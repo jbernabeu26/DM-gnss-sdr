@@ -31,7 +31,7 @@
  */
 
 #include "beidou_b2a_signal.h"
-#include "GPS_L5.h"
+#include "BEIDOU_B2a.h"
 #include <cinttypes>
 #include <cmath>
 #include <complex>
