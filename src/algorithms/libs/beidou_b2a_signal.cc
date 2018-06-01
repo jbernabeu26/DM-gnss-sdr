@@ -38,158 +38,154 @@
 #include <deque>
 
 
-std::deque<bool> l5i_xa_shift(std::deque<bool> xa)
+std::deque<bool> b2a_g1_shift(std::deque<bool> g1)
 {
-    if (xa == std::deque<bool>{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1})
-        {
-            return std::deque<bool>{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
-        }
-    else
-        {
-            std::deque<bool> out(xa.begin(), xa.end() - 1);
-            out.push_front(xa[12] xor xa[11] xor xa[9] xor xa[8]);
-            return out;
-        }
+	// Polynomial: G1 = 1 + x + x^5 + x^11 + x^13;
+	std::deque<bool> out(g1.begin(), g1.end() - 1);
+	out.push_front(g1[12] xor g1[12] xor g1[10] xor g1[4] xor g1[0]);
+	return out;
+
 }
 
 
-std::deque<bool> l5q_xa_shift(std::deque<bool> xa)
+std::deque<bool> b2ap_g1_shift(std::deque<bool> g1)
 {
-    if (xa == std::deque<bool>{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1})
-        {
-            return std::deque<bool>{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
-        }
-    else
-        {
-            std::deque<bool> out(xa.begin(), xa.end() - 1);
-            out.push_front(xa[12] xor xa[11] xor xa[9] xor xa[8]);
-            return out;
-        }
+	//Polynomial: G1 = 1 + x^3 + x^6 + x^7 + x^13;
+	std::deque<bool> out(g1.begin(), g1.end() - 1);
+	out.push_front(g1[12] xor g1[12] xor g1[6] xor g1[5] xor g1[2]);
+	return out;
 }
 
 
-std::deque<bool> l5i_xb_shift(std::deque<bool> xb)
+std::deque<bool> b2a_g2_shift(std::deque<bool> g2)
 {
-    std::deque<bool> out(xb.begin(), xb.end() - 1);
-    out.push_front(xb[12] xor xb[11] xor xb[7] xor xb[6] xor xb[5] xor xb[3] xor xb[2] xor xb[0]);
+	// Polynomial: G2 = 1 + x^3 + x^5 + x^9 + x^11 +x^12 +x^13;
+    std::deque<bool> out(g2.begin(), g2.end() - 1);
+    out.push_front(g2[12] xor g2[12] xor g2[11] xor g2[10] xor g2[8] xor g2[5] xor g2[2] xor g2[0]);
     return out;
 }
 
 
-std::deque<bool> l5q_xb_shift(std::deque<bool> xb)
+std::deque<bool> b2ap_g2_shift(std::deque<bool> g2)
 {
-    std::deque<bool> out(xb.begin(), xb.end() - 1);
-    out.push_front(xb[12] xor xb[11] xor xb[7] xor xb[6] xor xb[5] xor xb[3] xor xb[2] xor xb[0]);
+	// Polynomial: G2 = 1 + x + x^5 + x^7 + x^8 +x^12 +x^13;
+    std::deque<bool> out(g2.begin(), g2.end() - 1);
+    out.push_front(g2[12] xor g2[11] xor g2[12] xor g2[11] xor g2[7] xor g2[6] xor g2[4] xor g2[0]);
     return out;
 }
 
-
-std::deque<bool> make_l5i_xa()
+// Make the B2a data G1 sequence
+std::deque<bool> make_b2ad_g1()
 {
-    std::deque<bool> xa = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
-    std::deque<bool> y(GPS_L5i_CODE_LENGTH_CHIPS, 0);
+    std::deque<bool> g1 = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+    std::deque<bool> g1_seq(BEIDOU_B2ad_CODE_LENGTH_CHIPS, 0);
 
-    for (int i = 0; i < GPS_L5i_CODE_LENGTH_CHIPS; i++)
+    for (int i = 0; i < BEIDOU_B2ad_CODE_LENGTH_CHIPS; i++)
         {
-            y[i] = xa[12];
-            xa = l5i_xa_shift(xa);
+            g1_seq[i] = g1[12];
+            g1 = b2a_g1_shift(g1);
+            // reset the g1 register
+            if (i==8189)
+            {
+            	g1 = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+            }
         }
-    return y;
+    return g1_seq;
+}
+
+// Make the B2a data G2 sequence.
+std::deque<bool> make_b2ad_g2(std::deque<bool> g2)
+{
+    std::deque<bool> g2_seq(BEIDOU_B2ad_CODE_LENGTH_CHIPS, 0);
+
+    for (int i = 0; i < BEIDOU_B2ad_CODE_LENGTH_CHIPS; i++)
+        {
+            g2_seq[i] = g2[12];
+            g2 = b2a_g2_shift(g2);
+        }
+    return g2_seq;
 }
 
 
-std::deque<bool> make_l5i_xb()
+std::deque<bool> make_b2ap_g1()
 {
-    std::deque<bool> xb = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
-    std::deque<bool> y(GPS_L5i_CODE_LENGTH_CHIPS, 0);
+    std::deque<bool> g1 = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+    std::deque<bool> g1_seq(BEIDOU_B2ap_CODE_LENGTH_CHIPS, 0);
 
-    for (int i = 0; i < GPS_L5i_CODE_LENGTH_CHIPS; i++)
+    for (int i = 0; i < BEIDOU_B2ap_CODE_LENGTH_CHIPS; i++)
         {
-            y[i] = xb[12];
-            xb = l5i_xb_shift(xb);
+            g1_seq[i] = g1[12];
+            g1 = b2ap_g1_shift(g1);
         }
-    return y;
+    return g1_seq;
 }
 
 
-std::deque<bool> make_l5q_xa()
+std::deque<bool> make_b2ap_g2(std::deque<bool> g2)
 {
-    std::deque<bool> xa = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
-    std::deque<bool> y(GPS_L5q_CODE_LENGTH_CHIPS, 0);
+    std::deque<bool> g2_seq(BEIDOU_B2ap_CODE_LENGTH_CHIPS, 0);
 
-    for (int i = 0; i < GPS_L5q_CODE_LENGTH_CHIPS; i++)
+    for (int i = 0; i < BEIDOU_B2ap_CODE_LENGTH_CHIPS; i++)
         {
-            y[i] = xa[12];
-            xa = l5q_xa_shift(xa);
+            g2_seq[i] = g2[12];
+            g2 = b2ap_g2_shift(g2);
         }
-    return y;
+    return g2_seq;
 }
 
 
-std::deque<bool> make_l5q_xb()
+void make_b2ad(int32_t* _dest, int prn)
 {
-    std::deque<bool> xb = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
-    std::deque<bool> y(GPS_L5q_CODE_LENGTH_CHIPS, 0);
+	// TODO UGH should use array's instead to avoid this mess.
+	// could use memcpy but I don't like that.
+	// conclusion: there should be a more elegant way to do this.
+	std::deque<bool> g2 = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+	for (int i = 0;i < 13; i++)
+		{
+			g2[i] = BEIDOU_B2ad_INIT_REG[prn][i];
+		}
+    std::deque<bool> g1 = make_b2ad_g1();
+    std::deque<bool> g2 = make_b2ad_g2(g2);
 
-    for (int i = 0; i < GPS_L5q_CODE_LENGTH_CHIPS; i++)
+    std::deque<bool> out_code(BEIDOU_B2ad_CODE_LENGTH_CHIPS, 0);
+    for (int n = 0; n < BEIDOU_B2ad_CODE_LENGTH_CHIPS; n++)
         {
-            y[i] = xb[12];
-            xb = l5q_xb_shift(xb);
-        }
-    return y;
-}
-
-
-void make_l5i(int32_t* _dest, int prn)
-{
-    int xb_offset = GPS_L5i_INIT_REG[prn];
-
-    std::deque<bool> xb = make_l5i_xb();
-    std::deque<bool> xa = make_l5i_xa();
-    std::deque<bool> xb_shift(GPS_L5i_CODE_LENGTH_CHIPS, 0);
-
-    for (int n = 0; n < GPS_L5i_CODE_LENGTH_CHIPS; n++)
-        {
-            xb_shift[n] = xb[(xb_offset + n) % GPS_L5i_CODE_LENGTH_CHIPS];
-        }
-    std::deque<bool> out_code(GPS_L5i_CODE_LENGTH_CHIPS, 0);
-    for (int n = 0; n < GPS_L5i_CODE_LENGTH_CHIPS; n++)
-        {
-            _dest[n] = xa[n] xor xb_shift[n];
+            _dest[n] = g1[n] xor g2[n];
         }
 }
 
 
-void make_l5q(int32_t* _dest, int prn)
+void make_b2ap(int32_t* _dest, int prn)
 {
-    int xb_offset = GPS_L5q_INIT_REG[prn];
+	// TODO UGH should use array's instead to avoid this mess.
+	// could use memcpy but I don't like that.
+	// conclusion: there should be a more elegant way to do this.
+	std::deque<bool> g2 = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+	for (int i = 0;i < 13; i++)
+		{
+			g2[i] = BEIDOU_B2ad_INIT_REG[prn][i];//TODO add the register for the pilot code here!
+		}
+	    std::deque<bool> g1 = make_b2ap_g1();
+	    std::deque<bool> g2 = make_b2ap_g2(g2);
 
-    std::deque<bool> xb = make_l5q_xb();
-    std::deque<bool> xa = make_l5q_xa();
-    std::deque<bool> xb_shift(GPS_L5q_CODE_LENGTH_CHIPS, 0);
-
-    for (int n = 0; n < GPS_L5q_CODE_LENGTH_CHIPS; n++)
-        {
-            xb_shift[n] = xb[(xb_offset + n) % GPS_L5q_CODE_LENGTH_CHIPS];
-        }
-    std::deque<bool> out_code(GPS_L5q_CODE_LENGTH_CHIPS, 0);
-    for (int n = 0; n < GPS_L5q_CODE_LENGTH_CHIPS; n++)
-        {
-            _dest[n] = xa[n] xor xb_shift[n];
-        }
+	    std::deque<bool> out_code(BEIDOU_B2ap_CODE_LENGTH_CHIPS, 0);
+	    for (int n = 0; n < BEIDOU_B2ap_CODE_LENGTH_CHIPS; n++)
+	        {
+	            _dest[n] = g1[n] xor g2[n];
+	        }
 }
 
 
 void beidou_b2a_d_code_gen_complex(std::complex<float>* _dest, unsigned int _prn)
 {
-    int32_t* _code = new int32_t[GPS_L5i_CODE_LENGTH_CHIPS];
+    int32_t* _code = new int32_t[BEIDOU_B2ad_CODE_LENGTH_CHIPS];
 
-    if (_prn > 0 and _prn < 51)
+    if (_prn > 0 and _prn < 63)
         {
-            make_l5i(_code, _prn - 1);
+            make_b2ad(_code, _prn - 1);
         }
 
-    for (signed int i = 0; i < GPS_L5i_CODE_LENGTH_CHIPS; i++)
+    for (signed int i = 0; i < BEIDOU_B2ad_CODE_LENGTH_CHIPS; i++)
         {
             _dest[i] = std::complex<float>(1.0 - 2.0 * _code[i], 0.0);
         }
@@ -199,14 +195,14 @@ void beidou_b2a_d_code_gen_complex(std::complex<float>* _dest, unsigned int _prn
 
 void gbeidou_b2a_d_code_gen_float(float* _dest, unsigned int _prn)
 {
-    int32_t* _code = new int32_t[GPS_L5i_CODE_LENGTH_CHIPS];
+    int32_t* _code = new int32_t[BEIDOU_B2ad_CODE_LENGTH_CHIPS];
 
-    if (_prn > 0 and _prn < 51)
+    if (_prn > 0 and _prn < 63)
         {
-            make_l5i(_code, _prn - 1);
+            make_b2ad(_code, _prn - 1);
         }
 
-    for (signed int i = 0; i < GPS_L5i_CODE_LENGTH_CHIPS; i++)
+    for (signed int i = 0; i < BEIDOU_B2ad_CODE_LENGTH_CHIPS; i++)
         {
             _dest[i] = 1.0 - 2.0 * static_cast<float>(_code[i]);
         }
@@ -219,23 +215,23 @@ void gbeidou_b2a_d_code_gen_float(float* _dest, unsigned int _prn)
  */
 void beidou_b2a_d_code_gen_complex_sampled(std::complex<float>* _dest, unsigned int _prn, signed int _fs)
 {
-    int32_t* _code = new int32_t[GPS_L5i_CODE_LENGTH_CHIPS];
-    if (_prn > 0 and _prn < 51)
+    int32_t* _code = new int32_t[BEIDOU_B2ad_CODE_LENGTH_CHIPS];
+    if (_prn > 0 and _prn < 63)
         {
-            make_l5i(_code, _prn - 1);
+            make_b2ad(_code, _prn - 1);
         }
 
     signed int _samplesPerCode, _codeValueIndex;
     float _ts;
     float _tc;
-    const signed int _codeLength = GPS_L5i_CODE_LENGTH_CHIPS;
+    const signed int _codeLength = BEIDOU_B2ad_CODE_LENGTH_CHIPS;
 
     //--- Find number of samples per spreading code ----------------------------
-    _samplesPerCode = static_cast<int>(static_cast<double>(_fs) / (static_cast<double>(GPS_L5i_CODE_RATE_HZ) / static_cast<double>(_codeLength)));
+    _samplesPerCode = static_cast<int>(static_cast<double>(_fs) / (static_cast<double>(BEIDOU_B2ad_CODE_RATE_HZ) / static_cast<double>(_codeLength)));
 
     //--- Find time constants --------------------------------------------------
     _ts = 1.0 / static_cast<float>(_fs);                   // Sampling period in sec
-    _tc = 1.0 / static_cast<float>(GPS_L5i_CODE_RATE_HZ);  // C/A chip period in sec
+    _tc = 1.0 / static_cast<float>(BEIDOU_B2ad_CODE_RATE_HZ);  // C/A chip period in sec
 
     //float aux;
     for (signed int i = 0; i < _samplesPerCode; i++)
@@ -265,14 +261,14 @@ void beidou_b2a_d_code_gen_complex_sampled(std::complex<float>* _dest, unsigned 
 
 void beidou_b2a_p_code_gen_complex(std::complex<float>* _dest, unsigned int _prn)
 {
-    int32_t* _code = new int32_t[GPS_L5q_CODE_LENGTH_CHIPS];
+    int32_t* _code = new int32_t[BEIDOU_B2ap_CODE_LENGTH_CHIPS];
 
-    if (_prn > 0 and _prn < 51)
+    if (_prn > 0 and _prn < 63)
         {
-            make_l5q(_code, _prn - 1);
+            make_b2ap(_code, _prn - 1);
         }
 
-    for (signed int i = 0; i < GPS_L5q_CODE_LENGTH_CHIPS; i++)
+    for (signed int i = 0; i < BEIDOU_B2ap_CODE_LENGTH_CHIPS; i++)
         {
             _dest[i] = std::complex<float>(1.0 - 2.0 * _code[i], 0.0);
         }
@@ -282,14 +278,14 @@ void beidou_b2a_p_code_gen_complex(std::complex<float>* _dest, unsigned int _prn
 
 void beidou_b2a_p_code_gen_float(float* _dest, unsigned int _prn)
 {
-    int32_t* _code = new int32_t[GPS_L5q_CODE_LENGTH_CHIPS];
+    int32_t* _code = new int32_t[BEIDOU_B2ap_CODE_LENGTH_CHIPS];
 
-    if (_prn > 0 and _prn < 51)
+    if (_prn > 0 and _prn < 63)
         {
             make_l5q(_code, _prn - 1);
         }
 
-    for (signed int i = 0; i < GPS_L5q_CODE_LENGTH_CHIPS; i++)
+    for (signed int i = 0; i < BEIDOU_B2ap_CODE_LENGTH_CHIPS; i++)
         {
             _dest[i] = 1.0 - 2.0 * static_cast<float>(_code[i]);
         }
@@ -301,23 +297,23 @@ void beidou_b2a_p_code_gen_float(float* _dest, unsigned int _prn)
  */
 void beidou_b2a_p_code_gen_complex_sampled(std::complex<float>* _dest, unsigned int _prn, signed int _fs)
 {
-    int32_t* _code = new int32_t[GPS_L5q_CODE_LENGTH_CHIPS];
-    if (_prn > 0 and _prn < 51)
+    int32_t* _code = new int32_t[BEIDOU_B2ap_CODE_LENGTH_CHIPS];
+    if (_prn > 0 and _prn < 63)
         {
-            make_l5q(_code, _prn - 1);
+            make_b2ap(_code, _prn - 1);
         }
 
     signed int _samplesPerCode, _codeValueIndex;
     float _ts;
     float _tc;
-    const signed int _codeLength = GPS_L5q_CODE_LENGTH_CHIPS;
+    const signed int _codeLength = BEIDOU_B2ap_CODE_LENGTH_CHIPS;
 
     //--- Find number of samples per spreading code ----------------------------
-    _samplesPerCode = static_cast<int>(static_cast<double>(_fs) / (static_cast<double>(GPS_L5q_CODE_RATE_HZ) / static_cast<double>(_codeLength)));
+    _samplesPerCode = static_cast<int>(static_cast<double>(_fs) / (static_cast<double>(BEIDOU_B2ap_CODE_RATE_HZ) / static_cast<double>(_codeLength)));
 
     //--- Find time constants --------------------------------------------------
     _ts = 1.0 / static_cast<float>(_fs);                   // Sampling period in sec
-    _tc = 1.0 / static_cast<float>(GPS_L5q_CODE_RATE_HZ);  // C/A chip period in sec
+    _tc = 1.0 / static_cast<float>(BEIDOU_B2ap_CODE_RATE_HZ);  // C/A chip period in sec
 
     //float aux;
     for (signed int i = 0; i < _samplesPerCode; i++)
