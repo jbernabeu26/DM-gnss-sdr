@@ -1,9 +1,9 @@
 /*!
- * \file gps_l5i pcps_acquisition.cc
+ * \file beidou_b2ad pcps_acquisition.cc
  * \brief Adapts a PCPS acquisition block to an Acquisition Interface for
- *  GPS L5i signals
+ *  BEIDOU B2a signals
  * \authors <ul>
- *          <li> Javier Arribas, 2017. jarribas(at)cttc.es
+ *          <li> Sara Hrbek, 2018. sara.hrbek(at)gmail.com
  *          </ul>
  *
  * -------------------------------------------------------------------------
@@ -31,10 +31,10 @@
  * -------------------------------------------------------------------------
  */
 
-#include "gps_l5i_pcps_acquisition.h"
+#include "beidou_b2ad_pcps_acquisition.h"
 #include "configuration_interface.h"
-#include "gps_l5_signal.h"
-#include "GPS_L5.h"
+#include "beidou_b2a_signal.h"
+#include "BEIDOU_B2a.h"
 #include "gnss_sdr_flags.h"
 #include <boost/math/distributions/exponential.hpp>
 #include <glog/logging.h>
@@ -42,7 +42,7 @@
 
 using google::LogMessage;
 
-GpsL5iPcpsAcquisition::GpsL5iPcpsAcquisition(
+BeidouB2adPcpsAcquisition::BeidouB2adPcpsAcquisition(
     ConfigurationInterface* configuration, std::string role,
     unsigned int in_streams, unsigned int out_streams) : role_(role), in_streams_(in_streams), out_streams_(out_streams)
 {
@@ -76,7 +76,7 @@ GpsL5iPcpsAcquisition::GpsL5iPcpsAcquisition(
     dump_filename_ = configuration_->property(role + ".dump_filename", default_dump_filename);
     acq_parameters.dump_filename = dump_filename_;
     //--- Find number of samples per spreading code -------------------------
-    code_length_ = static_cast<unsigned int>(std::round(static_cast<double>(fs_in_) / (GPS_L5i_CODE_RATE_HZ / static_cast<double>(GPS_L5i_CODE_LENGTH_CHIPS))));
+    code_length_ = static_cast<unsigned int>(std::round(static_cast<double>(fs_in_) / (BEIDOU_B2ad_CODE_RATE_HZ / static_cast<double>(BEIDOU_B2ad_CODE_LENGTH_CHIPS))));
 
     vector_length_ = code_length_;
 
@@ -121,20 +121,20 @@ GpsL5iPcpsAcquisition::GpsL5iPcpsAcquisition(
 }
 
 
-GpsL5iPcpsAcquisition::~GpsL5iPcpsAcquisition()
+BeidouB2adPcpsAcquisition::~BeidouB2adPcpsAcquisition()
 {
     delete[] code_;
 }
 
 
-void GpsL5iPcpsAcquisition::set_channel(unsigned int channel)
+void BeidouB2adPcpsAcquisition::set_channel(unsigned int channel)
 {
     channel_ = channel;
     acquisition_->set_channel(channel_);
 }
 
 
-void GpsL5iPcpsAcquisition::set_threshold(float threshold)
+void BeidouB2adPcpsAcquisition::set_threshold(float threshold)
 {
     float pfa = configuration_->property(role_ + boost::lexical_cast<std::string>(channel_) + ".pfa", 0.0);
 
@@ -157,7 +157,7 @@ void GpsL5iPcpsAcquisition::set_threshold(float threshold)
 }
 
 
-void GpsL5iPcpsAcquisition::set_doppler_max(unsigned int doppler_max)
+void BeidouB2adPcpsAcquisition::set_doppler_max(unsigned int doppler_max)
 {
     doppler_max_ = doppler_max;
 
@@ -167,7 +167,7 @@ void GpsL5iPcpsAcquisition::set_doppler_max(unsigned int doppler_max)
 
 // Be aware that Doppler step should be set to 2/(3T) Hz, where T is the coherent integration time (GPS L2 period is 0.02s)
 // Doppler bin minimum size= 33 Hz
-void GpsL5iPcpsAcquisition::set_doppler_step(unsigned int doppler_step)
+void BeidouB2adPcpsAcquisition::set_doppler_step(unsigned int doppler_step)
 {
     doppler_step_ = doppler_step;
 
@@ -175,7 +175,7 @@ void GpsL5iPcpsAcquisition::set_doppler_step(unsigned int doppler_step)
 }
 
 
-void GpsL5iPcpsAcquisition::set_gnss_synchro(Gnss_Synchro* gnss_synchro)
+void BeidouB2adPcpsAcquisition::set_gnss_synchro(Gnss_Synchro* gnss_synchro)
 {
     gnss_synchro_ = gnss_synchro;
 
@@ -183,37 +183,37 @@ void GpsL5iPcpsAcquisition::set_gnss_synchro(Gnss_Synchro* gnss_synchro)
 }
 
 
-signed int GpsL5iPcpsAcquisition::mag()
+signed int BeidouB2adPcpsAcquisition::mag()
 {
     return acquisition_->mag();
 }
 
 
-void GpsL5iPcpsAcquisition::init()
+void BeidouB2adPcpsAcquisition::init()
 {
     acquisition_->init();
 }
 
-void GpsL5iPcpsAcquisition::set_local_code()
+void BeidouB2adPcpsAcquisition::set_local_code()
 {
-    gps_l5i_code_gen_complex_sampled(code_, gnss_synchro_->PRN, fs_in_);
+    beidou_b2ad_code_gen_complex_sampled(code_, gnss_synchro_->PRN, fs_in_);
 
     acquisition_->set_local_code(code_);
 }
 
 
-void GpsL5iPcpsAcquisition::reset()
+void BeidouB2adPcpsAcquisition::reset()
 {
     acquisition_->set_active(true);
 }
 
-void GpsL5iPcpsAcquisition::set_state(int state)
+void BeidouB2adPcpsAcquisition::set_state(int state)
 {
     acquisition_->set_state(state);
 }
 
 
-float GpsL5iPcpsAcquisition::calculate_threshold(float pfa)
+float BeidouB2adPcpsAcquisition::calculate_threshold(float pfa)
 {
     //Calculate the threshold
     unsigned int frequency_bins = 0;
@@ -233,7 +233,7 @@ float GpsL5iPcpsAcquisition::calculate_threshold(float pfa)
 }
 
 
-void GpsL5iPcpsAcquisition::connect(gr::top_block_sptr top_block)
+void BeidouB2adPcpsAcquisition::connect(gr::top_block_sptr top_block)
 {
     if (item_type_.compare("gr_complex") == 0)
         {
@@ -257,7 +257,7 @@ void GpsL5iPcpsAcquisition::connect(gr::top_block_sptr top_block)
 }
 
 
-void GpsL5iPcpsAcquisition::disconnect(gr::top_block_sptr top_block)
+void BeidouB2adPcpsAcquisition::disconnect(gr::top_block_sptr top_block)
 {
     if (item_type_.compare("gr_complex") == 0)
         {
@@ -283,7 +283,7 @@ void GpsL5iPcpsAcquisition::disconnect(gr::top_block_sptr top_block)
 }
 
 
-gr::basic_block_sptr GpsL5iPcpsAcquisition::get_left_block()
+gr::basic_block_sptr BeidouB2adPcpsAcquisition::get_left_block()
 {
     if (item_type_.compare("gr_complex") == 0)
         {
@@ -305,7 +305,7 @@ gr::basic_block_sptr GpsL5iPcpsAcquisition::get_left_block()
 }
 
 
-gr::basic_block_sptr GpsL5iPcpsAcquisition::get_right_block()
+gr::basic_block_sptr BeidouB2adPcpsAcquisition::get_right_block()
 {
     return acquisition_;
 }

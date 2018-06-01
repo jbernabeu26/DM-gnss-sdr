@@ -1,9 +1,9 @@
 /*!
- * \file GPS_L5i_PCPS_Acquisition.h
- * \brief Adapts a PCPS acquisition block to an AcquisitionInterface for
- *  GPS L5i signals
+ * \file beidou_b2ad pcps_acquisition.h
+ * \brief Adapts a PCPS acquisition block to an Acquisition Interface for
+ *  BEIDOU B2a signals
  * \authors <ul>
- *          <li> Javier Arribas, 2017. jarribas(at)cttc.es
+ *          <li> Sara Hrbek, 2018. sara.hrbek(at)gmail.com
  *          </ul>
  *
  * -------------------------------------------------------------------------
@@ -31,8 +31,8 @@
  * -------------------------------------------------------------------------
  */
 
-#ifndef GNSS_SDR_GPS_L5i_PCPS_ACQUISITION_H_
-#define GNSS_SDR_GPS_L5i_PCPS_ACQUISITION_H_
+#ifndef GNSS_SDR_BEIDOU_B2ad_PCPS_ACQUISITION_H_
+#define GNSS_SDR_BEIDOU_B2ad_PCPS_ACQUISITION_H_
 
 #include "acquisition_interface.h"
 #include "gnss_synchro.h"
@@ -50,14 +50,14 @@ class ConfigurationInterface;
  * \brief This class adapts a PCPS acquisition block to an AcquisitionInterface
  *  for GPS L5i signals
  */
-class GpsL5iPcpsAcquisition : public AcquisitionInterface
+class BeidouB2adPcpsAcquisition : public AcquisitionInterface
 {
 public:
-    GpsL5iPcpsAcquisition(ConfigurationInterface* configuration,
+	BeidouB2adPcpsAcquisition(ConfigurationInterface* configuration,
         std::string role, unsigned int in_streams,
         unsigned int out_streams);
 
-    virtual ~GpsL5iPcpsAcquisition();
+    virtual ~BeidouB2adPcpsAcquisition();
 
     inline std::string role() override
     {
@@ -65,11 +65,11 @@ public:
     }
 
     /*!
-     * \brief Returns "GPS_L5i_PCPS_Acquisition"
+     * \brief Returns "BEIDOU_B2ad_PCPS_Acquisition"
      */
     inline std::string implementation() override
     {
-        return "GPS_L5i_PCPS_Acquisition";
+        return "BEIDOU_B2ad_PCPS_Acquisition";
     }
 
     inline size_t item_size() override
@@ -165,4 +165,4 @@ private:
     float calculate_threshold(float pfa);
 };
 
-#endif /* GNSS_SDR_GPS_L5i_PCPS_ACQUISITION_H_ */
+#endif /* GNSS_SDR_BEIDOU_B2ad_PCPS_ACQUISITION_H_ */

@@ -1,7 +1,7 @@
 /*!
- * \file gps_l5_signal.cc
- * \brief This class implements signal generators for the GPS L5 signals
- * \author Javier Arribas, 2017. jarribas(at)cttc.es
+ * \file beidou_b2a_signal.cc
+ * \brief This class implements signal generators for the BEIDOU B2a signals
+ * \author Sara Hrbek, 2018. sara.hrbek(at)gmail.com
  *
  * Detailed description of the file here if needed.
  *
