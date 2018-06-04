@@ -50,7 +50,6 @@ const double BEIDOU_B2a_C_m_s = 299792458.0;                 //!< The speed of l
 ;const double BEIDOU_B2a_F = -4.442807633e-10;               //!< Constant, [s/(m)^(1/2)]
 */
 
-
 // carrier and code frequencies
 const double BEIDOU_B2a_FREQ_HZ = FREQ5;  //!< L5 [Hz]
 
@@ -204,7 +203,7 @@ const int BEIDOU_B2a_CNAV_DATA_PAGE_BITS = 300;  //!< GPS L5 CNAV page length, i
 const int BEIDOU_B2a_SYMBOLS_PER_BIT = 2;
 const int BEIDOU_B2a_SAMPLES_PER_SYMBOL = 10;
 const int BEIDOU_B2a_CNAV_DATA_PAGE_SYMBOLS = 600;
-const int BEIDOU_B2a_HISTORY_DEEP = 6;
+//const int BEIDOU_B2a_HISTORY_DEEP = 6;
 
 //Beidou secondary codes. Data component has a fixed sequence as secondary code which are the same for every satellite
 const int BEIDOU_B2ad_SECONDARY_CODE_LENGTH = 5;// Each bit is 1 ms (one primary code sequence)

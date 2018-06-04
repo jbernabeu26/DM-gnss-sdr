@@ -48,7 +48,7 @@ class ConfigurationInterface;
 
 /*!
  * \brief This class adapts a PCPS acquisition block to an AcquisitionInterface
- *  for GPS L5i signals
+ *  for BEIDOU B2ad signals
  */
 class BeidouB2adPcpsAcquisition : public AcquisitionInterface
 {

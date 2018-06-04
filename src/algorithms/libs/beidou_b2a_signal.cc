@@ -136,7 +136,7 @@ std::deque<bool> make_b2ap_g2(std::deque<bool> g2)
 
 void make_b2ad(int32_t* _dest, int prn)
 {
-	// TODO UGH should use array's instead to avoid this mess.
+	// TODO UGH should use arrays or vectors instead to avoid this mess.
 	// could use memcpy but I don't like that.
 	// conclusion: there should be a more elegant way to do this.
 	std::deque<bool> g2 = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
@@ -176,7 +176,7 @@ void make_b2ap(int32_t* _dest, int prn)
 }
 
 
-void beidou_b2a_d_code_gen_complex(std::complex<float>* _dest, unsigned int _prn)
+void beidou_b2ad_code_gen_complex(std::complex<float>* _dest, unsigned int _prn)
 {
     int32_t* _code = new int32_t[BEIDOU_B2ad_CODE_LENGTH_CHIPS];
 
@@ -193,7 +193,7 @@ void beidou_b2a_d_code_gen_complex(std::complex<float>* _dest, unsigned int _prn
     delete[] _code;
 }
 
-void gbeidou_b2a_d_code_gen_float(float* _dest, unsigned int _prn)
+void gbeidou_b2ad_code_gen_float(float* _dest, unsigned int _prn)
 {
     int32_t* _code = new int32_t[BEIDOU_B2ad_CODE_LENGTH_CHIPS];
 
@@ -213,7 +213,7 @@ void gbeidou_b2a_d_code_gen_float(float* _dest, unsigned int _prn)
 /*
  *  Generates complex GPS L5i code for the desired SV ID and sampled to specific sampling frequency
  */
-void beidou_b2a_d_code_gen_complex_sampled(std::complex<float>* _dest, unsigned int _prn, signed int _fs)
+void beidou_b2ad_code_gen_complex_sampled(std::complex<float>* _dest, unsigned int _prn, signed int _fs)
 {
     int32_t* _code = new int32_t[BEIDOU_B2ad_CODE_LENGTH_CHIPS];
     if (_prn > 0 and _prn < 63)
@@ -244,7 +244,7 @@ void beidou_b2a_d_code_gen_complex_sampled(std::complex<float>* _dest, unsigned 
             //aux = (_ts * (i + 1)) / _tc;
             //_codeValueIndex = static_cast<int>(static_cast<long>(aux)) - 1;
 
-            //--- Make the digitized version of the L2C code -----------------------
+            //--- Make the digitized version of the B2ad code -----------------------
             if (i == _samplesPerCode - 1)
                 {
                     //--- Correct the last index (due to number rounding issues) -----------
@@ -259,7 +259,7 @@ void beidou_b2a_d_code_gen_complex_sampled(std::complex<float>* _dest, unsigned 
 }
 
 
-void beidou_b2a_p_code_gen_complex(std::complex<float>* _dest, unsigned int _prn)
+void beidou_b2ap_code_gen_complex(std::complex<float>* _dest, unsigned int _prn)
 {
     int32_t* _code = new int32_t[BEIDOU_B2ap_CODE_LENGTH_CHIPS];
 
@@ -276,7 +276,7 @@ void beidou_b2a_p_code_gen_complex(std::complex<float>* _dest, unsigned int _prn
     delete[] _code;
 }
 
-void beidou_b2a_p_code_gen_float(float* _dest, unsigned int _prn)
+void beidou_b2ap_code_gen_float(float* _dest, unsigned int _prn)
 {
     int32_t* _code = new int32_t[BEIDOU_B2ap_CODE_LENGTH_CHIPS];
 
@@ -293,9 +293,9 @@ void beidou_b2a_p_code_gen_float(float* _dest, unsigned int _prn)
     delete[] _code;
 }
 /*
- *  Generates complex GPS L5i code for the desired SV ID and sampled to specific sampling frequency
+ *  Generates complex BEIDOU B2a pilot code for the desired SV ID and sampled to specific sampling frequency
  */
-void beidou_b2a_p_code_gen_complex_sampled(std::complex<float>* _dest, unsigned int _prn, signed int _fs)
+void beidou_b2ap_code_gen_complex_sampled(std::complex<float>* _dest, unsigned int _prn, signed int _fs)
 {
     int32_t* _code = new int32_t[BEIDOU_B2ap_CODE_LENGTH_CHIPS];
     if (_prn > 0 and _prn < 63)
@@ -320,7 +320,7 @@ void beidou_b2a_p_code_gen_complex_sampled(std::complex<float>* _dest, unsigned 
         {
             //=== Digitizing =======================================================
 
-            //--- Make index array to read L5 code values -------------------------
+            //--- Make index array to read B2a pilot code values -------------------------
             //TODO: Check this formula! Seems to start with an extra sample
             _codeValueIndex = ceil((_ts * (static_cast<float>(i) + 1)) / _tc) - 1;
             //aux = (_ts * (i + 1)) / _tc;
