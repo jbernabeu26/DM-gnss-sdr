@@ -33,8 +33,6 @@
 
 #include "beidou_b2ad_pcps_acquisition.h"
 #include "configuration_interface.h"
-#include "beidou_b2a_signal.h"
-#include "BEIDOU_B2a.h"
 #include "gnss_sdr_flags.h"
 #include <boost/math/distributions/exponential.hpp>
 #include <glog/logging.h>
@@ -97,6 +95,7 @@ BeidouB2adPcpsAcquisition::BeidouB2adPcpsAcquisition(
         }
     acq_parameters.samples_per_code = code_length_;
     acq_parameters.samples_per_ms = code_length_;
+    acq_parameters.sampled_ms = sampled_ms_;
     acq_parameters.it_size = item_size_;
     acq_parameters.sampled_ms = 1;
     acq_parameters.num_doppler_bins_step2 = configuration_->property(role + ".second_nbins", 4);
@@ -196,9 +195,19 @@ void BeidouB2adPcpsAcquisition::init()
 
 void BeidouB2adPcpsAcquisition::set_local_code()
 {
+    std::complex<float>* code = new std::complex<float>[code_length_];
+
     beidou_b2ad_code_gen_complex_sampled(code_, gnss_synchro_->PRN, fs_in_);
 
-    acquisition_->set_local_code(code_);
+    for (unsigned int i = 0; i < sampled_ms_; i++)
+		{
+			memcpy(&(code_[i * code_length_]), code,
+				sizeof(gr_complex) * code_length_);
+		}
+
+	acquisition_->set_local_code(code_);
+	delete[] code;
+
 }
 
 

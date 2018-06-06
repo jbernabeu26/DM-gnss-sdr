@@ -31,17 +31,19 @@
  * -------------------------------------------------------------------------
  */
 
-#ifndef GNSS_SDR_BEIDOU_B2ad_PCPS_ACQUISITION_H_
-#define GNSS_SDR_BEIDOU_B2ad_PCPS_ACQUISITION_H_
+#ifndef GNSS_SDR_BEIDOU_B2AD_PCPS_ACQUISITION_H_
+#define GNSS_SDR_BEIDOU_B2AD_PCPS_ACQUISITION_H_
 
 #include "acquisition_interface.h"
 #include "gnss_synchro.h"
 #include "pcps_acquisition.h"
+#include "BEIDOU_B2a.h"
 #include "complex_byte_to_float_x2.h"
 #include <gnuradio/blocks/stream_to_vector.h>
 #include <gnuradio/blocks/float_to_complex.h>
 #include <volk_gnsssdr/volk_gnsssdr.h>
 #include <string>
+#include "../../libs/beidou_b2a_signal_processing.h"
 
 
 class ConfigurationInterface;
@@ -115,7 +117,7 @@ public:
     void init() override;
 
     /*!
-     * \brief Sets local code for GPS L2/M PCPS acquisition algorithm.
+     * \brief Sets local code for Beidou B2a PCPS acquisition algorithm.
      */
     void set_local_code() override;
 
@@ -151,6 +153,7 @@ private:
     unsigned int doppler_max_;
     unsigned int doppler_step_;
     unsigned int max_dwells_;
+    unsigned int sampled_ms_;
     long fs_in_;
     long if_;
     bool dump_;
@@ -165,4 +168,4 @@ private:
     float calculate_threshold(float pfa);
 };
 
-#endif /* GNSS_SDR_BEIDOU_B2ad_PCPS_ACQUISITION_H_ */
+#endif /* GNSS_SDR_BEIDOU_B2AD_PCPS_ACQUISITION_H_ */

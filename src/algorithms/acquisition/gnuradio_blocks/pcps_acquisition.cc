@@ -199,11 +199,6 @@ bool pcps_acquisition::is_fdma()
             LOG(INFO) << "Trying to acquire SV PRN " << d_gnss_synchro->PRN << " with freq " << acq_parameters.freq << " in Glonass Channel " << GLONASS_PRN.at(d_gnss_synchro->PRN) << std::endl;
             return true;
         }
-	else if (strcmp(d_gnss_synchro->Signal, "5C") == 0)
-		{
-			LOG(INFO) << "Trying to acquire SV PRN " << d_gnss_synchro->PRN << " with freq " << acq_parameters.freq << " in Beidou Channel " << d_gnss_synchro->PRN << std::endl;
-			return true;
-	   }
     else
         {
             return false;
