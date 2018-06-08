@@ -972,9 +972,8 @@ void GNSSFlowgraph::set_signals_list()
     std::set<unsigned int> available_glonass_prn = {1, 2, 3, 4, 9, 10, 11, 12, 18, 19, 20, 21, 24};
 
     // Create the lists of BEIDOU satellites
-    std::set<unsigned int> available_beidou_prn = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
-        11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28,
-        29, 30, 31, 32};//TODO adjust for current constellation
+    //BeiDou-S3 satellites contain the modernized signals( PRN 31 33 34 32 35). BeiDou-3 contain the new satellites PRN 19 20 27 28 21 22 29 and 30
+    std::set<unsigned int> available_beidou_prn = {31, 33, 34, 32, 35, 19, 29, 27, 28, 21, 22, 29, 30};//TODO adjust for current constellation, also this does not use the beidou2 satellites.
 
     std::string sv_list = configuration_->property("Galileo.prns", std::string(""));
 
@@ -1179,8 +1178,8 @@ void GNSSFlowgraph::set_signals_list()
             /*
              * Loop to create BEIDOU B2a signals
              */
-            for (available_gnss_prn_iter = available_gps_prn.cbegin();
-                 available_gnss_prn_iter != available_gps_prn.cend();
+            for (available_gnss_prn_iter = available_beidou_prn.begin();
+                 available_gnss_prn_iter != available_beidou_prn.end();
                  available_gnss_prn_iter++)
                 {
                     available_GNSS_signals_.push_back(Gnss_Signal(
