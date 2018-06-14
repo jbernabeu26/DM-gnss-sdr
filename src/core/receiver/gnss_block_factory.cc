@@ -266,16 +266,19 @@ std::unique_ptr<GNSSBlockInterface> GNSSBlockFactory::GetObservables(std::shared
     unsigned int GPS_channels = configuration->property("Channels_1C.count", 0);
     GPS_channels += configuration->property("Channels_2S.count", 0);
     GPS_channels += configuration->property("Channels_L5.count", 0);
-    unsigned int Glonass_channels = configuration->property("Channels_1G.count", 0);// TODO ADD BEIDOU HERE
+    unsigned int Glonass_channels = configuration->property("Channels_1G.count", 0);
+    unsigned int Beidou_channels = configuration->property("Channels_5C.count", 0);
     unsigned int extra_channels = 1;  // For monitor channel sample counter
     return GetBlock(configuration, "Observables", implementation,
         Galileo_channels +
             GPS_channels +
             Glonass_channels +
+			Beidou_channels +
             extra_channels,
         Galileo_channels +
             GPS_channels +
-            Glonass_channels);
+            Glonass_channels+
+			Beidou_channels);
 }
 
 
@@ -289,8 +292,9 @@ std::unique_ptr<GNSSBlockInterface> GNSSBlockFactory::GetPVT(std::shared_ptr<Con
     unsigned int GPS_channels = configuration->property("Channels_1C.count", 0);
     GPS_channels += configuration->property("Channels_2S.count", 0);
     GPS_channels += configuration->property("Channels_L5.count", 0);
-    unsigned int Glonass_channels = configuration->property("Channels_1G.count", 0);// TODO ADD BEIDOU HERE
-    return GetBlock(configuration, "PVT", implementation, Galileo_channels + GPS_channels + Glonass_channels, 0);
+    unsigned int Glonass_channels = configuration->property("Channels_1G.count", 0);
+    unsigned int Beidou_channels = configuration->property("Channels_5C.count", 0);
+    return GetBlock(configuration, "PVT", implementation, Galileo_channels + GPS_channels + Glonass_channels + Beidou_channels, 0);
 }
 
 
@@ -810,7 +814,7 @@ std::unique_ptr<GNSSBlockInterface> GNSSBlockFactory::GetChannel_5C(
             appendix3 = "";
         }
     // Automatically detect input data type
-    std::shared_ptr<InMemoryConfiguration> config;
+    std::shared_ptr<InMemoryConfiguration> config;//TODO THIS IS THE PART THAT BREAKS! THE DATATYPE GETS SET TO PASS_THROUGH< SAME WITH DIRECT_SAMPLER.
     config = std::make_shared<InMemoryConfiguration>();
     std::string default_item_type = "gr_complex";
     std::string acq_item_type = configuration->property("Acquisition_5C" + appendix1 + ".item_type", default_item_type);
@@ -1072,7 +1076,7 @@ std::unique_ptr<std::vector<std::unique_ptr<GNSSBlockInterface>>> GNSSBlockFacto
                     channel_absolute_id++;
                 }
             //**************** BEIDOU B2a  CHANNELS **********************
-			LOG(INFO) << "Getting " << Channels_5C_count << "BEIDOU B2a channels";
+			LOG(INFO) << "Getting " << Channels_5C_count << " BEIDOU B2a channels";
 			tracking_implementation = configuration->property("Tracking_5C.implementation", default_implementation);
 			telemetry_decoder_implementation = configuration->property("TelemetryDecoder_5C.implementation", default_implementation);
 			acquisition_implementation = configuration->property("Acquisition_5C.implementation", default_implementation);

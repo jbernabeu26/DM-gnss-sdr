@@ -282,6 +282,7 @@ void GNSSFlowgraph::connect()
                 }
             catch (const std::exception& e)
                 {
+
                     LOG(WARNING) << "Can't connect sample counter";
                     LOG(ERROR) << e.what();
                     top_block_->disconnect_all();
@@ -325,6 +326,7 @@ void GNSSFlowgraph::connect()
             ch_out_sample_counter = gnss_sdr_make_sample_counter(fs, sig_conditioner_.at(0)->get_right_block()->output_signature()->sizeof_stream_item(0));
             top_block_->connect(sig_conditioner_.at(0)->get_right_block(), 0, ch_out_sample_counter, 0);
             top_block_->connect(ch_out_sample_counter, 0, observables_->get_left_block(), channels_count_);  //extra port for the sample counter pulse
+            fprintf(stdout,"ChannelCNt %d\n",channels_count_);
         }
     catch (const std::exception& e)
         {
@@ -973,7 +975,7 @@ void GNSSFlowgraph::set_signals_list()
 
     // Create the lists of BEIDOU satellites
     //BeiDou-S3 satellites contain the modernized signals( PRN 31 33 34 32 35). BeiDou-3 contain the new satellites PRN 19 20 27 28 21 22 29 and 30
-    std::set<unsigned int> available_beidou_prn = {31, 33, 34, 32, 35, 19, 29, 27, 28, 21, 22, 29, 30};//TODO adjust for current constellation, also this does not use the beidou2 satellites.
+    std::set<unsigned int> available_beidou_prn = {31, 33, 34, 32, 35, 19, 29, 27, 28, 21, 22, 29, 30};//TODO adjust for current constellation
 
     std::string sv_list = configuration_->property("Galileo.prns", std::string(""));
 
