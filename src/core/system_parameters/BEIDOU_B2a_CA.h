@@ -257,6 +257,7 @@ const std::vector<std::pair<int, int>> PRN({{1, 6}});
 const std::vector<std::pair<int, int>> MesType({{7, 6}});
 const std::vector<std::pair<int, int>> SOW({{13, 18}});
 
+
 // Type 10 (288 bits)
 const std::vector<std::pair<int, int>> WN({{31, 13}});
 const std::vector<std::pair<int, int>> DIF({{44, 1}});
@@ -267,8 +268,19 @@ const std::vector<std::pair<int, int>> DIF_B1C({{51, 1}});
 const std::vector<std::pair<int, int>> SIF_B1C({{52, 1}});
 const std::vector<std::pair<int, int>> AIF_B1C({{53, 1}});
 const std::vector<std::pair<int, int>> IODE({{54, 8}});
-const std::vector<std::pair<int, int>> EPHEMERIS_1({{62, 203}});
+// Ephemeris I (203 bits)
+const std::vector<std::pair<int, int>> t_oe({{62, 11}});
+const std::vector<std::pair<int, int>> SatType({{73, 2}});
+const std::vector<std::pair<int, int>> dA({{75, 26}});
+const std::vector<std::pair<int, int>> A_dot({{101, 25}});
+const std::vector<std::pair<int, int>> dn_0({{126, 17}});
+const std::vector<std::pair<int, int>> dn_0_dot({{143, 23}});
+const std::vector<std::pair<int, int>> M_0({{166, 33}});
+const std::vector<std::pair<int, int>> e({{199, 33}});
+const std::vector<std::pair<int, int>> omega({{232, 33}});
+// Ephemeris I End
 const std::vector<std::pair<int, int>> CRC({{265, 24}});
+
 
 // Type 11 (288 bits)
 const std::vector<std::pair<int, int>> HS({{31, 2}});
@@ -279,8 +291,20 @@ const std::vector<std::pair<int, int>> SISMAI({{36, 4}});
 const std::vector<std::pair<int, int>> DIF_B1C({{40, 1}});
 const std::vector<std::pair<int, int>> SIF_B1C({{41, 1}});
 const std::vector<std::pair<int, int>> AIF_B1C({{42, 1}});
-const std::vector<std::pair<int, int>> EPHEMERIS_2({{43, 222}});
+// Ephemeris II (222 bits)
+const std::vector<std::pair<int, int>> Omega_0({{43, 33}});
+const std::vector<std::pair<int, int>> i_0({{76, 33}});
+const std::vector<std::pair<int, int>> Omega_dot({{109, 19}});
+const std::vector<std::pair<int, int>> i_0_dot({{128, 15}});
+const std::vector<std::pair<int, int>> C_IS({{143, 16}});
+const std::vector<std::pair<int, int>> C_IC({{159, 16}});
+const std::vector<std::pair<int, int>> C_RS({{175, 24}});
+const std::vector<std::pair<int, int>> C_RC({{199, 24}});
+const std::vector<std::pair<int, int>> C_US({{223, 21}});
+const std::vector<std::pair<int, int>> C_UC({{244, 21}});
+// Ephemeris II End
 const std::vector<std::pair<int, int>> CRC({{265, 24}});
+
 
 // Type 30 (288 bits)
 const std::vector<std::pair<int, int>> HS({{31, 2}});
@@ -291,14 +315,30 @@ const std::vector<std::pair<int, int>> SISMAI({{36, 4}});
 const std::vector<std::pair<int, int>> DIF_B1C({{40, 1}});
 const std::vector<std::pair<int, int>> SIF_B1C({{41, 1}});
 const std::vector<std::pair<int, int>> AIF_B1C({{42, 1}});
-const std::vector<std::pair<int, int>> Clock_Correction_Parameters({{43, 69}});
+// Clock Correction Parameters (69 bits)
+const std::vector<std::pair<int, int>> t_oc({{43, 11}});
+const std::vector<std::pair<int, int>> a_0({{54, 25}});
+const std::vector<std::pair<int, int>> a_1({{79, 22}});
+const std::vector<std::pair<int, int>> a_2({{101, 11}});
+// Clock Correction Parameters End
 const std::vector<std::pair<int, int>> IODC({{112, 10}});
 const std::vector<std::pair<int, int>> T_GDB2ap({{122, 12}});
 const std::vector<std::pair<int, int>> ISC_B2ad({{134, 12}});
-const std::vector<std::pair<int, int>> Ionospheric_Delay_Correction_Model_Parameters({{146, 74}});
+// Ionospheric Delay Correction Model Parameters (74 bits)
+const std::vector<std::pair<int, int>> alpha_1({{146, 10}});
+const std::vector<std::pair<int, int>> alpha_2({{156, 8}});
+const std::vector<std::pair<int, int>> alpha_3({{164, 8}});
+const std::vector<std::pair<int, int>> alpha_4({{172, 8}});
+const std::vector<std::pair<int, int>> alpha_5({{180, 8}});
+const std::vector<std::pair<int, int>> alpha_6({{188, 8}});
+const std::vector<std::pair<int, int>> alpha_7({{196, 8}});
+const std::vector<std::pair<int, int>> alpha_8({{204, 8}});
+const std::vector<std::pair<int, int>> alpha_9({{212, 8}});
+// Ionospheric Delay Correction Model Parameters End
 const std::vector<std::pair<int, int>> T_GDB1Cp({{220, 12}});
 const std::vector<std::pair<int, int>> Rev({{232, 33}});
 const std::vector<std::pair<int, int>> CRC({{265, 24}});
+
 
 // Type 31 (288 bits)
 const std::vector<std::pair<int, int>> HS({{31, 2}});
@@ -309,15 +349,42 @@ const std::vector<std::pair<int, int>> SISMAI({{36, 4}});
 const std::vector<std::pair<int, int>> DIF_B1C({{40, 1}});
 const std::vector<std::pair<int, int>> SIF_B1C({{41, 1}});
 const std::vector<std::pair<int, int>> AIF_B1C({{42, 1}});
-const std::vector<std::pair<int, int>> Clock_Correction_Parameters({{43, 69}});
+// Clock Correction Parameters (69 bits)
+const std::vector<std::pair<int, int>> t_oc({{43, 11}});
+const std::vector<std::pair<int, int>> a_0({{54, 25}});
+const std::vector<std::pair<int, int>> a_1({{79, 22}});
+const std::vector<std::pair<int, int>> a_2({{101, 11}});
+// Clock Correction Parameters End
 const std::vector<std::pair<int, int>> IODC({{112, 10}});
 const std::vector<std::pair<int, int>> WN_a({{122, 13}});
 const std::vector<std::pair<int, int>> t_oa({{135, 8}});
-const std::vector<std::pair<int, int>> Reduced_Almanac({{143, 38}});
-const std::vector<std::pair<int, int>> Reduced_Almanac({{181, 38}});
-const std::vector<std::pair<int, int>> Reduced_Alamanc({{219, 38}});
+// Reduced Almanac Parameters (38 bits)
+const std::vector<std::pair<int, int>> PRN_a({{143, 6}});
+const std::vector<std::pair<int, int>> SatType({{149, 2}});
+const std::vector<std::pair<int, int>> delta_A({{151, 8}});
+const std::vector<std::pair<int, int>> Omega_0({{159, 7}});
+const std::vector<std::pair<int, int>> Phi_0({{166, 7}});
+const std::vector<std::pair<int, int>> Health({{173, 8}});
+// Reduced Almanac Parameters End
+// Reduced Almanac Parameters (38 bits)
+const std::vector<std::pair<int, int>> PRN_a({{181, 6}});
+const std::vector<std::pair<int, int>> SatType({{187, 2}});
+const std::vector<std::pair<int, int>> delta_A({{189, 8}});
+const std::vector<std::pair<int, int>> Omega_0({{197, 7}});
+const std::vector<std::pair<int, int>> Phi_0({{204, 7}});
+const std::vector<std::pair<int, int>> Health({{211, 8}});
+// Reduced Almanac Parameters End
+// Reduced Almanac Parameters (38 bits)
+const std::vector<std::pair<int, int>> PRN_a({{219, 6}});
+const std::vector<std::pair<int, int>> SatType({{225, 2}});
+const std::vector<std::pair<int, int>> delta_A({{227, 8}});
+const std::vector<std::pair<int, int>> Omega_0({{235, 7}});
+const std::vector<std::pair<int, int>> Phi_0({{242, 7}});
+const std::vector<std::pair<int, int>> Health({{249, 8}});
+// Reduced Almanac Parameters End
 const std::vector<std::pair<int, int>> Rev({{257, 8}});
 const std::vector<std::pair<int, int>> CRC({{265, 24}});
+
 
 // Type 32 (288 bits)
 const std::vector<std::pair<int, int>> HS({{31, 2}});
@@ -328,11 +395,25 @@ const std::vector<std::pair<int, int>> SISMAI({{36, 4}});
 const std::vector<std::pair<int, int>> DIF_B1C({{40, 1}});
 const std::vector<std::pair<int, int>> SIF_B1C({{41, 1}});
 const std::vector<std::pair<int, int>> AIF_B1C({{42, 1}});
-const std::vector<std::pair<int, int>> Clock_Correction_Parameters({{43, 69}});
+// Clock Correction Parameters (69 bits)
+const std::vector<std::pair<int, int>> t_oc({{43, 11}});
+const std::vector<std::pair<int, int>> a_0({{54, 25}});
+const std::vector<std::pair<int, int>> a_1({{79, 22}});
+const std::vector<std::pair<int, int>> a_2({{101, 11}});
+// Clock Correction Parameters End
 const std::vector<std::pair<int, int>> IODC({{112, 10}});
-const std::vector<std::pair<int, int>> EOP_Parameters({{122, 138}});
+// EOP Parameters (138 bits)
+const std::vector<std::pair<int, int>> t_EOP({{122, 16}});
+const std::vector<std::pair<int, int>> PM_X({{138, 21}});
+const std::vector<std::pair<int, int>> PM_X_dot({{159, 15}});
+const std::vector<std::pair<int, int>> PM_Y({{174, 21}});
+const std::vector<std::pair<int, int>> PM_Y_dot({{195, 15}});
+const std::vector<std::pair<int, int>> dUT1({{210, 31}});
+const std::vector<std::pair<int, int>> dUT1_dot({{241, 19}});
+// EOP Parameters End
 const std::vector<std::pair<int, int>> Rev({{260, 5}});
 const std::vector<std::pair<int, int>> CRC({{265, 24}});
+
 
 // Type 33 (288 bits)
 const std::vector<std::pair<int, int>> HS({{31, 2}});
@@ -343,9 +424,28 @@ const std::vector<std::pair<int, int>> SISMAI({{36, 4}});
 const std::vector<std::pair<int, int>> DIF_B1C({{40, 1}});
 const std::vector<std::pair<int, int>> SIF_B1C({{41, 1}});
 const std::vector<std::pair<int, int>> AIF_B1C({{42, 1}});
-const std::vector<std::pair<int, int>> Clock_Correction_Parameters({{43, 69}});
-const std::vector<std::pair<int, int>> BGTO_Parameters({{112, 68}});
-const std::vector<std::pair<int, int>> Reduced_Almanac({{180, 38}});
+// Clock Correction Parameters (69 bits)
+const std::vector<std::pair<int, int>> t_oc({{43, 11}});
+const std::vector<std::pair<int, int>> a_0({{54, 25}});
+const std::vector<std::pair<int, int>> a_1({{79, 22}});
+const std::vector<std::pair<int, int>> a_2({{101, 11}});
+// Clock Correction Parameters End
+// BGTO Parameters (68 bits)
+const std::vector<std::pair<int, int>> GNSS_ID({{112, 3}});
+const std::vector<std::pair<int, int>> WN_0BGTO({{115, 13}});
+const std::vector<std::pair<int, int>> t_0BGTO({{128, 16}});
+const std::vector<std::pair<int, int>> A_0BGTO({{144, 16}});
+const std::vector<std::pair<int, int>> A_1BGTO({{160, 13}});
+const std::vector<std::pair<int, int>> A_2BGTO({{173, 7}});
+// BGTO Parameters End
+// Reduced Almanac Parameters (38 bits)
+const std::vector<std::pair<int, int>> PRN_a({{180, 6}});
+const std::vector<std::pair<int, int>> SatType({{186, 2}});
+const std::vector<std::pair<int, int>> delta_A({{188, 8}});
+const std::vector<std::pair<int, int>> Omega_0({{196, 7}});
+const std::vector<std::pair<int, int>> Phi_0({{203, 7}});
+const std::vector<std::pair<int, int>> Health({{210, 8}});
+// Reduced Almanac Parameters End
 const std::vector<std::pair<int, int>> IODC({{218, 10}});
 const std::vector<std::pair<int, int>> WN_a({{228, 13}});
 const std::vector<std::pair<int, int>> t_oa({{241, 8}});
@@ -362,12 +462,33 @@ const std::vector<std::pair<int, int>> SISMAI({{36, 4}});
 const std::vector<std::pair<int, int>> DIF_B1C({{40, 1}});
 const std::vector<std::pair<int, int>> SIF_B1C({{41, 1}});
 const std::vector<std::pair<int, int>> AIF_B1C({{42, 1}});
-const std::vector<std::pair<int, int>> SISAI_OC({{43, 22}});
-const std::vector<std::pair<int, int>> Clock_Correction_Parameters({{65, 69}});
+// SISAI_OC (22 bits)
+const std::vector<std::pair<int, int>> t_op({{43, 11}});
+const std::vector<std::pair<int, int>> SISAI_ocb({{54, 5}});
+const std::vector<std::pair<int, int>> SISAI_oc1({{59, 3}});
+const std::vector<std::pair<int, int>> SISAI_oc2({{62, 3}});
+// SISAI_OC End
+// Clock Correction Parameters (69 bits)
+const std::vector<std::pair<int, int>> t_oc({{65, 11}});
+const std::vector<std::pair<int, int>> a_0({{76, 25}});
+const std::vector<std::pair<int, int>> a_1({{101, 22}});
+const std::vector<std::pair<int, int>> a_2({{123, 11}});
+// Clock Correction Parameters End
 const std::vector<std::pair<int, int>> IODC({{134, 10}});
-const std::vector<std::pair<int, int>> BDT_UTC_Time_Offset_Parameters({{144, 97}});
+// BDT-UTC Time Offset Parameters (97 bits)
+const std::vector<std::pair<int, int>> A_0UTC({{144, 16}});
+const std::vector<std::pair<int, int>> A_1UTC({{160, 13}});
+const std::vector<std::pair<int, int>> A_2UTC({{173, 7}});
+const std::vector<std::pair<int, int>> dt_LS({{180, 8}});
+const std::vector<std::pair<int, int>> t_ot({{188, 16}});
+const std::vector<std::pair<int, int>> WN_ot({{204, 13}});
+const std::vector<std::pair<int, int>> WN_LSF({{217, 13}});
+const std::vector<std::pair<int, int>> DN({{230, 3}});
+const std::vector<std::pair<int, int>> dt_LSF({{233, 8}});
+// BDT-UTC Time Offset Parameters End
 const std::vector<std::pair<int, int>> Rev({{241, 24}});
 const std::vector<std::pair<int, int>> CRC({{265, 24}});
+
 
 // Type 40 (288 bits)
 const std::vector<std::pair<int, int>> HS({{31, 2}});
@@ -379,109 +500,30 @@ const std::vector<std::pair<int, int>> DIF_B1C({{40, 1}});
 const std::vector<std::pair<int, int>> SIF_B1C({{41, 1}});
 const std::vector<std::pair<int, int>> AIF_B1C({{42, 1}});
 const std::vector<std::pair<int, int>> SISAI_OE({{43, 5}});
-const std::vector<std::pair<int, int>> SISAI_OC({{48, 22}});
-const std::vector<std::pair<int, int>> Midi_Almanac({{70, 156}});
+// SISAI_OC (22 bits)
+const std::vector<std::pair<int, int>> t_op({{48, 11}});
+const std::vector<std::pair<int, int>> SISAI_ocb({{59, 5}});
+const std::vector<std::pair<int, int>> SISAI_oc1({{64, 3}});
+const std::vector<std::pair<int, int>> SISAI_oc2({{67, 3}});
+// SISAI_OC End
+// Midi Almanac Parameters (156 bits)
+const std::vector<std::pair<int, int>> PRN_a({{70, 6}});
+const std::vector<std::pair<int, int>> SatType({{76, 2}});
+const std::vector<std::pair<int, int>> WN_a({{78, 13}});
+const std::vector<std::pair<int, int>> t_oa({{91, 8}});
+const std::vector<std::pair<int, int>> e({{99, 11}});
+const std::vector<std::pair<int, int>> delta_i({{110, 11}});
+const std::vector<std::pair<int, int>> sqrt_A({{121, 17}});
+const std::vector<std::pair<int, int>> Omega_0({{138, 16}});
+const std::vector<std::pair<int, int>> Omega_dot({{154, 11}});
+const std::vector<std::pair<int, int>> omega({{165, 16}});
+const std::vector<std::pair<int, int>> M_0({{181, 16}});
+const std::vector<std::pair<int, int>> a_f0({{197, 11}});
+const std::vector<std::pair<int, int>> a_f1({{208, 10}});
+const std::vector<std::pair<int, int>> Health({{218, 8}});
+// Midi Almanac Parameters End
 const std::vector<std::pair<int, int>> Rev({{226, 39}});
 const std::vector<std::pair<int, int>> CRC({{265, 24}});
 
 
-// Data Blocks This should be simply added to the data type above
-// Ephemeris I (203 bits)
-const std::vector<std::pair<int, int>> t_oe({{1, 11}});
-const std::vector<std::pair<int, int>> SatType({{12, 2}});
-const std::vector<std::pair<int, int>> dA({{14, 26}});
-const std::vector<std::pair<int, int>> A_dot({{40, 25}});
-const std::vector<std::pair<int, int>> dn_0({{65, 17}});
-const std::vector<std::pair<int, int>> dn_0_dot({{82, 23}});
-const std::vector<std::pair<int, int>> M_0({{105, 33}});
-const std::vector<std::pair<int, int>> e({{138, 33}});
-const std::vector<std::pair<int, int>> omega({{171, 33}});
-
-// Ephemeris II (222 bits)
-const std::vector<std::pair<int, int>> Omega_0({{1, 33}});
-const std::vector<std::pair<int, int>> i_0({{34, 33}});
-const std::vector<std::pair<int, int>> Omega_dot({{67, 19}});
-const std::vector<std::pair<int, int>> i_0_dot({{86, 15}});
-const std::vector<std::pair<int, int>> C_IS({{101, 16}});
-const std::vector<std::pair<int, int>> C_IC({{117, 16}});
-const std::vector<std::pair<int, int>> C_RS({{133, 24}});
-const std::vector<std::pair<int, int>> C_RC({{157, 24}});
-const std::vector<std::pair<int, int>> C_US({{181, 21}});
-const std::vector<std::pair<int, int>> C_UC({{202, 21}});
-
-// Clock Correction Parameters (69 bits)
-const std::vector<std::pair<int, int>> t_oc({{1, 11}});
-const std::vector<std::pair<int, int>> a_0({{12, 25}});
-const std::vector<std::pair<int, int>> a_1({{37, 22}});
-const std::vector<std::pair<int, int>> a_2({{59, 11}});
-
-// SISAI_OC (22 bits)
-const std::vector<std::pair<int, int>> C_US({{1, 11}});
-const std::vector<std::pair<int, int>> C_US({{12, 5}});
-const std::vector<std::pair<int, int>> C_US({{17, 3}});
-const std::vector<std::pair<int, int>> C_US({{20, 3}});
-
-// Ionospheric Delay Correction Model Parameters (74 bits)
-const std::vector<std::pair<int, int>> C_US({{1, 10}});
-const std::vector<std::pair<int, int>> C_US({{11, 8}});
-const std::vector<std::pair<int, int>> C_US({{19, 8}});
-const std::vector<std::pair<int, int>> C_US({{27, 8}});
-const std::vector<std::pair<int, int>> C_US({{35, 8}});
-const std::vector<std::pair<int, int>> C_US({{43, 8}});
-const std::vector<std::pair<int, int>> C_US({{51, 8}});
-const std::vector<std::pair<int, int>> C_US({{59, 8}});
-const std::vector<std::pair<int, int>> C_US({{67, 8}});
-
-// BDT-UTC Time Offset Parameters (97 bits)
-const std::vector<std::pair<int, int>> C_US({{1, 16}});
-const std::vector<std::pair<int, int>> C_US({{17, 13}});
-const std::vector<std::pair<int, int>> C_US({{30, 7}});
-const std::vector<std::pair<int, int>> C_US({{37, 8}});
-const std::vector<std::pair<int, int>> C_US({{45, 16}});
-const std::vector<std::pair<int, int>> C_US({{61, 13}});
-const std::vector<std::pair<int, int>> C_US({{74, 13}});
-const std::vector<std::pair<int, int>> C_US({{87, 3}});
-const std::vector<std::pair<int, int>> C_US({{90, 8}});
-
-// Reduced Almanac Parameters (38 bits)
-const std::vector<std::pair<int, int>> C_US({{1, 6}});
-const std::vector<std::pair<int, int>> C_US({{7, 2}});
-const std::vector<std::pair<int, int>> C_US({{9, 8}});
-const std::vector<std::pair<int, int>> C_US({{17, 7}});
-const std::vector<std::pair<int, int>> C_US({{24, 7}});
-const std::vector<std::pair<int, int>> C_US({{31, 8}});
-
-// EOP Parameters (138 bits)
-const std::vector<std::pair<int, int>> C_US({{1, 16}});
-const std::vector<std::pair<int, int>> C_US({{17, 21}});
-const std::vector<std::pair<int, int>> C_US({{38, 15}});
-const std::vector<std::pair<int, int>> C_US({{53, 21}});
-const std::vector<std::pair<int, int>> C_US({{74, 15}});
-const std::vector<std::pair<int, int>> C_US({{89, 31}});
-const std::vector<std::pair<int, int>> C_US({{120, 19}});
-
-// BGTO Parameters (68 bits)
-const std::vector<std::pair<int, int>> C_US({{1, 3}});
-const std::vector<std::pair<int, int>> C_US({{4, 13}});
-const std::vector<std::pair<int, int>> C_US({{17, 16}});
-const std::vector<std::pair<int, int>> C_US({{33, 16}});
-const std::vector<std::pair<int, int>> C_US({{49, 13}});
-const std::vector<std::pair<int, int>> C_US({{62, 7}});
-
-// Midi Almanac Parameters (156 bits)
-const std::vector<std::pair<int, int>> C_US({{1, 6}});
-const std::vector<std::pair<int, int>> C_US({{7, 2}});
-const std::vector<std::pair<int, int>> C_US({{9, 13}});
-const std::vector<std::pair<int, int>> C_US({{22, 8}});
-const std::vector<std::pair<int, int>> C_US({{30, 11}});
-const std::vector<std::pair<int, int>> C_US({{41, 11}});
-const std::vector<std::pair<int, int>> C_US({{52, 17}});
-const std::vector<std::pair<int, int>> C_US({{69, 16}});
-const std::vector<std::pair<int, int>> C_US({{85, 11}});
-const std::vector<std::pair<int, int>> C_US({{96, 16}});
-const std::vector<std::pair<int, int>> C_US({{112, 16}});
-const std::vector<std::pair<int, int>> C_US({{128, 11}});
-const std::vector<std::pair<int, int>> C_US({{139, 10}});
-const std::vector<std::pair<int, int>> C_US({{149, 8}});
-
-#endif /* GNSS_SDR_BEIDOU_L1_L2_CA_H_ */
+#endif /* GNSS_SDR_BEIDOU_B2a_CA_H_ */
