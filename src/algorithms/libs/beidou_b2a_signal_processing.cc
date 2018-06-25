@@ -32,18 +32,18 @@
 
 #include "beidou_b2a_signal_processing.h"
 
-#include "BEIDOU_B2a.h"
 #include <cinttypes>
 #include <cmath>
 #include <complex>
 #include <deque>
+#include "BEIDOU_B2A.h"
 
 
-std::deque<bool> b2a_g1_shift(std::deque<bool> g1)
+std::deque<bool> b2ad_g1_shift(std::deque<bool> g1)
 {
 	// Polynomial: G1 = 1 + x + x^5 + x^11 + x^13;
 	std::deque<bool> out(g1.begin(), g1.end() - 1);
-	out.push_front(g1[12] xor g1[12] xor g1[10] xor g1[4] xor g1[0]);
+	out.push_front(g1[12] xor g1[10] xor g1[4] xor g1[0]);
 	return out;
 
 }
@@ -53,16 +53,16 @@ std::deque<bool> b2ap_g1_shift(std::deque<bool> g1)
 {
 	//Polynomial: G1 = 1 + x^3 + x^6 + x^7 + x^13;
 	std::deque<bool> out(g1.begin(), g1.end() - 1);
-	out.push_front(g1[12] xor g1[12] xor g1[6] xor g1[5] xor g1[2]);
+	out.push_front(g1[12] xor g1[6] xor g1[5] xor g1[2]);
 	return out;
 }
 
 
-std::deque<bool> b2a_g2_shift(std::deque<bool> g2)
+std::deque<bool> b2ad_g2_shift(std::deque<bool> g2)
 {
 	// Polynomial: G2 = 1 + x^3 + x^5 + x^9 + x^11 +x^12 +x^13;
     std::deque<bool> out(g2.begin(), g2.end() - 1);
-    out.push_front(g2[12] xor g2[12] xor g2[11] xor g2[10] xor g2[8] xor g2[5] xor g2[2] xor g2[0]);
+    out.push_front(g2[12] xor g2[11] xor g2[10] xor g2[8] xor g2[4] xor g2[2]);
     return out;
 }
 
@@ -71,7 +71,7 @@ std::deque<bool> b2ap_g2_shift(std::deque<bool> g2)
 {
 	// Polynomial: G2 = 1 + x + x^5 + x^7 + x^8 +x^12 +x^13;
     std::deque<bool> out(g2.begin(), g2.end() - 1);
-    out.push_front(g2[12] xor g2[11] xor g2[12] xor g2[11] xor g2[7] xor g2[6] xor g2[4] xor g2[0]);
+    out.push_front(g2[12] xor g2[11] xor g2[7] xor g2[6] xor g2[4] xor g2[0]);
     return out;
 }
 
@@ -84,7 +84,7 @@ std::deque<bool> make_b2ad_g1()
     for (int i = 0; i < BEIDOU_B2ad_CODE_LENGTH_CHIPS; i++)
         {
             g1_seq[i] = g1[12];
-            g1 = b2a_g1_shift(g1);
+            g1 = b2ad_g1_shift(g1);
             // reset the g1 register
             if (i==8189)
             {
@@ -102,7 +102,7 @@ std::deque<bool> make_b2ad_g2(std::deque<bool> g2)
     for (int i = 0; i < BEIDOU_B2ad_CODE_LENGTH_CHIPS; i++)
         {
             g2_seq[i] = g2[12];
-            g2 = b2a_g2_shift(g2);
+            g2 = b2ad_g2_shift(g2);
         }
     return g2_seq;
 }
@@ -137,34 +137,34 @@ std::deque<bool> make_b2ap_g2(std::deque<bool> g2)
 
 void make_b2ad(int32_t* _dest, int prn)
 {
-	// TODO UGH should use arrays or vectors instead to avoid this mess.
-	// could use memcpy but I don't like that.
-	// conclusion: there should be a more elegant way to do this.
+	//fprintf(stdout,"prn%d =[",prn);
 	std::deque<bool> g2 = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 	for (int i = 0;i < 13; i++)
 		{
-			g2[i] = BEIDOU_B2ad_INIT_REG[prn][i];
+			g2[i] = BEIDOU_B2ad_INIT_REG[prn-1][i];//prn is indexed from 1.Initialization codes have been verified correct for PRN 26, 27 and 28.
+			//fprintf(stdout,"%d ",g2[i]);
 		}
-    std::deque<bool> g1 = make_b2ad_g1();
+    std::deque<bool> g1 = make_b2ad_g1(); //G1 have been verified correct. It is the same for all PRNs.
     g2 = make_b2ad_g2(g2);
 
     std::deque<bool> out_code(BEIDOU_B2ad_CODE_LENGTH_CHIPS, 0);
+
     for (int n = 0; n < BEIDOU_B2ad_CODE_LENGTH_CHIPS; n++)
         {
             _dest[n] = g1[n] xor g2[n];
+            //fprintf(stdout,"%d ",_dest[n]);//PRN 29 has been verified correct.
         }
+    //fprintf(stdout,"];\n");
 }
 
 
 void make_b2ap(int32_t* _dest, int prn)
 {
-	// TODO UGH should use array's instead to avoid this mess.
-	// could use memcpy but I don't like that.
-	// conclusion: there should be a more elegant way to do this.
+
 	std::deque<bool> g2 = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 	for (int i = 0;i < 13; i++)
 		{
-			g2[i] = BEIDOU_B2ad_INIT_REG[prn][i];//TODO add the register for the pilot code here!
+			g2[i] = BEIDOU_B2ap_INIT_REG[prn][i];
 		}
 	    std::deque<bool> g1 = make_b2ap_g1();
 	    g2 = make_b2ap_g2(g2);

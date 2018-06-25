@@ -222,6 +222,18 @@ void Gnss_Satellite::set_PRN(unsigned int PRN_)
                     PRN = PRN_;
                 }
         }
+    else if (system.compare("Beidou") == 0)
+        {
+            if (PRN_ < 25 or PRN_ > 35)
+                {
+                    DLOG(INFO) << "This PRN is not defined for Beidou B2a";
+                    PRN = 0;
+                }
+            else
+                {
+                    PRN = PRN_;
+                }
+        }
     else
         {
             DLOG(INFO) << "System " << system << " is not defined";
@@ -381,7 +393,18 @@ std::string Gnss_Satellite::what_block(const std::string& system_, unsigned int 
                     block_ = std::string("Unknown");
                 }
         }
-
+    if (system_.compare("Beidou") == 0)//TODO fill in the rest of this!!!
+            {
+                // info from http://mgex.igs.org/IGS_MGEX_Status_BDS.php
+                switch (PRN_)
+                    {
+                    case 27:
+                        block_ = std::string("BEIDOU 3M3");  // Plane D
+                        break;
+					default:
+                        block_ = std::string("Unknown");
+                    }
+            }
     if (system_.compare("Glonass") == 0)
         {
             // Info from http://www.sdcm.ru/smglo/grupglo?version=eng&site=extern

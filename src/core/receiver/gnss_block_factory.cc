@@ -277,7 +277,7 @@ std::unique_ptr<GNSSBlockInterface> GNSSBlockFactory::GetObservables(std::shared
             extra_channels,
         Galileo_channels +
             GPS_channels +
-            Glonass_channels+
+            Glonass_channels +
 			Beidou_channels);
 }
 
@@ -814,7 +814,7 @@ std::unique_ptr<GNSSBlockInterface> GNSSBlockFactory::GetChannel_5C(
             appendix3 = "";
         }
     // Automatically detect input data type
-    std::shared_ptr<InMemoryConfiguration> config;//TODO THIS IS THE PART THAT BREAKS! THE DATATYPE GETS SET TO PASS_THROUGH< SAME WITH DIRECT_SAMPLER.
+    std::shared_ptr<InMemoryConfiguration> config;
     config = std::make_shared<InMemoryConfiguration>();
     std::string default_item_type = "gr_complex";
     std::string acq_item_type = configuration->property("Acquisition_5C" + appendix1 + ".item_type", default_item_type);

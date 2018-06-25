@@ -326,7 +326,7 @@ void GNSSFlowgraph::connect()
             ch_out_sample_counter = gnss_sdr_make_sample_counter(fs, sig_conditioner_.at(0)->get_right_block()->output_signature()->sizeof_stream_item(0));
             top_block_->connect(sig_conditioner_.at(0)->get_right_block(), 0, ch_out_sample_counter, 0);
             top_block_->connect(ch_out_sample_counter, 0, observables_->get_left_block(), channels_count_);  //extra port for the sample counter pulse
-            fprintf(stdout,"ChannelCNt %d\n",channels_count_);
+            fprintf(stdout,"ChannelCnt %d\n",channels_count_);
         }
     catch (const std::exception& e)
         {
@@ -455,6 +455,7 @@ void GNSSFlowgraph::connect()
     for (unsigned int i = 0; i < channels_count_; i++)
         {
             LOG(INFO) << "Channel " << i << " assigned to " << channels_.at(i)->get_signal();
+
             if (channels_state_[i] == 1)
                 {
                     if (FPGA_enabled == false)
@@ -975,7 +976,8 @@ void GNSSFlowgraph::set_signals_list()
 
     // Create the lists of BEIDOU satellites
     //BeiDou-S3 satellites contain the modernized signals( PRN 31 33 34 32 35). BeiDou-3 contain the new satellites PRN 19 20 27 28 21 22 29 and 30
-    std::set<unsigned int> available_beidou_prn = {31, 33, 34, 32, 35, 19, 29, 27, 28, 21, 22, 29, 30};//TODO adjust for current constellation
+    std::set<unsigned int> available_beidou_prn = {27, 30};//, 31, 33, 34, 32, 35, 19, 29, 28, 21, 22, 29};//TODO adjust for current constellation{27, 30};//
+    //std::cout << "Beidou prns:   " << std::dec << 27 << '\n';
 
     std::string sv_list = configuration_->property("Galileo.prns", std::string(""));
 
@@ -1180,12 +1182,12 @@ void GNSSFlowgraph::set_signals_list()
             /*
              * Loop to create BEIDOU B2a signals
              */
-            for (available_gnss_prn_iter = available_beidou_prn.begin();
-                 available_gnss_prn_iter != available_beidou_prn.end();
+            for (available_gnss_prn_iter = available_beidou_prn.cbegin();
+                 available_gnss_prn_iter != available_beidou_prn.cend();
                  available_gnss_prn_iter++)
                 {
                     available_GNSS_signals_.push_back(Gnss_Signal(
-                        Gnss_Satellite(std::string("Beidou"), *available_gnss_prn_iter),//TODO check I spelled it right
+                        Gnss_Satellite(std::string("Beidou"), *available_gnss_prn_iter),
                         std::string("5C")));
                 }
         }

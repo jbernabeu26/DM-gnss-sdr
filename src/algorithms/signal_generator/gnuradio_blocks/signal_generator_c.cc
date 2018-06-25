@@ -33,16 +33,15 @@
 #include "glonass_l1_signal_processing.h"
 #include "galileo_e1_signal_processing.h"
 #include "galileo_e5_signal_processing.h"
+#include "beidou_b2a_signal_processing.h"
 #include "Galileo_E1.h"
 #include "Galileo_E5a.h"
 #include "GPS_L1_CA.h"
+#include "BEIDOU_B2A.h"
 #include "GLONASS_L1_L2_CA.h"
-#include "BEIDOU_B2a.h"
 #include <gnuradio/io_signature.h>
 #include <volk_gnsssdr/volk_gnsssdr.h>
 #include <fstream>
-#include "../../libs/beidou_b2a_signal_processing.h"
-
 
 /*
 * Create a new instance of signal_generator_c and return
@@ -124,6 +123,13 @@ void signal_generator_c::init()
 
                     num_of_codes_per_vector_.push_back(galileo_signal ? 4 * static_cast<int>(Galileo_E1_C_SECONDARY_CODE_LENGTH) : 1);
                     data_bit_duration_ms_.push_back(1e3 / GLONASS_GNAV_TELEMETRY_RATE_BITS_SECOND);
+                }
+            else if (system_[sat] == "C")
+                {
+                    samples_per_code_.push_back(round(static_cast<float>(fs_in_) / (BEIDOU_B2ad_CODE_RATE_HZ / BEIDOU_B2ad_CODE_LENGTH_CHIPS)));
+
+                    num_of_codes_per_vector_.push_back(galileo_signal ? 4 * static_cast<int>(Galileo_E1_C_SECONDARY_CODE_LENGTH) : 1);//todo what does this do?
+                    data_bit_duration_ms_.push_back(1e3 / BEIDOU_B2a_CNAV_DATA_PAGE_BITS);//TODO for DK to fill out?
                 }
             else if (system_[sat] == "E")
                 {
@@ -270,7 +276,7 @@ void signal_generator_c::generate_codes()
             else if (system_[sat] == "C")
                 {
                     // Generate one code-period of BEIDOU B2a signal
-            	beidou_b2ad_code_gen_complex_sampled(code, PRN_[sat], fs_in_);//BEIDOU does not have a chip shift.
+            		beidou_b2ad_code_gen_complex_sampled(code, PRN_[sat], fs_in_);//BEIDOU does not have a chip shift.
                         //static_cast<int>(BEIDOU_B2ad_CODE_LENGTH_CHIPS) - delay_chips_[sat]);
 
                     // Obtain the desired CN0 assuming that Pn = 1.

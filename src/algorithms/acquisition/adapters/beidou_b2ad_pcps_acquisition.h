@@ -37,12 +37,13 @@
 #include "acquisition_interface.h"
 #include "gnss_synchro.h"
 #include "pcps_acquisition.h"
-#include "BEIDOU_B2a.h"
 #include "complex_byte_to_float_x2.h"
 #include <gnuradio/blocks/stream_to_vector.h>
 #include <gnuradio/blocks/float_to_complex.h>
 #include <volk_gnsssdr/volk_gnsssdr.h>
 #include <string>
+
+#include "../../../core/system_parameters/BEIDOU_B2A.h"
 #include "../../libs/beidou_b2a_signal_processing.h"
 
 

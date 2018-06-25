@@ -102,7 +102,7 @@ BeidouB2adPcpsAcquisition::BeidouB2adPcpsAcquisition(
     acq_parameters.doppler_step2 = configuration_->property(role + ".second_doppler_step", 125.0);
     acq_parameters.make_2_steps = configuration_->property(role + ".make_two_steps", false);
     acquisition_ = pcps_make_acquisition(acq_parameters);
-    DLOG(INFO) << "acquisition(" << acquisition_->unique_id() << ")";
+    DLOG(INFO) << "SARA BEIDOU acquisition(" << acquisition_->unique_id() << ")";
 
     stream_to_vector_ = gr::blocks::stream_to_vector::make(item_size_, vector_length_);
     DLOG(INFO) << "stream_to_vector(" << stream_to_vector_->unique_id() << ")";
