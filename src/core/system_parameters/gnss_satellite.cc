@@ -112,7 +112,7 @@ Gnss_Satellite& Gnss_Satellite::operator=(const Gnss_Satellite &rhs) {
 
 void Gnss_Satellite::set_system(const std::string& system_)
 {
-    // Set the satellite system {"GPS", "Glonass", "SBAS", "Galileo", "Compass"}
+    // Set the satellite system {"GPS", "Glonass", "SBAS", "Galileo", "Compass"}//todo SARA it seems like Beidou has been defined as compass somewhere else
     std::set<std::string>::iterator it = system_set.find(system_);
 
     if (it != system_set.cend())
@@ -393,7 +393,7 @@ std::string Gnss_Satellite::what_block(const std::string& system_, unsigned int 
                     block_ = std::string("Unknown");
                 }
         }
-    if (system_.compare("Beidou") == 0)//TODO fill in the rest of this!!!
+    if (system_.compare("Beidou") == 0)//TODO sara fill in the rest of this!!!
             {
                 // info from http://mgex.igs.org/IGS_MGEX_Status_BDS.php
                 switch (PRN_)

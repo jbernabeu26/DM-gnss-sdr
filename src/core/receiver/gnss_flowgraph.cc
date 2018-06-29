@@ -326,7 +326,6 @@ void GNSSFlowgraph::connect()
             ch_out_sample_counter = gnss_sdr_make_sample_counter(fs, sig_conditioner_.at(0)->get_right_block()->output_signature()->sizeof_stream_item(0));
             top_block_->connect(sig_conditioner_.at(0)->get_right_block(), 0, ch_out_sample_counter, 0);
             top_block_->connect(ch_out_sample_counter, 0, observables_->get_left_block(), channels_count_);  //extra port for the sample counter pulse
-            fprintf(stdout,"ChannelCnt %d\n",channels_count_);
         }
     catch (const std::exception& e)
         {

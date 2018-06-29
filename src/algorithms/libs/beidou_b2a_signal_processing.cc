@@ -37,6 +37,9 @@
 #include <complex>
 #include <deque>
 #include "BEIDOU_B2A.h"
+#include <iostream>
+#include <fstream>
+
 
 
 std::deque<bool> b2ad_g1_shift(std::deque<bool> g1)
@@ -137,12 +140,11 @@ std::deque<bool> make_b2ap_g2(std::deque<bool> g2)
 
 void make_b2ad(int32_t* _dest, int prn)
 {
-	//fprintf(stdout,"prn%d =[",prn);
 	std::deque<bool> g2 = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 	for (int i = 0;i < 13; i++)
 		{
 			g2[i] = BEIDOU_B2ad_INIT_REG[prn-1][i];//prn is indexed from 1.Initialization codes have been verified correct for PRN 26, 27 and 28.
-			//fprintf(stdout,"%d ",g2[i]);
+
 		}
     std::deque<bool> g1 = make_b2ad_g1(); //G1 have been verified correct. It is the same for all PRNs.
     g2 = make_b2ad_g2(g2);
@@ -151,10 +153,8 @@ void make_b2ad(int32_t* _dest, int prn)
 
     for (int n = 0; n < BEIDOU_B2ad_CODE_LENGTH_CHIPS; n++)
         {
-            _dest[n] = g1[n] xor g2[n];
-            //fprintf(stdout,"%d ",_dest[n]);//PRN 29 has been verified correct.
+            _dest[n] = g1[n] xor g2[n];//PRN 29 has been verified correct.
         }
-    //fprintf(stdout,"];\n");
 }
 
 
@@ -217,9 +217,9 @@ void beidou_b2ad_code_gen_float(float* _dest, unsigned int _prn)
 void beidou_b2ad_code_gen_complex_sampled(std::complex<float>* _dest, unsigned int _prn, signed int _fs)
 {
     int32_t* _code = new int32_t[BEIDOU_B2ad_CODE_LENGTH_CHIPS];
-    if (_prn > 0 and _prn < 63)
+    if (_prn > 0 and _prn <= 63)
         {
-            make_b2ad(_code, _prn - 1);
+            make_b2ad(_code, _prn);//TODO Sara make code generation have the -1 for beidou, otherwise everything else might break. Maybe not, just tracking which I can fix.
         }
 
     signed int _samplesPerCode, _codeValueIndex;
@@ -234,18 +234,18 @@ void beidou_b2ad_code_gen_complex_sampled(std::complex<float>* _dest, unsigned i
     _ts = 1.0 / static_cast<float>(_fs);                   // Sampling period in sec
     _tc = 1.0 / static_cast<float>(BEIDOU_B2ad_CODE_RATE_HZ);  // C/A chip period in sec
 
-    //float aux;
     for (signed int i = 0; i < _samplesPerCode; i++)
         {
             //=== Digitizing =======================================================
 
             //--- Make index array to read L5 code values -------------------------
-            //TODO: Check this formula! Seems to start with an extra sample
+            //TODO: Check this formula! Seems to start with an extra sample.
             _codeValueIndex = ceil((_ts * (static_cast<float>(i) + 1)) / _tc) - 1;
             //aux = (_ts * (i + 1)) / _tc;
             //_codeValueIndex = static_cast<int>(static_cast<long>(aux)) - 1;
 
             //--- Make the digitized version of the B2ad code -----------------------
+
             if (i == _samplesPerCode - 1)
                 {
                     //--- Correct the last index (due to number rounding issues) -----------
@@ -301,7 +301,7 @@ void beidou_b2ap_code_gen_complex_sampled(std::complex<float>* _dest, unsigned i
     int32_t* _code = new int32_t[BEIDOU_B2ap_CODE_LENGTH_CHIPS];
     if (_prn > 0 and _prn < 63)
         {
-            make_b2ap(_code, _prn - 1);
+            make_b2ap(_code, _prn);
         }
 
     signed int _samplesPerCode, _codeValueIndex;

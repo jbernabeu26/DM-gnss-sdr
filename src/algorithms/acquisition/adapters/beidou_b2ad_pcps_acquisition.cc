@@ -95,14 +95,13 @@ BeidouB2adPcpsAcquisition::BeidouB2adPcpsAcquisition(
         }
     acq_parameters.samples_per_code = code_length_;
     acq_parameters.samples_per_ms = code_length_;
-    acq_parameters.sampled_ms = sampled_ms_;
+    acq_parameters.sampled_ms = 1;// TODO sara adjust for NH;
     acq_parameters.it_size = item_size_;
-    acq_parameters.sampled_ms = 1;
     acq_parameters.num_doppler_bins_step2 = configuration_->property(role + ".second_nbins", 4);
     acq_parameters.doppler_step2 = configuration_->property(role + ".second_doppler_step", 125.0);
     acq_parameters.make_2_steps = configuration_->property(role + ".make_two_steps", false);
     acquisition_ = pcps_make_acquisition(acq_parameters);
-    DLOG(INFO) << "SARA BEIDOU acquisition(" << acquisition_->unique_id() << ")";
+    DLOG(INFO) << "BEIDOU acquisition(" << acquisition_->unique_id() << ")";
 
     stream_to_vector_ = gr::blocks::stream_to_vector::make(item_size_, vector_length_);
     DLOG(INFO) << "stream_to_vector(" << stream_to_vector_->unique_id() << ")";
@@ -195,7 +194,7 @@ void BeidouB2adPcpsAcquisition::init()
 
 void BeidouB2adPcpsAcquisition::set_local_code()
 {
-    std::complex<float>* code = new std::complex<float>[code_length_];
+/*    std::complex<float>* code = new std::complex<float>[code_length_];
 
     beidou_b2ad_code_gen_complex_sampled(code_, gnss_synchro_->PRN, fs_in_);
 
@@ -206,7 +205,12 @@ void BeidouB2adPcpsAcquisition::set_local_code()
 		}
 
 	acquisition_->set_local_code(code_);
-	delete[] code;
+	delete[] code;*///todo sara check this part...
+	{
+		beidou_b2ad_code_gen_complex_sampled(code_, gnss_synchro_->PRN, fs_in_);
+
+	    acquisition_->set_local_code(code_);
+	}
 
 }
 
