@@ -94,6 +94,7 @@
 #include "glonass_l2_ca_dll_pll_tracking.h"
 #include "glonass_l2_ca_dll_pll_c_aid_tracking.h"
 #include "gps_l5_dll_pll_tracking.h"
+#include "beidou_b2a_dll_pll_tracking.h"
 #include "gps_l1_ca_telemetry_decoder.h"
 #include "gps_l2c_telemetry_decoder.h"
 #include "gps_l5_telemetry_decoder.h"
@@ -1594,7 +1595,12 @@ std::unique_ptr<GNSSBlockInterface> GNSSBlockFactory::GetBlock(
                 out_streams));
             block = std::move(block_);
         }
-
+    else if ((implementation.compare("BEIDOU_B2ad_DLL_PLL_Tracking") == 0) or (implementation.compare("BEIDOU_B2a_DLL_PLL_Tracking") == 0))
+           {
+               std::unique_ptr<GNSSBlockInterface> block_(new BeidouB2aDllPllTracking(configuration.get(), role, in_streams,
+                   out_streams));
+               block = std::move(block_);
+           }
 #if CUDA_GPU_ACCEL
     else if (implementation.compare("GPS_L1_CA_DLL_PLL_Tracking_GPU") == 0)
         {
@@ -1645,12 +1651,7 @@ std::unique_ptr<GNSSBlockInterface> GNSSBlockFactory::GetBlock(
                 out_streams));
             block = std::move(block_);
         }
-    /*else if (implementation.compare("BEIDOU_B2ad_DLL_PLL_Tracking") == 0)//TODO ADD BEIDOU BLOCK HERE
-        {
-            std::unique_ptr<GNSSBlockInterface> block_(new BeidouB2adDllPllTracking(configuration.get(), role, in_streams,
-                out_streams));
-            block = std::move(block_);
-        }*/
+
     // TELEMETRY DECODERS ----------------------------------------------------------
     else if (implementation.compare("GPS_L1_CA_Telemetry_Decoder") == 0)
         {
@@ -1700,7 +1701,6 @@ std::unique_ptr<GNSSBlockInterface> GNSSBlockFactory::GetBlock(
                 out_streams));
             block = std::move(block_);
         }
-    //TODO add tracking block for Beidou B2a here.
     // OBSERVABLES -----------------------------------------------------------------
     else if ((implementation.compare("Hybrid_Observables") == 0) || (implementation.compare("GPS_L1_CA_Observables") == 0) || (implementation.compare("GPS_L2C_Observables") == 0) ||
              (implementation.compare("Galileo_E5A_Observables") == 0))
@@ -1937,6 +1937,12 @@ std::unique_ptr<TrackingInterface> GNSSBlockFactory::GetTrkBlock(
                 out_streams));
             block = std::move(block_);
         }
+    else if ((implementation.compare("Beidou_B2ad_DLL_PLL_Tracking") == 0) or (implementation.compare("Beidou_B2a_DLL_PLL_Tracking") == 0))
+        {
+            std::unique_ptr<TrackingInterface> block_(new BeidouB2aDllPllTracking(configuration.get(), role, in_streams,
+                out_streams));
+            block = std::move(block_);
+        }
 #if CUDA_GPU_ACCEL
     else if (implementation.compare("GPS_L1_CA_DLL_PLL_Tracking_GPU") == 0)
         {
@@ -1969,7 +1975,6 @@ std::unique_ptr<TrackingInterface> GNSSBlockFactory::GetTrkBlock(
                 out_streams));
             block = std::move(block_);
         }
-    //TODO add the tracking block for Beidou B2a here.
     else
         {
             // Log fatal. This causes execution to stop.
@@ -2036,7 +2041,6 @@ std::unique_ptr<TelemetryDecoderInterface> GNSSBlockFactory::GetTlmBlock(
                 out_streams));
             block = std::move(block_);
         }
-    //TODO ADD BEIODU BLOCK HERE
     else
         {
             // Log fatal. This causes execution to stop.

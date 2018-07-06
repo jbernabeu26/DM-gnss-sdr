@@ -210,7 +210,7 @@ const int BEIDOU_B2a_CNAV_DATA_PAGE_SYMBOLS = 600;
 
 //Beidou secondary codes. Data component has a fixed sequence as secondary code which are the same for every satellite
 const int BEIDOU_B2ad_SECONDARY_CODE_LENGTH = 5;// Each bit is 1 ms (one primary code sequence)
-const int BEIDOU_B2ad_SECONDARY_CODE[10] = {0, 0, 0, 1, 0,};
+const int BEIDOU_B2ad_SECONDARY_CODE[5] = {0, 0, 0, 1, 0,};
 const std::string BEIDOU_B2ad_SECONDARY_CODE_STR = "00010";
 
 //TODO Beidou pilot code is an actual code which is currently not implemented
