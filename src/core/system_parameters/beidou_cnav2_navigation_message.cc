@@ -1,9 +1,9 @@
 /*!
  * \file beidou_cnav2_navigation_message.cc
- * \brief  Implementation of a beidou cnav2 Data message decoder as described in beidou ICD (Edition 5.1)
- * \note Code added as part of GSoC 2017 program
- * \author Damian Miralles, 2017. dmiralles2009(at)gmail.com
- * \see <a href="http://russianspacesystems.ru/wp-content/uploads/2016/08/ICD_beidou_eng_v5.1.pdf">beidou ICD</a>
+ * \brief  Implementation of a beidou cnav2 Data message decoder as described in BEIDOU ICD
+ * \note Code added as part of GSoC 2018 program
+ * \author Dong Kyeong Lee, 2018. dole7890(at)colorado.edu
+ * \see <a href="http://m.beidou.gov.cn/xt/gfxz/201712/P020171226742357364174.pdf">BEIDOU ICD</a>
  *
  * -------------------------------------------------------------------------
  *
@@ -35,32 +35,20 @@
 #include <glog/logging.h>
 
 
-void beidou_cnav2_Navigation_Message::reset()
+void Beidou_Cnav2_Navigation_Message::reset()
 {
     // Satellite Identification
     i_satellite_PRN = 0;
     i_alm_satellite_slot_number = 0;  //!< SV Orbit Slot Number
     flag_update_slot_number = false;
 
-    // Ephmeris Flags
+    // Ephemeris Flags
     flag_all_ephemeris = false;
     flag_ephemeris_str_1 = false;
     flag_ephemeris_str_2 = false;
-    flag_ephemeris_str_3 = false;
-    flag_ephemeris_str_4 = false;
 
     // Almanac Flags
-    flag_all_almanac = false;
-    flag_almanac_str_6 = false;
-    flag_almanac_str_7 = false;
-    flag_almanac_str_8 = false;
-    flag_almanac_str_9 = false;
-    flag_almanac_str_10 = false;
-    flag_almanac_str_11 = false;
-    flag_almanac_str_12 = false;
-    flag_almanac_str_13 = false;
-    flag_almanac_str_14 = false;
-    flag_almanac_str_15 = false;
+    flag_almanac_str_31 = false;
 
     // UTC and System Clocks Flags
     flag_utc_model_valid = false;   //!< If set, it indicates that the UTC model parameters are filled
@@ -89,7 +77,7 @@ void beidou_cnav2_Navigation_Message::reset()
     std::map<int, std::string> satelliteBlock;  //!< Map that stores to which block the PRN belongs http://www.navcen.uscg.gov/?Do=constellationStatus
 
     auto gnss_sat = Gnss_Satellite();
-    std::string _system("beidou");
+    std::string _system("BEIDOU");
     //TODO SHould number of channels be hardcoded?
     for (unsigned int i = 1; i < 14; i++)
         {
@@ -98,13 +86,13 @@ void beidou_cnav2_Navigation_Message::reset()
 }
 
 
-beidou_cnav2_Navigation_Message::beidou_cnav2_Navigation_Message()
+Beidou_Cnav2_Navigation_Message::Beidou_Cnav2_Navigation_Message()
 {
     reset();
 }
 
 
-bool beidou_cnav2_Navigation_Message::CRC_test(std::bitset<BEIDOU_CNAV2_STRING_BITS> bits)
+bool Beidou_Cnav2_Navigation_Message::CRC_test(std::bitset<BEIDOU_CNAV2_STRING_BITS> bits)
 {
     int sum_bits = 0;
     int sum_hamming = 0;
@@ -212,7 +200,7 @@ bool beidou_cnav2_Navigation_Message::CRC_test(std::bitset<BEIDOU_CNAV2_STRING_B
 }
 
 
-bool beidou_cnav2_Navigation_Message::read_navigation_bool(std::bitset<BEIDOU_CNAV2_STRING_BITS> bits, const std::vector<std::pair<int, int>> parameter)
+bool Beidou_Cnav2_Navigation_Message::read_navigation_bool(std::bitset<BEIDOU_CNAV2_STRING_BITS> bits, const std::vector<std::pair<int, int>> parameter)
 {
     bool value;
 
@@ -228,7 +216,7 @@ bool beidou_cnav2_Navigation_Message::read_navigation_bool(std::bitset<BEIDOU_CN
 }
 
 
-unsigned long int beidou_cnav2_Navigation_Message::read_navigation_unsigned(std::bitset<BEIDOU_CNAV2_STRING_BITS> bits, const std::vector<std::pair<int, int>> parameter)
+unsigned long int Beidou_Cnav2_Navigation_Message::read_navigation_unsigned(std::bitset<BEIDOU_CNAV2_STRING_BITS> bits, const std::vector<std::pair<int, int>> parameter)
 {
     unsigned long int value = 0;
     int num_of_slices = parameter.size();
@@ -247,7 +235,7 @@ unsigned long int beidou_cnav2_Navigation_Message::read_navigation_unsigned(std:
 }
 
 
-signed long int beidou_cnav2_Navigation_Message::read_navigation_signed(std::bitset<BEIDOU_CNAV2_STRING_BITS> bits, const std::vector<std::pair<int, int>> parameter)
+signed long int Beidou_Cnav2_Navigation_Message::read_navigation_signed(std::bitset<BEIDOU_CNAV2_STRING_BITS> bits, const std::vector<std::pair<int, int>> parameter)
 {
     signed long int value = 0;
     signed long int sign = 0;
@@ -276,7 +264,7 @@ signed long int beidou_cnav2_Navigation_Message::read_navigation_signed(std::bit
 }
 
 
-unsigned int beidou_cnav2_Navigation_Message::get_frame_number(unsigned int satellite_slot_number)
+unsigned int Beidou_Cnav2_Navigation_Message::get_frame_number(unsigned int satellite_slot_number)
 {
     unsigned int frame_ID = 0;
 
@@ -302,7 +290,7 @@ unsigned int beidou_cnav2_Navigation_Message::get_frame_number(unsigned int sate
         }
     else
         {
-            LOG(WARNING) << "beidou cnav2: Invalid Satellite Slot Number";
+            LOG(WARNING) << "BEIDOU CNAV2: Invalid Satellite Slot Number";
             frame_ID = 0;
         }
 
@@ -310,7 +298,7 @@ unsigned int beidou_cnav2_Navigation_Message::get_frame_number(unsigned int sate
 }
 
 
-int beidou_cnav2_Navigation_Message::string_decoder(std::string frame_string)
+int Beidou_Cnav2_Navigation_Message::string_decoder(std::string frame_string)
 {
     int J = 0;
     d_string_ID = 0;
@@ -332,79 +320,361 @@ int beidou_cnav2_Navigation_Message::string_decoder(std::string frame_string)
 
         case 1:
             //--- It is Type 10 -----------------------------------------------
-        	/*
 
+        	cnav2_ephemeris.PRN = static_cast<double>(read_navigation_unsigned(string_bits, PRN));
+        	cnav2_ephemeris.MesType = static_cast<double>(read_navigation_unsigned(string_bits, MesType));
+        	cnav2_ephemeris.SOW = static_cast<double>(read_navigation_unsigned(string_bits, SOW));
+        	cnav2_ephemeris.WN = static_cast<double>(read_navigation_unsigned(string_bits, WN));
+        	cnav2_ephemeris.DIF = static_cast<double>(read_navigation_unsigned(string_bits, DIF));
+        	cnav2_ephemeris.SIF = static_cast<double>(read_navigation_unsigned(string_bits, SIF));
+        	cnav2_ephemeris.AIF = static_cast<double>(read_navigation_unsigned(string_bits, AIF));
+        	cnav2_ephemeris.SISMAI = static_cast<double>(read_navigation_unsigned(string_bits, SISMAI));
+        	cnav2_ephemeris.DIF_B1C = static_cast<double>(read_navigation_unsigned(string_bits, DIF_B1C));
+        	cnav2_ephemeris.SIF_B1C = static_cast<double>(read_navigation_unsigned(string_bits, SIF_B1C));
+        	cnav2_ephemeris.AIF_B1C = static_cast<double>(read_navigation_unsigned(string_bits, AIF_B1C));
+        	cnav2_ephemeris.IODE = static_cast<double>(read_navigation_unsigned(string_bits, IODE));
 
-			*/
+			// Ephemeris I Start
+        	cnav2_ephemeris.t_oe = static_cast<double>(read_navigation_unsigned(string_bits, t_oe));
+        	cnav2_ephemeris.SatType = static_cast<double>(read_navigation_unsigned(string_bits, SatType));
+        	cnav2_ephemeris.dA = static_cast<double>(read_navigation_unsigned(string_bits, dA));
+        	cnav2_ephemeris.A_dot = static_cast<double>(read_navigation_unsigned(string_bits, A_dot));
+        	cnav2_ephemeris.dn_0 = static_cast<double>(read_navigation_unsigned(string_bits, dn_0));
+        	cnav2_ephemeris.dn_0_dot = static_cast<double>(read_navigation_unsigned(string_bits, dn_0_dot));
+        	cnav2_ephemeris.M_0 = static_cast<double>(read_navigation_unsigned(string_bits, M_0));
+        	cnav2_ephemeris.e = static_cast<double>(read_navigation_unsigned(string_bits, e));
+        	cnav2_ephemeris.omega = static_cast<double>(read_navigation_unsigned(string_bits, omega));
+        	// Ephemeris I End
+
+        	cnav2_ephemeris.CRC = static_cast<double>(read_navigation_unsigned(string_bits, CRC));
+
+            flag_ephemeris_str_1 = true;
+
             break;
 
         case 2:
             //--- It is Type 11 -----------------------------------------------
-        	/*
             if (flag_ephemeris_str_1 == true)
                 {
 
+            	cnav2_ephemeris.PRN = static_cast<double>(read_navigation_unsigned(string_bits, PRN));
+            	cnav2_ephemeris.MesType = static_cast<double>(read_navigation_unsigned(string_bits, MesType));
+            	cnav2_ephemeris.SOW = static_cast<double>(read_navigation_unsigned(string_bits, SOW));
+            	cnav2_ephemeris.HS = static_cast<double>(read_navigation_unsigned(string_bits, HS));
+            	cnav2_ephemeris.DIF = static_cast<double>(read_navigation_unsigned(string_bits, DIF));
+				cnav2_ephemeris.SIF = static_cast<double>(read_navigation_unsigned(string_bits, SIF));
+				cnav2_ephemeris.AIF = static_cast<double>(read_navigation_unsigned(string_bits, AIF));
+				cnav2_ephemeris.SISMAI = static_cast<double>(read_navigation_unsigned(string_bits, SISMAI));
+				cnav2_ephemeris.DIF_B1C = static_cast<double>(read_navigation_unsigned(string_bits, DIF_B1C));
+				cnav2_ephemeris.SIF_B1C = static_cast<double>(read_navigation_unsigned(string_bits, SIF_B1C));
+				cnav2_ephemeris.AIF_B1C = static_cast<double>(read_navigation_unsigned(string_bits, AIF_B1C));
+
+            	// Ephemeris II Start
+				cnav2_ephemeris.Omega_0 = static_cast<double>(read_navigation_unsigned(string_bits, Omega_0));
+				cnav2_ephemeris.i_0 = static_cast<double>(read_navigation_unsigned(string_bits, i_0));
+				cnav2_ephemeris.Omega_dot = static_cast<double>(read_navigation_unsigned(string_bits, Omega_dot));
+				cnav2_ephemeris.i_0_dot = static_cast<double>(read_navigation_unsigned(string_bits, i_0_dot));
+				cnav2_ephemeris.C_IS = static_cast<double>(read_navigation_unsigned(string_bits, C_IS));
+				cnav2_ephemeris.C_IC = static_cast<double>(read_navigation_unsigned(string_bits, C_IC));
+				cnav2_ephemeris.C_RS = static_cast<double>(read_navigation_unsigned(string_bits, C_RS));
+				cnav2_ephemeris.C_RC = static_cast<double>(read_navigation_unsigned(string_bits, C_RC));
+				cnav2_ephemeris.C_US = static_cast<double>(read_navigation_unsigned(string_bits, C_US));
+				cnav2_ephemeris.C_UC = static_cast<double>(read_navigation_unsigned(string_bits, C_UC));
+				// Ephemeris II End
+
+				cnav2_ephemeris.CRC = static_cast<double>(read_navigation_unsigned(string_bits, CRC));
+
+                flag_ephemeris_str_2 = true;
                 }
-            */
+
             break;
 
         case 3:
             // --- It is Type 30 ----------------------------------------------
-        	/*
-            if (flag_ephemeris_str_2 == true)
-                {
 
-                }
-            */
+        	cnav2_ephemeris.PRN = static_cast<double>(read_navigation_unsigned(string_bits, PRN));
+        	cnav2_ephemeris.MesType = static_cast<double>(read_navigation_unsigned(string_bits, MesType));
+        	cnav2_ephemeris.SOW = static_cast<double>(read_navigation_unsigned(string_bits, SOW));
+        	cnav2_ephemeris.HS = static_cast<double>(read_navigation_unsigned(string_bits, HS));
+        	cnav2_ephemeris.DIF = static_cast<double>(read_navigation_unsigned(string_bits, DIF));
+        	cnav2_ephemeris.SIF = static_cast<double>(read_navigation_unsigned(string_bits, SIF));
+        	cnav2_ephemeris.AIF = static_cast<double>(read_navigation_unsigned(string_bits, AIF));
+        	cnav2_ephemeris.SISMAI = static_cast<double>(read_navigation_unsigned(string_bits, SISMAI));
+        	cnav2_ephemeris.DIF_B1C = static_cast<double>(read_navigation_unsigned(string_bits, DIF_B1C));
+        	cnav2_ephemeris.SIF_B1C = static_cast<double>(read_navigation_unsigned(string_bits, SIF_B1C));
+        	cnav2_ephemeris.AIF_B1C = static_cast<double>(read_navigation_unsigned(string_bits, AIF_B1C));
+
+        	// Clock Correction Parameters (69 bits)
+        	cnav2_ephemeris.t_oc = static_cast<double>(read_navigation_unsigned(string_bits, t_oc));
+        	cnav2_ephemeris.a_0 = static_cast<double>(read_navigation_unsigned(string_bits, a_0));
+        	cnav2_ephemeris.a_1 = static_cast<double>(read_navigation_unsigned(string_bits, a_1));
+        	cnav2_ephemeris.a_2 = static_cast<double>(read_navigation_unsigned(string_bits, a_2));
+        	// Clock Correction Parameters End
+
+        	cnav2_ephemeris.IODC = static_cast<double>(read_navigation_unsigned(string_bits, IODC));
+        	cnav2_ephemeris.T_GDB2ap = static_cast<double>(read_navigation_unsigned(string_bits, T_GDB2ap));
+        	cnav2_ephemeris.ISC_B2ad = static_cast<double>(read_navigation_unsigned(string_bits, ISC_B2ad));
+
+        	// Ionospheric Delay Correction Model Parameters (74 bits)
+        	cnav2_ephemeris.alpha_1 = static_cast<double>(read_navigation_unsigned(string_bits, alpha_1));
+        	cnav2_ephemeris.alpha_2 = static_cast<double>(read_navigation_unsigned(string_bits, alpha_2));
+        	cnav2_ephemeris.alpha_3 = static_cast<double>(read_navigation_unsigned(string_bits, alpha_3));
+        	cnav2_ephemeris.alpha_4 = static_cast<double>(read_navigation_unsigned(string_bits, alpha_4));
+        	cnav2_ephemeris.alpha_5 = static_cast<double>(read_navigation_unsigned(string_bits, alpha_5));
+        	cnav2_ephemeris.alpha_6 = static_cast<double>(read_navigation_unsigned(string_bits, alpha_6));
+        	cnav2_ephemeris.alpha_7 = static_cast<double>(read_navigation_unsigned(string_bits, alpha_7));
+        	cnav2_ephemeris.alpha_8 = static_cast<double>(read_navigation_unsigned(string_bits, alpha_8));
+        	cnav2_ephemeris.alpha_9 = static_cast<double>(read_navigation_unsigned(string_bits, alpha_9));
+        	// Ionospheric Delay Correction Model Parameters End
+
+        	cnav2_ephemeris.T_GDB1Cp = static_cast<double>(read_navigation_unsigned(string_bits, T_GDB1Cp));
+        	cnav2_ephemeris.Rev = static_cast<double>(read_navigation_unsigned(string_bits, Rev));
+        	cnav2_ephemeris.CRC = static_cast<double>(read_navigation_unsigned(string_bits, CRC));
+
             break;
 
         case 4:
             // --- It is Type 31 ----------------------------------------------
-        	/*
-            if (flag_ephemeris_str_3 == true)
-                {
 
-                }
-            */
+        	cnav2_ephemeris.PRN = static_cast<double>(read_navigation_unsigned(string_bits, PRN));
+			cnav2_ephemeris.MesType = static_cast<double>(read_navigation_unsigned(string_bits, MesType));
+			cnav2_ephemeris.SOW = static_cast<double>(read_navigation_unsigned(string_bits, SOW));
+			cnav2_ephemeris.HS = static_cast<double>(read_navigation_unsigned(string_bits, HS));
+			cnav2_ephemeris.DIF = static_cast<double>(read_navigation_unsigned(string_bits, DIF));
+			cnav2_ephemeris.SIF = static_cast<double>(read_navigation_unsigned(string_bits, SIF));
+			cnav2_ephemeris.AIF = static_cast<double>(read_navigation_unsigned(string_bits, AIF));
+			cnav2_ephemeris.SISMAI = static_cast<double>(read_navigation_unsigned(string_bits, SISMAI));
+			cnav2_ephemeris.DIF_B1C = static_cast<double>(read_navigation_unsigned(string_bits, DIF_B1C));
+			cnav2_ephemeris.SIF_B1C = static_cast<double>(read_navigation_unsigned(string_bits, SIF_B1C));
+			cnav2_ephemeris.AIF_B1C = static_cast<double>(read_navigation_unsigned(string_bits, AIF_B1C));
+
+			// Clock Correction Parameters (69 bits)
+			cnav2_ephemeris.t_oc = static_cast<double>(read_navigation_unsigned(string_bits, t_oc));
+			cnav2_ephemeris.a_0 = static_cast<double>(read_navigation_unsigned(string_bits, a_0));
+			cnav2_ephemeris.a_1 = static_cast<double>(read_navigation_unsigned(string_bits, a_1));
+			cnav2_ephemeris.a_2 = static_cast<double>(read_navigation_unsigned(string_bits, a_2));
+			// Clock Correction Parameters End
+
+			cnav2_ephemeris.IODC = static_cast<double>(read_navigation_unsigned(string_bits, IODC));
+			cnav2_ephemeris.WN_a = static_cast<double>(read_navigation_unsigned(string_bits, WN_a));
+			cnav2_ephemeris.t_oa = static_cast<double>(read_navigation_unsigned(string_bits, t_oa));
+
+			// Reduced Almanac Parameters Sat 1(38 bits)
+			cnav2_ephemeris.PRN_a1 = static_cast<double>(read_navigation_unsigned(string_bits, PRN_a1));
+			cnav2_ephemeris.SatType1 = static_cast<double>(read_navigation_unsigned(string_bits, SatType1));
+			cnav2_ephemeris.delta_A1 = static_cast<double>(read_navigation_unsigned(string_bits, delta_A1));
+			cnav2_ephemeris.Omega_01 = static_cast<double>(read_navigation_unsigned(string_bits, Omega_01));
+			cnav2_ephemeris.Phi_01 = static_cast<double>(read_navigation_unsigned(string_bits, Phi_01));
+			cnav2_ephemeris.Health1 = static_cast<double>(read_navigation_unsigned(string_bits, Health1));
+			// Reduced Almanac Parameters End
+
+			// Reduced Almanac Parameters Sat 2(38 bits)
+			cnav2_ephemeris.PRN_a2 = static_cast<double>(read_navigation_unsigned(string_bits, PRN_a2));
+			cnav2_ephemeris.SatType2 = static_cast<double>(read_navigation_unsigned(string_bits, SatType2));
+			cnav2_ephemeris.delta_A2 = static_cast<double>(read_navigation_unsigned(string_bits, delta_A2));
+			cnav2_ephemeris.Omega_02 = static_cast<double>(read_navigation_unsigned(string_bits, Omega_02));
+			cnav2_ephemeris.Phi_02 = static_cast<double>(read_navigation_unsigned(string_bits, Phi_02));
+			cnav2_ephemeris.Health2 = static_cast<double>(read_navigation_unsigned(string_bits, Health2));
+			// Reduced Almanac Parameters End
+
+			// Reduced Almanac Parameters Sat 3(38 bits)
+			cnav2_ephemeris.PRN_a3 = static_cast<double>(read_navigation_unsigned(string_bits, PRN_a3));
+			cnav2_ephemeris.SatType3 = static_cast<double>(read_navigation_unsigned(string_bits, SatType3));
+			cnav2_ephemeris.delta_A3 = static_cast<double>(read_navigation_unsigned(string_bits, delta_A3));
+			cnav2_ephemeris.Omega_03 = static_cast<double>(read_navigation_unsigned(string_bits, Omega_03));
+			cnav2_ephemeris.Phi_03 = static_cast<double>(read_navigation_unsigned(string_bits, Phi_03));
+			cnav2_ephemeris.Health3 = static_cast<double>(read_navigation_unsigned(string_bits, Health3));
+			// Reduced Almanac Parameters End
+
+			cnav2_ephemeris.Rev = static_cast<double>(read_navigation_unsigned(string_bits, Rev));
+			cnav2_ephemeris.CRC = static_cast<double>(read_navigation_unsigned(string_bits, CRC));
+
+			flag_almanac_str_31 = true;
             break;
 
         case 5:
             // --- It is Type 32 ----------------------------------------------
-        	/*
-            if (flag_ephemeris_str_4 == true)
-                {
 
-                }
-            */
+        	cnav2_ephemeris.PRN = static_cast<double>(read_navigation_unsigned(string_bits, PRN));
+			cnav2_ephemeris.MesType = static_cast<double>(read_navigation_unsigned(string_bits, MesType));
+			cnav2_ephemeris.SOW = static_cast<double>(read_navigation_unsigned(string_bits, SOW));
+			cnav2_ephemeris.HS = static_cast<double>(read_navigation_unsigned(string_bits, HS));
+			cnav2_ephemeris.DIF = static_cast<double>(read_navigation_unsigned(string_bits, DIF));
+			cnav2_ephemeris.SIF = static_cast<double>(read_navigation_unsigned(string_bits, SIF));
+			cnav2_ephemeris.AIF = static_cast<double>(read_navigation_unsigned(string_bits, AIF));
+			cnav2_ephemeris.SISMAI = static_cast<double>(read_navigation_unsigned(string_bits, SISMAI));
+			cnav2_ephemeris.DIF_B1C = static_cast<double>(read_navigation_unsigned(string_bits, DIF_B1C));
+			cnav2_ephemeris.SIF_B1C = static_cast<double>(read_navigation_unsigned(string_bits, SIF_B1C));
+			cnav2_ephemeris.AIF_B1C = static_cast<double>(read_navigation_unsigned(string_bits, AIF_B1C));
+
+        	// Clock Correction Parameters (69 bits)
+			cnav2_ephemeris.t_oc = static_cast<double>(read_navigation_unsigned(string_bits, t_oc));
+			cnav2_ephemeris.a_0 = static_cast<double>(read_navigation_unsigned(string_bits, a_0));
+			cnav2_ephemeris.a_1 = static_cast<double>(read_navigation_unsigned(string_bits, a_1));
+			cnav2_ephemeris.a_2 = static_cast<double>(read_navigation_unsigned(string_bits, a_2));
+        	// Clock Correction Parameters End
+
+			cnav2_ephemeris.IODC = static_cast<double>(read_navigation_unsigned(string_bits, IODC));
+
+        	// EOP Parameters (138 bits)
+			cnav2_ephemeris.t_EOP = static_cast<double>(read_navigation_unsigned(string_bits, t_EOP));
+			cnav2_ephemeris.PM_X = static_cast<double>(read_navigation_unsigned(string_bits, PM_X));
+			cnav2_ephemeris.PM_X_dot = static_cast<double>(read_navigation_unsigned(string_bits, PM_X_dot));
+			cnav2_ephemeris.PM_Y = static_cast<double>(read_navigation_unsigned(string_bits, PM_Y));
+			cnav2_ephemeris.PM_Y_dot = static_cast<double>(read_navigation_unsigned(string_bits, PM_Y_dot));
+			cnav2_ephemeris.dUT1 = static_cast<double>(read_navigation_unsigned(string_bits, dUT1));
+			cnav2_ephemeris.dUT1_dot = static_cast<double>(read_navigation_unsigned(string_bits, dUT1_dot));
+        	// EOP Parameters End
+
+			cnav2_ephemeris.Rev = static_cast<double>(read_navigation_unsigned(string_bits, Rev));
+			cnav2_ephemeris.CRC = static_cast<double>(read_navigation_unsigned(string_bits, CRC));
+
             break;
 
         case 6:
             // --- It is Type 33 ----------------------------------------------
-        	/*
 
-            */
+        	cnav2_ephemeris.PRN = static_cast<double>(read_navigation_unsigned(string_bits, PRN));
+			cnav2_ephemeris.MesType = static_cast<double>(read_navigation_unsigned(string_bits, MesType));
+			cnav2_ephemeris.SOW = static_cast<double>(read_navigation_unsigned(string_bits, SOW));
+			cnav2_ephemeris.HS = static_cast<double>(read_navigation_unsigned(string_bits, HS));
+			cnav2_ephemeris.DIF = static_cast<double>(read_navigation_unsigned(string_bits, DIF));
+			cnav2_ephemeris.SIF = static_cast<double>(read_navigation_unsigned(string_bits, SIF));
+			cnav2_ephemeris.AIF = static_cast<double>(read_navigation_unsigned(string_bits, AIF));
+			cnav2_ephemeris.SISMAI = static_cast<double>(read_navigation_unsigned(string_bits, SISMAI));
+			cnav2_ephemeris.DIF_B1C = static_cast<double>(read_navigation_unsigned(string_bits, DIF_B1C));
+			cnav2_ephemeris.SIF_B1C = static_cast<double>(read_navigation_unsigned(string_bits, SIF_B1C));
+			cnav2_ephemeris.AIF_B1C = static_cast<double>(read_navigation_unsigned(string_bits, AIF_B1C));
+
+        	// Clock Correction Parameters (69 bits)
+			cnav2_ephemeris.t_oc = static_cast<double>(read_navigation_unsigned(string_bits, t_oc));
+			cnav2_ephemeris.a_0 = static_cast<double>(read_navigation_unsigned(string_bits, a_0));
+			cnav2_ephemeris.a_1 = static_cast<double>(read_navigation_unsigned(string_bits, a_1));
+			cnav2_ephemeris.a_2 = static_cast<double>(read_navigation_unsigned(string_bits, a_2));
+        	// Clock Correction Parameters End
+
+        	// BGTO Parameters (68 bits)
+			cnav2_ephemeris.GNSS_ID = static_cast<double>(read_navigation_unsigned(string_bits, GNSS_ID));
+			cnav2_ephemeris.WN_0BGTO = static_cast<double>(read_navigation_unsigned(string_bits, WN_0BGTO));
+			cnav2_ephemeris.t_0BGTO = static_cast<double>(read_navigation_unsigned(string_bits, t_0BGTO));
+			cnav2_ephemeris.A_0BGTO = static_cast<double>(read_navigation_unsigned(string_bits, A_0BGTO));
+			cnav2_ephemeris.A_1BGTO = static_cast<double>(read_navigation_unsigned(string_bits, A_1BGTO));
+			cnav2_ephemeris.A_2BGTO = static_cast<double>(read_navigation_unsigned(string_bits, A_2BGTO));
+        	// BGTO Parameters End
+
+        	// Reduced Almanac Parameters (38 bits)
+			cnav2_ephemeris.PRN_a = static_cast<double>(read_navigation_unsigned(string_bits, PRN_a));
+			cnav2_ephemeris.SatType = static_cast<double>(read_navigation_unsigned(string_bits, SatType));
+			cnav2_ephemeris.delta_A = static_cast<double>(read_navigation_unsigned(string_bits, delta_A));
+			cnav2_ephemeris.Omega_0 = static_cast<double>(read_navigation_unsigned(string_bits, Omega_0));
+			cnav2_ephemeris.Phi_0 = static_cast<double>(read_navigation_unsigned(string_bits, Phi_0));
+			cnav2_ephemeris.Health = static_cast<double>(read_navigation_unsigned(string_bits, Health));
+        	// Reduced Almanac Parameters End
+
+			cnav2_ephemeris.IODC = static_cast<double>(read_navigation_unsigned(string_bits, IODC));
+			cnav2_ephemeris.WN_a = static_cast<double>(read_navigation_unsigned(string_bits, WN_a));
+			cnav2_ephemeris.t_oa = static_cast<double>(read_navigation_unsigned(string_bits, t_oa));
+			cnav2_ephemeris.Rev = static_cast<double>(read_navigation_unsigned(string_bits, Rev));
+			cnav2_ephemeris.CRC = static_cast<double>(read_navigation_unsigned(string_bits, CRC));
+
             break;
 
         case 7:
             // --- It is Type 34 ----------------------------------------------
-        	/*
-            if (flag_almanac_str_6 == true)
-                {
 
-                }
-            */
+        	cnav2_ephemeris.PRN = static_cast<double>(read_navigation_unsigned(string_bits, PRN));
+			cnav2_ephemeris.MesType = static_cast<double>(read_navigation_unsigned(string_bits, MesType));
+			cnav2_ephemeris.SOW = static_cast<double>(read_navigation_unsigned(string_bits, SOW));
+			cnav2_ephemeris.HS = static_cast<double>(read_navigation_unsigned(string_bits, HS));
+			cnav2_ephemeris.DIF = static_cast<double>(read_navigation_unsigned(string_bits, DIF));
+			cnav2_ephemeris.SIF = static_cast<double>(read_navigation_unsigned(string_bits, SIF));
+			cnav2_ephemeris.AIF = static_cast<double>(read_navigation_unsigned(string_bits, AIF));
+			cnav2_ephemeris.SISMAI = static_cast<double>(read_navigation_unsigned(string_bits, SISMAI));
+			cnav2_ephemeris.DIF_B1C = static_cast<double>(read_navigation_unsigned(string_bits, DIF_B1C));
+			cnav2_ephemeris.SIF_B1C = static_cast<double>(read_navigation_unsigned(string_bits, SIF_B1C));
+			cnav2_ephemeris.AIF_B1C = static_cast<double>(read_navigation_unsigned(string_bits, AIF_B1C));
+
+        	// SISAI_OC (22 bits)
+			cnav2_ephemeris.t_op = static_cast<double>(read_navigation_unsigned(string_bits, t_op));
+			cnav2_ephemeris.SISAI_ocb = static_cast<double>(read_navigation_unsigned(string_bits, SISAI_ocb));
+			cnav2_ephemeris.SISAI_oc1 = static_cast<double>(read_navigation_unsigned(string_bits, SISAI_oc1));
+			cnav2_ephemeris.SISAI_oc2 = static_cast<double>(read_navigation_unsigned(string_bits, SISAI_oc2));
+        	// SISAI_OC End
+
+        	// Clock Correction Parameters (69 bits)
+			cnav2_ephemeris.t_oc = static_cast<double>(read_navigation_unsigned(string_bits, t_oc));
+			cnav2_ephemeris.a_0 = static_cast<double>(read_navigation_unsigned(string_bits, a_0));
+			cnav2_ephemeris.a_1 = static_cast<double>(read_navigation_unsigned(string_bits, a_1));
+			cnav2_ephemeris.a_2 = static_cast<double>(read_navigation_unsigned(string_bits, a_2));
+        	// Clock Correction Parameters End
+
+			cnav2_ephemeris.IODC = static_cast<double>(read_navigation_unsigned(string_bits, IODC));
+
+        	// BDT-UTC Time Offset Parameters (97 bits)
+			cnav2_ephemeris.A_0UTC = static_cast<double>(read_navigation_unsigned(string_bits, A_0UTC));
+        	cnav2_ephemeris.A_1UTC = static_cast<double>(read_navigation_unsigned(string_bits, A_1UTC));
+        	cnav2_ephemeris.A_2UTC = static_cast<double>(read_navigation_unsigned(string_bits, A_2UTC));
+        	cnav2_ephemeris.dt_LS = static_cast<double>(read_navigation_unsigned(string_bits, dt_LS));
+        	cnav2_ephemeris.t_ot = static_cast<double>(read_navigation_unsigned(string_bits, t_ot));
+        	cnav2_ephemeris.WN_ot = static_cast<double>(read_navigation_unsigned(string_bits, WN_ot));
+        	cnav2_ephemeris.WN_LSF = static_cast<double>(read_navigation_unsigned(string_bits, WN_LSF));
+        	cnav2_ephemeris.DN = static_cast<double>(read_navigation_unsigned(string_bits, DN));
+        	cnav2_ephemeris.dt_LSF = static_cast<double>(read_navigation_unsigned(string_bits, dt_LSF));
+        	// BDT-UTC Time Offset Parameters End
+
+        	cnav2_ephemeris.Rev = static_cast<double>(read_navigation_unsigned(string_bits, Rev));
+        	cnav2_ephemeris.CRC = static_cast<double>(read_navigation_unsigned(string_bits, CRC));
+
             break;
 
         case 8:
             // --- It is Type 40 ----------------------------------------------
-        	/*
 
-            */
+        	cnav2_ephemeris.PRN = static_cast<double>(read_navigation_unsigned(string_bits, PRN));
+			cnav2_ephemeris.MesType = static_cast<double>(read_navigation_unsigned(string_bits, MesType));
+			cnav2_ephemeris.SOW = static_cast<double>(read_navigation_unsigned(string_bits, SOW));
+			cnav2_ephemeris.HS = static_cast<double>(read_navigation_unsigned(string_bits, HS));
+			cnav2_ephemeris.DIF = static_cast<double>(read_navigation_unsigned(string_bits, DIF));
+			cnav2_ephemeris.SIF = static_cast<double>(read_navigation_unsigned(string_bits, SIF));
+			cnav2_ephemeris.AIF = static_cast<double>(read_navigation_unsigned(string_bits, AIF));
+			cnav2_ephemeris.SISMAI = static_cast<double>(read_navigation_unsigned(string_bits, SISMAI));
+			cnav2_ephemeris.DIF_B1C = static_cast<double>(read_navigation_unsigned(string_bits, DIF_B1C));
+			cnav2_ephemeris.SIF_B1C = static_cast<double>(read_navigation_unsigned(string_bits, SIF_B1C));
+			cnav2_ephemeris.AIF_B1C = static_cast<double>(read_navigation_unsigned(string_bits, AIF_B1C));
+			cnav2_ephemeris.SISAI_OE = static_cast<double>(read_navigation_unsigned(string_bits, SISAI_OE));
+
+        	// SISAI_OC (22 bits)
+			cnav2_ephemeris.t_op = static_cast<double>(read_navigation_unsigned(string_bits, t_op));
+			cnav2_ephemeris.SISAI_ocb = static_cast<double>(read_navigation_unsigned(string_bits, SISAI_ocb));
+			cnav2_ephemeris.SISAI_oc1 = static_cast<double>(read_navigation_unsigned(string_bits, SISAI_oc1));
+			cnav2_ephemeris.SISAI_oc2 = static_cast<double>(read_navigation_unsigned(string_bits, SISAI_oc2));
+        	// SISAI_OC End
+
+        	// Midi Almanac Parameters (156 bits)
+        	cnav2_ephemeris.PRN_a = static_cast<double>(read_navigation_unsigned(string_bits, PRN_a));
+        	cnav2_ephemeris.SatType = static_cast<double>(read_navigation_unsigned(string_bits, SatType));
+        	cnav2_ephemeris.WN_a = static_cast<double>(read_navigation_unsigned(string_bits, WN_a));
+        	cnav2_ephemeris.t_oa = static_cast<double>(read_navigation_unsigned(string_bits, t_oa));
+        	cnav2_ephemeris.e = static_cast<double>(read_navigation_unsigned(string_bits, e));
+        	cnav2_ephemeris.delta_i = static_cast<double>(read_navigation_unsigned(string_bits, delta_i));
+        	cnav2_ephemeris.sqrt_A = static_cast<double>(read_navigation_unsigned(string_bits, sqrt_A));
+        	cnav2_ephemeris.Omega_0 = static_cast<double>(read_navigation_unsigned(string_bits, Omega_0));
+        	cnav2_ephemeris.Omega_dot = static_cast<double>(read_navigation_unsigned(string_bits, Omega_dot));
+        	cnav2_ephemeris.omega = static_cast<double>(read_navigation_unsigned(string_bits, omega));
+        	cnav2_ephemeris.M_0 = static_cast<double>(read_navigation_unsigned(string_bits, M_0));
+        	cnav2_ephemeris.a_f0 = static_cast<double>(read_navigation_unsigned(string_bits, a_f0));
+        	cnav2_ephemeris.a_f1 = static_cast<double>(read_navigation_unsigned(string_bits, a_f1));
+        	cnav2_ephemeris.Health = static_cast<double>(read_navigation_unsigned(string_bits, Health));
+        	// Midi Almanac Parameters End
+
+        	cnav2_ephemeris.Rev = static_cast<double>(read_navigation_unsigned(string_bits, Rev));
+        	cnav2_ephemeris.CRC = static_cast<double>(read_navigation_unsigned(string_bits, CRC));
+
             break;
 
 
         default:
-            LOG(INFO) << "beidou cnav2: Invalid String ID of received. Received " << d_string_ID
+            LOG(INFO) << "BEIDOU CNAV2: Invalid String ID of received. Received " << d_string_ID
                       << ", but acceptable range is from 10 11 30 31 32 33 34 40";
 
             break;
@@ -414,30 +684,27 @@ int beidou_cnav2_Navigation_Message::string_decoder(std::string frame_string)
 }
 
 
-Beidou_Cnav2_Ephemeris beidou_cnav2_Navigation_Message::get_ephemeris()
+Beidou_Cnav2_Ephemeris Beidou_Cnav2_Navigation_Message::get_ephemeris()
 {
     return cnav2_ephemeris;
 }
 
-/*
-Beidou_Cnav2_Utc_Model beidou_cnav2_Navigation_Message::get_utc_model()
+Beidou_Cnav2_Utc_Model Beidou_Cnav2_Navigation_Message::get_utc_model()
 {
     return cnav2_utc_model;
 }
-*/
 
-Beidou_Cnav2_Almanac beidou_cnav2_Navigation_Message::get_almanac(unsigned int satellite_slot_number)
+Beidou_Cnav2_Almanac Beidou_Cnav2_Navigation_Message::get_almanac(unsigned int satellite_slot_number)
 {
     return cnav2_almanac[satellite_slot_number - 1];
 }
 
 
-bool beidou_cnav2_Navigation_Message::have_new_ephemeris()  //Check if we have a new ephemeris stored in the galileo navigation class
+bool Beidou_Cnav2_Navigation_Message::have_new_ephemeris()  //Check if we have a new ephemeris stored in the galileo navigation class
 {
     bool new_eph = false;
     // We need to make sure we have received the ephemeris info plus the time info
     if ((flag_ephemeris_str_1 == true) and (flag_ephemeris_str_2 == true) and
-        (flag_ephemeris_str_3 == true) and (flag_ephemeris_str_4 == true) and
         (flag_utc_model_str_5 == true))
     	/*
         {
@@ -460,7 +727,7 @@ bool beidou_cnav2_Navigation_Message::have_new_ephemeris()  //Check if we have a
 }
 
 
-bool beidou_cnav2_Navigation_Message::have_new_utc_model()  // Check if we have a new utc data set stored in the galileo navigation class
+bool Beidou_Cnav2_Navigation_Message::have_new_utc_model()  // Check if we have a new utc data set stored in the beidou navigation class
 {
     if (flag_utc_model_str_5 == true)
         {
@@ -472,7 +739,7 @@ bool beidou_cnav2_Navigation_Message::have_new_utc_model()  // Check if we have 
 }
 
 /*
-bool beidou_cnav2_Navigation_Message::have_new_almanac()  //Check if we have a new almanac data set stored in the galileo navigation class
+bool Beidou_Cnav2_Navigation_Message::have_new_almanac()  //Check if we have a new almanac data set stored in the beidou navigation class
 {
     bool new_alm = false;
     if ((flag_almanac_str_6 == true) and (flag_almanac_str_7 == true))

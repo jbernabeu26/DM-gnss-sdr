@@ -1,9 +1,9 @@
 /*!
  * \file beidou_cnav2_navigation_message.h
- * \brief  Interface of a beidou cnav2 Data message decoder as described in beidou ICD (Edition 5.1)
- * \note Code added as part of GSoC 2017 program
+ * \brief  Interface of a BEIDOU CNAV2 Data message decoder as described in BEIDOU ICD
+ * \note Code added as part of GSoC 2018 program
  * \author Dong Kyeong Lee, 2018. dole7890(at)colorado.edu
- * \see <a href="http://m.beidou.gov.cn/xt/gfxz/201712/P020171226742357364174.pdf">beidou ICD</a>
+ * \see <a href="http://m.beidou.gov.cn/xt/gfxz/201712/P020171226742357364174.pdf">BEIDOU ICD</a>
  *
  * -------------------------------------------------------------------------
  *
@@ -31,23 +31,23 @@
  */
 
 
-#ifndef GNSS_SDR_beidou_cnav2_NAVIGATION_MESSAGE_H_
-#define GNSS_SDR_beidou_cnav2_NAVIGATION_MESSAGE_H_
+#ifndef GNSS_SDR_BEIDOU_CNAV2_NAVIGATION_MESSAGE_H_
+#define GNSS_SDR_BEIDOU_CNAV2_NAVIGATION_MESSAGE_H_
 
 
 #include "beidou_cnav2_ephemeris.h"
 #include "beidou_cnav2_almanac.h"
-//#include "beidou_cnav2_utc_model.h"
-#include "beidou_L1_L2_CA.h"
+#include "beidou_cnav2_utc_model.h"
+#include "BEIDOU_B2a_CA.h"
 #include <bitset>
 
 
 /*!
- * \brief This class decodes a beidou cnav2 Data message as described in beidou ICD
+ * \brief This class decodes a BEIDOU cnav2 Data message as described in BEIDOU ICD
  * \note Code added as part of GSoC 2018 program
  * \see <a href="http://m.beidou.gov.cn/xt/gfxz/201712/P020171226742357364174.pdf">beidou ICD</a>
  */
-class beidou_cnav2_Navigation_Message
+class Beidou_Cnav2_Navigation_Message
 {
 private:
     unsigned long int read_navigation_unsigned(std::bitset<BEIDOU_CNAV2_STRING_BITS> bits, const std::vector<std::pair<int, int>> parameter);
@@ -64,28 +64,17 @@ public:
     unsigned int i_satellite_PRN;
 
     Beidou_Cnav2_Ephemeris cnav2_ephemeris;                   //!< Ephemeris information decoded
-    //Beidou_Cnav2_Utc_Model cnav2_utc_model;                   //!< UTC model information
+    Beidou_Cnav2_Utc_Model cnav2_utc_model;                   //!< UTC model information
     Beidou_Cnav2_Almanac cnav2_almanac[BEIDOU_CA_NBR_SATS];  //!< Almanac information for all 24 satellites
 
     // Ephemeris Flags and control variables
     bool flag_all_ephemeris;    //!< Flag indicating that all strings containing ephemeris have been received
-    bool flag_ephemeris_str_1;  //!< Flag indicating that ephemeris 1/4 (string 1) have been received
-    bool flag_ephemeris_str_2;  //!< Flag indicating that ephemeris 2/4 (string 2) have been received
-    bool flag_ephemeris_str_3;  //!< Flag indicating that ephemeris 3/4 (string 3) have been received
-    bool flag_ephemeris_str_4;  //!< Flag indicating that ephemeris 4/4 (string 4) have been received
+    bool flag_ephemeris_str_1;  //!< Flag indicating that ephemeris 1/2 (Type 10) have been received
+    bool flag_ephemeris_str_2;  //!< Flag indicating that ephemeris 2/2 (Type 11) have been received
 
     // Almanac Flags
-    bool flag_all_almanac;                     //!< Flag indicating that all almanac have been received
-    bool flag_almanac_str_6;                   //!< Flag indicating that almanac of string 6 have been received
-    bool flag_almanac_str_7;                   //!< Flag indicating that almanac of string 7 have been received
-    bool flag_almanac_str_8;                   //!< Flag indicating that almanac of string 8 have been received
-    bool flag_almanac_str_9;                   //!< Flag indicating that almanac of string 9 have been received
-    bool flag_almanac_str_10;                  //!< Flag indicating that almanac of string 10 have been received
-    bool flag_almanac_str_11;                  //!< Flag indicating that almanac of string 11 have been received
-    bool flag_almanac_str_12;                  //!< Flag indicating that almanac of string 12 have been received
-    bool flag_almanac_str_13;                  //!< Flag indicating that almanac of string 13 have been received
-    bool flag_almanac_str_14;                  //!< Flag indicating that almanac of string 14 have been received
-    bool flag_almanac_str_15;                  //!< Flag indicating that almanac of string 15 have been received
+    bool flag_almanac_str_31;                   //!< Flag indicating that almanac of Type 31 have been received
+
     unsigned int i_alm_satellite_slot_number;  //!< SV Orbit Slot Number
 
     // UTC and System Clocks Flags
@@ -100,11 +89,11 @@ public:
     double d_dtr;          //!<  Relativistic clock correction term
     double d_satClkDrift;  //!<  Satellite clock drift
 
-    double d_previous_tb;                       //!< Previous iode for the beidou_cnav2_Ephemeris object. Used to determine when new data arrives
-    double d_previous_Na[BEIDOU_CA_NBR_SATS];  //!< Previous time for almanac of the beidou_cnav2_Almanac object
+    double d_previous_tb;                       //!< Previous iode for the Beidou_Cnav2_Ephemeris object. Used to determine when new data arrives
+    double d_previous_Na[BEIDOU_CA_NBR_SATS];  //!< Previous time for almanac of the Beidou_Cnav2_Almanac object
 
     /*!
-     * \brief Compute CRC for beidou cnav2 strings
+     * \brief Compute CRC for BEIDOU CNAV2 strings
      * \param bits Bits of the string message where to compute CRC
      */
     bool CRC_test(std::bitset<BEIDOU_CNAV2_STRING_BITS> bits);
@@ -117,44 +106,44 @@ public:
     unsigned int get_frame_number(unsigned int satellite_slot_number);
 
     /*!
-     * \brief Reset Beidou cnav2 Navigation Information
+     * \brief Reset BEIDOU CNAV2 Navigation Information
      */
     void reset();
 
     /*!
-     * \brief Obtain a Beidou cnav2 SV Ephemeris class filled with current SV data
+     * \brief Obtain a BEIDOU CNAV2 SV Ephemeris class filled with current SV data
      */
     Beidou_Cnav2_Ephemeris get_ephemeris();
 
     /*!
-     * \brief Obtain a beidou cnav2 UTC model parameters class filled with current SV data
+     * \brief Obtain a BEIDOU CNAV2 UTC model parameters class filled with current SV data
      */
-    //beidou_cnav2_Utc_Model get_utc_model();
+    Beidou_Cnav2_Utc_Model get_utc_model();
 
     /*!
-     * \brief Returns a beidou_cnav2_Almanac object filled with the latest navigation data received
+     * \brief Returns a Beidou_Cnav2_Almanac object filled with the latest navigation data received
      * \param satellite_slot_number Slot number identifier for the satellite
-     * \returns Returns the beidou_cnav2_Almanac object for the input slot number
+     * \returns Returns the Beidou_Cnav2_Almanac object for the input slot number
      */
     Beidou_Cnav2_Almanac get_almanac(unsigned int satellite_slot_number);
 
     /*!
-     * \brief Returns true if a new beidou_cnav2_Ephemeris object has arrived.
+     * \brief Returns true if a new Beidou_Cnav2_Ephemeris object has arrived.
      */
     bool have_new_ephemeris();
 
     /*!
-     * \brief Returns true if new beidou_cnav2_Utc_Model object has arrived
+     * \brief Returns true if new Beidou_Cnav2_Utc_Model object has arrived
      */
     bool have_new_utc_model();
 
     /*!
-     * \brief Returns true if new beidou_cnav2_Almanac object has arrived.
+     * \brief Returns true if new Beidou_Cnav2_Almanac object has arrived.
      */
     bool have_new_almanac();
 
     /*!
-     * \brief Decodes the beidou cnav2 string
+     * \brief Decodes the BEIDOU CNAV2 string
      * \param frame_string [in] is the string message within the parsed frame
      * \returns Returns the ID of the decoded string
      */
@@ -163,7 +152,7 @@ public:
     /*!
      * Default constructor
      */
-    beidou_cnav2_Navigation_Message();
+    Beidou_Cnav2_Navigation_Message();
 };
 
 #endif

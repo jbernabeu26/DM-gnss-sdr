@@ -1,7 +1,7 @@
 /*!
  * \file beidou_cnav2_almanac.h
  * \brief  Interface of a beidou cnav2 ALMANAC storage
- * \note Code added as part of GSoC 2017 program
+ * \note Code added as part of GSoC 2018 program
  * \author Dong Kyeong Lee, 2018. dole7890(at)colorado.edu
  * \see <a href="http://m.beidou.gov.cn/xt/gfxz/201712/P020171226742357364174.pdf">beidou ICD</a>
  *
@@ -31,13 +31,13 @@
  */
 
 
-#ifndef GNSS_SDR_beidou_ALMANAC_H_
-#define GNSS_SDR_beidou_ALMANAC_H_
+#ifndef GNSS_SDR_BEIDOU_ALMANAC_H_
+#define GNSS_SDR_BEIDOU_ALMANAC_H_
 
 #include <boost/serialization/nvp.hpp>
 
 /*!
- * \brief This class is a storage for the beidou SV ALMANAC data as described beidou ICD
+ * \brief This class is a storage for the beidou SV ALMANAC data as described BEIDOU ICD
  * \note Code added as part of GSoC 2018 program
  * \see <a href="http://m.beidou.gov.cn/xt/gfxz/201712/P020171226742357364174.pdf">beidou ICD</a>
  */

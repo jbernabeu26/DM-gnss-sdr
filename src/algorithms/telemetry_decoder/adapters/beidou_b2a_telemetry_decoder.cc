@@ -1,6 +1,6 @@
 /*!
  * \file beidou_b2a_telemetry_decoder.cc
- * \brief Implementation of an adapter of a Beidou B2a NAV data decoder block
+ * \brief Implementation of an adapter of a BEIDOU B2a CNAV2 data decoder block
  * to a TelemetryDecoderInterface
  * \note Code added as part of GSoC 2018 program
  * \author Dong Kyeong Lee, 2018. dole7890(at)colorado.edu
@@ -33,16 +33,16 @@
 
 #include "beidou_b2a_telemetry_decoder.h"
 #include "configuration_interface.h"
-#include "beidou_bcnav2_ephemeris.h"
-#include "beidou_bcnav2_almanac.h"
-//#include "beidou_bcnav2_utc_model.h"
+#include "beidou_cnav2_ephemeris.h"
+#include "beidou_cnav2_almanac.h"
+//#include "beidou_cnav2_utc_model.h"
 #include <gnuradio/io_signature.h>
 #include <glog/logging.h>
 
 
 using google::LogMessage;
 
-beidouB2aTelemetryDecoder::beidouB2aTelemetryDecoder(ConfigurationInterface* configuration,
+BeidouB2aTelemetryDecoder::BeidouB2aTelemetryDecoder(ConfigurationInterface* configuration,
     std::string role,
     unsigned int in_streams,
     unsigned int out_streams) : role_(role),
@@ -54,18 +54,18 @@ beidouB2aTelemetryDecoder::beidouB2aTelemetryDecoder(ConfigurationInterface* con
     dump_ = configuration->property(role + ".dump", false);
     dump_filename_ = configuration->property(role + ".dump_filename", default_dump_filename);
     // make telemetry decoder object
-    telemetry_decoder_ = beidou_l1_ca_make_telemetry_decoder_cc(satellite_, dump_);
+    telemetry_decoder_ = beidou_b2a_make_telemetry_decoder_cc(satellite_, dump_);
     DLOG(INFO) << "telemetry_decoder(" << telemetry_decoder_->unique_id() << ")";
     channel_ = 0;
 }
 
 
-beidouB2aTelemetryDecoder::~beidouB2aTelemetryDecoder()
+BeidouB2aTelemetryDecoder::~BeidouB2aTelemetryDecoder()
 {
 }
 
 
-void beidouB2aTelemetryDecoder::set_satellite(const Gnss_Satellite& satellite)
+void BeidouB2aTelemetryDecoder::set_satellite(const Gnss_Satellite& satellite)
 {
     satellite_ = Gnss_Satellite(satellite.get_system(), satellite.get_PRN());
     telemetry_decoder_->set_satellite(satellite_);
@@ -73,7 +73,7 @@ void beidouB2aTelemetryDecoder::set_satellite(const Gnss_Satellite& satellite)
 }
 
 
-void beidouB2aTelemetryDecoder::connect(gr::top_block_sptr top_block)
+void BeidouB2aTelemetryDecoder::connect(gr::top_block_sptr top_block)
 {
     if (top_block)
         { /* top_block is not null */
@@ -83,7 +83,7 @@ void beidouB2aTelemetryDecoder::connect(gr::top_block_sptr top_block)
 }
 
 
-void beidouB2aTelemetryDecoder::disconnect(gr::top_block_sptr top_block)
+void BeidouB2aTelemetryDecoder::disconnect(gr::top_block_sptr top_block)
 {
     if (top_block)
         { /* top_block is not null */
@@ -92,13 +92,13 @@ void beidouB2aTelemetryDecoder::disconnect(gr::top_block_sptr top_block)
 }
 
 
-gr::basic_block_sptr beidouB2aTelemetryDecoder::get_left_block()
+gr::basic_block_sptr BeidouB2aTelemetryDecoder::get_left_block()
 {
     return telemetry_decoder_;
 }
 
 
-gr::basic_block_sptr beidouB2aTelemetryDecoder::get_right_block()
+gr::basic_block_sptr BeidouB2aTelemetryDecoder::get_right_block()
 {
     return telemetry_decoder_;
 }

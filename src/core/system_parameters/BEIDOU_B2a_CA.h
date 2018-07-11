@@ -1,6 +1,6 @@
 /*!
  * \file BEIDOU_B2a_CA.h
- * \brief  Defines system parameters for Beidou B2a C/A signal and NAV data
+ * \brief  Defines system parameters for Beidou B2a signal and CNAV2 data
  * \author Dong Kyeong Lee, 2018. dole7890(at)colorado.edu
  *
  * -------------------------------------------------------------------------
@@ -358,29 +358,29 @@ const std::vector<std::pair<int, int>> a_2({{101, 11}});
 const std::vector<std::pair<int, int>> IODC({{112, 10}});
 const std::vector<std::pair<int, int>> WN_a({{122, 13}});
 const std::vector<std::pair<int, int>> t_oa({{135, 8}});
-// Reduced Almanac Parameters (38 bits)
-const std::vector<std::pair<int, int>> PRN_a({{143, 6}});
-const std::vector<std::pair<int, int>> SatType({{149, 2}});
-const std::vector<std::pair<int, int>> delta_A({{151, 8}});
-const std::vector<std::pair<int, int>> Omega_0({{159, 7}});
-const std::vector<std::pair<int, int>> Phi_0({{166, 7}});
-const std::vector<std::pair<int, int>> Health({{173, 8}});
+// Reduced Almanac Parameters Sat 1(38 bits)
+const std::vector<std::pair<int, int>> PRN_a1({{143, 6}});
+const std::vector<std::pair<int, int>> SatType1({{149, 2}});
+const std::vector<std::pair<int, int>> delta_A1({{151, 8}});
+const std::vector<std::pair<int, int>> Omega_01({{159, 7}});
+const std::vector<std::pair<int, int>> Phi_01({{166, 7}});
+const std::vector<std::pair<int, int>> Health1({{173, 8}});
 // Reduced Almanac Parameters End
-// Reduced Almanac Parameters (38 bits)
-const std::vector<std::pair<int, int>> PRN_a({{181, 6}});
-const std::vector<std::pair<int, int>> SatType({{187, 2}});
-const std::vector<std::pair<int, int>> delta_A({{189, 8}});
-const std::vector<std::pair<int, int>> Omega_0({{197, 7}});
-const std::vector<std::pair<int, int>> Phi_0({{204, 7}});
-const std::vector<std::pair<int, int>> Health({{211, 8}});
+// Reduced Almanac Parameters Sat 2(38 bits)
+const std::vector<std::pair<int, int>> PRN_a2({{181, 6}});
+const std::vector<std::pair<int, int>> SatType2({{187, 2}});
+const std::vector<std::pair<int, int>> delta_A2({{189, 8}});
+const std::vector<std::pair<int, int>> Omega_02({{197, 7}});
+const std::vector<std::pair<int, int>> Phi_02({{204, 7}});
+const std::vector<std::pair<int, int>> Health2({{211, 8}});
 // Reduced Almanac Parameters End
-// Reduced Almanac Parameters (38 bits)
-const std::vector<std::pair<int, int>> PRN_a({{219, 6}});
-const std::vector<std::pair<int, int>> SatType({{225, 2}});
-const std::vector<std::pair<int, int>> delta_A({{227, 8}});
-const std::vector<std::pair<int, int>> Omega_0({{235, 7}});
-const std::vector<std::pair<int, int>> Phi_0({{242, 7}});
-const std::vector<std::pair<int, int>> Health({{249, 8}});
+// Reduced Almanac Parameters Sat 3(38 bits)
+const std::vector<std::pair<int, int>> PRN_a3({{219, 6}});
+const std::vector<std::pair<int, int>> SatType3({{225, 2}});
+const std::vector<std::pair<int, int>> delta_A3({{227, 8}});
+const std::vector<std::pair<int, int>> Omega_03({{235, 7}});
+const std::vector<std::pair<int, int>> Phi_03({{242, 7}});
+const std::vector<std::pair<int, int>> Health3({{249, 8}});
 // Reduced Almanac Parameters End
 const std::vector<std::pair<int, int>> Rev({{257, 8}});
 const std::vector<std::pair<int, int>> CRC({{265, 24}});

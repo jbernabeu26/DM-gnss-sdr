@@ -1,6 +1,6 @@
 /*!
  * \file beidou_b2a_telemetry_decoder.h
- * \brief Interface of an adapter of a BEIDOU B2a NAV data decoder block
+ * \brief Interface of an adapter of a BEIDOU B2a CNAV2 data decoder block
  * to a TelemetryDecoderInterface
  * \note Code added as part of GSoC 2018 program
  * \author Dong Kyeong Lee, 2018. dole7890(at)colorado.edu
@@ -31,8 +31,8 @@
  */
 
 
-#ifndef GNSS_SDR_BEIDOU_B2a_TELEMETRY_DECODER_H_
-#define GNSS_SDR_BEIDOU_B2a_TELEMETRY_DECODER_H_
+#ifndef GNSS_SDR_BEIDOU_L1_CA_TELEMETRY_DECODER_H_
+#define GNSS_SDR_BEIDOU_L1_CA_TELEMETRY_DECODER_H_
 
 #include "telemetry_decoder_interface.h"
 #include "beidou_b2a_telemetry_decoder_cc.h"

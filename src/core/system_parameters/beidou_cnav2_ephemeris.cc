@@ -63,7 +63,7 @@ Beidou_Cnav2_Ephemeris::Beidou_Cnav2_Ephemeris()
 }
 
 
-boost::posix_time::ptime Beidou_Cnav2_Ephemeris::compute_beidou_time(const double offset_time) const
+boost::posix_time::ptime Beidou_Cnav2_Ephemeris::compute_BEIDOU_time(const double offset_time) const
 {
 	// Requires Propagation?
 	/*
@@ -77,13 +77,13 @@ boost::posix_time::ptime Beidou_Cnav2_Ephemeris::compute_beidou_time(const doubl
 }
 
 
-boost::posix_time::ptime Beidou_Cnav2_Ephemeris::beidt_to_utc(const double offset_time, const double glot2utc_corr) const
+boost::posix_time::ptime Beidou_Cnav2_Ephemeris::beidt_to_utc(const double offset_time, const double beidt2utc_corr) const
 {
     double tod = 0.0;
-    double glot2utc = 3 * 3600;
+    double beidt2utc = 3 * 3600;
     // Requires Propagation?
     	/*
-    tod = offset_time - glot2utc + glot2utc_corr + d_tau_n;
+    tod = offset_time - beidt2utc + beidt2utc_corr + d_tau_n;
     boost::posix_time::time_duration t(0, 0, tod);
     boost::gregorian::date d1(d_yr, 1, 1);
     boost::gregorian::days d2(d_N_T - 1);
@@ -94,7 +94,7 @@ boost::posix_time::ptime Beidou_Cnav2_Ephemeris::beidt_to_utc(const double offse
 }
 
 
-void Beidou_Cnav2_Ephemeris::glot_to_gpst(double tod_offset, double glot2utc_corr, double glot2gpst_corr, double* wn, double* tow) const
+void Beidou_Cnav2_Ephemeris::beidt_to_gpst(double tod_offset, double beidt2utc_corr, double beidt2gpst_corr, double* wn, double* tow) const
 {
     double tod = 0.0;
     double beidt2utc = 3 * 3600;
@@ -144,7 +144,7 @@ void Beidou_Cnav2_Ephemeris::glot_to_gpst(double tod_offset, double glot2utc_cor
     // Compute the arithmetic modules to wrap around range
     *tow = total_sec - 604800 * floor(total_sec / 604800);
     // Perform corrections from fractional seconds
-    *tow += glot2utc_corr + glot2gpst_corr;
+    *tow += beidt2utc_corr + beidt2gpst_corr;
 
     */
 }
