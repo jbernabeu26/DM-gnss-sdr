@@ -43,6 +43,9 @@ Beidou_Cnav2_Ephemeris::Beidou_Cnav2_Ephemeris()
 	SOW = 0.0;
 	WN = 0.0;
 
+	// Satellite Health Satus
+	HS = 0.0;			//0:Satellite is healthy/provides services, 1:Satellite is unhealthy or in test/does not provide services, 2:reserved/reserved, 3:reserved/reserved
+
 	// Issue of Data, Ephemeris
 	IODE = 0.0;
 
@@ -87,6 +90,29 @@ Beidou_Cnav2_Ephemeris::Beidou_Cnav2_Ephemeris()
 	SIF_B1C = 0.0;
 	AIF_B1C = 0.0;
 	SISMAI = 0.0;
+
+	// Signal In Space Accuracy Index
+	SISAI_OE = 0.0;		//Satellite orbit along-track and cross-track accuracy index
+	t_op = 0.0;			//Time of week for data prediction
+	SISAI_ocb = 0.0;	//Satellite orbit radius and fixed satellite clock bias accuracy index
+	SISAI_oc1 = 0.0;	//Satellite clock bias accuracy index
+	SISAI_oc2 = 0.0;	//Satellite clock drift accuracy index
+
+	// Ionospheric Delay Correction Model Parameters
+	alpha_1 = 0.0;
+	alpha_2 = 0.0;
+	alpha_3 = 0.0;
+	alpha_4 = 0.0;
+	alpha_5 = 0.0;
+	alpha_6 = 0.0;
+	alpha_7 = 0.0;
+	alpha_8 = 0.0;
+	alpha_9 = 0.0;
+
+	// Group Delay Differential Parameters
+	T_GDB1Cp = 0.0;	//Group delay differential of the B1C pilot component [s]
+	T_GDB2ap = 0.0;	//Group delay differential of the B2a pilot component [s]
+	ISC_B2ad = 0.0;	//Group delay differential between the B2a data and pilot components [s]
 }
 
 

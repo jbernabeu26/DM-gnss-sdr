@@ -65,7 +65,7 @@ public:
 
     Beidou_Cnav2_Ephemeris cnav2_ephemeris;                   //!< Ephemeris information decoded
     Beidou_Cnav2_Utc_Model cnav2_utc_model;                   //!< UTC model information
-    Beidou_Cnav2_Almanac cnav2_almanac[BEIDOU_CA_NBR_SATS];  //!< Almanac information for all 63 satellites
+    Beidou_Cnav2_Almanac cnav2_almanac[BEIDOU_NBR_SATS];  //!< Almanac information for all 63 satellites
 
     // Ephemeris Flags and control variables
     bool flag_all_ephemeris;    //!< Flag indicating that all strings containing ephemeris have been received
@@ -90,13 +90,17 @@ public:
     double d_satClkDrift;  //!<  Satellite clock drift
 
     double d_previous_tb;                       //!< Previous iode for the Beidou_Cnav2_Ephemeris object. Used to determine when new data arrives
-    double d_previous_Na[BEIDOU_CA_NBR_SATS];  //!< Previous time for almanac of the Beidou_Cnav2_Almanac object
+    double d_previous_Na[BEIDOU_NBR_SATS];  //!< Previous time for almanac of the Beidou_Cnav2_Almanac object
+
+    unsigned int d_string_ID;
+
+    double temp;
 
     /*!
      * \brief Compute CRC for BEIDOU CNAV2 strings
      * \param bits Bits of the string message where to compute CRC
      */
-    bool CRC_test(std::bitset<BEIDOU_CNAV2_STRING_BITS> bits);
+    bool CRC_test(std::bitset<BEIDOU_CNAV2_STRING_BITS> bits,unsigned int d_string_ID);
 
     /*!
      * \brief Computes the frame number being decoded given the satellite slot number

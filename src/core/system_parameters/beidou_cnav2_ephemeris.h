@@ -52,6 +52,10 @@ public:
 	unsigned int PRN;	//Pseudo-Random Noise, Satellite ID
 	double SOW;			//Seconds of week [s]
 	double WN;			//Week number [week]
+	double Rev;			//Unspecified in ICD. Probably Reserved
+
+	// Satellite Health Satus
+	double HS;			//0:Satellite is healthy/provides services, 1:Satellite is unhealthy or in test/does not provide services, 2:reserved/reserved, 3:reserved/reserved
 
 	// Issue of Data, Ephemeris
 	double IODE;		//Issue of Data, Ephemeris
@@ -98,6 +102,29 @@ public:
 	double AIF_B1C;		//Accuracy Integrity FLAG B1C
 	double SISMAI;		//Signal in space monitoring accuracy index
 
+	// Signal In Space Accuracy Index
+	double SISAI_OE;	//Satellite orbit along-track and cross-track accuracy index
+	double t_op;		//Time of week for data prediction
+	double SISAI_ocb;	//Satellite orbit radius and fixed satellite clock bias accuracy index
+	double SISAI_oc1;	//Satellite clock bias accuracy index
+	double SISAI_oc2;	//Satellite clock drift accuracy index
+
+	// Ionospheric Delay Correction Model Parameters
+	double alpha_1;		//[TECu]
+	double alpha_2;		//[TECu]
+	double alpha_3;		//[TECu]
+	double alpha_4;		//[TECu]
+	double alpha_5;		//[TECu]
+	double alpha_6;		//[TECu]
+	double alpha_7;		//[TECu]
+	double alpha_8;		//[TECu]
+	double alpha_9;		//[TECu]
+
+	// Group Delay Differential Parameters
+	double T_GDB1Cp;	//Group delay differential of the B1C pilot component [s]
+	double T_GDB2ap;	//Group delay differential of the B2a pilot component [s]
+	double ISC_B2ad;	//Group delay differential between the B2a data and pilot components [s]
+
     template <class Archive>
 
     /*!
@@ -113,6 +140,9 @@ public:
     	archive& make_nvp("PRN", PRN);
     	archive& make_nvp("SOW", SOW);
     	archive& make_nvp("WN", WN);
+
+    	// Satellite Heath Status
+    	archive& make_nvp("HS", HS);	//0:Satellite is healthy/provides services, 1:Satellite is unhealthy or in test/does not provide services, 2:reserved/reserved, 3:reserved/reserved
 
     	// Issue of Data, Ephemeris
     	archive& make_nvp("IODE", IODE);
@@ -158,6 +188,29 @@ public:
     	archive& make_nvp("SIF_B1C", SIF_B1C);
     	archive& make_nvp("AIF_B1C", AIF_B1C);
     	archive& make_nvp("SISMAI", SISMAI);
+
+    	// Signal In Space Accuracy Index
+    	archive& make_nvp("SISAI_OE", SISAI_OE);	//Satellite orbit along-track and cross-track accuracy index
+		archive& make_nvp("t_op", t_op);			//Time of week for data prediction
+		archive& make_nvp("SISAI_ocb", SISAI_ocb);	//Satellite orbit radius and fixed satellite clock bias accuracy index
+		archive& make_nvp("SISAI_oc1", SISAI_oc1);	//Satellite clock bias accuracy index
+		archive& make_nvp("SISAI_oc2", SISAI_oc2);	//Satellite clock drift accuracy index
+
+		// Ionospheric Delay Correction Model Parameters
+		archive& make_nvp("alpha_1", alpha_1);
+		archive& make_nvp("alpha_2", alpha_2);
+		archive& make_nvp("alpha_3", alpha_3);
+		archive& make_nvp("alpha_4", alpha_4);
+		archive& make_nvp("alpha_5", alpha_5);
+		archive& make_nvp("alpha_6", alpha_6);
+		archive& make_nvp("alpha_7", alpha_7);
+		archive& make_nvp("alpha_8", alpha_8);
+		archive& make_nvp("alpha_9", alpha_9);
+
+		// Group Delay Differential Parameters
+		archive& make_nvp("T_GDB1Cp", T_GDB1Cp);	//Group delay differential of the B1C pilot component [s]
+		archive& make_nvp("T_GDB2ap", T_GDB2ap);	//Group delay differential of the B2a pilot component [s]
+		archive& make_nvp("ISC_B2ad", ISC_B2ad);	//Group delay differential between the B2a data and pilot components [s]
     }
 
     /*!

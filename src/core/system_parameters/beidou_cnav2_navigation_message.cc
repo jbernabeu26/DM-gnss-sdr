@@ -92,108 +92,48 @@ Beidou_Cnav2_Navigation_Message::Beidou_Cnav2_Navigation_Message()
 }
 
 
-bool Beidou_Cnav2_Navigation_Message::CRC_test(std::bitset<BEIDOU_CNAV2_STRING_BITS> bits)
+bool Beidou_Cnav2_Navigation_Message::CRC_test(std::bitset<BEIDOU_CNAV2_STRING_BITS> bits, d_string_ID)
 {
     int sum_bits = 0;
-    int sum_hamming = 0;
-    int C1 = 0;
-    int C2 = 0;
-    int C3 = 0;
-    int C4 = 0;
-    int C5 = 0;
-    int C6 = 0;
-    int C7 = 0;
-    int C_Sigma = 0;
     std::vector<int> string_bits(BEIDOU_CNAV2_STRING_BITS);
 
-    //!< Populate data and hamming code vectors
+    //!< Populate data
     for (int i = 0; i < static_cast<int>(BEIDOU_CNAV2_STRING_BITS); i++)
         {
             string_bits[i] = static_cast<int>(bits[i]);
         }
 
-    //!< Compute C1 term
-    sum_bits = 0;
-    for (int i = 0; i < static_cast<int>(BEIDOU_CNAV2_CRC_I_INDEX.size()); i++)
-        {
-            sum_bits += string_bits[BEIDOU_CNAV2_CRC_I_INDEX[i] - 1];
-        }
-    C1 = string_bits[0] ^ (sum_bits % 2);
+    // This is very inefficient. Need a better method
+    if (d_string_ID==10)
+    {
+    	for(int i=0; i<13; i++)
+    		{
+    		temp = 1;
+    			for (int j=0; j<i; j++)
+    			{
+    				temp = temp*2;
+    			}
+    			sum_bits += static_cast<int>(string_bits[31+i])*temp;
+    		}
+    	for(int i=0; i<1; i++)
+			{
+			temp = 1;
+				for (int j=0; j<i; j++)
+				{
+					temp = temp*2;
+				}
+				sum_bits += static_cast<int>(string_bits[44+i])*temp;
+			}
 
-    //!< Compute C2 term
-    sum_bits = 0;
-    for (int j = 0; j < static_cast<int>(BEIDOU_CNAV2_CRC_J_INDEX.size()); j++)
-        {
-            sum_bits += string_bits[BEIDOU_CNAV2_CRC_J_INDEX[j] - 1];
-        }
-    C2 = (string_bits[1]) ^ (sum_bits % 2);
+    }
+    //
 
-    //!< Compute C3 term
-    sum_bits = 0;
-    for (int k = 0; k < static_cast<int>(BEIDOU_CNAV2_CRC_K_INDEX.size()); k++)
-        {
-            sum_bits += string_bits[BEIDOU_CNAV2_CRC_K_INDEX[k] - 1];
-        }
-    C3 = string_bits[2] ^ (sum_bits % 2);
-
-    //!< Compute C4 term
-    sum_bits = 0;
-    for (int l = 0; l < static_cast<int>(BEIDOU_CNAV2_CRC_L_INDEX.size()); l++)
-        {
-            sum_bits += string_bits[BEIDOU_CNAV2_CRC_L_INDEX[l] - 1];
-        }
-    C4 = string_bits[3] ^ (sum_bits % 2);
-
-    //!< Compute C5 term
-    sum_bits = 0;
-    for (int m = 0; m < static_cast<int>(BEIDOU_CNAV2_CRC_M_INDEX.size()); m++)
-        {
-            sum_bits += string_bits[BEIDOU_CNAV2_CRC_M_INDEX[m] - 1];
-        }
-    C5 = string_bits[4] ^ (sum_bits % 2);
-
-    //!< Compute C6 term
-    sum_bits = 0;
-    for (int n = 0; n < static_cast<int>(BEIDOU_CNAV2_CRC_N_INDEX.size()); n++)
-        {
-            sum_bits += string_bits[BEIDOU_CNAV2_CRC_N_INDEX[n] - 1];
-        }
-    C6 = string_bits[5] ^ (sum_bits % 2);
-
-    //!< Compute C7 term
-    sum_bits = 0;
-    for (int p = 0; p < static_cast<int>(BEIDOU_CNAV2_CRC_P_INDEX.size()); p++)
-        {
-            sum_bits += string_bits[BEIDOU_CNAV2_CRC_P_INDEX[p] - 1];
-        }
-    C7 = string_bits[6] ^ (sum_bits % 2);
-
-    //!< Compute C_Sigma term
-    sum_bits = 0;
-    sum_hamming = 0;
-    for (int q = 0; q < static_cast<int>(BEIDOU_CNAV2_CRC_Q_INDEX.size()); q++)
-        {
-            sum_bits += string_bits[BEIDOU_CNAV2_CRC_Q_INDEX[q] - 1];
-        }
-    for (int q = 0; q < 8; q++)
-        {
-            sum_hamming += string_bits[q];
-        }
-    C_Sigma = (sum_hamming % 2) ^ (sum_bits % 2);
-
-    //!< Verification of the data
-    // (a-i) All checksums (C1,...,C7 and C_Sigma) are equal to zero
-    if ((C1 + C2 + C3 + C4 + C5 + C6 + C7 + C_Sigma) == 0)
-        {
-            return true;
-        }
-    // (a-ii) Only one of the checksums (C1,...,C7) is equal to zero but C_Sigma = 1
-    else if (C_Sigma == 1 && C1 + C2 + C3 + C4 + C5 + C6 + C7 == 6)
+    if (sum_bits == static_cast<double>(read_navigation_unsigned(string_bits, CRC)))
         {
             return true;
         }
     else
-        // All other conditions are assumed errors. TODO: Add correction for case B
+        // All other conditions are assumed errors.
         {
             return false;
         }
@@ -263,41 +203,6 @@ signed long int Beidou_Cnav2_Navigation_Message::read_navigation_signed(std::bit
     return (sign * value);
 }
 
-
-unsigned int Beidou_Cnav2_Navigation_Message::get_frame_number(unsigned int satellite_slot_number)
-{
-    unsigned int frame_ID = 0;
-
-    if (satellite_slot_number >= 1 and satellite_slot_number <= 5)
-        {
-            frame_ID = 1;
-        }
-    else if (satellite_slot_number >= 6 and satellite_slot_number <= 10)
-        {
-            frame_ID = 2;
-        }
-    else if (satellite_slot_number >= 11 and satellite_slot_number <= 15)
-        {
-            frame_ID = 3;
-        }
-    else if (satellite_slot_number >= 16 and satellite_slot_number <= 20)
-        {
-            frame_ID = 4;
-        }
-    else if (satellite_slot_number >= 21 and satellite_slot_number <= 24)
-        {
-            frame_ID = 5;
-        }
-    else
-        {
-            LOG(WARNING) << "BEIDOU CNAV2: Invalid Satellite Slot Number";
-            frame_ID = 0;
-        }
-
-    return frame_ID;
-}
-
-
 int Beidou_Cnav2_Navigation_Message::string_decoder(std::string frame_string)
 {
     int J = 0;
@@ -307,17 +212,19 @@ int Beidou_Cnav2_Navigation_Message::string_decoder(std::string frame_string)
     // Unpack bytes to bits
     std::bitset<BEIDOU_CNAV2_STRING_BITS> string_bits(frame_string);
 
-    // Perform data verification and exit code if error in bit sequence
-    flag_CRC_test = CRC_test(string_bits);
-    if (flag_CRC_test == false)
-        return 0;
 
-    // Decode all 8 string messages
     d_string_ID = static_cast<unsigned int>(read_navigation_unsigned(string_bits, MesType));
-    switch (d_string_ID)
-        {
-    // These should be changed according to the format outlined in the BEIDOU_B2a_CA.h
 
+    // Perform data verification and exit code if error in bit sequence
+	flag_CRC_test = CRC_test(string_bits,d_string_ID);
+
+
+	if (flag_CRC_test == false)
+		return 0;
+
+	// Decode all 8 string messages
+	switch (d_string_ID)
+        {
         case 10:
             //--- It is Type 10 -----------------------------------------------
 
@@ -345,8 +252,6 @@ int Beidou_Cnav2_Navigation_Message::string_decoder(std::string frame_string)
         	cnav2_ephemeris.e = static_cast<double>(read_navigation_unsigned(string_bits, e_10))*TWO_N34;				//[dimensionless]
         	cnav2_ephemeris.omega = static_cast<double>(read_navigation_signed(string_bits, omega_10))*TWO_N32;		//[pi]
         	// Ephemeris I End
-
-        	cnav2_ephemeris.CRC = static_cast<double>(read_navigation_unsigned(string_bits, CRC_10));
 
             flag_ephemeris_str_1 = true;
 
@@ -405,10 +310,10 @@ int Beidou_Cnav2_Navigation_Message::string_decoder(std::string frame_string)
         	cnav2_ephemeris.AIF_B1C = static_cast<double>(read_navigation_unsigned(string_bits, AIF_B1C_30));
 
         	// Clock Correction Parameters (69 bits)
-        	cnav2_ephemeris.t_oc = static_cast<double>(read_navigation_unsigned(string_bits, t_oc_30))*300;				//[s]
-        	cnav2_ephemeris.a_0 = static_cast<double>(read_navigation_signed(string_bits, a_0_30))*TWO_N34;				//[s]
-        	cnav2_ephemeris.a_1 = static_cast<double>(read_navigation_signed(string_bits, a_1_30))*TWO_N50;				//[s/s]
-        	cnav2_ephemeris.a_2 = static_cast<double>(read_navigation_signed(string_bits, a_2_30))*TWO_N66;				//[s/s^2]
+        	cnav2_utc_model.t_oc = static_cast<double>(read_navigation_unsigned(string_bits, t_oc_30))*300;				//[s]
+        	cnav2_utc_model.a_0 = static_cast<double>(read_navigation_signed(string_bits, a_0_30))*TWO_N34;				//[s]
+        	cnav2_utc_model.a_1 = static_cast<double>(read_navigation_signed(string_bits, a_1_30))*TWO_N50;				//[s/s]
+        	cnav2_utc_model.a_2 = static_cast<double>(read_navigation_signed(string_bits, a_2_30))*TWO_N66;				//[s/s^2]
         	// Clock Correction Parameters End
 
         	cnav2_ephemeris.IODC = static_cast<double>(read_navigation_unsigned(string_bits, IODC_30));
@@ -456,11 +361,11 @@ int Beidou_Cnav2_Navigation_Message::string_decoder(std::string frame_string)
 			// Clock Correction Parameters End
 
 			cnav2_ephemeris.IODC = static_cast<double>(read_navigation_unsigned(string_bits, IODC_31));
-			cnav2_ephemeris.WN_a = static_cast<double>(read_navigation_unsigned(string_bits, WN_a_31));			//[week] effective range 0~8191
-			cnav2_ephemeris.t_oa = static_cast<double>(read_navigation_unsigned(string_bits, t_oa_31))*TWO_P12;	//[s] effective range 0~602112
 
 			// Reduced Almanac Parameters Sat 1(38 bits)
 			i_alm_satellite_slot_number = static_cast<unsigned int>(read_navigation_unsigned(string_bits, PRN_a1_31));								//[dimensionless] effective range 1~63
+			cnav2_almanac[i_alm_satellite_slot_number-1].WN_a = static_cast<double>(read_navigation_unsigned(string_bits, WN_a_31));				//[week] effective range 0~8191
+			cnav2_almanac[i_alm_satellite_slot_number-1].t_oa = static_cast<double>(read_navigation_unsigned(string_bits, t_oa_31))*TWO_P12;		//[s] effective range 0~602112
 			cnav2_almanac[i_alm_satellite_slot_number-1].SatType = static_cast<double>(read_navigation_unsigned(string_bits, SatType1_31));			//[dimensionless] binary, 01:GEO, 10:IGSO, 11:MEO, 00:Reserved
 			cnav2_almanac[i_alm_satellite_slot_number-1].delta_A = static_cast<double>(read_navigation_signed(string_bits, delta_A1_31))*TWO_P9;	//[m] reference MEO: 27906100m, IGSO/GEO: 42162200m
 			cnav2_almanac[i_alm_satellite_slot_number-1].Omega_0 = static_cast<double>(read_navigation_signed(string_bits, Omega_01_31))*TWO_N6;	//[pi]
@@ -470,6 +375,8 @@ int Beidou_Cnav2_Navigation_Message::string_decoder(std::string frame_string)
 
 			// Reduced Almanac Parameters Sat 2(38 bits)
 			i_alm_satellite_slot_number = static_cast<unsigned int>(read_navigation_unsigned(string_bits, PRN_a2_31));								//[dimensionless] effective range 1~63
+			cnav2_almanac[i_alm_satellite_slot_number-1].WN_a = static_cast<double>(read_navigation_unsigned(string_bits, WN_a_31));				//[week] effective range 0~8191
+			cnav2_almanac[i_alm_satellite_slot_number-1].t_oa = static_cast<double>(read_navigation_unsigned(string_bits, t_oa_31))*TWO_P12;		//[s] effective range 0~602112
 			cnav2_almanac[i_alm_satellite_slot_number-1].SatType = static_cast<double>(read_navigation_unsigned(string_bits, SatType2_31));			//[dimensionless] binary, 01:GEO, 10:IGSO, 11:MEO, 00:Reserved
 			cnav2_almanac[i_alm_satellite_slot_number-1].delta_A = static_cast<double>(read_navigation_signed(string_bits, delta_A2_31))*TWO_P9;	//[m] reference MEO: 27906100m, IGSO/GEO: 42162200m
 			cnav2_almanac[i_alm_satellite_slot_number-1].Omega_0 = static_cast<double>(read_navigation_signed(string_bits, Omega_02_31))*TWO_N6;	//[pi]
@@ -479,6 +386,8 @@ int Beidou_Cnav2_Navigation_Message::string_decoder(std::string frame_string)
 
 			// Reduced Almanac Parameters Sat 3(38 bits)
 			i_alm_satellite_slot_number = static_cast<unsigned int>(read_navigation_unsigned(string_bits, PRN_a3_31));								//[dimensionless] effective range 1~63
+			cnav2_almanac[i_alm_satellite_slot_number-1].WN_a = static_cast<double>(read_navigation_unsigned(string_bits, WN_a_31));				//[week] effective range 0~8191
+			cnav2_almanac[i_alm_satellite_slot_number-1].t_oa = static_cast<double>(read_navigation_unsigned(string_bits, t_oa_31))*TWO_P12;		//[s] effective range 0~602112
 			cnav2_almanac[i_alm_satellite_slot_number-1].SatType = static_cast<double>(read_navigation_unsigned(string_bits, SatType3_31));			//[dimensionless] binary, 01:GEO, 10:IGSO, 11:MEO, 00:Reserved
 			cnav2_almanac[i_alm_satellite_slot_number-1].delta_A = static_cast<double>(read_navigation_signed(string_bits, delta_A3_31))*TWO_P9;	//[m] reference MEO: 27906100m, IGSO/GEO: 42162200m
 			cnav2_almanac[i_alm_satellite_slot_number-1].Omega_0 = static_cast<double>(read_navigation_signed(string_bits, Omega_03_31))*TWO_N6;	//[pi]
@@ -554,12 +463,12 @@ int Beidou_Cnav2_Navigation_Message::string_decoder(std::string frame_string)
         	// Clock Correction Parameters End
 
         	// BGTO Parameters (68 bits)
-			cnav2_ephemeris.GNSS_ID = static_cast<double>(read_navigation_unsigned(string_bits, GNSS_ID_33)); 				//[dimensionless]
-			cnav2_ephemeris.WN_0BGTO = static_cast<double>(read_navigation_unsigned(string_bits, WN_0BGTO_33));				//[week]
-			cnav2_ephemeris.t_0BGTO = static_cast<double>(read_navigation_unsigned(string_bits, t_0BGTO_33))*TWO_P4;		//[s] effective range 0~604784
-			cnav2_ephemeris.A_0BGTO = static_cast<double>(read_navigation_unsigned(string_bits, A_0BGTO_33))*TWO_N35;		//[s]
-			cnav2_ephemeris.A_1BGTO = static_cast<double>(read_navigation_unsigned(string_bits, A_1BGTO_33))*TWO_N51;		//[s/s]
-			cnav2_ephemeris.A_2BGTO = static_cast<double>(read_navigation_unsigned(string_bits, A_2BGTO_33))*TWO_N68;		//[s/s^2]
+			cnav2_utc_model.GNSS_ID = static_cast<double>(read_navigation_unsigned(string_bits, GNSS_ID_33)); 				//[dimensionless]
+			cnav2_utc_model.WN_0BGTO = static_cast<double>(read_navigation_unsigned(string_bits, WN_0BGTO_33));				//[week]
+			cnav2_utc_model.t_0BGTO = static_cast<double>(read_navigation_unsigned(string_bits, t_0BGTO_33))*TWO_P4;		//[s] effective range 0~604784
+			cnav2_utc_model.A_0BGTO = static_cast<double>(read_navigation_unsigned(string_bits, A_0BGTO_33))*TWO_N35;		//[s]
+			cnav2_utc_model.A_1BGTO = static_cast<double>(read_navigation_unsigned(string_bits, A_1BGTO_33))*TWO_N51;		//[s/s]
+			cnav2_utc_model.A_2BGTO = static_cast<double>(read_navigation_unsigned(string_bits, A_2BGTO_33))*TWO_N68;		//[s/s^2]
         	// BGTO Parameters End
 
         	// Reduced Almanac Parameters (38 bits)
@@ -572,8 +481,8 @@ int Beidou_Cnav2_Navigation_Message::string_decoder(std::string frame_string)
         	// Reduced Almanac Parameters End
 
 			cnav2_ephemeris.IODC = static_cast<double>(read_navigation_unsigned(string_bits, IODC_33));
-			cnav2_ephemeris.WN_a = static_cast<double>(read_navigation_unsigned(string_bits, WN_a_33));			//[week] effective range 0~8191
-			cnav2_ephemeris.t_oa = static_cast<double>(read_navigation_unsigned(string_bits, t_oa_33))*TWO_P12;	//[s] effective range 0~602112
+			cnav2_almanac[i_alm_satellite_slot_number-1].WN_a = static_cast<double>(read_navigation_unsigned(string_bits, WN_a_33));			//[week] effective range 0~8191
+			cnav2_almanac[i_alm_satellite_slot_number-1].t_oa = static_cast<double>(read_navigation_unsigned(string_bits, t_oa_33))*TWO_P12;	//[s] effective range 0~602112
 			cnav2_ephemeris.Rev = static_cast<double>(read_navigation_unsigned(string_bits, Rev_33));
 			cnav2_ephemeris.CRC = static_cast<double>(read_navigation_unsigned(string_bits, CRC_33));
 

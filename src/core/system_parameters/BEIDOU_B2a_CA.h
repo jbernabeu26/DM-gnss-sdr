@@ -126,7 +126,7 @@ const int BEIDOU_CNAV2_DATA_SYMBOLS = 576;																									//STRING DATA
 const std::vector<std::pair<int, int>> PRN({{1, 6}});
 const std::vector<std::pair<int, int>> MesType({{7, 6}});
 const std::vector<std::pair<int, int>> SOW({{13, 18}});
-
+const std::vector<std::pair<int, int>> CRC({{265, 24}});
 
 // Type 10 (288 bits)
 const std::vector<std::pair<int, int>> WN_10({{31, 13}});
@@ -149,8 +149,6 @@ const std::vector<std::pair<int, int>> M_0_10({{166, 33}});
 const std::vector<std::pair<int, int>> e_10({{199, 33}});
 const std::vector<std::pair<int, int>> omega_10({{232, 33}});
 // Ephemeris I End
-const std::vector<std::pair<int, int>> CRC_10({{265, 24}});
-// Similar format for CRC to this? const std::vector<int> GLONASS_GNAV_CRC_I_INDEX{9, 10, 12, 13, 15, 17, 19, 20, 22, 24, 26, 28, 30, 32, 34, 35, 37, 39, 41, 43, 45, 47, 49, 51, 53, 55, 57, 59, 61, 63, 65, 66, 68, 70, 72, 74, 76, 78, 80, 82, 84};
 
 // Type 11 (288 bits)
 const std::vector<std::pair<int, int>> HS_11({{31, 2}});
@@ -173,7 +171,6 @@ const std::vector<std::pair<int, int>> C_RC_11({{199, 24}});
 const std::vector<std::pair<int, int>> C_US_11({{223, 21}});
 const std::vector<std::pair<int, int>> C_UC_11({{244, 21}});
 // Ephemeris II End
-const std::vector<std::pair<int, int>> CRC_11({{265, 24}});
 
 
 // Type 30 (288 bits)
@@ -207,7 +204,6 @@ const std::vector<std::pair<int, int>> alpha_9_30({{212, 8}});
 // Ionospheric Delay Correction Model Parameters End
 const std::vector<std::pair<int, int>> T_GDB1Cp_30({{220, 12}});
 const std::vector<std::pair<int, int>> Rev_30({{232, 33}});
-const std::vector<std::pair<int, int>> CRC_30({{265, 24}});
 
 
 // Type 31 (288 bits)
@@ -253,7 +249,6 @@ const std::vector<std::pair<int, int>> Phi_03_31({{242, 7}});
 const std::vector<std::pair<int, int>> Health3_31({{249, 8}});
 // Reduced Almanac Parameters End
 const std::vector<std::pair<int, int>> Rev_31({{257, 8}});
-const std::vector<std::pair<int, int>> CRC_31({{265, 24}});
 
 
 // Type 32 (288 bits)
@@ -282,7 +277,6 @@ const std::vector<std::pair<int, int>> dUT1_32({{210, 31}});
 const std::vector<std::pair<int, int>> dUT1_dot_32({{241, 19}});
 // EOP Parameters End
 const std::vector<std::pair<int, int>> Rev_32({{260, 5}});
-const std::vector<std::pair<int, int>> CRC_32({{265, 24}});
 
 
 // Type 33 (288 bits)
@@ -320,7 +314,6 @@ const std::vector<std::pair<int, int>> IODC_33({{218, 10}});
 const std::vector<std::pair<int, int>> WN_a_33({{228, 13}});
 const std::vector<std::pair<int, int>> t_oa_33({{241, 8}});
 const std::vector<std::pair<int, int>> Rev_33({{249, 16}});
-const std::vector<std::pair<int, int>> CRC_33({{265, 24}});
 
 
 // Type 34 (288 bits)
@@ -357,7 +350,6 @@ const std::vector<std::pair<int, int>> DN_34({{230, 3}});
 const std::vector<std::pair<int, int>> dt_LSF_34({{233, 8}});
 // BDT-UTC Time Offset Parameters End
 const std::vector<std::pair<int, int>> Rev_34({{241, 24}});
-const std::vector<std::pair<int, int>> CRC_34({{265, 24}});
 
 
 // Type 40 (288 bits)
@@ -393,7 +385,6 @@ const std::vector<std::pair<int, int>> a_f1_40({{208, 10}});
 const std::vector<std::pair<int, int>> Health_40({{218, 8}});
 // Midi Almanac Parameters End
 const std::vector<std::pair<int, int>> Rev_40({{226, 39}});
-const std::vector<std::pair<int, int>> CRC_40({{265, 24}});
 
 
 #endif /* GNSS_SDR_BEIDOU_B2a_CA_H_ */
