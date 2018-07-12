@@ -32,7 +32,6 @@
 
 #include "beidou_cnav2_ephemeris.h"
 #include "gnss_satellite.h"
-#include "BEIDOU_B2a_CA.h"
 #include <cmath>
 
 

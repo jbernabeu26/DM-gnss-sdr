@@ -38,7 +38,7 @@
 #include "beidou_cnav2_ephemeris.h"
 #include "beidou_cnav2_almanac.h"
 #include "beidou_cnav2_utc_model.h"
-#include "BEIDOU_B2a_CA.h"
+#include "BEIDOU_B2a.h"
 #include <bitset>
 
 

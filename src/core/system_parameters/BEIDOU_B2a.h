@@ -1,5 +1,5 @@
 /*!
- * \file BEIDOU_B2a_CA.h
+ * \file BEIDOU_B2a.h
  * \brief  Defines system parameters for Beidou B2a signal and CNAV2 data
  * \author Dong Kyeong Lee, 2018. dole7890(at)colorado.edu
  *
@@ -29,8 +29,8 @@
  */
 
 
-#ifndef GNSS_SDR_BEIDOU_B2a_CA_H_
-#define GNSS_SDR_BEIDOU_B2a_CA_H_
+#ifndef GNSS_SDR_BEIDOU_B2a_H_
+#define GNSS_SDR_BEIDOU_B2a_H_
 
 #include "gnss_frequencies.h"
 #include "MATH_CONSTANTS.h"
@@ -85,7 +85,7 @@ const double BEIDOU_B2a_CODE_LENGTH_CHIPS = 10230;  //!< BEIDOU B2a C/A code len
 const double BEIDOU_B2a_CODE_PERIOD = 0.001;        //!< BEIDOU B2a C/A code period [seconds]
 const double BEIDOU_B2a_CHIP_PERIOD = 9.775171065493646e-08;   //!< BEIDOU B2a C/A chip period [seconds]
 const double BEIDOU_B2a_SYMBOL_RATE_SPS = 200;		//BEIDOU symbol rate
-//const double BEIDOU_B2a_CA_SYMBOL_Length = 600;
+//const double BEIDOU_B2a_SYMBOL_Length = 600;
 
 const int BEIDOU_NBR_SATS = 63;  // Total number of satellites
 
@@ -95,9 +95,6 @@ const int BEIDOU_NBR_SATS = 63;  // Total number of satellites
 const double BEIDOU_LEAP_SECONDS = -33; // uniform scale and 33 seconds behind TAI. However, this should be in the broadcast message
 
 //const double BEIDOU_STARTOFFSET_ms = 68.802;  //[ms] Initial sign. travel time (this cannot go here)
-
-// OBSERVABLE HISTORY DEEP FOR INTERPOLATION
-//const int BEIDOU_L1_CA_HISTORY_DEEP = 100;
 
 // NAVIGATION MESSAGE DEMODULATION AND DECODING
 #define BEIDOU_CNAV2_PREAMBLE                                                                    \
@@ -387,4 +384,4 @@ const std::vector<std::pair<int, int>> Health_40({{218, 8}});
 const std::vector<std::pair<int, int>> Rev_40({{226, 39}});
 
 
-#endif /* GNSS_SDR_BEIDOU_B2a_CA_H_ */
+#endif /* GNSS_SDR_BEIDOU_B2a_H_ */

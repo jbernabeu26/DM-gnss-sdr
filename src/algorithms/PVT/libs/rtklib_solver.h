@@ -60,6 +60,7 @@
 #include "gps_navigation_message.h"
 #include "gps_cnav_navigation_message.h"
 #include "glonass_gnav_navigation_message.h"
+#include "beidou_cnav2_navigation_message.h"
 #include "gnss_synchro.h"
 #include "pvt_solution.h"
 #include <fstream>
@@ -94,7 +95,8 @@ public:
     std::map<int, Galileo_Ephemeris> galileo_ephemeris_map;            //!< Map storing new Galileo_Ephemeris
     std::map<int, Gps_Ephemeris> gps_ephemeris_map;                    //!< Map storing new GPS_Ephemeris
     std::map<int, Gps_CNAV_Ephemeris> gps_cnav_ephemeris_map;          //!< Map storing new GPS_CNAV_Ephemeris
-    std::map<int, Glonass_Gnav_Ephemeris> glonass_gnav_ephemeris_map;  //!< Map storing new GLONASS GNAV Ephmeris
+    std::map<int, Glonass_Gnav_Ephemeris> glonass_gnav_ephemeris_map;  //!< Map storing new BEIDOU_CNAV2_Ephemeris
+    std::map<int, Beidou_Cnav2_Ephemeris> beidou_cnav2_ephemeris_map;  //!< Map storing new BEIDOU_CNAV2_Ephemeris
 
     Galileo_Utc_Model galileo_utc_model;
     Galileo_Iono galileo_iono;
@@ -108,6 +110,9 @@ public:
 
     Glonass_Gnav_Utc_Model glonass_gnav_utc_model;  //!< Map storing GLONASS GNAV UTC Model
     Glonass_Gnav_Almanac glonass_gnav_almanac;      //!< Map storing GLONASS GNAV Almanac Model
+
+    Beidou_Cnav2_Utc_Model beidou_cnav2_utc_model;  //!< Map storing BEIDOU_CNAV2_UTC_Model
+	Beidou_Cnav2_Almanac beidou_cnav2_almanac;      //!< Map storing BEIDOU_CNAV2_Almanac_Model
 
     int count_valid_position;
 };

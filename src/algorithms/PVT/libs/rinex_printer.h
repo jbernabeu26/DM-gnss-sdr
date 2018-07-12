@@ -58,6 +58,7 @@
 #include "GPS_L1_CA.h"
 #include "Galileo_E1.h"
 #include "GLONASS_L1_L2_CA.h"
+#include "BEIDOU_B2a.h"
 #include "gnss_synchro.h"
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <string>
@@ -302,6 +303,22 @@ public:
      *  \brief Writes Mixed Galileo/GLONASS observables into the RINEX file
      */
     void log_rinex_obs(std::fstream& out, const Galileo_Ephemeris& galileo_eph, const Glonass_Gnav_Ephemeris& glonass_gnav_eph, const double gps_obs_time, const std::map<int, Gnss_Synchro>& observables);
+
+    /*!
+     *  \brief Writes BEIDOU B2a observables into the RINEX file
+     */
+    void log_rinex_obs(std::fstream& out, const Beidou_Cnav2_Ephemeris& beidou_cnav_eph, double gps_obs_time, const std::map<int, Gnss_Synchro>& observables);
+
+    /*!
+	 *  \brief Writes Mixed GPS L1 C/A - BEIDOU B2a observables into the RINEX file
+	 */
+	void log_rinex_obs(std::fstream& out, const Gps_Ephemeris& gps_eph, const Beidou_Cnav2_Ephemeris& beidou_cnav_eph, double gps_obs_time, const std::map<int, Gnss_Synchro>& observables);
+
+	/*!
+	 *  \brief Writes Mixed GPS L2C - BEIDOU B2a observables into the RINEX file
+	 */
+	void log_rinex_obs(std::fstream& out, const Gps_CNAV_Ephemeris& gps_cnav_eph, const Beidou_Cnav2_Ephemeris& eph, double gps_obs_time, const std::map<int, Gnss_Synchro>& observables);
+
 
     /*!
      * \brief Represents GPS time in the date time format. Leap years are considered, but leap seconds are not.
