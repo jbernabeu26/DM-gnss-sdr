@@ -44,16 +44,19 @@ void Beidou_Cnav2_Navigation_Message::reset()
 
     // Ephemeris Flags
     flag_all_ephemeris = false;
-    flag_ephemeris_str_1 = false;
-    flag_ephemeris_str_2 = false;
+    flag_ephemeris_str_10 = false;
+    flag_ephemeris_str_11 = false;
 
     // Almanac Flags
     flag_almanac_str_31 = false;
+    flag_almanac_str_33 = false;
+    flag_almanac_str_40 = false;
 
     // UTC and System Clocks Flags
     flag_utc_model_valid = false;   //!< If set, it indicates that the UTC model parameters are filled
-    flag_utc_model_str_5 = false;   //!< Clock info send in string 5 of navigation data
-    flag_utc_model_str_15 = false;  //!< Clock info send in string 15 of frame 5 of navigation data
+    flag_utc_model_str_32 = false;  //!< Clock info send in Type 32
+    flag_utc_model_str_33 = false;  //!< Clock info send in Type 33
+    flag_utc_model_str_34 = false;  //!< Clock info send in Type 34
 
     // broadcast orbit 1
     flag_TOW_set = false;
@@ -71,18 +74,13 @@ void Beidou_Cnav2_Navigation_Message::reset()
 
     // Data update information
     d_previous_tb = 0.0;
-    for (unsigned int i = 0; i < BEIDOU_CA_NBR_SATS; i++)
+    for (unsigned int i = 0; i < BEIDOU_NBR_SATS; i++)
         d_previous_Na[i] = 0.0;
 
     std::map<int, std::string> satelliteBlock;  //!< Map that stores to which block the PRN belongs http://www.navcen.uscg.gov/?Do=constellationStatus
 
     auto gnss_sat = Gnss_Satellite();
     std::string _system("BEIDOU");
-    //TODO SHould number of channels be hardcoded?
-    for (unsigned int i = 1; i < 14; i++)
-        {
-            satelliteBlock[i] = gnss_sat.what_block(_system, i);
-        }
 }
 
 
@@ -92,8 +90,9 @@ Beidou_Cnav2_Navigation_Message::Beidou_Cnav2_Navigation_Message()
 }
 
 
-bool Beidou_Cnav2_Navigation_Message::CRC_test(std::bitset<BEIDOU_CNAV2_STRING_BITS> bits, d_string_ID)
+bool Beidou_Cnav2_Navigation_Message::CRC_test(std::bitset<BEIDOU_CNAV2_STRING_BITS> bits)
 {
+	/* This is not required for functionality, but is recommended. This is needed for GPS L1 C/A as well
     int sum_bits = 0;
     std::vector<int> string_bits(BEIDOU_CNAV2_STRING_BITS);
 
@@ -137,6 +136,8 @@ bool Beidou_Cnav2_Navigation_Message::CRC_test(std::bitset<BEIDOU_CNAV2_STRING_B
         {
             return false;
         }
+        */
+	return true;
 }
 
 
@@ -216,7 +217,7 @@ int Beidou_Cnav2_Navigation_Message::string_decoder(std::string frame_string)
     d_string_ID = static_cast<unsigned int>(read_navigation_unsigned(string_bits, MesType));
 
     // Perform data verification and exit code if error in bit sequence
-	flag_CRC_test = CRC_test(string_bits,d_string_ID);
+	flag_CRC_test = CRC_test(string_bits);
 
 
 	if (flag_CRC_test == false)
@@ -253,13 +254,13 @@ int Beidou_Cnav2_Navigation_Message::string_decoder(std::string frame_string)
         	cnav2_ephemeris.omega = static_cast<double>(read_navigation_signed(string_bits, omega_10))*TWO_N32;		//[pi]
         	// Ephemeris I End
 
-            flag_ephemeris_str_1 = true;
+            flag_ephemeris_str_10 = true;
 
             break;
 
         case 11:
             //--- It is Type 11 -----------------------------------------------
-            if (flag_ephemeris_str_1 == true)
+            if (flag_ephemeris_str_10 == true)
                 {
 
             	cnav2_ephemeris.PRN = static_cast<unsigned int>(read_navigation_unsigned(string_bits, PRN));
@@ -287,9 +288,7 @@ int Beidou_Cnav2_Navigation_Message::string_decoder(std::string frame_string)
 				cnav2_ephemeris.C_UC = static_cast<double>(read_navigation_signed(string_bits, C_UC_11))*TWO_N30;				//[rad]
 				// Ephemeris II End
 
-				cnav2_ephemeris.CRC = static_cast<double>(read_navigation_unsigned(string_bits, CRC_11));
-
-                flag_ephemeris_str_2 = true;
+                flag_ephemeris_str_11 = true;
                 }
 
             break;
@@ -334,8 +333,8 @@ int Beidou_Cnav2_Navigation_Message::string_decoder(std::string frame_string)
 
         	cnav2_ephemeris.T_GDB1Cp = static_cast<double>(read_navigation_signed(string_bits, T_GDB1Cp_30))*TWO_N34;		//[s]
         	cnav2_ephemeris.Rev = static_cast<double>(read_navigation_unsigned(string_bits, Rev_30));
-        	cnav2_ephemeris.CRC = static_cast<double>(read_navigation_unsigned(string_bits, CRC_30));
 
+        	flag_ephemeris_str_30 = true;
             break;
 
         case 31:
@@ -396,8 +395,7 @@ int Beidou_Cnav2_Navigation_Message::string_decoder(std::string frame_string)
 			// Reduced Almanac Parameters End
 
 			cnav2_ephemeris.Rev = static_cast<double>(read_navigation_unsigned(string_bits, Rev_31));
-			cnav2_ephemeris.CRC = static_cast<double>(read_navigation_unsigned(string_bits, CRC_31));
-
+			flag_ephemeris_str_31 = true;
 			flag_almanac_str_31 = true;
             break;
 
@@ -436,8 +434,9 @@ int Beidou_Cnav2_Navigation_Message::string_decoder(std::string frame_string)
         	// EOP Parameters End
 
 			cnav2_ephemeris.Rev = static_cast<double>(read_navigation_unsigned(string_bits, Rev_32));
-			cnav2_ephemeris.CRC = static_cast<double>(read_navigation_unsigned(string_bits, CRC_32));
 
+			flag_ephemeris_str_32 = true;
+			flag_utc_model_str_32 = true;
             break;
 
         case 33:
@@ -484,8 +483,9 @@ int Beidou_Cnav2_Navigation_Message::string_decoder(std::string frame_string)
 			cnav2_almanac[i_alm_satellite_slot_number-1].WN_a = static_cast<double>(read_navigation_unsigned(string_bits, WN_a_33));			//[week] effective range 0~8191
 			cnav2_almanac[i_alm_satellite_slot_number-1].t_oa = static_cast<double>(read_navigation_unsigned(string_bits, t_oa_33))*TWO_P12;	//[s] effective range 0~602112
 			cnav2_ephemeris.Rev = static_cast<double>(read_navigation_unsigned(string_bits, Rev_33));
-			cnav2_ephemeris.CRC = static_cast<double>(read_navigation_unsigned(string_bits, CRC_33));
 
+			flag_almanac_str_33 = true;
+			flag_utc_model_str_33 = true;
             break;
 
         case 34:
@@ -532,8 +532,9 @@ int Beidou_Cnav2_Navigation_Message::string_decoder(std::string frame_string)
         	// BDT-UTC Time Offset Parameters End
 
         	cnav2_ephemeris.Rev = static_cast<double>(read_navigation_unsigned(string_bits, Rev_34));
-        	cnav2_ephemeris.CRC = static_cast<double>(read_navigation_unsigned(string_bits, CRC_34));
 
+        	flag_ephemeris_str_34 = true;
+        	flag_utc_model_str_34 = true;
             break;
 
         case 40:
@@ -577,8 +578,9 @@ int Beidou_Cnav2_Navigation_Message::string_decoder(std::string frame_string)
         	// Midi Almanac Parameters End
 
         	cnav2_ephemeris.Rev = static_cast<double>(read_navigation_unsigned(string_bits, Rev_40));
-        	cnav2_ephemeris.CRC = static_cast<double>(read_navigation_unsigned(string_bits, CRC_40));
 
+        	flag_almanac_str_40 = true;
+        	flag_ephemeris_str_40 = true;
             break;
 
 
@@ -613,24 +615,19 @@ bool Beidou_Cnav2_Navigation_Message::have_new_ephemeris()  //Check if we have a
 {
     bool new_eph = false;
     // We need to make sure we have received the ephemeris info plus the time info
-    if ((flag_ephemeris_str_1 == true) and (flag_ephemeris_str_2 == true) and
-        (flag_utc_model_str_5 == true))
-    	/*
+    if ((flag_ephemeris_str_10 == true) and (flag_ephemeris_str_11 == true))
         {
-            if (d_previous_tb != cnav2_ephemeris.d_t_b)
+            if (d_previous_tb != cnav2_ephemeris.IODE)
                 {
-                    flag_ephemeris_str_1 = false;  // clear the flag
-                    flag_ephemeris_str_2 = false;  // clear the flag
-                    flag_ephemeris_str_3 = false;  // clear the flag
-                    flag_ephemeris_str_4 = false;  // clear the flag
+                    flag_ephemeris_str_10 = false;  // clear the flag
+                    flag_ephemeris_str_11 = false;  // clear the flag
                     flag_all_ephemeris = true;
                     // Update the time of ephemeris information
-                    d_previous_tb = cnav2_ephemeris.d_t_b;
-                    DLOG(INFO) << "beidou cnav2 Ephemeris (1, 2, 3, 4) have been received and belong to the same batch" << std::endl;
+                    d_previous_tb = cnav2_ephemeris.IODE;
+                    DLOG(INFO) << "Beidou Cnav2 Ephemeris (1, 2) have been received and belong to the same batch" << std::endl;
                     new_eph = true;
                 }
         }
-        */
 
     return new_eph;
 }
@@ -638,66 +635,46 @@ bool Beidou_Cnav2_Navigation_Message::have_new_ephemeris()  //Check if we have a
 
 bool Beidou_Cnav2_Navigation_Message::have_new_utc_model()  // Check if we have a new utc data set stored in the beidou navigation class
 {
-    if (flag_utc_model_str_5 == true)
+    if ((flag_utc_model_str_32 == true) and (flag_utc_model_str_33 == true) and (flag_utc_model_str_34 == true))
         {
-            flag_utc_model_str_5 = false;  // clear the flag
+            flag_utc_model_str_32 = false;  // clear the flag
+            flag_utc_model_str_33 = false;  // clear the flag
+            flag_utc_model_str_34 = false;  // clear the flag
             return true;
         }
     else
         return false;
 }
 
-/*
+
 bool Beidou_Cnav2_Navigation_Message::have_new_almanac()  //Check if we have a new almanac data set stored in the beidou navigation class
 {
-    bool new_alm = false;
-    if ((flag_almanac_str_6 == true) and (flag_almanac_str_7 == true))
+    if (flag_almanac_str_31 == true)
         {
-            if (d_previous_Na[i_alm_satellite_slot_number] != cnav2_utc_model.d_N_A)
+            if (d_previous_Na[i_alm_satellite_slot_number] != cnav2_almanac[i_alm_satellite_slot_number-1].t_oa)
                 {
                     //All almanac have been received for this satellite
-                    flag_almanac_str_6 = false;
-                    flag_almanac_str_7 = false;
-                    new_alm = true;
+                    flag_almanac_str_31 = false;
+                    return true;
                 }
         }
-    if ((flag_almanac_str_8 == true) and (flag_almanac_str_9 == true))
-        {
-            if (d_previous_Na[i_alm_satellite_slot_number] != cnav2_utc_model.d_N_A)
-                {
-                    flag_almanac_str_8 = false;
-                    flag_almanac_str_9 = false;
-                    new_alm = true;
-                }
-        }
-    if ((flag_almanac_str_10 == true) and (flag_almanac_str_11 == true))
-        {
-            if (d_previous_Na[i_alm_satellite_slot_number] != cnav2_utc_model.d_N_A)
-                {
-                    flag_almanac_str_10 = false;
-                    flag_almanac_str_11 = false;
-                    new_alm = true;
-                }
-        }
-    if ((flag_almanac_str_12 == true) and (flag_almanac_str_13 == true))
-        {
-            if (d_previous_Na[i_alm_satellite_slot_number] != cnav2_utc_model.d_N_A)
-                {
-                    flag_almanac_str_12 = false;
-                    flag_almanac_str_13 = false;
-                    new_alm = true;
-                }
-        }
-    if ((flag_almanac_str_14 == true) and (flag_almanac_str_15 == true))
-        {
-            if (d_previous_Na[i_alm_satellite_slot_number] != cnav2_utc_model.d_N_A)
-                {
-                    flag_almanac_str_14 = false;
-                    flag_almanac_str_15 = false;
-                    new_alm = true;
-                }
-        }
+    if (flag_almanac_str_33 == true)
+            {
+                if (d_previous_Na[i_alm_satellite_slot_number] != cnav2_almanac[i_alm_satellite_slot_number-1].t_oa)
+                    {
+                        //All almanac have been received for this satellite
+                        flag_almanac_str_33 = false;
+                        return true;
+                    }
+            }
+    if (flag_almanac_str_40 == true)
+            {
+                if (d_previous_Na[i_alm_satellite_slot_number] != cnav2_almanac[i_alm_satellite_slot_number-1].t_oa)
+                    {
+                        //All almanac have been received for this satellite
+                        flag_almanac_str_40 = false;
+                        return true;
+                    }
+            }
 
-    return new_alm;
 }
-*/

@@ -69,18 +69,28 @@ public:
 
     // Ephemeris Flags and control variables
     bool flag_all_ephemeris;    //!< Flag indicating that all strings containing ephemeris have been received
-    bool flag_ephemeris_str_1;  //!< Flag indicating that ephemeris 1/2 (Type 10) have been received
-    bool flag_ephemeris_str_2;  //!< Flag indicating that ephemeris 2/2 (Type 11) have been received
+    bool flag_ephemeris_str_10;  //!< Flag indicating that ephemeris 1/2 (Type 10) have been received
+    bool flag_ephemeris_str_11;  //!< Flag indicating that ephemeris 2/2 (Type 11) have been received
+
+    bool flag_ephemeris_str_30;
+    bool flag_ephemeris_str_31;
+    bool flag_ephemeris_str_32;
+    bool flag_ephemeris_str_34;
+    bool flag_ephemeris_str_40;
 
     // Almanac Flags
     bool flag_almanac_str_31;                   //!< Flag indicating that almanac of Type 31 have been received
+    bool flag_almanac_str_33;
+    bool flag_almanac_str_40;
 
     unsigned int i_alm_satellite_slot_number;  //!< SV Orbit Slot Number
 
     // UTC and System Clocks Flags
     bool flag_utc_model_valid;   //!< If set, it indicates that the UTC model parameters are filled
-    bool flag_utc_model_str_5;   //!< Clock info send in string 5 of navigation data
-    bool flag_utc_model_str_15;  //!< Clock info send in string 15 of frame 5 of navigation data
+    bool flag_utc_model_str_32;
+    bool flag_utc_model_str_33;
+    bool flag_utc_model_str_34;
+
 
     bool flag_TOW_set;  //!< Flag indicating when the TOW has been set
     bool flag_TOW_new;  //!< Flag indicating when a new TOW has been computed
@@ -92,15 +102,13 @@ public:
     double d_previous_tb;                       //!< Previous iode for the Beidou_Cnav2_Ephemeris object. Used to determine when new data arrives
     double d_previous_Na[BEIDOU_NBR_SATS];  //!< Previous time for almanac of the Beidou_Cnav2_Almanac object
 
-    unsigned int d_string_ID;
-
     double temp;
 
     /*!
      * \brief Compute CRC for BEIDOU CNAV2 strings
      * \param bits Bits of the string message where to compute CRC
      */
-    bool CRC_test(std::bitset<BEIDOU_CNAV2_STRING_BITS> bits,unsigned int d_string_ID);
+    bool CRC_test(std::bitset<BEIDOU_CNAV2_STRING_BITS> bits);
 
     /*!
      * \brief Computes the frame number being decoded given the satellite slot number

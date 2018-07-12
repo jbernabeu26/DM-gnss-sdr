@@ -63,12 +63,51 @@ Beidou_Cnav2_Utc_Model::Beidou_Cnav2_Utc_Model()
 }
 
 
-double Beidou_Cnav2_Utc_Model::utc_time(double beidou_time_corrected)
+double Beidou_Cnav2_Utc_Model::utc_time(double beidou_time)
 {
     double t_utc;
 
     // BEIDOU Time is relative to UTC Moscow, so we simply add its time difference
-    t_utc = beidou_time_corrected + 3 * 3600 + d_tau_c;
+    t_utc = beidou_time + dt_LS;	// Adds the leap seconds that is broadcasted
 
     return t_utc;
+}
+
+
+boost::posix_time::ptime Beidou_Cnav2_Utc_Model::compute_BEIDOU_time(const double offset_time) const
+{
+	/* Need to check this
+    boost::posix_time::time_duration t(0, 0, offset_time + d_tau_c + d_tau_n);
+    boost::gregorian::date d1(d_yr, 1, 1);
+    boost::gregorian::days d2(d_N_T - 1);
+    boost::posix_time::ptime beidou_time(d1 + d2, t);
+
+    return beidou_time;
+    */
+}
+
+
+boost::posix_time::ptime Beidou_Cnav2_Utc_Model::beidt_to_utc(const double offset_time, const double beidt2utc_corr) const
+{
+    /*
+     * 1) DN is not in the past
+     * t_UTC = (t_E - dt_UTC)mod86400
+     * dt_UTC = dt_LS + A_0UTC + A_1UTC * (t_E - t_ot + 604800 * (WN - WN_ot)) + A_2UTC * (t_E - t_ot + 604800 * (WN - WN_ot))^2
+     *
+     * 2) user's present time falls within the time span which starts six hours prior to the leap second time and ends six hours after the leap second time
+     * t_UTC = W mod(86400 + dt_LSF - dt_LS)
+     * W = ((t_E - dt_UTC - 43200) mod86400) + 43200
+     *
+     * 3) DN is in the past
+     * t_UTC = (t_E - dt_UTC)mod86400
+     * dt_UTC = dt_LSF + A_0UTC + A_1UTC * (t_E - t_ot + 604800 * (WN - WN_ot)) + A_2UTC * (t_E - t_ot + 604800 * (WN - WN_ot))^2
+     */
+}
+
+
+void Beidou_Cnav2_Utc_Model::beidt_to_gpst(double tod_offset, double beidt2utc_corr, double beidt2gpst_corr, double* wn, double* tow) const
+{
+	/*
+	 * dT_systems = t_BD - t_GNSS = A_0BGTO + A_1BGTO*[t_BD - t_0BGTO + 604800*(WN - WN_BGTO)] + A_2BGTO*[t_BD - t_0BGTO +604800*(WN - WN_BGTO)]^2
+	 */
 }

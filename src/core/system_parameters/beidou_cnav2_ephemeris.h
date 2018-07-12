@@ -213,41 +213,7 @@ public:
 		archive& make_nvp("ISC_B2ad", ISC_B2ad);	//Group delay differential between the B2a data and pilot components [s]
     }
 
-    /*!
-     * \brief Sets (\a d_satClkDrift)and returns the clock drift in seconds according to the User Algorithm for SV Clock Correction
-     *  (IS-GPS-200E,  20.3.3.3.3.1)
-     */
-    double sv_clock_drift(double transmitTime, double timeCorrUTC);
 
-    /*!
-     *  \brief Computes the BEIDOU System Time and returns a boost::posix_time::ptime object
-     * \ param offset_time Is the start of day offset to compute the time
-     */
-    boost::posix_time::ptime compute_BEIDOU_time(const double offset_time) const;
-
-    /*!
-     * \brief Converts from BEIDOUT to UTC
-     * \details The function simply adjust for the 6 hrs offset between BEIDOUT and UTC
-     * \param[in] offset_time Is the start of day offset
-     * \param[in] beidt2utc_corr Correction from BEIDOUT to UTC
-     * \returns UTC time as a boost::posix_time::ptime object
-     */
-    boost::posix_time::ptime beidt_to_utc(const double offset_time, const double glot2utc_corr) const;
-
-    /*!
-     * \brief Converts from BEIDOUT to GPST
-     * \details Converts from BEIDOUT to GPST in time of week (TOW) and week number (WN) format
-     * \param[in] tod_offset Is the start of day offset
-     * \param[in] beidt2utc_corr Correction from BEIDOUT to UTC
-     * \param[in] beidt2gpst_corr Correction from BEIDOUT to GPST
-     * \param[out] WN Week Number, not in mod(1024) format
-     * \param[out] TOW Time of Week in seconds of week
-     */
-    void beidt_to_gpst(double tod_offset, double beidt2utc_corr, double beidt2gpst_corr, double* WN, double* TOW) const;
-
-    /*!
-     * Default constructor
-     */
     Beidou_Cnav2_Ephemeris();
 };
 
