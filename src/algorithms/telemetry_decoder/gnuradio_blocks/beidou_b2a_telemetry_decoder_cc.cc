@@ -37,7 +37,7 @@
 #include <glog/logging.h>
 
 
-#define CRC_ERROR_LIMIT 6
+#define CRC_ERROR_LIMIT 8
 
 using google::LogMessage;
 
@@ -62,7 +62,7 @@ beidou_b2a_telemetry_decoder_cc::beidou_b2a_telemetry_decoder_cc(
     LOG(INFO) << "Initializing BEIDOU B2a TELEMETRY DECODING";
     // Define the number of sampes per symbol. Notice that BEIDOU has 2 rates, !!!Change
     //one for the navigation data and the other for the preamble information
-    d_samples_per_symbol = (BEIDOU_B2a_CODE_RATE_HZ / BEIDOU_B2a_CODE_LENGTH_CHIPS) / BEIDOU_B2a_SYMBOL_RATE_BPS;
+    d_samples_per_symbol = (BEIDOU_B2a_CODE_RATE_HZ / BEIDOU_B2a_CODE_LENGTH_CHIPS) / BEIDOU_B2a_SYMBOL_RATE_SPS;
 
     // Set the preamble information
     unsigned short int preambles_bits[BEIDOU_CNAV2_PREAMBLE_LENGTH_BITS] = BEIDOU_CNAV2_PREAMBLE;

@@ -31,8 +31,8 @@
  */
 
 
-#ifndef GNSS_SDR_BEIDOU_L1_CA_TELEMETRY_DECODER_H_
-#define GNSS_SDR_BEIDOU_L1_CA_TELEMETRY_DECODER_H_
+#ifndef GNSS_SDR_BEIDOU_B2A_TELEMETRY_DECODER_H_
+#define GNSS_SDR_BEIDOU_B2A_TELEMETRY_DECODER_H_
 
 #include "telemetry_decoder_interface.h"
 #include "beidou_b2a_telemetry_decoder_cc.h"

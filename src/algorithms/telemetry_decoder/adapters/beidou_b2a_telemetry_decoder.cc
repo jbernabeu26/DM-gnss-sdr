@@ -35,7 +35,7 @@
 #include "configuration_interface.h"
 #include "beidou_cnav2_ephemeris.h"
 #include "beidou_cnav2_almanac.h"
-//#include "beidou_cnav2_utc_model.h"
+#include "beidou_cnav2_utc_model.h"
 #include <gnuradio/io_signature.h>
 #include <glog/logging.h>
 

@@ -30,8 +30,8 @@
  * -------------------------------------------------------------------------
  */
 
-#ifndef GNSS_SDR_BEIDOU_L1_CA_TELEMETRY_DECODER_CC_H
-#define GNSS_SDR_BEIDOU_L1_CA_TELEMETRY_DECODER_CC_H
+#ifndef GNSS_SDR_BEIDOU_B2A_TELEMETRY_DECODER_CC_H
+#define GNSS_SDR_BEIDOU_B2A_TELEMETRY_DECODER_CC_H
 
 
 #include "beidou_cnav2_navigation_message.h"

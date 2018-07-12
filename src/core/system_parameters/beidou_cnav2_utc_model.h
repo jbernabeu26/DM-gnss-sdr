@@ -39,21 +39,40 @@
 
 //!!! Check
 /*!
- * \brief This class is a storage for the GLONASS GNAV UTC MODEL data as described in GLONASS ICD (Edition 5.1)
- * \note Code added as part of GSoC 2017 program
- * \see <a href="http://russianspacesystems.ru/wp-content/uploads/2016/08/ICD_GLONASS_eng_v5.1.pdf">GLONASS ICD</a>
+ * \brief This class is a storage for the BEIDOU CNAV2 UTC MODEL data as described in BEIDOU ICD
+ * \note Code added as part of GSoC 2018 program
+ * \see <a href="http://m.beidou.gov.cn/xt/gfxz/201712/P020171226742357364174.pdf">BEIDOU ICD</a>
  */
 class Beidou_Cnav2_Utc_Model
 {
 public:
     bool valid;
-    // Clock Parameters
-    double d_tau_c;    //!< GLONASS time scale correction to UTC(SU) time. [s]
-    double d_tau_gps;  //!< Correction to GPS time to GLONASS time [day]
-    double d_N_4;      //!< Four year interval number starting from 1996 [4 year interval]
-    double d_N_A;      //!< Calendar day number within the four-year period beginning since the leap year for Almanac data [days]
-    double d_B1;       //!< Coefficient  to  determine DeltaUT1 [s]
-    double d_B2;       //!< Coefficient  to  determine DeltaUT1 [s/msd]
+
+    // BDT-UTC Time Offset Parameters
+    double A_0UTC;	//Bias coefficient of BDT time scale relative to UTC time scale [s]
+	double A_1UTC;	//Drift coefficient of BDT time scale relative to UTC time scale [s/s]
+	double A_2UTC;	//Drift rate coefficient of BDT time scale relative to UTC time scale [s/s^2]
+	double dt_LS;	//Current of past leap second count [s]
+	double t_ot;	//Reference time of week [s]
+	double WN_ot;	//Reference week number [week]
+	double WN_LSF;	//Leap second reference week number [week]
+	double DN;		//Leap second reference day number [day]
+	double dt_LSF;	//Current of future leap second count [s]
+
+
+	// BDT_GNSS Time Offset Parameters
+	double GNSS_ID;		//GNSS type identification [dimensionless]
+	double WN_0BGTO;	//Reference week number [week]
+	double t_0BGTO;		//Reference time of week [s]
+	double A_0BGTO;		//Bias coefficient of BDT time scale relative to GNSS time scale [s]
+	double A_1BGTO;		//Drift coefficient of BDT time scale relative to GNSS time scale [s/s]
+	double A_2BGTO;		//Drift rate coefficient of BDT time scale relative to GNSS time scale [s/s^2]
+
+	// Clock Correction Parameters
+	double t_oc;
+	double a_0;
+	double a_1;
+	double a_2;
 
     template <class Archive>
     /*!
@@ -66,12 +85,31 @@ public:
             {
             };
         archive& make_nvp("valid", valid);
-        archive& make_nvp("d_tau_c", d_tau_c);
-        archive& make_nvp("d_tau_gps", d_tau_gps);
-        archive& make_nvp("d_N_4", d_N_4);
-        archive& make_nvp("d_N_A", d_N_A);
-        archive& make_nvp("d_B1", d_B1);
-        archive& make_nvp("d_B2", d_B2);
+
+        // BDT-UTC Time Offset Parameters
+        archive& make_nvp("A_0UTC", A_0UTC);
+        archive& make_nvp("A_1UTC", A_1UTC);
+        archive& make_nvp("A_2UTC", A_2UTC);
+        archive& make_nvp("dt_LS", dt_LS);
+        archive& make_nvp("t_ot", t_ot);
+        archive& make_nvp("WN_ot", WN_ot);
+        archive& make_nvp("WN_LSF", WN_LSF);
+        archive& make_nvp("DN", DN);
+        archive& make_nvp("dt_LSF", dt_LSF);
+
+        // BDT_GNSS Time Offset Parameters
+        archive& make_nvp("GNSS_ID", GNSS_ID);
+        archive& make_nvp("WN_0BGTO", WN_0BGTO);
+        archive& make_nvp("t_0BGTO", t_0BGTO);
+        archive& make_nvp("A_0BGTO", A_0BGTO);
+        archive& make_nvp("A_1BGTO", A_1BGTO);
+        archive& make_nvp("A_2BGTO", A_2BGTO);
+
+        // Clock Correction Parameters
+        archive& make_nvp("t_oc", t_oc);
+        archive& make_nvp("a_0", a_0);
+        archive& make_nvp("a_1", a_1);
+        archive& make_nvp("a_2", a_2);
     }
 
     /*!
@@ -81,7 +119,7 @@ public:
 
     /*!
      * \brief Computes the Coordinated Universal Time (UTC) and
-     * returns it in [s] (GLONASS ICD (Edition 5.1) Section 3.3.3 GLONASS Time)
+     * returns it in [s]
      */
     double utc_time(double beidou_time_corrected);
 };

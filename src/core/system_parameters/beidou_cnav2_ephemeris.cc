@@ -38,10 +38,21 @@
 
 Beidou_Cnav2_Ephemeris::Beidou_Cnav2_Ephemeris()
 {
+	// Other values
+	PRN = 0;
+	SOW = 0.0;
+	WN = 0.0;
 
+	// Issue of Data, Ephemeris
+	IODE = 0.0;
+
+	// Issue of Data, Clock
+	IODC = 0.0;
+
+	// Ephemeris
     t_oe = 0.0;				//!< Ephemeris reference time [s]
     SatType = 0.0;			//!< Satellite orbit type [dimensionless]
-    d_A = 0.0;				//!< Semi-major axis difference at reference time [m]
+    dA = 0.0;				//!< Semi-major axis difference at reference time [m]
     A_dot = 0.0;			//!< Change rate in semi-major axis [m/s]
     dn_0 = 0.0;				//!< Mean motion difference from computed value at reference time [pi/s]
     dn_0_dot = 0.0;			//!< Rate of mean motion difference from computed value at reference time [pi/s^2]
@@ -52,14 +63,30 @@ Beidou_Cnav2_Ephemeris::Beidou_Cnav2_Ephemeris()
     i_0 = 0.0;				//!< Inclination angle at reference time [pi]
     Omega_dot = 0.0;		//!< Rate of right ascension [pi/s]
     i_0_dot = 0.0;			//!< Rate of inclination angle [pi/s]
-    C_is = 0.0;				//!< Amplitude of sine harmonic correction term to the angle of inclination [rad]
-    C_ic = 0.0;				//!< Amplitude of cosine harmonic correction term to the angle of inclination [rad]
-    C_rs = 0.0;				//!< Amplitude of sine harmonic correction term to the orbit radius [m]
-    C_rc = 0.0;				//!< Amplitude of cosine harmonic correction term to the orbit radius [m]
-    C_us = 0.0;				//!< Amplitude of sine harmonic correction to the argument of latitude [rad]
-    C_uc = 0.0;				//!< Amplitude of cosine harmonic correction to the argument of latitude [rad]
+    C_IS = 0.0;				//!< Amplitude of sine harmonic correction term to the angle of inclination [rad]
+    C_IC = 0.0;				//!< Amplitude of cosine harmonic correction term to the angle of inclination [rad]
+    C_RS = 0.0;				//!< Amplitude of sine harmonic correction term to the orbit radius [m]
+    C_RC = 0.0;				//!< Amplitude of cosine harmonic correction term to the orbit radius [m]
+    C_US = 0.0;				//!< Amplitude of sine harmonic correction to the argument of latitude [rad]
+    C_UC = 0.0;				//!< Amplitude of cosine harmonic correction to the argument of latitude [rad]
 
+	// Earth Orientation Parameters
+	t_EOP = 0.0;			//EOP data reference time [s]
+	PM_X = 0.0;				//X Axis polar motion value at reference time [arc s]
+	PM_X_dot = 0.0;			//X Axis polar motion drift at reference time [arc s/day]
+	PM_Y = 0.0;				//Y Axis polar motion value at reference time [arc s]
+	PM_Y_dot = 0.0;			//Y Axis polar motion drift at reference time [arc s/day]
+	dUT1 = 0.0;				//UT1-UTC difference at reference time [s]
+	dUT1_dot = 0.0;			//Rate of UT1-UTC difference at reference time [s/day]
 
+	// Satellite Integrity Flag
+	DIF = 0.0;
+	SIF = 0.0;
+	AIF = 0.0;
+	DIF_B1C = 0.0;
+	SIF_B1C = 0.0;
+	AIF_B1C = 0.0;
+	SISMAI = 0.0;
 }
 
 

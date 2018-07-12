@@ -48,26 +48,55 @@ class Beidou_Cnav2_Ephemeris
 {
 
 public:
+	// Other values
+	unsigned int PRN;	//Pseudo-Random Noise, Satellite ID
+	double SOW;			//Seconds of week [s]
+	double WN;			//Week number [week]
 
-    double t_oe;			//!< Ephemeris reference time [s]
-    double SatType;			//!< Satellite orbit type [dimensionless]
-    double d_A;				//!< Semi-major axis difference at reference time [m]
-    double A_dot;			//!< Change rate in semi-major axis [m/s]
-    double dn_0;			//!< Mean motion difference from computed value at reference time [pi/s]
-    double dn_0_dot;		//!< Rate of mean motion difference from computed value at reference time [pi/s^2]
-    double M_0;				//!< Mean anomaly at reference time [pi]
-    double e;				//!< Eccentricity [dimensionless]
-    double omega;			//!< Argument of perigee [pi]
-    double Omega_0;			//!< Longitude of ascending node of orbital plane at weekly epoch [pi]
-    double i_0;				//!< Inclination angle at reference time [pi]
-    double Omega_dot;		//!< Rate of right ascension [pi/s]
-    double i_0_dot;			//!< Rate of inclination angle [pi/s]
-    double C_is;			//!< Amplitude of sine harmonic correction term to the angle of inclination [rad]
-    double C_ic;			//!< Amplitude of cosine harmonic correction term to the angle of inclination [rad]
-    double C_rs;			//!< Amplitude of sine harmonic correction term to the orbit radius [m]
-    double C_rc;			//!< Amplitude of cosine harmonic correction term to the orbit radius [m]
-    double C_us;			//!< Amplitude of sine harmonic correction to the argument of latitude [rad]
-    double C_uc;			//!< Amplitude of cosine harmonic correction to the argument of latitude [rad]
+	// Issue of Data, Ephemeris
+	double IODE;		//Issue of Data, Ephemeris
+
+	// Issue of Data, Clock
+	double IODC;		//Issue of Data, Clock
+
+	// Ephemeris Perimeters
+	double t_oe;		//Ephemeris reference time [s]
+	double SatType;		//Satellite orbit type [dimensionless]
+	double dA;			//Semi-major axis difference at reference time [m]
+	double A_dot;		//Change rate in semi-major axis [m/s]
+	double dn_0;		//Mean motion difference from computed value at reference time [pi/s]
+	double dn_0_dot;	//Rate of mean motion difference from computed value at reference time [pi/s^2]
+	double M_0;			//Mean anomaly at reference time [pi]
+	double e;			//Eccentricity [dimensionless]
+	double omega;		//Argument of perigee [pi]
+	double Omega_0;		//Longitude of ascending node of orbital plane at weekly epoch [pi]
+	double i_0;			//Inclination angle at reference time [pi]
+	double Omega_dot;	//Rate of right ascension [pi/s]
+	double i_0_dot;		//Rate of inclination angle [pi/s]
+	double C_IS;		//Amplitude of sine harmonic correction term to the angle of inclination [rad]
+	double C_IC;		//Amplitude of cosine harmonic correction term to the angle of inclination [rad]
+	double C_RS;		//Amplitude of sine harmonic correction term to the orbit radius [m]
+	double C_RC;		//Amplitude of cosine harmonic correction term to the orbit radius [m]
+	double C_US;		//Amplitude of sine harmonic correction ot the argument of latitude [rad]
+	double C_UC;		//Amplitude of cosine harmonic correction to the argument of latitude [rad]
+
+	// Earth Orientation Parameters
+	double t_EOP;		//EOP data reference time [s]
+	double PM_X;		//X Axis polar motion value at reference time [arc s]
+	double PM_X_dot;	//X Axis polar motion drift at reference time [arc s/day]
+	double PM_Y;		//Y Axis polar motion value at reference time [arc s]
+	double PM_Y_dot;	//Y Axis polar motion drift at reference time [arc s/day]
+	double dUT1;		//UT1-UTC difference at reference time [s]
+	double dUT1_dot;	//Rate of UT1-UTC difference at reference time [s/day]
+
+	//Satellite Integrity Status Flag
+	double DIF;			//Data Integrity Flag, 0:The error of message parameters broadcasted in this signal does not exceed the predictive accuracy, 1:The error of message parameters broadcasted in this signal exceeds the predictive accuracy
+	double SIF;			//Signal Integrity Flag, 0:This signal is normal, 1:This signal is abnormal
+	double AIF;			//Accuracy Integrity Flag, 0:SISMAI value of this signal is valud, 1:SISMAI value of this signal is invalid
+	double DIF_B1C;		//Data Integrity FLAG B1C
+	double SIF_B1C;		//Signal Integrity FLAG B1C
+	double AIF_B1C;		//Accuracy Integrity FLAG B1C
+	double SISMAI;		//Signal in space monitoring accuracy index
 
     template <class Archive>
 
@@ -80,10 +109,21 @@ public:
         if (version)
             {
             };
+    	// Others values
+    	archive& make_nvp("PRN", PRN);
+    	archive& make_nvp("SOW", SOW);
+    	archive& make_nvp("WN", WN);
 
+    	// Issue of Data, Ephemeris
+    	archive& make_nvp("IODE", IODE);
+
+    	// Issue of Data, Clock
+    	archive& make_nvp("IODC", IODC);
+
+        // Ephemeris
         archive& make_nvp("t_oe", t_oe);  //!< SV PRN frequency channel number
         archive& make_nvp("SatType", SatType);
-        archive& make_nvp("d_A", d_A);
+        archive& make_nvp("dA", dA);
         archive& make_nvp("A_dot", A_dot);
         archive& make_nvp("dn_0", dn_0);
         archive& make_nvp("dn_0_dot", dn_0_dot);
@@ -94,12 +134,30 @@ public:
         archive& make_nvp("i_0", i_0);
         archive& make_nvp("Omega_dot", Omega_dot);
         archive& make_nvp("i_0_dot", i_0_dot);
-        archive& make_nvp("C_is", C_is);
-        archive& make_nvp("C_ic", C_ic);
-        archive& make_nvp("C_rs", C_rs);
-        archive& make_nvp("C_rc", C_rc);
-        archive& make_nvp("C_us", C_us);
-        archive& make_nvp("C_uc", C_uc);
+        archive& make_nvp("C_IS", C_IS);
+        archive& make_nvp("C_IC", C_IC);
+        archive& make_nvp("C_RS", C_RS);
+        archive& make_nvp("C_RC", C_RC);
+        archive& make_nvp("C_US", C_US);
+        archive& make_nvp("C_UC", C_UC);
+
+    	// Earth Orientation Parameters
+    	archive& make_nvp("t_EOP", t_EOP);			//EOP data reference time [s]
+    	archive& make_nvp("PM_X", PM_X);			//X Axis polar motion value at reference time [arc s]
+    	archive& make_nvp("PM_X_dot", PM_X_dot);	//X Axis polar motion drift at reference time [arc s/day]
+    	archive& make_nvp("PM_Y", PM_Y);			//Y Axis polar motion value at reference time [arc s]
+    	archive& make_nvp("PM_Y_dot", PM_Y_dot);	//Y Axis polar motion drift at reference time [arc s/day]
+    	archive& make_nvp("dUT1", dUT1);			//UT1-UTC difference at reference time [s]
+    	archive& make_nvp("dUT1_dot", dUT1_dot);	//Rate of UT1-UTC difference at reference time [s/day]
+
+    	// Satellite Integrity Flag
+    	archive& make_nvp("DIF", DIF);
+    	archive& make_nvp("SIF", AIF);
+    	archive& make_nvp("AIF", AIF);
+    	archive& make_nvp("DIF_B1C", DIF_B1C);
+    	archive& make_nvp("SIF_B1C", SIF_B1C);
+    	archive& make_nvp("AIF_B1C", AIF_B1C);
+    	archive& make_nvp("SISMAI", SISMAI);
     }
 
     /*!

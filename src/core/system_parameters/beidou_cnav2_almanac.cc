@@ -36,7 +36,7 @@ Beidou_Cnav2_Almanac::Beidou_Cnav2_Almanac()
 {
 	// Midi Almanac Parameters
 
-	PRN_a = 0.0;				//!< PRN number of the corresponding almanac data [dimensionless]
+	PRN_a = 0;					//!< PRN number of the corresponding almanac data [dimensionless]
 	SatType = 0.0;				//!< Satellite orbit type [dimensionless]
 	WN_a = 0.0;					//!< Almanac reference week number [week]
 	t_oa = 0.0;					//!< Almanac reference time [s]
@@ -53,9 +53,9 @@ Beidou_Cnav2_Almanac::Beidou_Cnav2_Almanac()
 
 	// Reduced Almanac Parameters
 
-	PRN_a = 0.0;				//!< PRN number of the corresponding almanac data
+	PRN_a = 0;					//!< PRN number of the corresponding almanac data
 	SatType = 0.0;				//!< Satellite orbit type
-	delta_a = 0.0;				//!< Correction of semi-major axis relative to reference value at reference time
+	delta_A = 0.0;				//!< Correction of semi-major axis relative to reference value at reference time
 	Omega_0 = 0.0;				//!< Longitude of ascending node of orbital plane at weekly epoch
 	Phi_0 = 0.0;				//!< Argument of latitude at reference time
 	Health = 0.0;				//!< Satellite health information

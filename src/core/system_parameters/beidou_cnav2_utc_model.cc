@@ -35,12 +35,31 @@
 Beidou_Cnav2_Utc_Model::Beidou_Cnav2_Utc_Model()
 {
     valid = false;
-    d_tau_c = 0.0;
-    d_tau_gps = 0.0;
-    d_N_4 = 0.0;
-    d_N_A = 0.0;
-    d_B1 = 0.0;
-    d_B2 = 0.0;
+
+    // BDT-UTC Time Offset Parameters
+    A_0UTC = 0.0;		//Bias coefficient of BDT time scale relative to UTC time scale [s]
+	A_1UTC = 0.0;		//Drift coefficient of BDT time scale relative to UTC time scale [s/s]
+	A_2UTC = 0.0;		//Drift rate coefficient of BDT time scale relative to UTC time scale [s/s^2]
+	dt_LS = 0.0;		//Current of past leap second count [s]
+	t_ot = 0.0;			//Reference time of week [s]
+	WN_ot = 0.0;		//Reference week number [week]
+	WN_LSF = 0.0;		//Leap second reference week number [week]
+	DN = 0.0;			//Leap second reference day number [day]
+	dt_LSF = 0.0;		//Current of future leap second count [s]
+
+	// BDT-GNSS Time Offset Parameters
+	GNSS_ID = 0.0;		//GNSS type identification [dimensionless]
+	WN_0BGTO = 0.0;		//Reference week number [week]
+	t_0BGTO = 0.0;		//Reference time of week [s]
+	A_0BGTO = 0.0;		//Bias coefficient of BDT time scale relative to GNSS time scale [s]
+	A_1BGTO = 0.0;		//Drift coefficient of BDT time scale relative to GNSS time scale [s/s]
+	A_2BGTO = 0.0;		//Drift rate coefficient of BDT time scale relative to GNSS time scale [s/s^2]
+
+	// Clock Correction Parameters
+	t_oc = 0.0;
+	a_0 = 0.0;
+	a_1 = 0.0;
+	a_2 = 0.0;
 }
 
 

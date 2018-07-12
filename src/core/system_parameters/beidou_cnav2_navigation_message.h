@@ -65,7 +65,7 @@ public:
 
     Beidou_Cnav2_Ephemeris cnav2_ephemeris;                   //!< Ephemeris information decoded
     Beidou_Cnav2_Utc_Model cnav2_utc_model;                   //!< UTC model information
-    Beidou_Cnav2_Almanac cnav2_almanac[BEIDOU_CA_NBR_SATS];  //!< Almanac information for all 24 satellites
+    Beidou_Cnav2_Almanac cnav2_almanac[BEIDOU_CA_NBR_SATS];  //!< Almanac information for all 63 satellites
 
     // Ephemeris Flags and control variables
     bool flag_all_ephemeris;    //!< Flag indicating that all strings containing ephemeris have been received

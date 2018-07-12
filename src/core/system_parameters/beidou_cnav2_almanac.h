@@ -31,8 +31,8 @@
  */
 
 
-#ifndef GNSS_SDR_BEIDOU_ALMANAC_H_
-#define GNSS_SDR_BEIDOU_ALMANAC_H_
+#ifndef GNSS_SDR_BEIDOU_CNAV2_ALMANAC_H_
+#define GNSS_SDR_BEIDOU_CNAV2_ALMANAC_H_
 
 #include <boost/serialization/nvp.hpp>
 
@@ -46,7 +46,7 @@ class Beidou_Cnav2_Almanac
 public:
 	// Midi Almanac Parameters
 
-	double PRN_a;				//!< PRN number of the corresponding almanac data [dimnsionless]
+	unsigned int PRN_a;				//!< PRN number of the corresponding almanac data [dimnsionless]
 	double SatType;				//!< Satellite orbit type [dimnsionless]
 	double WN_a;				//!< Alamanc reference week number [week]
 	double t_oa;				//!< Almanac reference time [s]
@@ -61,11 +61,11 @@ public:
 	double a_f1;				//!< Satellite clock time drift correction coefficient [s/s]
 	double Health;				//!< Satellite health information [dimnsionless]
 
-	// Reduced Alamanac Parameters
+	// Reduced Almanac Parameters
 
-	double PRN_a;				//!< PRN number of the corresponding almanac data
+	unsigned int PRN_a;			//!< PRN number of the corresponding almanac data
 	double SatType;				//!< Satellite orbit type
-	double delta_a;				//!< Correction of semi-major axis relative to reference value at reference time
+	double delta_A;				//!< Correction of semi-major axis relative to reference value at reference time
 	double Omega_0;				//!< Longitude of ascending node of orbital plane at weekly epoch
 	double Phi_0;				//!< Argument of latitude at reference time
 	double Health;				//!< Satellite health information
@@ -98,7 +98,7 @@ public:
 
         archive& make_nvp("PRN_a", PRN_a);
         archive& make_nvp("SatType", SatType);
-        archive& make_nvp("delta_a", delta_a);
+        archive& make_nvp("delta_A", delta_A);
         archive& make_nvp("Omega_0", Omega_0);
         archive& make_nvp("Phi_0", Phi_0);
         archive& make_nvp("Health", Health);
