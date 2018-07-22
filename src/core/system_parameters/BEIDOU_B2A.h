@@ -56,7 +56,7 @@ const double BEIDOU_B2a_FREQ_HZ = FREQ5;  //!< L5 [Hz]
 const double BEIDOU_B2ad_CODE_RATE_HZ = 10.23e6;  //!< BEIDOU_B2a data code rate [chips/s]
 const int BEIDOU_B2ad_CODE_LENGTH_CHIPS = 10230;  //!< BEIDOU_B2a data  code length [chips]
 const double BEIDOU_B2ad_PERIOD = 0.001;          //!< BEIDOU_B2a data code period [seconds]
-const double BEIDOU_B2ad_SYMBOL_PERIOD = 0.01;    //!< BEIDOU_B2a data symbol period [seconds]
+const double BEIDOU_B2ad_SYMBOL_PERIOD = 0.01;    //!< BEIDOU_B2a data symbol period [seconds]//todo sara this is uncessary
 
 const double BEIDOU_B2ap_CODE_RATE_HZ = 10.23e6;  //!< BEIDOU_B2a pilot code rate [chips/s]
 const int BEIDOU_B2ap_CODE_LENGTH_CHIPS = 10230;  //!< BEIDOU_B2a pilot code length [chips]
@@ -203,8 +203,8 @@ const int32_t BEIDOU_B2ap_INIT_REG[63][13] =
 
 //TODO, these are for DK to fill in.
 const int BEIDOU_B2a_CNAV_DATA_PAGE_BITS = 300;  //!< GPS L5 CNAV page length, including preamble and CRC [bits]
-const int BEIDOU_B2a_SYMBOLS_PER_BIT = 2;
-const int BEIDOU_B2a_SAMPLES_PER_SYMBOL = 10;
+const int BEIDOU_B2a_SYMBOLS_PER_BIT = 1;
+const int BEIDOU_B2a_SAMPLES_PER_SYMBOL = 5;
 const int BEIDOU_B2a_CNAV_DATA_PAGE_SYMBOLS = 600;
 //const int BEIDOU_B2a_HISTORY_DEEP = 6;
 

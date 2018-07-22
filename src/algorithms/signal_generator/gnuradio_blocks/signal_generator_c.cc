@@ -129,7 +129,7 @@ void signal_generator_c::init()
                     samples_per_code_.push_back(round(static_cast<float>(fs_in_) / (BEIDOU_B2ad_CODE_RATE_HZ / BEIDOU_B2ad_CODE_LENGTH_CHIPS)));
 
                     num_of_codes_per_vector_.push_back(galileo_signal ? 4 * static_cast<int>(Galileo_E1_C_SECONDARY_CODE_LENGTH) : 1);//todo what does this do?
-                    data_bit_duration_ms_.push_back(1e3 / BEIDOU_B2a_CNAV_DATA_PAGE_BITS);//TODO for DK to fill out?
+                    data_bit_duration_ms_.push_back(1e3 / BEIDOU_B2a_CNAV_DATA_PAGE_BITS);
                 }
             else if (system_[sat] == "E")
                 {

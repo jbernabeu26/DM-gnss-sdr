@@ -183,7 +183,7 @@ void beidou_b2ad_code_gen_complex(std::complex<float>* _dest, unsigned int _prn)
 
     if (_prn > 0 and _prn < 63)
         {
-            make_b2ad(_code, _prn - 1);
+            make_b2ad(_code, _prn );
         }
 
     for (signed int i = 0; i < BEIDOU_B2ad_CODE_LENGTH_CHIPS; i++)
@@ -200,7 +200,7 @@ void beidou_b2ad_code_gen_float(float* _dest, unsigned int _prn)
 
     if (_prn > 0 and _prn < 63)
         {
-            make_b2ad(_code, _prn - 1);
+            make_b2ad(_code, _prn );//todo sara this is probably why it is not working, was -1 here.
         }
 
     for (signed int i = 0; i < BEIDOU_B2ad_CODE_LENGTH_CHIPS; i++)
@@ -266,7 +266,7 @@ void beidou_b2ap_code_gen_complex(std::complex<float>* _dest, unsigned int _prn)
 
     if (_prn > 0 and _prn < 63)
         {
-            make_b2ap(_code, _prn - 1);
+            make_b2ap(_code, _prn);//todo -1
         }
 
     for (signed int i = 0; i < BEIDOU_B2ap_CODE_LENGTH_CHIPS; i++)
@@ -283,7 +283,7 @@ void beidou_b2ap_code_gen_float(float* _dest, unsigned int _prn)
 
     if (_prn > 0 and _prn < 63)
         {
-            make_b2ap(_code, _prn - 1);
+            make_b2ap(_code, _prn);
         }
 
     for (signed int i = 0; i < BEIDOU_B2ap_CODE_LENGTH_CHIPS; i++)

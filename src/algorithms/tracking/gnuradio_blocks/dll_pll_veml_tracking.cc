@@ -244,7 +244,7 @@ dll_pll_veml_tracking::dll_pll_veml_tracking(dllpllconf_t conf_) : gr::block("dl
         }
     else if (trk_parameters.system == 'C')
             {
-                systemName = "Beidou";//todo SARA: make sure lowercase here!
+                systemName = "Beidou";
 			if (signal_type.compare("5C") == 0)
 					{
 						d_signal_carrier_freq = BEIDOU_B2a_FREQ_HZ;
@@ -492,7 +492,7 @@ void dll_pll_veml_tracking::start_tracking()
                     gps_l5i_code_gen_float(d_tracking_code, d_acquisition_gnss_synchro->PRN);
                 }
         }
-    else if (systemName.compare("Beidou") == 0 and signal_type.compare("5C") == 0)//todo SARA: Make sure it is not upper case!
+    else if (systemName.compare("Beidou") == 0 and signal_type.compare("5C") == 0)
         {
             if (trk_parameters.track_pilot)
                 {

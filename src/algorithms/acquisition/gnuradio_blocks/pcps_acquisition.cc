@@ -553,6 +553,8 @@ void pcps_acquisition::acquisition_core(unsigned long int samp_count)
                                     send_positive_acquisition();
                                     d_step_two = false;
                                     d_state = 0;  // Positive acquisition
+                                    std::cout << "Acquired prn " << d_gnss_synchro->PRN<<" on channel " << d_channel << "!" << std::endl;
+
                                 }
                             else
                                 {
@@ -564,6 +566,8 @@ void pcps_acquisition::acquisition_core(unsigned long int samp_count)
                         {
                             send_positive_acquisition();
                             d_state = 0;  // Positive acquisition
+                            std::cout << "Acquired prn" << d_gnss_synchro->PRN<<"on channel " << d_channel << "!" << std::endl;
+
                         }
                 }
             else if (d_well_count == acq_parameters.max_dwells)
@@ -586,6 +590,8 @@ void pcps_acquisition::acquisition_core(unsigned long int samp_count)
                                     send_positive_acquisition();
                                     d_step_two = false;
                                     d_state = 0;  // Positive acquisition
+                                    std::cout << "Acquired prn" << d_gnss_synchro->PRN<<"on channel " << d_channel << "!" << std::endl;
+
                                 }
                             else
                                 {
@@ -597,6 +603,7 @@ void pcps_acquisition::acquisition_core(unsigned long int samp_count)
                         {
                             send_positive_acquisition();
                             d_state = 0;  // Positive acquisition
+                            std::cout << "Acquired prn" << d_gnss_synchro->PRN<<"on channel " << d_channel << "!" << std::endl;
                         }
                 }
             else
