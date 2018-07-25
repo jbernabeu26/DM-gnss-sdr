@@ -73,20 +73,6 @@ double Beidou_Cnav2_Utc_Model::utc_time(double beidou_time)
     return t_utc;
 }
 
-
-boost::posix_time::ptime Beidou_Cnav2_Utc_Model::compute_BEIDOU_time(const double offset_time) const
-{
-	/* Need to check this
-    boost::posix_time::time_duration t(0, 0, offset_time + d_tau_c + d_tau_n);
-    boost::gregorian::date d1(d_yr, 1, 1);
-    boost::gregorian::days d2(d_N_T - 1);
-    boost::posix_time::ptime beidou_time(d1 + d2, t);
-
-    return beidou_time;
-    */
-}
-
-
 boost::posix_time::ptime Beidou_Cnav2_Utc_Model::beidt_to_utc(const double offset_time, const double beidt2utc_corr) const
 {
     /*

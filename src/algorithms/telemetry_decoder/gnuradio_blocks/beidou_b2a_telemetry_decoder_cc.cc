@@ -130,50 +130,9 @@ void beidou_b2a_telemetry_decoder_cc::decode_string(double *frame_symbols, int f
     int chip_acc_counter = 0;
 
     // 1. Transform from symbols to bits
-    std::string bi_binary_code;
-    std::string relative_code;
     std::string data_bits;
 
-    // Group samples into bi-binary code
-    for (int i = 0; i < (frame_length); i++)
-        {
-            chip_acc += frame_symbols[i];
-            chip_acc_counter += 1;
-
-            if (chip_acc_counter == (BEIDOU_CNAV2_TELEMETRY_SYMBOLS_PER_BIT))
-                {
-                    if (chip_acc > 0)
-                        {
-                            bi_binary_code.push_back('1');
-                            chip_acc_counter = 0;
-                            chip_acc = 0;
-                        }
-                    else
-                        {
-                            bi_binary_code.push_back('0');
-                            chip_acc_counter = 0;
-                            chip_acc = 0;
-                        }
-                }
-        }
-    // Convert from bi-binary code to relative code
-    for (int i = 0; i < (BEIDOU_CNAV2_STRING_BITS); i++)
-        {
-            if (bi_binary_code[2 * i] == '1' && bi_binary_code[2 * i + 1] == '0')
-                {
-                    relative_code.push_back('1');
-                }
-            else
-                {
-                    relative_code.push_back('0');
-                }
-        }
-    // Convert from relative code to data bits
-    data_bits.push_back('0');
-    for (int i = 1; i < (BEIDOU_CNAV2_STRING_BITS); i++)
-        {
-            data_bits.push_back(((relative_code[i - 1] - '0') ^ (relative_code[i] - '0')) + '0');
-        }
+    data_bits = frame_symbols[1:288];
 
     // 2. Call the BEIDOU CNAV2 string decoder
     d_nav.string_decoder(data_bits);
@@ -191,7 +150,6 @@ void beidou_b2a_telemetry_decoder_cc::decode_string(double *frame_symbols, int f
     if (d_nav.have_new_ephemeris() == true)
         {
             // get object for this SV (mandatory)
-            d_nav.cnav2_ephemeris.i_satellite_freq_channel = d_satellite.get_rf_link();
             std::shared_ptr<Beidou_Cnav2_Ephemeris> tmp_obj = std::make_shared<Beidou_Cnav2_Ephemeris>(d_nav.get_ephemeris());
             this->message_port_pub(pmt::mp("telemetry"), pmt::make_any(tmp_obj));
             LOG(INFO) << "BEIDOU CNAV2 Ephemeris have been received in channel" << d_channel << " from satellite " << d_satellite;

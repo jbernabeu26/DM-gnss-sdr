@@ -40,7 +40,7 @@
 #include "beidou_cnav2_utc_model.h"
 #include "gnss_satellite.h"
 #include "gnss_synchro.h"
-#include "BEIDOU_B2a_CA.h"
+#include "BEIDOU_B2a.h"
 #include <gnuradio/block.h>
 #include <fstream>
 #include <string>

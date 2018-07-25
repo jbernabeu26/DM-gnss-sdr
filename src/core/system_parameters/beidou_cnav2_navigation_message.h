@@ -104,6 +104,8 @@ public:
 
     double temp;
 
+    double crc_compute;
+
     /*!
      * \brief Compute CRC for BEIDOU CNAV2 strings
      * \param bits Bits of the string message where to compute CRC

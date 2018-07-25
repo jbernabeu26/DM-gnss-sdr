@@ -121,9 +121,9 @@ Rinex_Printer::Rinex_Printer(int conf_version)
     observationCode["COMPASS_E2_I"] = "2I";
     observationCode["COMPASS_E2_Q"] = "2Q";
     observationCode["COMPASS_E2_IQ"] = "2X";
-    observationCode["COMPASS_E5b_I"] = "7I";
-    observationCode["COMPASS_E5b_Q"] = "7Q";
-    observationCode["COMPASS_E5b_IQ"] = "7X";
+    observationCode["COMPASS_E5b_I"] = "7I";	  // "7I" BEIDOU B2a I
+    observationCode["COMPASS_E5b_Q"] = "7Q";	  // "7Q" BEIDOU B2a Q
+    observationCode["COMPASS_E5b_IQ"] = "7X";	  // "7X" BEIDOU B2a I+Q
     observationCode["COMPASS_E6_I"] = "6I";
     observationCode["COMPASS_E6_Q"] = "6Q";
     observationCode["COMPASS_E6_IQ"] = "6X";
@@ -230,6 +230,7 @@ std::string Rinex_Printer::createFilename(std::string type)
     fileType.insert(std::pair<std::string, std::string>("RINEX_FILE_TYPE_GPS_NAV", "N"));    // N - GPS navigation message file.
     fileType.insert(std::pair<std::string, std::string>("RINEX_FILE_TYPE_MET", "M"));        // M - Meteorological data file.
     fileType.insert(std::pair<std::string, std::string>("RINEX_FILE_TYPE_GLO_NAV", "G"));    // G - GLONASS navigation file.
+    fileType.insert(std::pair<std::string, std::string>("RINEX_FILE_TYPE_BDS_NAV", "C"));    // C - BEIDOU navigation file.
     fileType.insert(std::pair<std::string, std::string>("RINEX_FILE_TYPE_GAL_NAV", "L"));    // L - Galileo navigation message file.
     fileType.insert(std::pair<std::string, std::string>("RINEX_FILE_TYPE_MIXED_NAV", "P"));  // P - Mixed GNSS navigation message file.
     fileType.insert(std::pair<std::string, std::string>("RINEX_FILE_TYPE_GEO_NAV", "H"));    // H - SBAS Payload navigation message file.

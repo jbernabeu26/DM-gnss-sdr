@@ -427,7 +427,7 @@ bool rtklib_solver::get_PVT(const std::map<int, Gnss_Synchro>& gnss_observables_
 						// BEIDOU B2a
 						// find the ephemeris for the current BEIDOU SV observation. The SV PRN ID is the map key
 						std::string sig_(gnss_observables_iter->second.Signal);
-						if (sig_.compare("2X") == 0)
+						if (sig_.compare("7X") == 0)
 							{
 								beidou_cnav2_ephemeris_iter = beidou_cnav2_ephemeris_map.find(gnss_observables_iter->second.PRN);
 								if (beidou_cnav2_ephemeris_iter != beidou_cnav2_ephemeris_map.cend())
