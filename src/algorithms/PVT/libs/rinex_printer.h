@@ -55,6 +55,7 @@
 #include "gps_cnav_navigation_message.h"
 #include "galileo_navigation_message.h"
 #include "glonass_gnav_navigation_message.h"
+#include "beidou_cnav2_navigation_message.h"
 #include "GPS_L1_CA.h"
 #include "Galileo_E1.h"
 #include "GLONASS_L1_L2_CA.h"

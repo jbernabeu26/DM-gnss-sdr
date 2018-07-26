@@ -95,7 +95,7 @@ public:
     std::map<int, Galileo_Ephemeris> galileo_ephemeris_map;            //!< Map storing new Galileo_Ephemeris
     std::map<int, Gps_Ephemeris> gps_ephemeris_map;                    //!< Map storing new GPS_Ephemeris
     std::map<int, Gps_CNAV_Ephemeris> gps_cnav_ephemeris_map;          //!< Map storing new GPS_CNAV_Ephemeris
-    std::map<int, Glonass_Gnav_Ephemeris> glonass_gnav_ephemeris_map;  //!< Map storing new BEIDOU_CNAV2_Ephemeris
+    std::map<int, Glonass_Gnav_Ephemeris> glonass_gnav_ephemeris_map;  //!< Map storing new GLONASS_GNAV_Ephemeris
     std::map<int, Beidou_Cnav2_Ephemeris> beidou_cnav2_ephemeris_map;  //!< Map storing new BEIDOU_CNAV2_Ephemeris
 
     Galileo_Utc_Model galileo_utc_model;

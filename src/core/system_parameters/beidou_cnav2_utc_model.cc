@@ -90,10 +90,12 @@ boost::posix_time::ptime Beidou_Cnav2_Utc_Model::beidt_to_utc(const double offse
      */
 }
 
+template < typename t >
+t square(t x) { return x * x; }
 
 void Beidou_Cnav2_Utc_Model::beidt_to_gpst(double tod_offset, double beidt2utc_corr, double beidt2gpst_corr, double* wn, double* tow) const
 {
-	/*
-	 * dT_systems = t_BD - t_GNSS = A_0BGTO + A_1BGTO*[t_BD - t_0BGTO + 604800*(WN - WN_BGTO)] + A_2BGTO*[t_BD - t_0BGTO +604800*(WN - WN_BGTO)]^2
-	 */
+	
+	 dT_systems = t_BD - t_GNSS = A_0BGTO + A_1BGTO*[t_BD - t_0BGTO + 604800*(WN - WN_BGTO)] + A_2BGTO*square(t_BD - t_0BGTO +604800*(WN - WN_BGTO))
+	 
 }

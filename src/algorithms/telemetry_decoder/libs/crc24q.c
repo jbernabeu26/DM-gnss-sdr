@@ -67,7 +67,7 @@ static void crc_init(unsigned table[256])
 	    table[i + j] = table[j] ^ h;
     }
 }
-
+/*
 int main(int argc, char *argv[])
 {
     int i;
@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
     exit(0);
 }
 #endif
-
+*/
 static const unsigned crc24q[256] = {
     0x00000000, 0x01864CFB, 0x028AD50D, 0x030C99F6,
     0x0493E6E1, 0x0515AA1A, 0x061933EC, 0x079F7F17,

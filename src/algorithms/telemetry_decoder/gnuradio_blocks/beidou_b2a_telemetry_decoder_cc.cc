@@ -35,7 +35,7 @@
 #include <boost/lexical_cast.hpp>
 #include <gnuradio/io_signature.h>
 #include <glog/logging.h>
-
+//#include <memory>
 
 #define CRC_ERROR_LIMIT 8
 
@@ -132,7 +132,22 @@ void beidou_b2a_telemetry_decoder_cc::decode_string(double *frame_symbols, int f
     // 1. Transform from symbols to bits
     std::string data_bits;
 
-    data_bits = frame_symbols[1:288];
+    // we want data_bits = frame_symbols[24:311]
+    assert(frame_length >= 24+288); // or whatever error checking mechanism exists in this cb
+    for (unsigned ii = 24; ii < (24+288); ++ii) {
+    	char bit_value;
+
+    	if (frame_symbols[ii] > 0)
+    		bit_value = '1';
+    	else
+    		bit_value = '0';
+
+    	data_bits.push_back(bit_value);
+
+    	// "ternary" operator
+    	//data_bits.push_back( (frame_symbols[ii] > 0) ? ('1') : ('0') );
+    }
+
 
     // 2. Call the BEIDOU CNAV2 string decoder
     d_nav.string_decoder(data_bits);

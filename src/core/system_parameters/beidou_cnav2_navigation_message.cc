@@ -33,7 +33,7 @@
 #include "beidou_cnav2_navigation_message.h"
 #include "gnss_satellite.h"
 #include <glog/logging.h>
-#include "crc24q.c"
+#include "crc24q.h"
 
 void Beidou_Cnav2_Navigation_Message::reset()
 {
@@ -90,9 +90,11 @@ Beidou_Cnav2_Navigation_Message::Beidou_Cnav2_Navigation_Message()
 }
 
 
-bool Beidou_Cnav2_Navigation_Message::read_navigation_bool(std::bitset<BEIDOU_CNAV2_STRING_BITS> bits, const std::vector<std::pair<int, int>> parameter)
+bool Beidou_Cnav2_Navigation_Message::read_navigation_bool(std::bitset<BEIDOU_CNAV2_STRING_BITS> const &bits, const std::vector<std::pair<int, int>> &parameter)
 {
     bool value;
+
+    // bitset::any() (bits.any())
 
     if (bits[BEIDOU_CNAV2_STRING_BITS - parameter[0].first] == 1)
         {
@@ -106,7 +108,7 @@ bool Beidou_Cnav2_Navigation_Message::read_navigation_bool(std::bitset<BEIDOU_CN
 }
 
 
-unsigned long int Beidou_Cnav2_Navigation_Message::read_navigation_unsigned(std::bitset<BEIDOU_CNAV2_STRING_BITS> bits, const std::vector<std::pair<int, int>> parameter)
+unsigned long int Beidou_Cnav2_Navigation_Message::read_navigation_unsigned(std::bitset<BEIDOU_CNAV2_STRING_BITS> const &bits, const std::vector<std::pair<int, int>> &parameter)
 {
     unsigned long int value = 0;
     int num_of_slices = parameter.size();
@@ -117,7 +119,7 @@ unsigned long int Beidou_Cnav2_Navigation_Message::read_navigation_unsigned(std:
                     value <<= 1;  //shift left
                     if (bits[BEIDOU_CNAV2_STRING_BITS - parameter[i].first - j] == 1)
                         {
-                            value += 1;  // insert the bit
+                            value |= 1;  // insert the bit
                         }
                 }
         }
@@ -125,7 +127,7 @@ unsigned long int Beidou_Cnav2_Navigation_Message::read_navigation_unsigned(std:
 }
 
 
-signed long int Beidou_Cnav2_Navigation_Message::read_navigation_signed(std::bitset<BEIDOU_CNAV2_STRING_BITS> bits, const std::vector<std::pair<int, int>> parameter)
+signed long int Beidou_Cnav2_Navigation_Message::read_navigation_signed(std::bitset<BEIDOU_CNAV2_STRING_BITS> const &bits, const std::vector<std::pair<int, int>> &parameter)
 {
     signed long int value = 0;
     signed long int sign = 0;
@@ -146,7 +148,7 @@ signed long int Beidou_Cnav2_Navigation_Message::read_navigation_signed(std::bit
                     value <<= 1;  //shift left
                     if (bits[BEIDOU_CNAV2_STRING_BITS - parameter[i].first - j] == 1)
                         {
-                            value += 1;  // insert the bit
+                            value |= 1;  // insert the bit
                         }
                 }
         }
@@ -154,34 +156,28 @@ signed long int Beidou_Cnav2_Navigation_Message::read_navigation_signed(std::bit
 }
 
 
-bool Beidou_Cnav2_Navigation_Message::CRC_test(std::bitset<BEIDOU_CNAV2_STRING_BITS> string_bits)
+bool Beidou_Cnav2_Navigation_Message::CRC_test(std::bitset<BEIDOU_CNAV2_STRING_BITS> const &string_bits)
 {
-    crc_compute = crc24q_check(string_bits({1,264});
+	std::vector<unsigned char> rawBits(0, string_bits.size() / 8);
 
-    if (crc_compute == static_cast<double>(read_navigation_unsigned(string_bits, CRC)))
-        {
-            return true;
-        }
-    else
-        // All other conditions are assumed errors.
-        {
-            return false;
-        }
-	return true;
+	for (unsigned i = 0; i < rawBits.size(); ++i) {
+		for (int j = 0; j < 8; ++j) {
+			rawBits[i] |= (string_bits[8*i + j] << (7 - j));
+		}
+	}
+
+    crc_compute = crc24q_check(rawBits.data(), rawBits.size());
+
+    return crc_compute;
 }
 
 
-int Beidou_Cnav2_Navigation_Message::string_decoder(std::string frame_string)
+int Beidou_Cnav2_Navigation_Message::string_decoder(std::string const &frame_string)
 {
     int J = 0;
-    d_string_ID = 0;
-    d_frame_ID = 0;
 
     // Unpack bytes to bits
     std::bitset<BEIDOU_CNAV2_STRING_BITS> string_bits(frame_string);
-
-
-    d_string_ID = static_cast<unsigned int>(read_navigation_unsigned(string_bits, MesType));
 
     // Perform data verification and exit code if error in bit sequence
 	flag_CRC_test = CRC_test(string_bits);
@@ -190,8 +186,10 @@ int Beidou_Cnav2_Navigation_Message::string_decoder(std::string frame_string)
 	if (flag_CRC_test == false)
 		return 0;
 
+    i_string_MesType = static_cast<unsigned int>(read_navigation_unsigned(string_bits, MesType));
+
 	// Decode all 8 string messages
-	switch (d_string_ID)
+	switch (i_string_MesType)
         {
         case 10:
             //--- It is Type 10 -----------------------------------------------

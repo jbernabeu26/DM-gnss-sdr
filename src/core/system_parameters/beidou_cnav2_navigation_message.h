@@ -50,14 +50,13 @@
 class Beidou_Cnav2_Navigation_Message
 {
 private:
-    unsigned long int read_navigation_unsigned(std::bitset<BEIDOU_CNAV2_STRING_BITS> bits, const std::vector<std::pair<int, int>> parameter);
-    signed long int read_navigation_signed(std::bitset<BEIDOU_CNAV2_STRING_BITS> bits, const std::vector<std::pair<int, int>> parameter);
-    bool read_navigation_bool(std::bitset<BEIDOU_CNAV2_STRING_BITS> bits, const std::vector<std::pair<int, int>> parameter);
+    unsigned long int read_navigation_unsigned(std::bitset<BEIDOU_CNAV2_STRING_BITS> const &bits, const std::vector<std::pair<int, int>> &parameter);
+    signed long int read_navigation_signed(std::bitset<BEIDOU_CNAV2_STRING_BITS> const &bits, const std::vector<std::pair<int, int>> &parameter);
+    bool read_navigation_bool(std::bitset<BEIDOU_CNAV2_STRING_BITS> const &bits, const std::vector<std::pair<int, int>> &parameter);
 
 public:
     bool flag_CRC_test;
-    unsigned int d_frame_ID;
-    unsigned int d_string_ID;
+    unsigned int i_string_MesType;
     bool flag_update_slot_number;
 
     int i_channel_ID;
@@ -110,7 +109,7 @@ public:
      * \brief Compute CRC for BEIDOU CNAV2 strings
      * \param bits Bits of the string message where to compute CRC
      */
-    bool CRC_test(std::bitset<BEIDOU_CNAV2_STRING_BITS> bits);
+    bool CRC_test(std::bitset<BEIDOU_CNAV2_STRING_BITS> const &bits);
 
     /*!
      * \brief Computes the frame number being decoded given the satellite slot number
@@ -161,7 +160,7 @@ public:
      * \param frame_string [in] is the string message within the parsed frame
      * \returns Returns the ID of the decoded string
      */
-    int string_decoder(std::string frame_string);
+    int string_decoder(std::string const &frame_string);
 
     /*!
      * Default constructor

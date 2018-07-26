@@ -55,5 +55,5 @@ Beidou_Cnav2_Almanac::Beidou_Cnav2_Almanac()
 
 	delta_A = 0.0;				//!< Correction of semi-major axis relative to reference value at reference time
 	Phi_0 = 0.0;				//!< Argument of latitude at reference time
-	Health = 0.0;				//!< Satellite health information
+	//Health = 0.0;				//!< Satellite health information
 }

@@ -63,12 +63,8 @@ public:
 
 	// Reduced Almanac Parameters
 
-	unsigned int PRN_a;			//!< PRN number of the corresponding almanac data
-	double SatType;				//!< Satellite orbit type
 	double delta_A;				//!< Correction of semi-major axis relative to reference value at reference time
-	double Omega_0;				//!< Longitude of ascending node of orbital plane at weekly epoch
 	double Phi_0;				//!< Argument of latitude at reference time
-	double Health;				//!< Satellite health information
 
     template <class Archive>
     /*!
