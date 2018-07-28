@@ -2,7 +2,7 @@
  * \file beidou_b2a_dll_pll_tracking.cc
  * \brief  Interface of an adapter of a DLL+PLL tracking loop block
  * for BEIDOU B2A to a TrackingInterface
- * \author Sara Hrbek, 2018. sara.hrbek(at)gmail.com
+ * \author Sara Hrbek, 2018. sara.hrbek(at)gmail.com gsoc 2018
  *
  * Code DLL + carrier PLL according to the algorithms described in:
  * K.Borre, D.M.Akos, N.Bertelsen, P.Rinder, and S.H.Jensen,
@@ -99,7 +99,7 @@ BeidouB2aDllPllTracking::BeidouB2aDllPllTracking(
     trk_param.very_early_late_space_chips = 0.0;
     trk_param.very_early_late_space_narrow_chips = 0.0;
     trk_param.system = 'C';
-    char sig_[3] = "5C";//todo SARA DOUBLE CHECK THIS!
+    char sig_[3] = "5C";
     std::memcpy(trk_param.signal, sig_, 3);
     int cn0_samples = configuration->property(role + ".cn0_samples", 20);
     if (FLAGS_cn0_samples != 20) cn0_samples = FLAGS_cn0_samples;

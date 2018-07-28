@@ -1,7 +1,7 @@
 /*!
  * \file beidou_b2a_signal_processing.h
  * \brief This class implements signal generators for the BeiDou B2a signals
- * \author Sara Hrbek, 2018. sara.hrbek(at)gmail.com
+ * \author Sara Hrbek, 2018. sara.hrbek(at)gmail.com gsoc 2018
  *
  * Detailed description of the file here if needed.
  *
@@ -36,18 +36,20 @@
 #include <complex>
 
 
-//!Generates complex BeiDou B2a data primary code for the desired SV ID
+//!< Generates complex BeiDou B2a data primary code for the desired SV ID
 void beidou_b2ad_code_gen_complex(std::complex<float>* _dest, unsigned int _prn);
+void beidou_b2ad_code_gen_complexSecondary(std::complex<float>* _dest, unsigned int _prn);
 void beidou_b2ad_code_gen_float(float* _dest, unsigned int _prn);
 
-//!Generates complex BeiDou B2a pilot primary code for the desired SV ID
+//!< Generates complex BeiDou B2a pilot primary code for the desired SV ID
 void beidou_b2ap_code_gen_complex(std::complex<float>* _dest, unsigned int _prn);
 void beidou_b2ap_code_gen_float(float* _dest, unsigned int _prn);
 
-//! Generates complex BeiDou B2a data primary code for the desired SV ID, and sampled to specific sampling frequency
+//!< Generates complex BeiDou B2a data primary code for the desired SV ID, and sampled to specific sampling frequency
 void beidou_b2ad_code_gen_complex_sampled(std::complex<float>* _dest, unsigned int _prn, signed int _fs);
+void beidou_b2ad_code_gen_complex_sampledSecondary(std::complex<float>* _dest, unsigned int _prn, signed int _fs);
 
-//! Generates complex BeiDou B2 pilot primary code for the desired SV ID, and sampled to specific sampling frequency
+//!< Generates complex BeiDou B2 pilot primary code for the desired SV ID, and sampled to specific sampling frequency
 void beidou_b2ap_code_gen_complex_sampled(std::complex<float>* _dest, unsigned int _prn, signed int _fs);
 
 

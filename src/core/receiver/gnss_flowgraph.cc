@@ -973,10 +973,9 @@ void GNSSFlowgraph::set_signals_list()
     // Removing satellites sharing same frequency number(1 and 5, 2 and 6, 3 and 7, 4 and 6, 11 and 15, 12 and 16, 14 and 18, 17 and 21
     std::set<unsigned int> available_glonass_prn = {1, 2, 3, 4, 9, 10, 11, 12, 18, 19, 20, 21, 24};
 
-    // Create the lists of BEIDOU satellites
-    //BeiDou-S3 satellites contain the modernized signals( PRN 31 33 34 32 35). BeiDou-3 contain the new satellites PRN 19 20 27 28 21 22 29 and 30
-    std::set<unsigned int> available_beidou_prn = {19, 21, 22, 27, 28, 30};//, 31, 33, 34, 32, 35, 29, 29};//TODO adjust for current constellation{27, 30};//
-    //std::cout << "Beidou prns:   " << std::dec << 27 << '\n';
+    //!< Create the lists of BEIDOU satellites
+    //!< BeiDou-S3 satellites contain the modernized signals( PRN 31 33 34 32 35). BeiDou-3 contain the new satellites PRN 19 20 27 28 21 22 29 and 30
+    std::set<unsigned int> available_beidou_prn = {19, 21, 22, 27, 28, 30, 31, 33, 34, 32, 35, 29};
 
     std::string sv_list = configuration_->property("Galileo.prns", std::string(""));
 

@@ -3,7 +3,7 @@
  * \brief Adapts a PCPS acquisition block to an Acquisition Interface for
  *  BEIDOU B2a signals
  * \authors <ul>
- *          <li> Sara Hrbek, 2018. sara.hrbek(at)gmail.com
+ *          <li> Sara Hrbek, 2018. sara.hrbek(at)gmail.com gsoc 2018
  *          </ul>
  *
  * -------------------------------------------------------------------------

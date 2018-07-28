@@ -259,14 +259,14 @@ dll_pll_veml_tracking::dll_pll_veml_tracking(dllpllconf_t conf_) : gr::block("dl
 							{
 								d_secondary_code_length = static_cast<unsigned int>(BEIDOU_B2ap_SECONDARY_CODE_LENGTH);
 								d_secondary_code_string = const_cast<std::string *>(&BEIDOU_B2ap_SECONDARY_CODE_STR);
-								signal_pretty_name = signal_pretty_name + "Q";
+								signal_pretty_name = signal_pretty_name + "Pilot";
 								interchange_iq = true;
 							}
 						else
 							{
 								d_secondary_code_length = static_cast<unsigned int>(BEIDOU_B2ad_SECONDARY_CODE_LENGTH);
 								d_secondary_code_string = const_cast<std::string *>(&BEIDOU_B2ad_SECONDARY_CODE_STR);
-								signal_pretty_name = signal_pretty_name + "I";
+								signal_pretty_name = signal_pretty_name + "Data";
 								interchange_iq = false;
 							}
 					}
@@ -454,11 +454,14 @@ void dll_pll_veml_tracking::start_tracking()
     double T_prn_true_samples = T_prn_true_seconds * trk_parameters.fs_in;
     double T_prn_diff_seconds = T_prn_true_seconds - T_prn_mod_seconds;
     double N_prn_diff = acq_trk_diff_seconds / T_prn_true_seconds;
-    double corrected_acq_phase_samples = std::fmod(d_acq_code_phase_samples + T_prn_diff_seconds * N_prn_diff * trk_parameters.fs_in, T_prn_true_samples);
+    //!<TODO Sign was reversed here so that 10.23 MHz signals can step properly into tracking. Double check that this works with all FE's
+    double corrected_acq_phase_samples = std::fmod(d_acq_code_phase_samples - T_prn_diff_seconds * N_prn_diff * trk_parameters.fs_in, T_prn_true_samples);
+
     if (corrected_acq_phase_samples < 0.0)
         {
             corrected_acq_phase_samples += T_prn_mod_samples;
         }
+
     double delay_correction_samples = d_acq_code_phase_samples - corrected_acq_phase_samples;
 
     d_acq_code_phase_samples = corrected_acq_phase_samples;
@@ -788,7 +791,7 @@ void dll_pll_veml_tracking::run_dll_pll()
         }
     // Code discriminator filter
     d_code_error_filt_chips = d_code_loop_filter.get_code_nco(d_code_error_chips);  // [chips/second]
-}
+    }
 
 
 void dll_pll_veml_tracking::clear_tracking_vars()
@@ -1283,6 +1286,7 @@ int dll_pll_veml_tracking::general_work(int noutput_items __attribute__((unused)
                 // Signal alignment (skip samples until the incoming signal is aligned with local replica)
                 unsigned long int acq_to_trk_delay_samples = d_sample_counter - d_acq_sample_stamp;
                 double acq_trk_shif_correction_samples = static_cast<double>(d_current_prn_length_samples) - std::fmod(static_cast<double>(acq_to_trk_delay_samples), static_cast<double>(d_current_prn_length_samples));
+                //int samples_offset = d_acq_code_phase_samples;
                 int samples_offset = std::round(d_acq_code_phase_samples + acq_trk_shif_correction_samples);
                 if (samples_offset < 0)
                     {

@@ -3,7 +3,7 @@
  * \brief Adapts a PCPS acquisition block to an Acquisition Interface for
  *  BEIDOU B2a signals
  * \authors <ul>
- *          <li> Sara Hrbek, 2018. sara.hrbek(at)gmail.com
+ *          <li> Sara Hrbek, 2018. sara.hrbek(at)gmail.com, gsoc 2018
  *          </ul>
  *
  * -------------------------------------------------------------------------
@@ -53,7 +53,7 @@ BeidouB2adPcpsAcquisition::BeidouB2adPcpsAcquisition(
 
     item_type_ = configuration_->property(role + ".item_type", default_item_type);
 
-    long fs_in_deprecated = configuration_->property("GNSS-SDR.internal_fs_hz", 2048000);
+    long fs_in_deprecated = configuration_->property("GNSS-SDR.internal_fs_hz", 25000000);
     fs_in_ = configuration_->property("GNSS-SDR.internal_fs_sps", fs_in_deprecated);
     acq_parameters.fs_in = fs_in_;
     if_ = configuration_->property(role + ".if", 0);
@@ -95,7 +95,7 @@ BeidouB2adPcpsAcquisition::BeidouB2adPcpsAcquisition(
         }
     acq_parameters.samples_per_code = code_length_;
     acq_parameters.samples_per_ms = code_length_;
-    acq_parameters.sampled_ms = 1;// TODO sara adjust for NH;
+    acq_parameters.sampled_ms = 1;// TODO possibly adjust for Secondary Code;
     acq_parameters.it_size = item_size_;
     acq_parameters.num_doppler_bins_step2 = configuration_->property(role + ".second_nbins", 4);
     acq_parameters.doppler_step2 = configuration_->property(role + ".second_doppler_step", 125.0);
@@ -162,9 +162,6 @@ void BeidouB2adPcpsAcquisition::set_doppler_max(unsigned int doppler_max)
     acquisition_->set_doppler_max(doppler_max_);
 }
 
-
-// Be aware that Doppler step should be set to 2/(3T) Hz, where T is the coherent integration time (GPS L2 period is 0.02s)
-// Doppler bin minimum size= 33 Hz
 void BeidouB2adPcpsAcquisition::set_doppler_step(unsigned int doppler_step)
 {
     doppler_step_ = doppler_step;
@@ -194,20 +191,9 @@ void BeidouB2adPcpsAcquisition::init()
 
 void BeidouB2adPcpsAcquisition::set_local_code()
 {
-/*    std::complex<float>* code = new std::complex<float>[code_length_];
-
-    beidou_b2ad_code_gen_complex_sampled(code_, gnss_synchro_->PRN, fs_in_);
-
-    for (unsigned int i = 0; i < sampled_ms_; i++)
-		{
-			memcpy(&(code_[i * code_length_]), code,
-				sizeof(gr_complex) * code_length_);
-		}
-
-	acquisition_->set_local_code(code_);
-	delete[] code;*///todo sara check this part...
 	{
 		beidou_b2ad_code_gen_complex_sampled(code_, gnss_synchro_->PRN, fs_in_);
+		//beidou_b2ad_code_gen_complex_sampledSecondary(code_, gnss_synchro_->PRN, fs_in_);
 
 	    acquisition_->set_local_code(code_);
 	}
