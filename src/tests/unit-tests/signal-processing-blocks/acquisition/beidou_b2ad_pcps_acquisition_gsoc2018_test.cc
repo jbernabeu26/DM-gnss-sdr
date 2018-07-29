@@ -1,9 +1,9 @@
 /*!
  * \file beidou_b2ad_pcps_acquisition_gsoc2018_test.cc
- * \brief  Tests a PCPS acquisition block for Glonass L1 C/A signals
+ * \brief  Tests a PCPS acquisition block for Beidou B2a signals
  * \author Gabriel Araujo, 2017. gabriel.araujo.5000(at)gmail.com
  * \author Luis Esteve, 2017. luis(at)epsilon-formacion.com
- * \author Sara Hrbek, 2018. sara.hrbek(at)gmail.com
+ * \author Sara Hrbek, 2018. sara.hrbek(at)gmail.com gsoc 2018
  *
  *
  * -------------------------------------------------------------------------
@@ -98,7 +98,7 @@ void BeidouB2adPcpsAcquisitionGSoC2018Test_msg_rx::msg_handler_events(pmt::pmt_t
 }
 
 
-BeidouB2adPcpsAcquisitionGSoC2018Test_msg_rx::BeidouB2adPcpsAcquisitionGSoC2018Test_msg_rx(concurrent_queue<int>& queue) : gr::block("GlonassL1CaPcpsAcquisitionGSoC2017Test_msg_rx", gr::io_signature::make(0, 0, 0), gr::io_signature::make(0, 0, 0)), channel_internal_queue(queue)
+BeidouB2adPcpsAcquisitionGSoC2018Test_msg_rx::BeidouB2adPcpsAcquisitionGSoC2018Test_msg_rx(concurrent_queue<int>& queue) : gr::block("BeidouB2adPcpsAcquisitionGSoC2018Test_msg_rx", gr::io_signature::make(0, 0, 0), gr::io_signature::make(0, 0, 0)), channel_internal_queue(queue)
 {
     this->message_port_register_in(pmt::mp("events"));
     this->set_msg_handler(pmt::mp("events"), boost::bind(&BeidouB2adPcpsAcquisitionGSoC2018Test_msg_rx::msg_handler_events, this, _1));
@@ -197,12 +197,12 @@ void BeidouB2adAcquisitionGSoC2018Test::config_1()
     std::string signal = "5C";
     signal.copy(gnss_synchro.Signal, 2, 0);
 
-    integration_time_ms = 1;
+    integration_time_ms = 5;
     fs_in = 25e6;
 
-    expected_delay_chips = 255;//todo sara fix this value
-    expected_doppler_hz = -1500;//todo sara fix this value
-    max_doppler_error_hz = 2 / (3 * integration_time_ms * 1e-3);//todo sara fix this value
+    expected_delay_chips = 7659.8;//TODO double check samples: 18719
+    expected_doppler_hz = 350;//TODO double check
+    max_doppler_error_hz = 2 / (3 * integration_time_ms * 1e-3);
     max_delay_error_chips = 0.50;
 
     num_of_realizations = 1;
@@ -218,43 +218,25 @@ void BeidouB2adAcquisitionGSoC2018Test::config_1()
     config->set_property("SignalSource.num_satellites", "1");
 
     config->set_property("SignalSource.system_0", "C");
-    config->set_property("SignalSource.PRN_0", "10");//todo sara fix this value
-    config->set_property("SignalSource.CN0_dB_0", "44");//todo sara fix this value
-    config->set_property("SignalSource.doppler_Hz_0", std::to_string(expected_doppler_hz));//todo sara fix this value
-    config->set_property("SignalSource.delay_chips_0", std::to_string(expected_delay_chips));//todo sara fix this value
+    config->set_property("SignalSource.PRN_0", "27");//TODO double check
+    config->set_property("SignalSource.CN0_dB_0", "50");//TODO double check
+    config->set_property("SignalSource.doppler_Hz_0", std::to_string(expected_doppler_hz));//TODO double check
+    config->set_property("SignalSource.delay_chips_0", std::to_string(expected_delay_chips));//TODO double check
 
-    config->set_property("SignalSource.noise_flag", "false");//todo sara fix this value
-    config->set_property("SignalSource.data_flag", "false");//todo sara fix this value
-    config->set_property("SignalSource.BW_BB", "0.97");//todo sara fix this value
+    config->set_property("SignalSource.noise_flag", "false");//TODO double check
+    config->set_property("SignalSource.data_flag", "false");//TODO double check
+    config->set_property("SignalSource.BW_BB", "0.97");//TODO double check
 
-    config->set_property("InputFilter.implementation", "Fir_Filter");
-    config->set_property("InputFilter.input_item_type", "gr_complex");
-    config->set_property("InputFilter.output_item_type", "gr_complex");
-    config->set_property("InputFilter.taps_item_type", "float");
-    config->set_property("InputFilter.number_of_taps", "11");
-    config->set_property("InputFilter.number_of_bands", "2");
-    config->set_property("InputFilter.band1_begin", "0.0");
-    config->set_property("InputFilter.band1_end", "0.97");
-    config->set_property("InputFilter.band2_begin", "0.98");
-    config->set_property("InputFilter.band2_end", "1.0");
-    config->set_property("InputFilter.ampl1_begin", "1.0");
-    config->set_property("InputFilter.ampl1_end", "1.0");
-    config->set_property("InputFilter.ampl2_begin", "0.0");
-    config->set_property("InputFilter.ampl2_end", "0.0");
-    config->set_property("InputFilter.band1_error", "1.0");
-    config->set_property("InputFilter.band2_error", "1.0");
-    config->set_property("InputFilter.filter_type", "bandpass");
-    config->set_property("InputFilter.grid_density", "16");
 
     config->set_property("Acquisition.item_type", "gr_complex");
-    config->set_property("Acquisition.if", "4000000");
+    config->set_property("Acquisition.if", "0");
     config->set_property("Acquisition.coherent_integration_time_ms",
         std::to_string(integration_time_ms));
     config->set_property("Acquisition.max_dwells", "1");
-    config->set_property("Acquisition.implementation", "BEIDOU_B2AD_PCPS_Acquisition");//todo sara check the spelling
-    config->set_property("Acquisition.threshold", "0.8");
+    config->set_property("Acquisition.implementation", "BEIDOU_B2ad_PCPS_Acquisition");
+    config->set_property("Acquisition_5C.pfa", "0.01");
     config->set_property("Acquisition.doppler_max", "10000");
-    config->set_property("Acquisition.doppler_step", "250");
+    config->set_property("Acquisition.doppler_step", "50");
     config->set_property("Acquisition.bit_transition_flag", "false");
     config->set_property("Acquisition.dump", "false");
 }
@@ -315,34 +297,16 @@ void BeidouB2adPcpsAcquisitionGSoC2018Test::config_2()
     config->set_property("SignalSource.data_flag", "true");
     config->set_property("SignalSource.BW_BB", "0.97");
 
-    config->set_property("InputFilter.implementation", "Fir_Filter");
-    config->set_property("InputFilter.input_item_type", "gr_complex");
-    config->set_property("InputFilter.output_item_type", "gr_complex");
-    config->set_property("InputFilter.taps_item_type", "float");
-    config->set_property("InputFilter.number_of_taps", "11");
-    config->set_property("InputFilter.number_of_bands", "2");
-    config->set_property("InputFilter.band1_begin", "0.0");
-    config->set_property("InputFilter.band1_end", "0.97");
-    config->set_property("InputFilter.band2_begin", "0.98");
-    config->set_property("InputFilter.band2_end", "1.0");
-    config->set_property("InputFilter.ampl1_begin", "1.0");
-    config->set_property("InputFilter.ampl1_end", "1.0");
-    config->set_property("InputFilter.ampl2_begin", "0.0");
-    config->set_property("InputFilter.ampl2_end", "0.0");
-    config->set_property("InputFilter.band1_error", "1.0");
-    config->set_property("InputFilter.band2_error", "1.0");
-    config->set_property("InputFilter.filter_type", "bandpass");
-    config->set_property("InputFilter.grid_density", "16");
 
     config->set_property("Acquisition.item_type", "gr_complex");
-    config->set_property("Acquisition.if", "4000000");
+    config->set_property("Acquisition.if", "0");
     config->set_property("Acquisition.coherent_integration_time_ms",
         std::to_string(integration_time_ms));
-    config->set_property("Acquisition.max_dwells", "1");
-    config->set_property("Acquisition.implementation", "BEIDOU_B2AD_PCPS_Acquisition");//todo sara check the spelling
+    config->set_property("Acquisition.max_dwells", "10");
+    config->set_property("Acquisition.implementation", "BEIDOU_B2ad_PCPS_Acquisition");
     config->set_property("Acquisition.pfa", "0.1");
     config->set_property("Acquisition.doppler_max", "10000");
-    config->set_property("Acquisition.doppler_step", "250");
+    config->set_property("Acquisition.doppler_step", "50");
     config->set_property("Acquisition.bit_transition_flag", "false");
     config->set_property("Acquisition.dump", "false");
 }

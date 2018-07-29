@@ -93,7 +93,7 @@ BeidouB2adPcpsAcquisition::BeidouB2adPcpsAcquisition(
         {
             item_size_ = sizeof(gr_complex);
         }
-    acq_parameters.samples_per_code = code_length_;
+    acq_parameters.samples_per_code = code_length_*5;
     acq_parameters.samples_per_ms = code_length_;
     acq_parameters.sampled_ms = 1;// TODO possibly adjust for Secondary Code;
     acq_parameters.it_size = item_size_;

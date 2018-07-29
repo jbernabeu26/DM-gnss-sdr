@@ -55,7 +55,7 @@ const double BEIDOU_B2a_FREQ_HZ = FREQ5;  //!< L5 [Hz]
 const double BEIDOU_B2ad_CODE_RATE_HZ = 10.23e6;  //!< BEIDOU_B2a data code rate [chips/s]
 const int BEIDOU_B2ad_CODE_LENGTH_CHIPS = 10230;  //!< BEIDOU_B2a data  code length [chips]
 const double BEIDOU_B2ad_PERIOD = 0.001;          //!< BEIDOU_B2a data code period [seconds]
-const double BEIDOU_B2ad_SYMBOL_PERIOD = 0.01;    //!< BEIDOU_B2a data symbol period [seconds]//todo sara this is uncessary
+//const double BEIDOU_B2ad_SYMBOL_PERIOD = 0.01;    //!< BEIDOU_B2a data symbol period [seconds]
 
 const double BEIDOU_B2ap_CODE_RATE_HZ = 10.23e6;  //!< BEIDOU_B2a pilot code rate [chips/s]
 const int BEIDOU_B2ap_CODE_LENGTH_CHIPS = 10230;  //!< BEIDOU_B2a pilot code length [chips]

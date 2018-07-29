@@ -500,7 +500,7 @@ void dll_pll_veml_tracking::start_tracking()
             if (trk_parameters.track_pilot)
                 {
                     beidou_b2ap_code_gen_float(d_tracking_code, d_acquisition_gnss_synchro->PRN);
-                    beidou_b2ad_code_gen_float(d_data_code, d_acquisition_gnss_synchro->PRN);//TODO SARA: should it be data here?
+                    beidou_b2ad_code_gen_float(d_data_code, d_acquisition_gnss_synchro->PRN);
                     d_Prompt_Data[0] = gr_complex(0.0, 0.0);
                     correlator_data_cpu.set_local_code_and_taps(d_code_length_chips, d_data_code, d_prompt_data_shift);
                 }

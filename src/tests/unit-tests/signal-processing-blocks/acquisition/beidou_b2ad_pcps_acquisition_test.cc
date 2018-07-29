@@ -3,7 +3,7 @@
  * \brief  Tests a PCPS acquisition block for Glonass L1 C/A signals
  * \author Gabriel Araujo, 2017. gabriel.araujo.5000(at)gmail.com
  * \author Luis Esteve, 2017. luis(at)epsilon-formacion.com
- * \author Sara Hrbek, 2018. sara.hrbek(at)gmail.com
+ * \author Sara Hrbek, 2018. sara.hrbek(at)gmail.com gsoc 2018
  *
  * -------------------------------------------------------------------------
  *
@@ -136,19 +136,20 @@ void BeidouB2adPcpsAcquisitionTest::init()
     gnss_synchro.System = 'C';
     std::string signal = "5C";
     signal.copy(gnss_synchro.Signal, 2, 0);
-    gnss_synchro.PRN = 1;
+    gnss_synchro.PRN = 27;
     config->set_property("GNSS-SDR.internal_fs_sps", "25000000");
     config->set_property("Acquisition_5C.item_type", "gr_complex");
-    config->set_property("Acquisition_5C.if", "9540000");//todo sara change
+    config->set_property("Acquisition_5C.if", "0");
     config->set_property("Acquisition_5C.coherent_integration_time_ms", "1");
     config->set_property("Acquisition_5C.dump", "true");
     config->set_property("Acquisition_5C.dump_filename", "./acquisition");
-    config->set_property("Acquisition_5C.implementation", "Beidou_B2ad_PCPS_Acquisition");//todo Sara check spelling here
-    config->set_property("Acquisition_5C.threshold", "0.001");
-    config->set_property("Acquisition_5C.doppler_max", "5000");
-    config->set_property("Acquisition_5C.doppler_step", "500");
-    config->set_property("Acquisition_5C.repeat_satellite", "false");
-    //config->set_property("Acquisition_1G.pfa", "0.0");
+    config->set_property("Acquisition_5C.implementation", "Beidou_B2ad_PCPS_Acquisition");
+    config->set_property("Acquisition_5C.pfa", "0.01");
+    config->set_property("Acquisition_5C.doppler_max", "10000");
+    config->set_property("Acquisition_5C.doppler_step", "50");
+    config->set_property("Acquisition.bit_transition_flag", "false");
+    //config->set_property("Acquisition_5C.repeat_satellite", "true");
+
 }
 
 
@@ -235,7 +236,7 @@ TEST_F(BeidouB2adPcpsAcquisitionTest, ValidationOfResults)
 
     ASSERT_NO_THROW({
         std::string path = std::string(TEST_PATH);
-        std::string file = path + "signal_samples/Glonass_L1_CA_SIM_Fs_62Msps_4ms.dat";//sara todo fix the file name/
+        std::string file = path + "signal_samples/USRP_BDS_B2a_201805171115_fs_25e6_if0e3_ishort_200ms.bin";
         const char* file_name = file.c_str();
         gr::blocks::file_source::sptr file_source = gr::blocks::file_source::make(sizeof(gr_complex), file_name, false);
         top_block->connect(file_source, 0, acquisition->get_left_block(), 0);
@@ -255,9 +256,9 @@ TEST_F(BeidouB2adPcpsAcquisitionTest, ValidationOfResults)
     ASSERT_EQ(1, msg_rx->rx_message) << "Acquisition failure. Expected message: 1=ACQ SUCCESS.";
 
     double delay_error_samples = std::abs(expected_delay_samples - gnss_synchro.Acq_delay_samples);
-    float delay_error_chips = static_cast<float>(delay_error_samples) * 511.0 / 62316.0;
+    float delay_error_chips = static_cast<float>(delay_error_samples) * 10230 / 25000;
     double doppler_error_hz = std::abs(expected_doppler_hz - gnss_synchro.Acq_doppler_hz);
 
-    EXPECT_LE(doppler_error_hz, 666) << "Doppler error exceeds the expected value: 666 Hz = 2/(3*integration period)";
+    EXPECT_LE(doppler_error_hz, 133.3) << "Doppler error exceeds the expected value: 133.3 Hz = 2/(3*integration period)";
     EXPECT_LT(delay_error_chips, 0.5) << "Delay error exceeds the expected value: 0.5 chips";
 }
