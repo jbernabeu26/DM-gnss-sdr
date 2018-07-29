@@ -165,9 +165,9 @@ TEST_F(BeidouB2aDllPllTrackingTest, ValidationOfResults)
     std::shared_ptr<TrackingInterface> tracking = std::make_shared<BeidouB2aDllPllTracking>(config.get(), "Tracking_5C", 1, 1);
     boost::shared_ptr<BeidouB2aDllPllTrackingTest_msg_rx> msg_rx = BeidouB2aDllPllTrackingTest_msg_rx_make();
 
-    gnss_synchro.Acq_delay_samples = 1;
-    gnss_synchro.Acq_doppler_hz = 1200;
-    gnss_synchro.Acq_samplestamp_samples = 0;
+    gnss_synchro.Acq_delay_samples = 18718;
+    gnss_synchro.Acq_doppler_hz = 410;
+    gnss_synchro.Acq_samplestamp_samples = 0;//todo fix.
 
     ASSERT_NO_THROW({
         tracking->set_channel(gnss_synchro.Channel_ID);
