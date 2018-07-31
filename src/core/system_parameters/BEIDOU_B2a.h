@@ -99,6 +99,7 @@ const double BEIDOU_LEAP_SECONDS = -33; // uniform scale and 33 seconds behind T
 // NAVIGATION MESSAGE DEMODULATION AND DECODING
 #define BEIDOU_CNAV2_PREAMBLE                                                                    \
     {                                                                                            \
+	1, 1, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 0, 0						 \
     }
 
 const double BEIDOU_CNAV2_PREAMBLE_DURATION_S = 0.120;	//[s]
