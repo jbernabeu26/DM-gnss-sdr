@@ -21,6 +21,7 @@ add_subdirectory(libswiftcnav)
 set(TELEMETRY_DECODER_LIB_SOURCES 
      gps_l1_ca_subframe_fsm.cc 
      viterbi_decoder.cc
+     crc24q.c
 )
 
 include_directories(

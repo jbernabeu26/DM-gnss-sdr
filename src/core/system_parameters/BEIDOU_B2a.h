@@ -99,13 +99,13 @@ const double BEIDOU_LEAP_SECONDS = -33; // uniform scale and 33 seconds behind T
 // NAVIGATION MESSAGE DEMODULATION AND DECODING
 #define BEIDOU_CNAV2_PREAMBLE                                                                    \
     {                                                                                            \
-        1, 1, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 0, 0 \
     }
+
 const double BEIDOU_CNAV2_PREAMBLE_DURATION_S = 0.120;	//[s]
 const int BEIDOU_CNAV2_PREAMBLE_LENGTH_BITS = 12;		//[bits]
 const int BEIDOU_CNAV2_PREAMBLE_LENGTH_SYMBOLS = 24;	//[symbols]
 
-//const int BEIDOU_CNAV2_PREAMBLE_PERIOD_SYMBOLS = 2000;
+const int BEIDOU_CNAV2_PREAMBLE_PERIOD_SYMBOLS = 600;
 const int BEIDOU_CNAV2_TELEMETRY_RATE_BITS_SECOND = 100;																					//bps
 const int BEIDOU_CNAV2_TELEMETRY_SYMBOLS_PER_BIT = 2;																						//spb
 const int BEIDOU_CNAV2_TELEMETRY_SYMBOLS_PER_PREAMBLE_BIT = 2;																				//spb

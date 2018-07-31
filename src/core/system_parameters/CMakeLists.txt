@@ -39,10 +39,14 @@ set(SYSTEM_PARAMETERS_SOURCES
 	 gps_cnav_iono.cc
 	 gps_cnav_utc_model.cc
 	 rtcm.cc
-   glonass_gnav_ephemeris.cc
-   glonass_gnav_almanac.cc
-   glonass_gnav_utc_model.cc
-   glonass_gnav_navigation_message.cc
+     glonass_gnav_ephemeris.cc
+     glonass_gnav_almanac.cc
+     glonass_gnav_utc_model.cc
+     glonass_gnav_navigation_message.cc
+   	 beidou_cnav2_navigation_message.cc
+   	 beidou_cnav2_ephemeris.cc
+   	 beidou_cnav2_almanac.cc
+   	 beidou_cnav2_utc_model.cc
 )
 
 

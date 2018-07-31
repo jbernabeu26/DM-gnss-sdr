@@ -33,7 +33,7 @@
 #include "beidou_cnav2_navigation_message.h"
 #include "gnss_satellite.h"
 #include <glog/logging.h>
-#include "crc24q.h"
+#include "../../algorithms/telemetry_decoder/libs/crc24q.h"
 
 void Beidou_Cnav2_Navigation_Message::reset()
 {
@@ -63,8 +63,7 @@ void Beidou_Cnav2_Navigation_Message::reset()
     flag_TOW_new = false;
 
     flag_CRC_test = false;
-    d_frame_ID = 0;
-    d_string_ID = 0;
+    i_string_MesType = 0;
     i_channel_ID = 0;
 
     // Clock terms
@@ -174,8 +173,6 @@ bool Beidou_Cnav2_Navigation_Message::CRC_test(std::bitset<BEIDOU_CNAV2_STRING_B
 
 int Beidou_Cnav2_Navigation_Message::string_decoder(std::string const &frame_string)
 {
-    int J = 0;
-
     // Unpack bytes to bits
     std::bitset<BEIDOU_CNAV2_STRING_BITS> string_bits(frame_string);
 
@@ -220,6 +217,8 @@ int Beidou_Cnav2_Navigation_Message::string_decoder(std::string const &frame_str
         	// Ephemeris I End
 
             flag_ephemeris_str_10 = true;
+
+            //cnav2_utc_model.beidt_to_utc(cnav2_ephemeris, 0, 1142341);
 
             break;
 
@@ -550,13 +549,13 @@ int Beidou_Cnav2_Navigation_Message::string_decoder(std::string const &frame_str
 
 
         default:
-            LOG(INFO) << "BEIDOU CNAV2: Invalid String ID of received. Received " << d_string_ID
+            LOG(INFO) << "BEIDOU CNAV2: Invalid String ID of received. Received " << i_string_MesType
                       << ", but acceptable range is from 10 11 30 31 32 33 34 40";
 
             break;
         }  // switch string ID
 
-    return d_string_ID;
+    return i_string_MesType;
 }
 
 
@@ -642,4 +641,6 @@ bool Beidou_Cnav2_Navigation_Message::have_new_almanac()  //Check if we have a n
                     }
             }
 
+    // todo  fix
+    return false;
 }

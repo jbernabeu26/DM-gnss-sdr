@@ -36,6 +36,7 @@
 
 #include <boost/assign.hpp>
 #include <boost/serialization/nvp.hpp>
+#include "beidou_cnav2_ephemeris.h"
 
 //!!! Check
 /*!
@@ -112,26 +113,7 @@ public:
         archive& make_nvp("a_2", a_2);
     }
 
-    /*!
-     * \brief Sets (\a d_satClkDrift)and returns the clock drift in seconds according to the User Algorithm for SV Clock Correction
-     *  (IS-GPS-200E,  20.3.3.3.3.1)
-     */
-    double sv_clock_drift(double transmitTime, double timeCorrUTC);
-
-    /*!
-     *  \brief Computes the BEIDOU System Time and returns a boost::posix_time::ptime object
-     * \ param offset_time Is the start of day offset to compute the time
-     */
-    boost::posix_time::ptime compute_BEIDOU_time(const double offset_time) const;
-
-    /*!
-     * \brief Converts from BEIDOUT to UTC
-     * \details The function simply adjust for the 6 hrs offset between BEIDOUT and UTC
-     * \param[in] offset_time Is the start of day offset
-     * \param[in] beidt2utc_corr Correction from BEIDOUT to UTC
-     * \returns UTC time as a boost::posix_time::ptime object
-     */
-    boost::posix_time::ptime beidt_to_utc(const double offset_time, const double glot2utc_corr) const;
+    double beidt_to_gpst(const double offset_time, const double glot2utc_corr);
 
     /*!
      * \brief Converts from BEIDOUT to GPST
@@ -142,24 +124,33 @@ public:
      * \param[out] WN Week Number, not in mod(1024) format
      * \param[out] TOW Time of Week in seconds of week
      */
-    void beidt_to_gpst(double tod_offset, double beidt2utc_corr, double beidt2gpst_corr, double* WN, double* TOW) const;
+    double beidt_to_utc(Beidou_Cnav2_Ephemeris const&eph);
+
+
+    /*!
+     * \brief Converts from BEIDOUT to GPST
+     * \details Converts from BEIDOUT to GPST in time of week (TOW) and week number (WN) format
+     * \param[in] tod_offset Is the start of day offset
+     * \param[in] beidt2utc_corr Correction from BEIDOUT to UTC
+     * \param[in] beidt2gpst_corr Correction from BEIDOUT to GPST
+     * \param[out] WN Week Number, not in mod(1024) format
+     * \param[out] TOW Time of Week in seconds of week
+     */
+
+    double beidt_to_gpst(const Beidou_Cnav2_Ephemeris &eph, double beid_time);
 
     /*!
      * Default constructor
      */
 
-
+    double utc_time(double beidou_time);
 
     /*!
      * Default constructor
      */
+
     Beidou_Cnav2_Utc_Model();
 
-    /*!
-     * \brief Computes the Coordinated Universal Time (UTC) and
-     * returns it in [s]
-     */
-    double utc_time(double beidou_time);
 };
 
 #endif

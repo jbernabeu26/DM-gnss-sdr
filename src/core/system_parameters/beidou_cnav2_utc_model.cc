@@ -31,6 +31,7 @@
  */
 
 #include "beidou_cnav2_utc_model.h"
+#include <cmath>
 
 Beidou_Cnav2_Utc_Model::Beidou_Cnav2_Utc_Model()
 {
@@ -67,35 +68,43 @@ double Beidou_Cnav2_Utc_Model::utc_time(double beidou_time)
 {
     double t_utc;
 
-    // BEIDOU Time is relative to UTC Moscow, so we simply add its time difference
     t_utc = beidou_time + dt_LS;	// Adds the leap seconds that is broadcasted
 
     return t_utc;
 }
 
-boost::posix_time::ptime Beidou_Cnav2_Utc_Model::beidt_to_utc(const double offset_time, const double beidt2utc_corr) const
+double Beidou_Cnav2_Utc_Model::beidt_to_utc(Beidou_Cnav2_Ephemeris const&eph)
 {
-    /*
-     * 1) DN is not in the past
-     * t_UTC = (t_E - dt_UTC)mod86400
-     * dt_UTC = dt_LS + A_0UTC + A_1UTC * (t_E - t_ot + 604800 * (WN - WN_ot)) + A_2UTC * (t_E - t_ot + 604800 * (WN - WN_ot))^2
-     *
-     * 2) user's present time falls within the time span which starts six hours prior to the leap second time and ends six hours after the leap second time
-     * t_UTC = W mod(86400 + dt_LSF - dt_LS)
-     * W = ((t_E - dt_UTC - 43200) mod86400) + 43200
-     *
-     * 3) DN is in the past
-     * t_UTC = (t_E - dt_UTC)mod86400
-     * dt_UTC = dt_LSF + A_0UTC + A_1UTC * (t_E - t_ot + 604800 * (WN - WN_ot)) + A_2UTC * (t_E - t_ot + 604800 * (WN - WN_ot))^2
-     */
+	double t_UTC;
+	double dt_UTC;
+	double W;
+
+     // 1) DN is not in the past
+	dt_UTC = dt_LS + A_0UTC + A_1UTC * (eph.t_oe - t_ot + 604800 * (eph.WN - WN_ot)) + A_2UTC * (eph.t_oe - t_ot + 604800 * (eph.WN - WN_ot)) * (eph.t_oe - t_ot + 604800 * (eph.WN - WN_ot));
+	t_UTC = fmod((eph.t_oe - dt_UTC),86400);
+
+	 // 2) user's present time falls within the time span which starts six hours prior to the leap second time and ends six hours after the leap second time
+	W = fmod((eph.t_oe - dt_UTC - 43200),86400) + 43200;
+	t_UTC = fmod(W,(86400 + dt_LSF - dt_LS));
+
+     // 3) DN is in the past
+    dt_UTC = dt_LSF + A_0UTC + A_1UTC * (eph.t_oe - t_ot + 604800 * (eph.WN - WN_ot)) + A_2UTC * (eph.t_oe - t_ot + 604800 * (eph.WN - WN_ot)) * (eph.t_oe - t_ot + 604800 * (eph.WN - WN_ot));
+    t_UTC = fmod((eph.t_oe - dt_UTC),86400);
+
+    return t_UTC;
 }
 
+/*
 template < typename t >
 t square(t x) { return x * x; }
+*/
 
-void Beidou_Cnav2_Utc_Model::beidt_to_gpst(double tod_offset, double beidt2utc_corr, double beidt2gpst_corr, double* wn, double* tow) const
+double Beidou_Cnav2_Utc_Model::beidt_to_gpst(Beidou_Cnav2_Ephemeris const&eph, double beidou_time)
 {
+	double t_GNSS;
 	
-	 dT_systems = t_BD - t_GNSS = A_0BGTO + A_1BGTO*[t_BD - t_0BGTO + 604800*(WN - WN_BGTO)] + A_2BGTO*square(t_BD - t_0BGTO +604800*(WN - WN_BGTO))
+	 //dT_systems = t_BD - t_GNSS = A_0BGTO + A_1BGTO*[t_BD - t_0BGTO + 604800*(WN - WN_BGTO)] + A_2BGTO*square(t_BD - t_0BGTO +604800*(WN - WN_BGTO));
+	 t_GNSS = beidou_time - (A_0BGTO + A_1BGTO*(beidou_time - t_0BGTO + 604800*(eph.WN - WN_0BGTO)) + A_2BGTO*(beidou_time - t_0BGTO +604800*(eph.WN - WN_0BGTO)))*(beidou_time - t_0BGTO +604800*(eph.WN - WN_0BGTO));
 	 
+	 return t_GNSS;
 }

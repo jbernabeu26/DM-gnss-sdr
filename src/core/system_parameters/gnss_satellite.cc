@@ -222,6 +222,18 @@ void Gnss_Satellite::set_PRN(unsigned int PRN_)
                     PRN = PRN_;
                 }
         }
+    else if (system.compare("Beidou") == 0)
+        {
+            if (PRN_ < 1 or PRN_ > 63)
+                {
+                    DLOG(INFO) << "This PRN is not defined";
+                    PRN = 0;
+                }
+            else
+                {
+                    PRN = PRN_;
+                }
+        }
     else
         {
             DLOG(INFO) << "System " << system << " is not defined";
