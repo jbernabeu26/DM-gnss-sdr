@@ -43,7 +43,7 @@ TEST(BeidouCnav2NavigationMessageTest, CRCTestSuccess)
 {
     // Variables declarations in code
     bool test_result;
-    std::bitset<BEIDOU_CNAV2_STRING_BITS> string_bits(std::string("011110101000100001001011101110101111111111011110000000000001111000000101001001101011011010110110101101101011011010110110101101101011011010110110101101101011011010110110101101101011011010110110101101101011011010110110101101101000000000000000000000000000000000000000000110011100111111011010011010100000000101110000100001101110000111101101001010110010001101001111010110110100101000000000000010001111010011101111000010011101001000010110010101111110111100010010010011011010101000110101011011111010011011000000010111100100010001101011001110010001110100101010001101110111011001011000"));
+    std::bitset<BEIDOU_CNAV2_STRING_BITS> string_bits(std::string("011110001010100001001011110001000101000010111111111110001000110101001100110000000000011110010110001011111111111000001000011100010100000110001100000000000111001101111111111000001101101111000100111101000000000011111010100101100110011111110011010110011100101111001111011001001001100111111010101000000101001110101000110101000000101011001010111101001110001000100001101100001100000101010110010100101000101100110011010100001001011010000010110010110010001001100110101111011100001110010101010001110010111111101110000110110111101110101100010110001101111010010110001110110110110000011001"));
     Beidou_Cnav2_Navigation_Message cnav2_nav_message;
     cnav2_nav_message.reset();
 
@@ -65,12 +65,12 @@ TEST(BeidouCnav2NavigationMessageTest, CRCTestFailure)
     // Variables declarations in code
     bool test_result;
     // Constructor of string to bitset will flip the order of the bits. Needed for CRC computation
-    std::bitset<BEIDOU_CNAV2_STRING_BITS> string_bits(std::string("011110101000100001001011101110101111111111011110000000000001111000000101001001101011011010110110101101101011011010110110101101101011011010110110101101101011011010110110101101101011011010110110101101101011011010110110101101101000000000000000000000000000000000000000000110011100111111011010011010100000000101110000100001101110000111101101001010110010001101001111010110110100101000000000000010001111010011101111000010011101001000010110010101111110111100010010010011011010101000110101011011111010011011000000010111100100010001101011001110010001110100101010001101110111011001011001"));
+    std::bitset<BEIDOU_CNAV2_STRING_BITS> string_bits(std::string("011110001010100001001011110001000101000010111111111110001000110101001100110000000000011110010110001011111111111000001000011100010100000110001100000000000111001101111111111000001101101111000100111101000000000011111010100101100110011111110011010110011100101111001111011001001001100111111010101000000101001110101000110101000000101011001010111101001110001000100001101100001100000101010110010100101000101100110011010100001001011010000010110010110010001001100110101111011100001110010101010001110010111111101110000110110111101110101100010110001101111010010110001110110110110000011000"));
     Beidou_Cnav2_Navigation_Message cnav2_nav_message;
     cnav2_nav_message.reset();
 
     // Call function to test
-    test_result = gnav_nav_message.CRC_test(string_bits);
+    test_result = cnav2_nav_message.CRC_test(string_bits);
 
     // Check results in unit test assetions
     ASSERT_FALSE(test_result);
@@ -79,190 +79,583 @@ TEST(BeidouCnav2NavigationMessageTest, CRCTestFailure)
 
 /*!
  * \brief Testing string decoding for BEIDOU CNAV2 messages
- * \test The provided string (str1.....str15) was generated with a version of
+ * \test The provided string (str1.....str8) was generated with a version of
  * MATLAB GNSS-SDR that the author coded to perform proper decoding of BEIDOU
  * CNAV2 signals. The same assumption is to be applied for ephemeris and almanac
  * data provided.
  */
 TEST(BeidouCnav2NavigationMessageTest, String1Decoder)
 {
+	// Message Type 10
     // Variable declarations
-    std::string str1("011110101000100001001011101110101111111111011110000000000001111000000101001001101011011010110110101101101011011010110110101101101011011010110110101101101011011010110110101101101011011010110110101101101011011010110110101101101000000000000000000000000000000000000000000110011100111111011010011010100000000101110000100001101110000111101101001010110010001101001111010110110100101000000000000010001111010011101111000010011101001000010110010101111110111100010010010011011010101000110101011011111010011011000000010111100100010001101011001110010001110100101010001101110111011001011000");
-    Glonass_Gnav_Navigation_Message gnav_nav_message;
-    Glonass_Gnav_Ephemeris gnav_ephemeris;
+    std::string str1("011110001010100001001011110001000101000010111111111110001000110101001100110000000000011110010110001011111111111000001000011100010100000110001100000000000111001101111111111000001101101111000100111101000000000011111010100101100110011111110011010110011100101111001111011001001001100111111010101000000101001110101000110101000000101011001010111101001110001000100001101100001100000101010110010100101000101100110011010100001001011010000010110010110010001001100110101111011100001110010101010001110010111111101110000110110111101110101100010110001101111010010110001110110110110000011001");
+    Beidou_Cnav2_Navigation_Message cnav2_nav_message;
+    Beidou_Cnav2_Ephemeris cnav2_ephemeris;
 
     // Fill out ephemeris values for truth
-    gnav_ephemeris.d_P_1 = 15;
-    gnav_ephemeris.d_t_k = 7560;
-    gnav_ephemeris.d_VXn = -0.490900039672852;
-    gnav_ephemeris.d_AXn = 0;
-    gnav_ephemeris.d_Xn = -11025.6669921875;
+    cnav2_ephemeris.PRN = 30;
+    cnav2_ephemeris.SOW = 407763;
+    cnav2_ephemeris.WN = 645;
+    cnav2_ephemeris.DIF = 1;
+    cnav2_ephemeris.SIF = 1;
+    cnav2_ephemeris.AIF = 1;
+    cnav2_ephemeris.SISMAI = 15;
+    cnav2_ephemeris.DIF_B1C = 1;
+    cnav2_ephemeris.SIF_B1C = 1;
+    cnav2_ephemeris.AIF_B1C = 1;
+    cnav2_ephemeris.IODE = 17;
+    cnav2_ephemeris.t_oe = 406800;
+    cnav2_ephemeris.SatType = 3;
+    cnav2_ephemeris.dA = 60.691406250000000;
+    cnav2_ephemeris.A_dot = -0.007683753967285;
+    cnav2_ephemeris.dn_0 = 0.000000001169780716736568;
+    cnav2_ephemeris.dn_0_dot = 0.00000000000002563921297493721;
+    cnav2_ephemeris.M_0 = -0.030411646468565;
+    cnav2_ephemeris.e = 0.0004.779577138833702;
+    cnav2_ephemeris.omega = -0.049411069834605;
 
     // Call target test method
-    gnav_nav_message.string_decoder(str1);
+    cnav2_nav_message.string_decoder(str1);
 
     // Perform assertions of decoded fields
-    ASSERT_TRUE(gnav_ephemeris.d_P_1 - gnav_nav_message.gnav_ephemeris.d_P_1 < FLT_EPSILON);
-    ASSERT_TRUE(gnav_ephemeris.d_t_k - gnav_nav_message.gnav_ephemeris.d_t_k < FLT_EPSILON);
-    ASSERT_TRUE(gnav_ephemeris.d_VXn - gnav_nav_message.gnav_ephemeris.d_VXn < FLT_EPSILON);
-    ASSERT_TRUE(gnav_ephemeris.d_AXn - gnav_nav_message.gnav_ephemeris.d_AXn < FLT_EPSILON);
-    ASSERT_TRUE(gnav_ephemeris.d_Xn - gnav_nav_message.gnav_ephemeris.d_Xn < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.PRN - cnav2_nav_message.cnav2_ephemeris.PRN < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.SOW - cnav2_nav_message.cnav2_ephemeris.SOW < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.WN - cnav2_nav_message.cnav2_ephemeris.WN < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.DIF - cnav2_nav_message.cnav2_ephemeris.DIF < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.SIF - cnav2_nav_message.cnav2_ephemeris.SIF < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.AIF - cnav2_nav_message.cnav2_ephemeris.AIF < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.SISMAI - cnav2_nav_message.cnav2_ephemeris.SISMAI < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.DIF_B1C - cnav2_nav_message.cnav2_ephemeris.DIF_B1C < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.SIF_B1C - cnav2_nav_message.cnav2_ephemeris.SIF_B1C < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.AIF_B1C - cnav2_nav_message.cnav2_ephemeris.AIF_B1C < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.IODE - cnav2_nav_message.cnav2_ephemeris.IODE < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.t_oe - cnav2_nav_message.cnav2_ephemeris.t_oe < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.SatType - cnav2_nav_message.cnav2_ephemeris.SatType < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.dA - cnav2_nav_message.cnav2_ephemeris.dA < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.A_dot - cnav2_nav_message.cnav2_ephemeris.A_dot < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.dn_0 - cnav2_nav_message.cnav2_ephemeris.dn_0 < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.dn_0_dot - cnav2_nav_message.cnav2_ephemeris.dn_0_dot < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.M_0 - cnav2_nav_message.cnav2_ephemeris.M_0 < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.e - cnav2_nav_message.cnav2_ephemeris.e < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.omega - cnav2_nav_message.cnav2_ephemeris.omega < FLT_EPSILON);
 }
 
 
 /*!
- * \brief Testing string decoding for GLONASS GNAV messages
- * \test The provided string (str1.....str15) was generated with a version of
- * MATLAB GNSS-SDR that the author coded to perform proper decoding of GLONASS
- * GNAV signals. The same assumption is to be applied for ephemeris and almanac
+ * \brief Testing string decoding for BEIDOU CNAV2 messages
+ * \test The provided string (str1.....str8) was generated with a version of
+ * MATLAB GNSS-SDR that the author coded to perform proper decoding of BEIDOU
+ * CNAV2 signals. The same assumption is to be applied for ephemeris and almanac
  * data provided.
  */
-TEST(GlonassGnavNavigationMessageTest, String2Decoder)
+TEST(BeidouCnav2NavigationMessageTest, String2Decoder)
 {
+	// Message Type 11
     // Variable declarations
-    std::string str2("0001000010001001000001010101100001011001011000000010101100110000001011110000110011110");
-    Glonass_Gnav_Navigation_Message gnav_nav_message;
-    Glonass_Gnav_Ephemeris gnav_ephemeris;
+    std::string str2("011110001011100001001011110000101111111111011110011000110100001010101111110001001110010010111111111000000000111011001111000101011101101001101100000000001010000000000000010011111111110011101010011001000000001111001100000011000000001100010011010111111101011110101111000010101000010110011001101110111101100101111100110110001011001000111011001111111111110000111101101010010100110000001011000100001000111111001110000110001001010100000001010101010101110111110001010101100011011101011110011100010100001000101001010001110101010000010100110111001110100010111111100010101110100101111000");
+    Beidou_Cnav2_Navigation_Message cnav2_nav_message;
+    Beidou_Cnav2_Ephemeris cnav2_ephemeris;
 
     // Fill out ephemeris values for truth
-    gnav_ephemeris.d_B_n = 0;
-    gnav_ephemeris.d_P_2 = 1;
-    gnav_ephemeris.d_t_b = 8100;
-    gnav_ephemeris.d_VYn = -2.69022750854492;
-    gnav_ephemeris.d_AYn = 0;
-    gnav_ephemeris.d_Yn = -11456.7348632812;
+    cnav2_ephemeris.PRN = 30;
+    cnav2_ephemeris.SOW = 407760;
+    cnav2_ephemeris.HS = 2;
+    cnav2_ephemeris.DIF = 1;
+    cnav2_ephemeris.SIF = 1;
+    cnav2_ephemeris.AIF = 1;
+    cnav2_ephemeris.SISMAI = 15;
+    cnav2_ephemeris.DIF_B1C = 1;
+    cnav2_ephemeris.SIF_B1C = 1;
+    cnav2_ephemeris.AIF_B1C = 1;
+
+    cnav2_ephemeris.Omega_0 = 0.949616759549826;
+    cnav2_ephemeris.i_0 = 0.30584704875946;
+    cnav2_ephemeris.Omega_dot = -0.00000000221859863813734;
+    cnav2_ephemeris.i_0_dot = -0.000000000136708422360243;
+    cnav2_ephemeris.C_IS = 0.0000000372529029846191;
+    cnav2_ephemeris.C_IC = 0.0000000176951289176941;
+    cnav2_ephemeris.C_RS = -197.40234375;
+    cnav2_ephemeris.C_RC = 243.01171875;
+    cnav2_ephemeris.C_US = 0.00000586546957492828;
+    cnav2_ephemeris.C_UC = -0.00000961218029260635e;
 
     // Call target test method
-    gnav_nav_message.flag_ephemeris_str_1 = true;
-    gnav_nav_message.gnav_ephemeris.d_P_1 = 15;
-    gnav_nav_message.string_decoder(str2);
+    cnav2_nav_message.string_decoder(str2);
 
     // Perform assertions of decoded fields
-    ASSERT_TRUE(gnav_ephemeris.d_B_n - gnav_nav_message.gnav_ephemeris.d_B_n < FLT_EPSILON);
-    ASSERT_TRUE(gnav_ephemeris.d_P_2 - gnav_nav_message.gnav_ephemeris.d_P_2 < FLT_EPSILON);
-    ASSERT_TRUE(gnav_ephemeris.d_t_b - gnav_nav_message.gnav_ephemeris.d_t_b < FLT_EPSILON);
-    ASSERT_TRUE(gnav_ephemeris.d_VYn - gnav_nav_message.gnav_ephemeris.d_VYn < FLT_EPSILON);
-    ASSERT_TRUE(gnav_ephemeris.d_AYn - gnav_nav_message.gnav_ephemeris.d_AYn < FLT_EPSILON);
-    ASSERT_TRUE(gnav_ephemeris.d_Yn - gnav_nav_message.gnav_ephemeris.d_Yn < FLT_EPSILON);
-}
+    ASSERT_TRUE(cnav2_ephemeris.PRN - cnav2_nav_message.cnav2_ephemeris.PRN < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.SOW - cnav2_nav_message.cnav2_ephemeris.SOW < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.HS - cnav2_nav_message.cnav2_ephemeris.HS < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.DIF - cnav2_nav_message.cnav2_ephemeris.DIF < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.SIF - cnav2_nav_message.cnav2_ephemeris.SIF < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.AIF - cnav2_nav_message.cnav2_ephemeris.AIF < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.SISMAI - cnav2_nav_message.cnav2_ephemeris.SISMAI < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.DIF_B1C - cnav2_nav_message.cnav2_ephemeris.DIF_B1C < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.SIF_B1C - cnav2_nav_message.cnav2_ephemeris.SIF_B1C < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.AIF_B1C - cnav2_nav_message.cnav2_ephemeris.AIF_B1C < FLT_EPSILON);
 
+    ASSERT_TRUE(cnav2_ephemeris.Omega_0 - cnav2_nav_message.cnav2_ephemeris.Omega_0 < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.i_0 - cnav2_nav_message.cnav2_ephemeris.i_0 < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.Omega_dot - cnav2_nav_message.cnav2_ephemeris.Omega_dot < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.i_0_dot - cnav2_nav_message.cnav2_ephemeris.i_0_dot < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.C_IS - cnav2_nav_message.cnav2_ephemeris.C_IS < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.C_IC - cnav2_nav_message.cnav2_ephemeris.C_IC < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.C_RS - cnav2_nav_message.cnav2_ephemeris.C_RS < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.C_RC - cnav2_nav_message.cnav2_ephemeris.C_RC < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.C_US - cnav2_nav_message.cnav2_ephemeris.C_US < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.C_UC - cnav2_nav_message.cnav2_ephemeris.C_UC < FLT_EPSILON);
+}
 
 /*!
- * \brief Testing string decoding for GLONASS GNAV messages
- * \test The provided string (str1.....str15) was generated with a version of
- * MATLAB GNSS-SDR that the author coded to perform proper decoding of GLONASS
- * GNAV signals. The same assumption is to be applied for ephemeris and almanac
+ * \brief Testing string decoding for BEIDOU CNAV2 messages
+ * \test The provided string (str1.....str8) was generated with a version of
+ * MATLAB GNSS-SDR that the author coded to perform proper decoding of BEIDOU
+ * CNAV2 signals. The same assumption is to be applied for ephemeris and almanac
  * data provided.
  */
-TEST(GlonassGnavNavigationMessageTest, String3Decoder)
+TEST(BeidouCnav2NavigationMessageTest, String3Decoder)
 {
+	// Message Type 30
     // Variable declarations
-    std::string str3("0001110000000001001101001110100011111011010011001101001101110110010011110011100100011");
-    Glonass_Gnav_Navigation_Message gnav_nav_message;
-    Glonass_Gnav_Ephemeris gnav_ephemeris;
+    std::string str3("011110011110100001001011110011101111111111101010011000111001010101111100110001111111010010101100011000000000000010100110111110101110011111101011100010101010001001100100101000101000001100000000000000001000000010100000100000000011000000000000000000000000000000000000111001000111110001000010101000000111101100011000101110101111000001001111001110100101101100110000101100001111110100100010101010101010011101001110111010001111101000111000111110010011111011110101010111100010101001110101010000011110100010110101011110101110101010101000011011000101110011101101111011010110011000100110");
+    Beidou_Cnav2_Navigation_Message cnav2_nav_message;
+    Beidou_Cnav2_Ephemeris cnav2_ephemeris;
+    Beidou_Cnav2_Utc_Model cnav2_utc_model;
 
     // Fill out ephemeris values for truth
-    gnav_ephemeris.d_P_3 = 1;
-    gnav_ephemeris.d_gamma_n = 1.81898940354586e-12;
-    gnav_ephemeris.d_P = 3;
-    gnav_ephemeris.d_l3rd_n = 0;
-    gnav_ephemeris.d_VZn = -1.82016849517822;
-    gnav_ephemeris.d_AZn = -2.79396772384644e-09;
-    gnav_ephemeris.d_Zn = 19929.2377929688;
+    cnav2_ephemeris.PRN = 30;
+    cnav2_ephemeris.SOW = 407769;
+
+    cnav2_ephemeris.HS = 2;
+    cnav2_ephemeris.DIF = 1;
+    cnav2_ephemeris.SIF = 1;
+    cnav2_ephemeris.AIF = 1;
+    cnav2_ephemeris.SISMAI = 15;
+    cnav2_ephemeris.DIF_B1C = 1;
+    cnav2_ephemeris.SIF_B1C = 1;
+    cnav2_ephemeris.AIF_B1C = 1;
+
+    cnav2_utc_model.t_oc = 406800;
+    cnav2_utc_model.a_0 = 0.000874984136316925;
+    cnav2_utc_model.a_1 = -0.0000000000412061496035676;
+    cnav2_utc_model.a_2 = 0;
+
+    cnav2_ephemeris.IODC = 333;
+    cnav2_ephemeris.T_GDB2ap = -0.00000000954605638980865;
+    cnav2_ephemeris.ISC_B2ad = 0.00000023603206500411;
+
+    cnav2_ephemeris.alpha_1 = 10.625;
+    cnav2_ephemeris.alpha_2 = 2.375;
+    cnav2_ephemeris.alpha_3 = 4.625;
+    cnav2_ephemeris.alpha_4 = 2.5;
+    cnav2_ephemeris.alpha_5 = -3;
+    cnav2_ephemeris.alpha_6 = 0;
+    cnav2_ephemeris.alpha_7 = 0.5;
+    cnav2_ephemeris.alpha_8 = 0.625;
+    cnav2_ephemeris.alpha_9 = 0.5;
+    cnav2_ephemeris.T_GDB1Cp = 0.00000000139698386192322;
 
     // Call target test method
-    gnav_nav_message.flag_ephemeris_str_2 = true;
-    gnav_nav_message.string_decoder(str3);
+    cnav2_nav_message.string_decoder(str3);
 
     // Perform assertions of decoded fields
-    ASSERT_TRUE(gnav_ephemeris.d_P_3 - gnav_nav_message.gnav_ephemeris.d_P_3 < FLT_EPSILON);
-    ASSERT_TRUE(gnav_ephemeris.d_gamma_n - gnav_nav_message.gnav_ephemeris.d_gamma_n < FLT_EPSILON);
-    ASSERT_TRUE(gnav_ephemeris.d_P - gnav_nav_message.gnav_ephemeris.d_P < FLT_EPSILON);
-    ASSERT_TRUE(gnav_ephemeris.d_l3rd_n - gnav_nav_message.gnav_ephemeris.d_l3rd_n < FLT_EPSILON);
-    ASSERT_TRUE(gnav_ephemeris.d_VZn - gnav_nav_message.gnav_ephemeris.d_VZn < FLT_EPSILON);
-    ASSERT_TRUE(gnav_ephemeris.d_AZn - gnav_nav_message.gnav_ephemeris.d_AZn < FLT_EPSILON);
-    ASSERT_TRUE(gnav_ephemeris.d_Zn - gnav_nav_message.gnav_ephemeris.d_Zn < FLT_EPSILON);
-}
+    ASSERT_TRUE(cnav2_ephemeris.PRN - cnav2_nav_message.cnav2_ephemeris.PRN < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.SOW - cnav2_nav_message.cnav2_ephemeris.SOW < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.HS - cnav2_nav_message.cnav2_ephemeris.HS < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.DIF - cnav2_nav_message.cnav2_ephemeris.DIF < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.SIF - cnav2_nav_message.cnav2_ephemeris.SIF < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.AIF - cnav2_nav_message.cnav2_ephemeris.AIF < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.SISMAI - cnav2_nav_message.cnav2_ephemeris.SISMAI < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.DIF_B1C - cnav2_nav_message.cnav2_ephemeris.DIF_B1C < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.SIF_B1C - cnav2_nav_message.cnav2_ephemeris.SIF_B1C < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.AIF_B1C - cnav2_nav_message.cnav2_ephemeris.AIF_B1C < FLT_EPSILON);
 
+    ASSERT_TRUE(cnav2_utc_model.t_oc - cnav2_nav_message.cnav2_utc_model.t_oc < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_utc_model.a_0 - cnav2_nav_message.cnav2_utc_model.a_0 < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_utc_model.a_1 - cnav2_nav_message.cnav2_utc_model.a_1 < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_utc_model.a_2 - cnav2_nav_message.cnav2_utc_model.a_2 < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.IODC - cnav2_nav_message.cnav2_ephemeris.IODC < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.T_GDB2ap - cnav2_nav_message.cnav2_ephemeris.T_GDB2ap < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.ISC_B2ad - cnav2_nav_message.cnav2_ephemeris.ISC_B2ad < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.alpha_1 - cnav2_nav_message.cnav2_ephemeris.alpha_1 < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.alpha_2 - cnav2_nav_message.cnav2_ephemeris.alpha_2 < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.alpha_3 - cnav2_nav_message.cnav2_ephemeris.alpha_3 < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.alpha_4 - cnav2_nav_message.cnav2_ephemeris.alpha_4 < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.alpha_5 - cnav2_nav_message.cnav2_ephemeris.alpha_5 < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.alpha_6 - cnav2_nav_message.cnav2_ephemeris.alpha_6 < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.alpha_7 - cnav2_nav_message.cnav2_ephemeris.alpha_7 < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.alpha_8 - cnav2_nav_message.cnav2_ephemeris.alpha_8 < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.alpha_9 - cnav2_nav_message.cnav2_ephemeris.alpha_9 < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.T_GDB1Cp - cnav2_nav_message.cnav2_ephemeris.T_GDB1Cp < FLT_EPSILON);
+}
 
 /*!
- * \brief Testing string decoding for GLONASS GNAV messages
- * \test The provided string (str1.....str15) was generated with a version of
- * MATLAB GNSS-SDR that the author coded to perform proper decoding of GLONASS
- * GNAV signals. The same assumption is to be applied for ephemeris and almanac
+ * \brief Testing string decoding for BEIDOU CNAV2 messages
+ * \test The provided string (str1.....str8) was generated with a version of
+ * MATLAB GNSS-SDR that the author coded to perform proper decoding of BEIDOU
+ * CNAV2 signals. The same assumption is to be applied for ephemeris and almanac
  * data provided.
  */
-TEST(GlonassGnavNavigationMessageTest, String4Decoder)
+TEST(BeidouCnav2NavigationMessageTest, String4Decoder)
 {
+	// Message Type 31
     // Variable declarations
-    std::string str4("0010010000101011100100000100000100000000000000000000011000100100001100101010100011101");
-    Glonass_Gnav_Navigation_Message gnav_nav_message;
-    Glonass_Gnav_Ephemeris gnav_ephemeris;
+    std::string str4("011110011111100001001011101111101111111111101010011000111001010101111100110001111111010010101100011000000000000010100110100010100001010011001100010101000111011000100000011100000000000111101111101100110111000101000000000010011011111010111001011001010000000000000000001010010100001111111111011110100011010000101011110110011001110100101100111100101110101001011011000010111001101110010111001111000001011010100110110001101000001100011010001111010111110010011000101011011001100000000110100001110110100101111001001111011111001110000111111110110000011001110101110100001111101011110011");
+    Beidou_Cnav2_Navigation_Message cnav2_nav_message;
+    Beidou_Cnav2_Ephemeris cnav2_ephemeris;
+    Beidou_Cnav2_Utc_Model cnav2_utc_model;
+    Beidou_Cnav2_Almanac cnav2_almanac;
 
     // Fill out ephemeris values for truth
-    gnav_ephemeris.d_tau_n = -8.30907374620438e-05;
-    gnav_ephemeris.d_Delta_tau_n = 9.31322574615479e-10;
-    gnav_ephemeris.d_E_n = 0;
-    gnav_ephemeris.d_P_4 = 0;
-    gnav_ephemeris.d_F_T = 6;
-    gnav_ephemeris.d_N_T = 268;
-    gnav_ephemeris.d_n = 21;
-    gnav_ephemeris.d_M = 1;
+    cnav2_ephemeris.PRN = 30;
+    cnav2_ephemeris.SOW = 407757;
+    cnav2_ephemeris.HS = 2;
+    cnav2_ephemeris.DIF = 1;
+    cnav2_ephemeris.SIF = 1;
+    cnav2_ephemeris.AIF = 1;
+    cnav2_ephemeris.SISMAI = 15;
+    cnav2_ephemeris.DIF_B1C = 1;
+    cnav2_ephemeris.SIF_B1C = 1;
+    cnav2_ephemeris.AIF_B1C = 1;
+
+    cnav2_utc_model.t_oc = 406800;
+	cnav2_utc_model.a_0 = 0.000874984136316925;
+	cnav2_utc_model.a_1 = -0.0000000000412061496035676;
+	cnav2_utc_model.a_2 = 0;
+
+	cnav2_ephemeris.IODC = 333;
+
+	cnav2_almanac[5-1].WN_a = 645;
+	cnav2_almanac[5-1].t_oa = 208896;
+	cnav2_almanac[5-1].SatType = 1;
+	cnav2_almanac[5-1].delta_A = 14848;
+	cnav2_almanac[5-1].Omega_0 = -0.9375;
+	cnav2_almanac[5-1].Phi_0 = 0.109375;
+	cnav2_almanac[5-1].Health = 0;
+
+	cnav2_almanac[7-1].WN_a = 645;
+	cnav2_almanac[7-1].t_oa = 208896;
+	cnav2_almanac[7-1].SatType = 2;
+	cnav2_almanac[7-1].delta_A = -2560;
+	cnav2_almanac[7-1].Omega_0 = 0.421875;
+	cnav2_almanac[7-1].Phi_0 = -0.921875;
+	cnav2_almanac[7-1].Health = 0;
+
+	cnav2_almanac[9-1].WN_a = 645;
+	cnav2_almanac[9-1].t_oa = 208896;
+	cnav2_almanac[9-1].SatType = 2;
+	cnav2_almanac[9-1].delta_A = -3072;
+	cnav2_almanac[9-1].Omega_0 = -0.21875;
+	cnav2_almanac[9-1].Phi_0 = -0.421875;
+	cnav2_almanac[9-1].Health = 0;
 
     // Call target test method
-    gnav_nav_message.flag_ephemeris_str_3 = true;
-    gnav_nav_message.string_decoder(str4);
+    cnav2_nav_message.string_decoder(str4);
 
     // Perform assertions of decoded fields
-    ASSERT_TRUE(gnav_ephemeris.d_tau_n - gnav_nav_message.gnav_ephemeris.d_tau_n < FLT_EPSILON);
-    ASSERT_TRUE(gnav_ephemeris.d_Delta_tau_n - gnav_nav_message.gnav_ephemeris.d_Delta_tau_n < FLT_EPSILON);
-    ASSERT_TRUE(gnav_ephemeris.d_E_n - gnav_nav_message.gnav_ephemeris.d_E_n < FLT_EPSILON);
-    ASSERT_TRUE(gnav_ephemeris.d_P_4 - gnav_nav_message.gnav_ephemeris.d_P_4 < FLT_EPSILON);
-    ASSERT_TRUE(gnav_ephemeris.d_F_T - gnav_nav_message.gnav_ephemeris.d_F_T < FLT_EPSILON);
-    ASSERT_TRUE(gnav_ephemeris.d_N_T - gnav_nav_message.gnav_ephemeris.d_N_T < FLT_EPSILON);
-    ASSERT_TRUE(gnav_ephemeris.d_n - gnav_nav_message.gnav_ephemeris.d_n < FLT_EPSILON);
-    ASSERT_TRUE(gnav_ephemeris.d_M - gnav_nav_message.gnav_ephemeris.d_M < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.PRN - cnav2_nav_message.cnav2_ephemeris.PRN < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.SOW - cnav2_nav_message.cnav2_ephemeris.SOW < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.HS - cnav2_nav_message.cnav2_ephemeris.HS < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.DIF - cnav2_nav_message.cnav2_ephemeris.DIF < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.SIF - cnav2_nav_message.cnav2_ephemeris.SIF < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.AIF - cnav2_nav_message.cnav2_ephemeris.AIF < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.SISMAI - cnav2_nav_message.cnav2_ephemeris.SISMAI < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.DIF_B1C - cnav2_nav_message.cnav2_ephemeris.DIF_B1C < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.SIF_B1C - cnav2_nav_message.cnav2_ephemeris.SIF_B1C < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.AIF_B1C - cnav2_nav_message.cnav2_ephemeris.AIF_B1C < FLT_EPSILON);
+
+    ASSERT_TRUE(cnav2_utc_model.t_oc - cnav2_nav_message.cnav2_utc_model.t_oc < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_utc_model.a_0 - cnav2_nav_message.cnav2_utc_model.a_0 < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_utc_model.a_1 - cnav2_nav_message.cnav2_utc_model.a_1 < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_utc_model.a_2 - cnav2_nav_message.cnav2_utc_model.a_2 < FLT_EPSILON);
+
+    ASSERT_TRUE(cnav2_almanac[5-1].WN_a - cnav2_nav_message.cnav2_almanac[5-1].WN_a < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_almanac[5-1].t_oa - cnav2_nav_message.cnav2_almanac[5-1].t_oa < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_almanac[5-1].SatType - cnav2_nav_message.cnav2_almanac[5-1].SatType < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_almanac[5-1].delta_A - cnav2_nav_message.cnav2_almanac[5-1].delta_A < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_almanac[5-1].Omega_0 - cnav2_nav_message.cnav2_almanac[5-1].Omega_0 < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_almanac[5-1].Phi_0 - cnav2_nav_message.cnav2_almanac[5-1].Phi_0 < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_almanac[5-1].Health - cnav2_nav_message.cnav2_almanac[5-1].Health < FLT_EPSILON);
+
+    ASSERT_TRUE(cnav2_almanac[7-1].WN_a - cnav2_nav_message.cnav2_almanac[7-1].WN_a < FLT_EPSILON);
+	ASSERT_TRUE(cnav2_almanac[7-1].t_oa - cnav2_nav_message.cnav2_almanac[7-1].t_oa < FLT_EPSILON);
+	ASSERT_TRUE(cnav2_almanac[7-1].SatType - cnav2_nav_message.cnav2_almanac[7-1].SatType < FLT_EPSILON);
+	ASSERT_TRUE(cnav2_almanac[7-1].delta_A - cnav2_nav_message.cnav2_almanac[7-1].delta_A < FLT_EPSILON);
+	ASSERT_TRUE(cnav2_almanac[7-1].Omega_0 - cnav2_nav_message.cnav2_almanac[7-1].Omega_0 < FLT_EPSILON);
+	ASSERT_TRUE(cnav2_almanac[7-1].Phi_0 - cnav2_nav_message.cnav2_almanac[7-1].Phi_0 < FLT_EPSILON);
+	ASSERT_TRUE(cnav2_almanac[7-1].Health - cnav2_nav_message.cnav2_almanac[7-1].Health < FLT_EPSILON);
+
+	ASSERT_TRUE(cnav2_almanac[9-1].WN_a - cnav2_nav_message.cnav2_almanac[9-1].WN_a < FLT_EPSILON);
+	ASSERT_TRUE(cnav2_almanac[9-1].t_oa - cnav2_nav_message.cnav2_almanac[9-1].t_oa < FLT_EPSILON);
+	ASSERT_TRUE(cnav2_almanac[9-1].SatType - cnav2_nav_message.cnav2_almanac[9-1].SatType < FLT_EPSILON);
+	ASSERT_TRUE(cnav2_almanac[9-1].delta_A - cnav2_nav_message.cnav2_almanac[9-1].delta_A < FLT_EPSILON);
+	ASSERT_TRUE(cnav2_almanac[9-1].Omega_0 - cnav2_nav_message.cnav2_almanac[9-1].Omega_0 < FLT_EPSILON);
+	ASSERT_TRUE(cnav2_almanac[9-1].Phi_0 - cnav2_nav_message.cnav2_almanac[9-1].Phi_0 < FLT_EPSILON);
+	ASSERT_TRUE(cnav2_almanac[9-1].Health - cnav2_nav_message.cnav2_almanac[9-1].Health < FLT_EPSILON);
 }
 
 
+//TODO
+//////
 /*!
- * \brief Testing string decoding for GLONASS GNAV messages
- * \test The provided string (str1.....str15) was generated with a version of
- * MATLAB GNSS-SDR that the author coded to perform proper decoding of GLONASS
- * GNAV signals. The same assumption is to be applied for ephemeris and almanac
+ * \brief Testing string decoding for BEIDOU CNAV2 messages
+ * \test The provided string (str1.....str8) was generated with a version of
+ * MATLAB GNSS-SDR that the author coded to perform proper decoding of BEIDOU
+ * CNAV2 signals. The same assumption is to be applied for ephemeris and almanac
  * data provided.
  */
-TEST(GlonassGnavNavigationMessageTest, String5Decoder)
+TEST(BeidouCnav2NavigationMessageTest, String2Decoder)
 {
+	// Message Type 11
     // Variable declarations
-    std::string str5("0010100100001100000000000000000000000000110011110001100000000000000001100100011000000");
-    Glonass_Gnav_Navigation_Message gnav_nav_message;
-    Glonass_Gnav_Utc_Model gnav_utc_model;
+    std::string str2("011110001011100001001011110000101111111111011110011000110100001010101111110001001110010010111111111000000000111011001111000101011101101001101100000000001010000000000000010011111111110011101010011001000000001111001100000011000000001100010011010111111101011110101111000010101000010110011001101110111101100101111100110110001011001000111011001111111111110000111101101010010100110000001011000100001000111111001110000110001001010100000001010101010101110111110001010101100011011101011110011100010100001000101001010001110101010000010100110111001110100010111111100010101110100101111000");
+    Beidou_Cnav2_Navigation_Message cnav2_nav_message;
+    Beidou_Cnav2_Ephemeris cnav2_ephemeris;
 
     // Fill out ephemeris values for truth
-    gnav_utc_model.d_N_A = 268;
-    gnav_utc_model.d_tau_c = 9.6391886472702e-08;
-    gnav_utc_model.d_N_4 = 6;
-    gnav_utc_model.d_tau_gps = 9.313225746154785e-08;
+    cnav2_ephemeris.PRN = 30;
+    cnav2_ephemeris.SOW = 407760;
+    cnav2_ephemeris.HS = 2;
+    cnav2_ephemeris.DIF = 1;
+    cnav2_ephemeris.SIF = 1;
+    cnav2_ephemeris.AIF = 1;
+    cnav2_ephemeris.SISMAI = 15;
+    cnav2_ephemeris.DIF_B1C = 1;
+    cnav2_ephemeris.SIF_B1C = 1;
+    cnav2_ephemeris.AIF_B1C = 1;
+
+    cnav2_ephemeris.Omega_0 = 0.949616759549826;
+    cnav2_ephemeris.i_0 = 0.30584704875946;
+    cnav2_ephemeris.Omega_dot = -0.00000000221859863813734;
+    cnav2_ephemeris.i_0_dot = -0.000000000136708422360243;
+    cnav2_ephemeris.C_IS = 0.0000000372529029846191;
+    cnav2_ephemeris.C_IC = 0.0000000176951289176941;
+    cnav2_ephemeris.C_RS = -197.40234375;
+    cnav2_ephemeris.C_RC = 243.01171875;
+    cnav2_ephemeris.C_US = 0.00000586546957492828;
+    cnav2_ephemeris.C_UC = -0.00000961218029260635e;
 
     // Call target test method
-    gnav_nav_message.flag_ephemeris_str_4 = true;
-    gnav_nav_message.string_decoder(str5);
+    cnav2_nav_message.string_decoder(str2);
 
     // Perform assertions of decoded fields
-    ASSERT_TRUE(gnav_utc_model.d_N_A - gnav_nav_message.gnav_utc_model.d_N_A < FLT_EPSILON);
-    ASSERT_TRUE(gnav_utc_model.d_tau_c - gnav_nav_message.gnav_utc_model.d_tau_c < FLT_EPSILON);
-    ASSERT_TRUE(gnav_utc_model.d_N_4 - gnav_nav_message.gnav_utc_model.d_N_4 < FLT_EPSILON);
-    ASSERT_TRUE(gnav_utc_model.d_tau_gps - gnav_nav_message.gnav_utc_model.d_tau_gps < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.PRN - cnav2_nav_message.cnav2_ephemeris.PRN < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.SOW - cnav2_nav_message.cnav2_ephemeris.SOW < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.HS - cnav2_nav_message.cnav2_ephemeris.HS < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.DIF - cnav2_nav_message.cnav2_ephemeris.DIF < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.SIF - cnav2_nav_message.cnav2_ephemeris.SIF < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.AIF - cnav2_nav_message.cnav2_ephemeris.AIF < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.SISMAI - cnav2_nav_message.cnav2_ephemeris.SISMAI < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.DIF_B1C - cnav2_nav_message.cnav2_ephemeris.DIF_B1C < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.SIF_B1C - cnav2_nav_message.cnav2_ephemeris.SIF_B1C < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.AIF_B1C - cnav2_nav_message.cnav2_ephemeris.AIF_B1C < FLT_EPSILON);
+
+    ASSERT_TRUE(cnav2_ephemeris.Omega_0 - cnav2_nav_message.cnav2_ephemeris.Omega_0 < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.i_0 - cnav2_nav_message.cnav2_ephemeris.i_0 < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.Omega_dot - cnav2_nav_message.cnav2_ephemeris.Omega_dot < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.i_0_dot - cnav2_nav_message.cnav2_ephemeris.i_0_dot < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.C_IS - cnav2_nav_message.cnav2_ephemeris.C_IS < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.C_IC - cnav2_nav_message.cnav2_ephemeris.C_IC < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.C_RS - cnav2_nav_message.cnav2_ephemeris.C_RS < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.C_RC - cnav2_nav_message.cnav2_ephemeris.C_RC < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.C_US - cnav2_nav_message.cnav2_ephemeris.C_US < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.C_UC - cnav2_nav_message.cnav2_ephemeris.C_UC < FLT_EPSILON);
 }
 
-std::string str6("0011010100110100001100111100011100001101011000000110101111001000000101100011111011001");
-std::string str7("0011101101010001000010000110101111110000101101001011111110101110100010111100010001101");
-std::string str8("0100010100111000000001111110001101000000110000001000100111011100001010101111010011010");
-std::string str9("0100111010001001011100010000010100010101111101001011111110101011100010100101000110101");
-std::string str10("0101010101000000000011101111111101111001011000001000101010001100001111000110101111110");
-std::string str11("0101110111011011011100011001111011101111001101001011111111000110100100000110010001111");
-std::string str12("0110010101001100000011110110100110100100010100001000111110000100001110001010111000001");
-std::string str13("0110111011100100111110100001000110100010011101001011111110100100101010011010001101001");
-std::string str14("0111010101010000000100011000011110100110111100001110110100001000001111001101010000101");
-std::string str15("0111101110101010001110101010100111101100001101001011111111100010101010011001010011101");
+//////
+/*!
+ * \brief Testing string decoding for BEIDOU CNAV2 messages
+ * \test The provided string (str1.....str8) was generated with a version of
+ * MATLAB GNSS-SDR that the author coded to perform proper decoding of BEIDOU
+ * CNAV2 signals. The same assumption is to be applied for ephemeris and almanac
+ * data provided.
+ */
+TEST(BeidouCnav2NavigationMessageTest, String2Decoder)
+{
+	// Message Type 11
+    // Variable declarations
+    std::string str2("011110001011100001001011110000101111111111011110011000110100001010101111110001001110010010111111111000000000111011001111000101011101101001101100000000001010000000000000010011111111110011101010011001000000001111001100000011000000001100010011010111111101011110101111000010101000010110011001101110111101100101111100110110001011001000111011001111111111110000111101101010010100110000001011000100001000111111001110000110001001010100000001010101010101110111110001010101100011011101011110011100010100001000101001010001110101010000010100110111001110100010111111100010101110100101111000");
+    Beidou_Cnav2_Navigation_Message cnav2_nav_message;
+    Beidou_Cnav2_Ephemeris cnav2_ephemeris;
+
+    // Fill out ephemeris values for truth
+    cnav2_ephemeris.PRN = 30;
+    cnav2_ephemeris.SOW = 407760;
+    cnav2_ephemeris.HS = 2;
+    cnav2_ephemeris.DIF = 1;
+    cnav2_ephemeris.SIF = 1;
+    cnav2_ephemeris.AIF = 1;
+    cnav2_ephemeris.SISMAI = 15;
+    cnav2_ephemeris.DIF_B1C = 1;
+    cnav2_ephemeris.SIF_B1C = 1;
+    cnav2_ephemeris.AIF_B1C = 1;
+
+    cnav2_ephemeris.Omega_0 = 0.949616759549826;
+    cnav2_ephemeris.i_0 = 0.30584704875946;
+    cnav2_ephemeris.Omega_dot = -0.00000000221859863813734;
+    cnav2_ephemeris.i_0_dot = -0.000000000136708422360243;
+    cnav2_ephemeris.C_IS = 0.0000000372529029846191;
+    cnav2_ephemeris.C_IC = 0.0000000176951289176941;
+    cnav2_ephemeris.C_RS = -197.40234375;
+    cnav2_ephemeris.C_RC = 243.01171875;
+    cnav2_ephemeris.C_US = 0.00000586546957492828;
+    cnav2_ephemeris.C_UC = -0.00000961218029260635e;
+
+    // Call target test method
+    cnav2_nav_message.string_decoder(str2);
+
+    // Perform assertions of decoded fields
+    ASSERT_TRUE(cnav2_ephemeris.PRN - cnav2_nav_message.cnav2_ephemeris.PRN < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.SOW - cnav2_nav_message.cnav2_ephemeris.SOW < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.HS - cnav2_nav_message.cnav2_ephemeris.HS < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.DIF - cnav2_nav_message.cnav2_ephemeris.DIF < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.SIF - cnav2_nav_message.cnav2_ephemeris.SIF < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.AIF - cnav2_nav_message.cnav2_ephemeris.AIF < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.SISMAI - cnav2_nav_message.cnav2_ephemeris.SISMAI < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.DIF_B1C - cnav2_nav_message.cnav2_ephemeris.DIF_B1C < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.SIF_B1C - cnav2_nav_message.cnav2_ephemeris.SIF_B1C < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.AIF_B1C - cnav2_nav_message.cnav2_ephemeris.AIF_B1C < FLT_EPSILON);
+
+    ASSERT_TRUE(cnav2_ephemeris.Omega_0 - cnav2_nav_message.cnav2_ephemeris.Omega_0 < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.i_0 - cnav2_nav_message.cnav2_ephemeris.i_0 < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.Omega_dot - cnav2_nav_message.cnav2_ephemeris.Omega_dot < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.i_0_dot - cnav2_nav_message.cnav2_ephemeris.i_0_dot < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.C_IS - cnav2_nav_message.cnav2_ephemeris.C_IS < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.C_IC - cnav2_nav_message.cnav2_ephemeris.C_IC < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.C_RS - cnav2_nav_message.cnav2_ephemeris.C_RS < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.C_RC - cnav2_nav_message.cnav2_ephemeris.C_RC < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.C_US - cnav2_nav_message.cnav2_ephemeris.C_US < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.C_UC - cnav2_nav_message.cnav2_ephemeris.C_UC < FLT_EPSILON);
+}
+
+//////
+/*!
+ * \brief Testing string decoding for BEIDOU CNAV2 messages
+ * \test The provided string (str1.....str8) was generated with a version of
+ * MATLAB GNSS-SDR that the author coded to perform proper decoding of BEIDOU
+ * CNAV2 signals. The same assumption is to be applied for ephemeris and almanac
+ * data provided.
+ */
+TEST(BeidouCnav2NavigationMessageTest, String2Decoder)
+{
+	// Message Type 11
+    // Variable declarations
+    std::string str2("011110001011100001001011110000101111111111011110011000110100001010101111110001001110010010111111111000000000111011001111000101011101101001101100000000001010000000000000010011111111110011101010011001000000001111001100000011000000001100010011010111111101011110101111000010101000010110011001101110111101100101111100110110001011001000111011001111111111110000111101101010010100110000001011000100001000111111001110000110001001010100000001010101010101110111110001010101100011011101011110011100010100001000101001010001110101010000010100110111001110100010111111100010101110100101111000");
+    Beidou_Cnav2_Navigation_Message cnav2_nav_message;
+    Beidou_Cnav2_Ephemeris cnav2_ephemeris;
+
+    // Fill out ephemeris values for truth
+    cnav2_ephemeris.PRN = 30;
+    cnav2_ephemeris.SOW = 407760;
+    cnav2_ephemeris.HS = 2;
+    cnav2_ephemeris.DIF = 1;
+    cnav2_ephemeris.SIF = 1;
+    cnav2_ephemeris.AIF = 1;
+    cnav2_ephemeris.SISMAI = 15;
+    cnav2_ephemeris.DIF_B1C = 1;
+    cnav2_ephemeris.SIF_B1C = 1;
+    cnav2_ephemeris.AIF_B1C = 1;
+
+    cnav2_ephemeris.Omega_0 = 0.949616759549826;
+    cnav2_ephemeris.i_0 = 0.30584704875946;
+    cnav2_ephemeris.Omega_dot = -0.00000000221859863813734;
+    cnav2_ephemeris.i_0_dot = -0.000000000136708422360243;
+    cnav2_ephemeris.C_IS = 0.0000000372529029846191;
+    cnav2_ephemeris.C_IC = 0.0000000176951289176941;
+    cnav2_ephemeris.C_RS = -197.40234375;
+    cnav2_ephemeris.C_RC = 243.01171875;
+    cnav2_ephemeris.C_US = 0.00000586546957492828;
+    cnav2_ephemeris.C_UC = -0.00000961218029260635e;
+
+    // Call target test method
+    cnav2_nav_message.string_decoder(str2);
+
+    // Perform assertions of decoded fields
+    ASSERT_TRUE(cnav2_ephemeris.PRN - cnav2_nav_message.cnav2_ephemeris.PRN < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.SOW - cnav2_nav_message.cnav2_ephemeris.SOW < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.HS - cnav2_nav_message.cnav2_ephemeris.HS < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.DIF - cnav2_nav_message.cnav2_ephemeris.DIF < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.SIF - cnav2_nav_message.cnav2_ephemeris.SIF < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.AIF - cnav2_nav_message.cnav2_ephemeris.AIF < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.SISMAI - cnav2_nav_message.cnav2_ephemeris.SISMAI < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.DIF_B1C - cnav2_nav_message.cnav2_ephemeris.DIF_B1C < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.SIF_B1C - cnav2_nav_message.cnav2_ephemeris.SIF_B1C < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.AIF_B1C - cnav2_nav_message.cnav2_ephemeris.AIF_B1C < FLT_EPSILON);
+
+    ASSERT_TRUE(cnav2_ephemeris.Omega_0 - cnav2_nav_message.cnav2_ephemeris.Omega_0 < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.i_0 - cnav2_nav_message.cnav2_ephemeris.i_0 < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.Omega_dot - cnav2_nav_message.cnav2_ephemeris.Omega_dot < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.i_0_dot - cnav2_nav_message.cnav2_ephemeris.i_0_dot < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.C_IS - cnav2_nav_message.cnav2_ephemeris.C_IS < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.C_IC - cnav2_nav_message.cnav2_ephemeris.C_IC < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.C_RS - cnav2_nav_message.cnav2_ephemeris.C_RS < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.C_RC - cnav2_nav_message.cnav2_ephemeris.C_RC < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.C_US - cnav2_nav_message.cnav2_ephemeris.C_US < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.C_UC - cnav2_nav_message.cnav2_ephemeris.C_UC < FLT_EPSILON);
+}
+
+//////
+/*!
+ * \brief Testing string decoding for BEIDOU CNAV2 messages
+ * \test The provided string (str1.....str8) was generated with a version of
+ * MATLAB GNSS-SDR that the author coded to perform proper decoding of BEIDOU
+ * CNAV2 signals. The same assumption is to be applied for ephemeris and almanac
+ * data provided.
+ */
+TEST(BeidouCnav2NavigationMessageTest, String2Decoder)
+{
+	// Message Type 11
+    // Variable declarations
+    std::string str2("011110001011100001001011110000101111111111011110011000110100001010101111110001001110010010111111111000000000111011001111000101011101101001101100000000001010000000000000010011111111110011101010011001000000001111001100000011000000001100010011010111111101011110101111000010101000010110011001101110111101100101111100110110001011001000111011001111111111110000111101101010010100110000001011000100001000111111001110000110001001010100000001010101010101110111110001010101100011011101011110011100010100001000101001010001110101010000010100110111001110100010111111100010101110100101111000");
+    Beidou_Cnav2_Navigation_Message cnav2_nav_message;
+    Beidou_Cnav2_Ephemeris cnav2_ephemeris;
+
+    // Fill out ephemeris values for truth
+    cnav2_ephemeris.PRN = 30;
+    cnav2_ephemeris.SOW = 407760;
+    cnav2_ephemeris.HS = 2;
+    cnav2_ephemeris.DIF = 1;
+    cnav2_ephemeris.SIF = 1;
+    cnav2_ephemeris.AIF = 1;
+    cnav2_ephemeris.SISMAI = 15;
+    cnav2_ephemeris.DIF_B1C = 1;
+    cnav2_ephemeris.SIF_B1C = 1;
+    cnav2_ephemeris.AIF_B1C = 1;
+
+    cnav2_ephemeris.Omega_0 = 0.949616759549826;
+    cnav2_ephemeris.i_0 = 0.30584704875946;
+    cnav2_ephemeris.Omega_dot = -0.00000000221859863813734;
+    cnav2_ephemeris.i_0_dot = -0.000000000136708422360243;
+    cnav2_ephemeris.C_IS = 0.0000000372529029846191;
+    cnav2_ephemeris.C_IC = 0.0000000176951289176941;
+    cnav2_ephemeris.C_RS = -197.40234375;
+    cnav2_ephemeris.C_RC = 243.01171875;
+    cnav2_ephemeris.C_US = 0.00000586546957492828;
+    cnav2_ephemeris.C_UC = -0.00000961218029260635e;
+
+    // Call target test method
+    cnav2_nav_message.string_decoder(str2);
+
+    // Perform assertions of decoded fields
+    ASSERT_TRUE(cnav2_ephemeris.PRN - cnav2_nav_message.cnav2_ephemeris.PRN < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.SOW - cnav2_nav_message.cnav2_ephemeris.SOW < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.HS - cnav2_nav_message.cnav2_ephemeris.HS < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.DIF - cnav2_nav_message.cnav2_ephemeris.DIF < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.SIF - cnav2_nav_message.cnav2_ephemeris.SIF < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.AIF - cnav2_nav_message.cnav2_ephemeris.AIF < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.SISMAI - cnav2_nav_message.cnav2_ephemeris.SISMAI < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.DIF_B1C - cnav2_nav_message.cnav2_ephemeris.DIF_B1C < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.SIF_B1C - cnav2_nav_message.cnav2_ephemeris.SIF_B1C < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.AIF_B1C - cnav2_nav_message.cnav2_ephemeris.AIF_B1C < FLT_EPSILON);
+
+    ASSERT_TRUE(cnav2_ephemeris.Omega_0 - cnav2_nav_message.cnav2_ephemeris.Omega_0 < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.i_0 - cnav2_nav_message.cnav2_ephemeris.i_0 < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.Omega_dot - cnav2_nav_message.cnav2_ephemeris.Omega_dot < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.i_0_dot - cnav2_nav_message.cnav2_ephemeris.i_0_dot < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.C_IS - cnav2_nav_message.cnav2_ephemeris.C_IS < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.C_IC - cnav2_nav_message.cnav2_ephemeris.C_IC < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.C_RS - cnav2_nav_message.cnav2_ephemeris.C_RS < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.C_RC - cnav2_nav_message.cnav2_ephemeris.C_RC < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.C_US - cnav2_nav_message.cnav2_ephemeris.C_US < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_ephemeris.C_UC - cnav2_nav_message.cnav2_ephemeris.C_UC < FLT_EPSILON);
+}
