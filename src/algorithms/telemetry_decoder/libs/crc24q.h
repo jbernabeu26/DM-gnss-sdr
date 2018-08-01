@@ -2,6 +2,7 @@
  * \file crc24q.h
  * \brief  Implementation of the CRC-240 cyclic redundancy checksum
  * \author
+ * \source: https://github.com/ukyg9e5r6k7gubiekd6/gpsd/blob/master/crc24q.c
  *
  * -------------------------------------------------------------------------
  *

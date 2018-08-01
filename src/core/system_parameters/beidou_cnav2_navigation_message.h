@@ -55,12 +55,12 @@ private:
     bool read_navigation_bool(std::bitset<BEIDOU_CNAV2_STRING_BITS> const &bits, const std::vector<std::pair<int, int>> &parameter);
 
 public:
-    bool flag_CRC_test;
-    unsigned int i_string_MesType;
-    bool flag_update_slot_number;
+    bool flag_CRC_test;				//!< Flag indicating CRC test
+    unsigned int i_string_MesType;	//!< Flag indicating MesType
+    bool flag_update_slot_number;	//!< Flag indicating change in slot number
 
-    int i_channel_ID;
-    unsigned int i_satellite_PRN;
+    int i_channel_ID;				//!< PRN of the channel
+    unsigned int i_satellite_PRN;	//!< Satellite PRN
 
     Beidou_Cnav2_Ephemeris cnav2_ephemeris;                   //!< Ephemeris information decoded
     Beidou_Cnav2_Utc_Model cnav2_utc_model;                   //!< UTC model information
@@ -71,24 +71,24 @@ public:
     bool flag_ephemeris_str_10;  //!< Flag indicating that ephemeris 1/2 (Type 10) have been received
     bool flag_ephemeris_str_11;  //!< Flag indicating that ephemeris 2/2 (Type 11) have been received
 
-    bool flag_ephemeris_str_30;
-    bool flag_ephemeris_str_31;
-    bool flag_ephemeris_str_32;
-    bool flag_ephemeris_str_34;
-    bool flag_ephemeris_str_40;
+    bool flag_ephemeris_str_30; //!< Flag indicating that (Type 30) have been received
+    bool flag_ephemeris_str_31; //!< Flag indicating that (Type 31) have been received
+    bool flag_ephemeris_str_32; //!< Flag indicating that (Type 32) have been received
+    bool flag_ephemeris_str_34; //!< Flag indicating that (Type 34) have been received
+    bool flag_ephemeris_str_40; //!< Flag indicating that (Type 40) have been received
 
     // Almanac Flags
-    bool flag_almanac_str_31;                   //!< Flag indicating that almanac of Type 31 have been received
-    bool flag_almanac_str_33;
-    bool flag_almanac_str_40;
+    bool flag_almanac_str_31; //!< Flag indicating that almanac of Type 31 have been received
+    bool flag_almanac_str_33; //!< Flag indicating that almanac of Type 33 have been received
+    bool flag_almanac_str_40; //!< Flag indicating that almanac of Type 40 have been received
 
     unsigned int i_alm_satellite_slot_number;  //!< SV Orbit Slot Number
 
     // UTC and System Clocks Flags
-    bool flag_utc_model_valid;   //!< If set, it indicates that the UTC model parameters are filled
-    bool flag_utc_model_str_32;
-    bool flag_utc_model_str_33;
-    bool flag_utc_model_str_34;
+    bool flag_utc_model_valid;  //!< If set, it indicates that the UTC model parameters are filled
+    bool flag_utc_model_str_32; //!< If set, it indicates that the UTC model parameters of Type 32 have been received
+    bool flag_utc_model_str_33; //!< If set, it indicates that the UTC model parameters of Type 33 have been received
+    bool flag_utc_model_str_34; //!< If set, it indicates that the UTC model parameters of Type 34 have been received
 
 
     bool flag_TOW_set;  //!< Flag indicating when the TOW has been set
@@ -101,9 +101,9 @@ public:
     double d_previous_tb;                       //!< Previous iode for the Beidou_Cnav2_Ephemeris object. Used to determine when new data arrives
     double d_previous_Na[BEIDOU_NBR_SATS];  //!< Previous time for almanac of the Beidou_Cnav2_Almanac object
 
-    double temp;
+    double temp;	//!< Temporary value
 
-    double crc_compute;
+    double crc_compute;		//!< Value of the computed CRC
 
     /*!
      * \brief Compute CRC for BEIDOU CNAV2 strings

@@ -52,6 +52,10 @@
 #include "glonass_gnav_almanac.h"
 #include "glonass_gnav_utc_model.h"
 
+#include "beidou_cnav2_ephemeris.h"
+#include "beidou_cnav2_almanac.h"
+#include "beidou_cnav2_utc_model.h"
+
 #include <boost/thread.hpp>
 #include <boost/make_shared.hpp>
 #include <boost/filesystem.hpp>
@@ -153,6 +157,8 @@ DECLARE_string(log_dir);
 
 #include "unit-tests/system-parameters/glonass_gnav_ephemeris_test.cc"
 #include "unit-tests/system-parameters/glonass_gnav_nav_message_test.cc"
+#include "unit-tests/system-parameters/beidou_cnav2_ephemeris_test.cc"
+#include "unit-tests/system-parameters/beidou_cnav2_nav_message_test.cc"
 
 // For GPS NAVIGATION (L1)
 concurrent_queue<Gps_Acq_Assist> global_gps_acq_assist_queue;

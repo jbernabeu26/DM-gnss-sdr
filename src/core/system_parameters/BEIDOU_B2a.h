@@ -1,7 +1,9 @@
 /*!
  * \file BEIDOU_B2a.h
  * \brief  Defines system parameters for Beidou B2a signal and CNAV2 data
+ * \note Code added as part of GSoC 2018 program
  * \author Dong Kyeong Lee, 2018. dole7890(at)colorado.edu
+ * \see <a href="http://m.beidou.gov.cn/xt/gfxz/201712/P020171226742357364174.pdf">beidou ICD</a>
  *
  * -------------------------------------------------------------------------
  *

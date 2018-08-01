@@ -2,7 +2,7 @@
  * \file crc24q.c
  * \brief  Implementation of the CRC-240 cyclic redundancy checksum
  * \author
- *
+ * \source: https://github.com/ukyg9e5r6k7gubiekd6/gpsd/blob/master/crc24q.c
  * -------------------------------------------------------------------------
  *
  * This is an implementation of the CRC-24Q cyclic redundancy checksum
@@ -67,23 +67,7 @@ static void crc_init(unsigned table[256])
 	    table[i + j] = table[j] ^ h;
     }
 }
-/*
-int main(int argc, char *argv[])
-{
-    int i;
 
-    crc_init(table);
-
-    for (i = 0; i < 256; i++) {
-	printf("0x%08X, ", table[i]);
-	if ((i % 4) == 3)
-	    putchar('\n');
-    }
-
-    exit(0);
-}
-#endif
-*/
 static const unsigned crc24q[256] = {
     0x00000000, 0x01864CFB, 0x028AD50D, 0x030C99F6,
     0x0493E6E1, 0x0515AA1A, 0x061933EC, 0x079F7F17,

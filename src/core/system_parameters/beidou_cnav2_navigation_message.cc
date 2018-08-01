@@ -33,7 +33,7 @@
 #include "beidou_cnav2_navigation_message.h"
 #include "gnss_satellite.h"
 #include <glog/logging.h>
-#include "../../algorithms/telemetry_decoder/libs/crc24q.h"
+#include "crc24q.h"
 
 void Beidou_Cnav2_Navigation_Message::reset()
 {
