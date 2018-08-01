@@ -523,81 +523,183 @@ std::string Gnss_Satellite::what_block(const std::string& system_, unsigned int 
                     block_ = std::string("Unknown");
                 }
         }
-    if (system_.compare("Galileo") == 0)
+    if (system_.compare("Beidou") == 0)
         {
-            // Check http://en.wikipedia.org/wiki/List_of_Galileo_satellites and https://www.gsc-europa.eu/system-status/Constellation-Information
+            // Check https://en.wikipedia.org/wiki/List_of_BeiDou_satellites
             switch (PRN_)
                 {
                 case 1:
-                    block_ = std::string("FOC-FM10");  // Galileo Full Operational Capability (FOC) satellite FM10 / GSAT-0210, launched on May 24, 2016.
+                    block_ = std::string("Compass-G1");  // BeiDou C01, Compass-G1, launched on January 16, 2010. / Operational
                     break;
                 case 2:
-                    block_ = std::string("FOC-FM11");  // Galileo Full Operational Capability (FOC) satellite FM11 / GSAT-0211, launched on May 24, 2016.
+                    block_ = std::string("Compass-G6");  // BeiDou C02, Compass-G6, launched on October 25, 2012. / Operational
                     break;
                 case 3:
-                    block_ = std::string("FOC-FM12");  // Galileo Full Operational Capability (FOC) satellite FM12 / GSAT-0212, launched on November 17, 2016.
+                    block_ = std::string("Compass-G3");  // BeiDou C03, Compass-G3, launched on June 2, 2010. / Operational
                     break;
                 case 4:
-                    block_ = std::string("FOC-FM13");  // Galileo Full Operational Capability (FOC) satellite FM13 / GSAT-0213, launched on November 17, 2016.
+                    block_ = std::string("Compass-G4");  // BeiDou C04, Compass-G4, launched on October 31, 2010. / Operational
                     break;
                 case 5:
-                    block_ = std::string("FOC-FM14");  // Galileo Full Operational Capability (FOC) satellite FM14 / GSAT-0214, launched on November 17, 2016.
+                    block_ = std::string("Compass-G5");  // BeiDou C05, Compass-G5, launched on February 24, 2012. / Operational
+                    break;
+                case 6:
+                    block_ = std::string("Compass-IGS01");  // BeiDou C06, Compass-IGS01, launched on July 31, 2010. / Operational
                     break;
                 case 7:
-                    block_ = std::string("FOC-FM7");  // Galileo Full Operational Capability (FOC) satellite FM7 / GSAT-0207, launched on November 17, 2016.
+                    block_ = std::string("Compass-IGS02");  // BeiDou C07, Compass-IGS02, launched on December 17, 2010. / Operational
                     break;
                 case 8:
-                    block_ = std::string("FOC-FM8");  // Galileo Full Operational Capability (FOC) satellite FM8 / GSAT0208, launched on December 17, 2015.
+                    block_ = std::string("Compass-IGS03");  // BeiDou C08, Compass-IGS03, launched on April 9, 2011. / Operational
                     break;
                 case 9:
-                    block_ = std::string("FOC-FM9");  // Galileo Full Operational Capability (FOC) satellite FM9 / GSAT0209, launched on December 17, 2015.
+                    block_ = std::string("Compass-IGS04");  // BeiDou C09, Compass-IGS04, launched on July 26, 2011. / Operational
+                    break;
+                case 10:
+                    block_ = std::string("Compass-IGS05");  // BeiDou C10, Compass-IGS05, launched on December 1, 2011. / Operational
                     break;
                 case 11:
-                    block_ = std::string("IOV-PFM");  // PFM, the ProtoFlight Model / GSAT0101, launched from French Guiana at 10:30 GMT on October 21, 2011.
+                    block_ = std::string("Compass-M3");  // BeiDou C11, Compass-M3, launched on April 29, 2012. / Operational
                     break;
                 case 12:
-                    block_ = std::string("IOV-FM2");  // Galileo In-Orbit Validation (IOV) satellite FM2 (Flight Model 2) also known as GSAT0102, from French Guiana at 10:30 GMT on October 21, 2011.
+                    block_ = std::string("Compass-M4");  // BeiDou C12, Compass-M4, launched on April 29, 2012. / Operational
+                    break;
+                case 13:
+                    block_ = std::string("Compass-IGS06");  // BeiDou C13, Compass-IGS06, launched on March 29, 2016. / Operational
                     break;
                 case 14:
-                    block_ = std::string("FOC-FM2*");  // Galileo Full Operational Capability (FOC) satellite FM2 / GSAT0202, launched into incorrect orbit on August 22, 2014. Moved to usable orbit in March, 2015. UNDER TESTING.
+                    block_ = std::string("Compass-M6");  // BeiDou C14, Compass-M6, launched on September 18, 2012. / Operational
+                    break;
+                case 16:
+                    block_ = std::string("Compass-IGS07");  // BeiDou C16, Compass-IGS07, launched on July 9, 2018. / In commissioning
+                    break;
+                case 17:
+                    block_ = std::string("Compass-G7");  // BeiDou C17, Compass-G7, launched on June 12, 2016. / Operational
                     break;
                 case 18:
-                    block_ = std::string("FOC-FM1*");  // Galileo Full Operational Capability (FOC) satellite FM1 / GSAT0201, launched into incorrect orbit on August 22, 2014. Moved to usable orbit in December, 2014. UNDER TESTING.
+                    block_ = std::string("BDS I2-S");  // BeiDou C18, BDS I2-S, launched on September 29, 2015. / Testing
                     break;
                 case 19:
-                    block_ = std::string("IOV-FM3");  // Galileo In-Orbit Validation (IOV) satellite FM3 (Flight Model 3) / GSAT0103, launched on October 12, 2012.
+                    block_ = std::string("BeiDou-3 M1");  // BeiDou C19, BeiDou-3 M1, launched on November 5, 2017. / In commissioning
                     break;
                 case 20:
-                    block_ = std::string("IOV-FM4**");  // Galileo In-Orbit Validation (IOV) satellite FM4 (Flight Model 4) / GSAT0104, launched on October 12, 2012. Payload power problem beginning May 27, 2014 led to permanent loss of E5 and E6 transmissions, E1 transmission restored. UNAVAILABLE FROM 2014-05-27 UNTIL FURTHER NOTICE
+                    block_ = std::string("BeiDou-3 M2");  // BeiDou C20, BeiDou-3 M2, launched on November 5, 2017. / In commissioning
                     break;
                 case 21:
-                    block_ = std::string("FOC-FM15");  // Galileo Full Operational Capability (FOC) satellite FM15 / GSAT0215, launched on Dec. 12, 2017. UNDER COMMISSIONING.
+                    block_ = std::string("BeiDou-3 M3");  // BeiDou C21, BeiDou-3 M3, launched on February 12, 2018. / In commissioning
                     break;
                 case 22:
-                    block_ = std::string("FOC-FM4**");  // Galileo Full Operational Capability (FOC) satellite FM4 / GSAT0204, launched on March 27, 2015. REMOVED FROM ACTIVE SERVICE ON 2017-12-08 UNTIL FURTHER NOTICE FOR CONSTELLATION MANAGEMENT PURPOSES.
+                    block_ = std::string("BeiDou-3 M4");  // BeiDou C22, BeiDou-3 M4, launched on February 12, 2018. / In commissioning
                     break;
+                case 23:
+					block_ = std::string("BeiDou-3 M5");  // BeiDou C23, BeiDou-3 M5, launched on July 29, 2018. / In commissioning
+					break;
                 case 24:
-                    block_ = std::string("FOC-FM5");  // Galileo Full Operational Capability (FOC) satellite FM5 / GSAT0205, launched on Sept. 11, 2015.
-                    break;
-                case 25:
-                    block_ = std::string("FOC-FM16");  // Galileo Full Operational Capability (FOC) satellite FM16 / GSAT0216, launched on Dec. 12, 2017. UNDER COMMISSIONING.
-                    break;
-                case 26:
-                    block_ = std::string("FOC-FM3");  // Galileo Full Operational Capability (FOC) satellite FM3 / GSAT0203, launched on March 27, 2015.
+                    block_ = std::string("BeiDou-3 M6");  // BeiDou C24, BeiDou-3 M6, launched on July 29, 2018. / In commissioning
                     break;
                 case 27:
-                    block_ = std::string("FOC-FM17");  // Galileo Full Operational Capability (FOC) satellite FM17 / GSAT0217, launched on Dec. 12, 2017. UNDER COMMISSIONING.
-                    break;
-                case 30:
-                    block_ = std::string("FOC-FM6");  // Galileo Full Operational Capability (FOC) satellite FM6 / GSAT0206, launched on Sept. 11, 2015.
-                    break;
-                case 31:
-                    block_ = std::string("FOC-FM18");  // Galileo Full Operational Capability (FOC) satellite FM18 / GSAT0218, launched on Dec. 12, 2017. UNDER COMMISSIONING.
-                    break;
+					block_ = std::string("BeiDou-3 M7");  // BeiDou C27, BeiDou-3 M7, launched on January 11, 2018. / In commissioning
+					break;
+				case 28:
+					block_ = std::string("BeiDou-3 M8");  // BeiDou C28, BeiDou-3 M8, launched on January 11, 2018. / In commissioning
+					break;
+				case 29:
+					block_ = std::string("BeiDou-3 M9");  // BeiDou C29, BeiDou-3 M9, launched on March 29, 2018. / In commissioning
+					break;
+				case 30:
+					block_ = std::string("BeiDou-3 M10");  // BeiDou C30, BeiDou-3 M10, launched on March 29, 2018. / In commissioning
+					break;
+				case 31:
+					block_ = std::string("BDS I1-S");  // BeiDou C31, BDS I1-S, launched on March 30, 2015. / Testing
+					break;
+				case 33:
+					block_ = std::string("BDS M1-S");  // BeiDou C33, BDS M1-S, launched on July 25, 2015. / Testing
+					break;
+				case 34:
+					block_ = std::string("BDS M2-S");  // BeiDou C34, BDS M2-S, launched on July 25, 2015. / Testing
+					break;
+				case 35:
+					block_ = std::string("BDS M3-S");  // BeiDou C35, BDS M3-S, launched on February 1, 2016. / Testing
+					break;
                 default:
                     block_ = std::string("Unknown(Simulated)");
                 }
         }
+    if (system_.compare("Galileo") == 0)
+            {
+                // Check http://en.wikipedia.org/wiki/List_of_Galileo_satellites and https://www.gsc-europa.eu/system-status/Constellation-Information
+                switch (PRN_)
+                    {
+                    case 1:
+                        block_ = std::string("FOC-FM10");  // Galileo Full Operational Capability (FOC) satellite FM10 / GSAT-0210, launched on May 24, 2016.
+                        break;
+                    case 2:
+                        block_ = std::string("FOC-FM11");  // Galileo Full Operational Capability (FOC) satellite FM11 / GSAT-0211, launched on May 24, 2016.
+                        break;
+                    case 3:
+                        block_ = std::string("FOC-FM12");  // Galileo Full Operational Capability (FOC) satellite FM12 / GSAT-0212, launched on November 17, 2016.
+                        break;
+                    case 4:
+                        block_ = std::string("FOC-FM13");  // Galileo Full Operational Capability (FOC) satellite FM13 / GSAT-0213, launched on November 17, 2016.
+                        break;
+                    case 5:
+                        block_ = std::string("FOC-FM14");  // Galileo Full Operational Capability (FOC) satellite FM14 / GSAT-0214, launched on November 17, 2016.
+                        break;
+                    case 7:
+                        block_ = std::string("FOC-FM7");  // Galileo Full Operational Capability (FOC) satellite FM7 / GSAT-0207, launched on November 17, 2016.
+                        break;
+                    case 8:
+                        block_ = std::string("FOC-FM8");  // Galileo Full Operational Capability (FOC) satellite FM8 / GSAT0208, launched on December 17, 2015.
+                        break;
+                    case 9:
+                        block_ = std::string("FOC-FM9");  // Galileo Full Operational Capability (FOC) satellite FM9 / GSAT0209, launched on December 17, 2015.
+                        break;
+                    case 11:
+                        block_ = std::string("IOV-PFM");  // PFM, the ProtoFlight Model / GSAT0101, launched from French Guiana at 10:30 GMT on October 21, 2011.
+                        break;
+                    case 12:
+                        block_ = std::string("IOV-FM2");  // Galileo In-Orbit Validation (IOV) satellite FM2 (Flight Model 2) also known as GSAT0102, from French Guiana at 10:30 GMT on October 21, 2011.
+                        break;
+                    case 14:
+                        block_ = std::string("FOC-FM2*");  // Galileo Full Operational Capability (FOC) satellite FM2 / GSAT0202, launched into incorrect orbit on August 22, 2014. Moved to usable orbit in March, 2015. UNDER TESTING.
+                        break;
+                    case 18:
+                        block_ = std::string("FOC-FM1*");  // Galileo Full Operational Capability (FOC) satellite FM1 / GSAT0201, launched into incorrect orbit on August 22, 2014. Moved to usable orbit in December, 2014. UNDER TESTING.
+                        break;
+                    case 19:
+                        block_ = std::string("IOV-FM3");  // Galileo In-Orbit Validation (IOV) satellite FM3 (Flight Model 3) / GSAT0103, launched on October 12, 2012.
+                        break;
+                    case 20:
+                        block_ = std::string("IOV-FM4**");  // Galileo In-Orbit Validation (IOV) satellite FM4 (Flight Model 4) / GSAT0104, launched on October 12, 2012. Payload power problem beginning May 27, 2014 led to permanent loss of E5 and E6 transmissions, E1 transmission restored. UNAVAILABLE FROM 2014-05-27 UNTIL FURTHER NOTICE
+                        break;
+                    case 21:
+                        block_ = std::string("FOC-FM15");  // Galileo Full Operational Capability (FOC) satellite FM15 / GSAT0215, launched on Dec. 12, 2017. UNDER COMMISSIONING.
+                        break;
+                    case 22:
+                        block_ = std::string("FOC-FM4**");  // Galileo Full Operational Capability (FOC) satellite FM4 / GSAT0204, launched on March 27, 2015. REMOVED FROM ACTIVE SERVICE ON 2017-12-08 UNTIL FURTHER NOTICE FOR CONSTELLATION MANAGEMENT PURPOSES.
+                        break;
+                    case 24:
+                        block_ = std::string("FOC-FM5");  // Galileo Full Operational Capability (FOC) satellite FM5 / GSAT0205, launched on Sept. 11, 2015.
+                        break;
+                    case 25:
+                        block_ = std::string("FOC-FM16");  // Galileo Full Operational Capability (FOC) satellite FM16 / GSAT0216, launched on Dec. 12, 2017. UNDER COMMISSIONING.
+                        break;
+                    case 26:
+                        block_ = std::string("FOC-FM3");  // Galileo Full Operational Capability (FOC) satellite FM3 / GSAT0203, launched on March 27, 2015.
+                        break;
+                    case 27:
+                        block_ = std::string("FOC-FM17");  // Galileo Full Operational Capability (FOC) satellite FM17 / GSAT0217, launched on Dec. 12, 2017. UNDER COMMISSIONING.
+                        break;
+                    case 30:
+                        block_ = std::string("FOC-FM6");  // Galileo Full Operational Capability (FOC) satellite FM6 / GSAT0206, launched on Sept. 11, 2015.
+                        break;
+                    case 31:
+                        block_ = std::string("FOC-FM18");  // Galileo Full Operational Capability (FOC) satellite FM18 / GSAT0218, launched on Dec. 12, 2017. UNDER COMMISSIONING.
+                        break;
+                    default:
+                        block_ = std::string("Unknown(Simulated)");
+                    }
+            }
     return block_;
 }
 
