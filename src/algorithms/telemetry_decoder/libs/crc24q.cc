@@ -169,3 +169,5 @@ bool crc24q_check(unsigned char *data, int len)
     return (((data[len - 3] == HI(crc)) &&
 	     (data[len - 2] == MID(crc)) && (data[len - 1] == LO(crc))));
 }
+
+

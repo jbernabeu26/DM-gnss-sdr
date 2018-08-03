@@ -72,7 +72,7 @@ TEST(BeidouCnav2NavigationMessageTest, CRCTestFailure)
     // Call function to test
     test_result = cnav2_nav_message.CRC_test(string_bits);
 
-    // Check results in unit test assetions
+    // Check results in unit test assertions
     ASSERT_FALSE(test_result);
 }
 
@@ -111,7 +111,7 @@ TEST(BeidouCnav2NavigationMessageTest, String1Decoder)
     cnav2_ephemeris.dn_0 = 0.000000001169780716736568;
     cnav2_ephemeris.dn_0_dot = 0.00000000000002563921297493721;
     cnav2_ephemeris.M_0 = -0.030411646468565;
-    cnav2_ephemeris.e = 0.0004.779577138833702;
+    cnav2_ephemeris.e = 0.0004779577138833702;
     cnav2_ephemeris.omega = -0.049411069834605;
 
     // Call target test method
@@ -177,7 +177,7 @@ TEST(BeidouCnav2NavigationMessageTest, String2Decoder)
     cnav2_ephemeris.C_RS = -197.40234375;
     cnav2_ephemeris.C_RC = 243.01171875;
     cnav2_ephemeris.C_US = 0.00000586546957492828;
-    cnav2_ephemeris.C_UC = -0.00000961218029260635e;
+    cnav2_ephemeris.C_UC = -0.00000961218029260635;
 
     // Call target test method
     cnav2_nav_message.string_decoder(str2);
@@ -304,7 +304,7 @@ TEST(BeidouCnav2NavigationMessageTest, String4Decoder)
     Beidou_Cnav2_Navigation_Message cnav2_nav_message;
     Beidou_Cnav2_Ephemeris cnav2_ephemeris;
     Beidou_Cnav2_Utc_Model cnav2_utc_model;
-    Beidou_Cnav2_Almanac cnav2_almanac;
+    Beidou_Cnav2_Almanac cnav2_almanac[3];
 
     // Fill out ephemeris values for truth
     cnav2_ephemeris.PRN = 30;
@@ -325,29 +325,29 @@ TEST(BeidouCnav2NavigationMessageTest, String4Decoder)
 
 	cnav2_ephemeris.IODC = 333;
 
-	cnav2_almanac[5-1].WN_a = 645;
-	cnav2_almanac[5-1].t_oa = 208896;
-	cnav2_almanac[5-1].SatType = 1;
-	cnav2_almanac[5-1].delta_A = 14848;
-	cnav2_almanac[5-1].Omega_0 = -0.9375;
-	cnav2_almanac[5-1].Phi_0 = 0.109375;
-	cnav2_almanac[5-1].Health = 0;
+	cnav2_almanac[0].WN_a = 645;
+	cnav2_almanac[0].t_oa = 208896;
+	cnav2_almanac[0].SatType = 1;
+	cnav2_almanac[0].delta_A = 14848;
+	cnav2_almanac[0].Omega_0 = -0.9375;
+	cnav2_almanac[0].Phi_0 = 0.109375;
+	cnav2_almanac[0].Health = 0;
 
-	cnav2_almanac[7-1].WN_a = 645;
-	cnav2_almanac[7-1].t_oa = 208896;
-	cnav2_almanac[7-1].SatType = 2;
-	cnav2_almanac[7-1].delta_A = -2560;
-	cnav2_almanac[7-1].Omega_0 = 0.421875;
-	cnav2_almanac[7-1].Phi_0 = -0.921875;
-	cnav2_almanac[7-1].Health = 0;
+	cnav2_almanac[1].WN_a = 645;
+	cnav2_almanac[1].t_oa = 208896;
+	cnav2_almanac[1].SatType = 2;
+	cnav2_almanac[1].delta_A = -2560;
+	cnav2_almanac[1].Omega_0 = 0.421875;
+	cnav2_almanac[1].Phi_0 = -0.921875;
+	cnav2_almanac[1].Health = 0;
 
-	cnav2_almanac[9-1].WN_a = 645;
-	cnav2_almanac[9-1].t_oa = 208896;
-	cnav2_almanac[9-1].SatType = 2;
-	cnav2_almanac[9-1].delta_A = -3072;
-	cnav2_almanac[9-1].Omega_0 = -0.21875;
-	cnav2_almanac[9-1].Phi_0 = -0.421875;
-	cnav2_almanac[9-1].Health = 0;
+	cnav2_almanac[2].WN_a = 645;
+	cnav2_almanac[2].t_oa = 208896;
+	cnav2_almanac[2].SatType = 2;
+	cnav2_almanac[2].delta_A = -3072;
+	cnav2_almanac[2].Omega_0 = -0.21875;
+	cnav2_almanac[2].Phi_0 = -0.421875;
+	cnav2_almanac[2].Health = 0;
 
     // Call target test method
     cnav2_nav_message.string_decoder(str4);
@@ -371,29 +371,29 @@ TEST(BeidouCnav2NavigationMessageTest, String4Decoder)
 
     ASSERT_TRUE(cnav2_ephemeris.IODC - cnav2_nav_message.cnav2_ephemeris.IODC < FLT_EPSILON);
 
-    ASSERT_TRUE(cnav2_almanac[5-1].WN_a - cnav2_nav_message.cnav2_almanac[5-1].WN_a < FLT_EPSILON);
-    ASSERT_TRUE(cnav2_almanac[5-1].t_oa - cnav2_nav_message.cnav2_almanac[5-1].t_oa < FLT_EPSILON);
-    ASSERT_TRUE(cnav2_almanac[5-1].SatType - cnav2_nav_message.cnav2_almanac[5-1].SatType < FLT_EPSILON);
-    ASSERT_TRUE(cnav2_almanac[5-1].delta_A - cnav2_nav_message.cnav2_almanac[5-1].delta_A < FLT_EPSILON);
-    ASSERT_TRUE(cnav2_almanac[5-1].Omega_0 - cnav2_nav_message.cnav2_almanac[5-1].Omega_0 < FLT_EPSILON);
-    ASSERT_TRUE(cnav2_almanac[5-1].Phi_0 - cnav2_nav_message.cnav2_almanac[5-1].Phi_0 < FLT_EPSILON);
-    ASSERT_TRUE(cnav2_almanac[5-1].Health - cnav2_nav_message.cnav2_almanac[5-1].Health < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_almanac[0].WN_a - cnav2_nav_message.cnav2_almanac[5-1].WN_a < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_almanac[0].t_oa - cnav2_nav_message.cnav2_almanac[5-1].t_oa < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_almanac[0].SatType - cnav2_nav_message.cnav2_almanac[5-1].SatType < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_almanac[0].delta_A - cnav2_nav_message.cnav2_almanac[5-1].delta_A < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_almanac[0].Omega_0 - cnav2_nav_message.cnav2_almanac[5-1].Omega_0 < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_almanac[0].Phi_0 - cnav2_nav_message.cnav2_almanac[5-1].Phi_0 < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_almanac[0].Health - cnav2_nav_message.cnav2_almanac[5-1].Health < FLT_EPSILON);
 
-    ASSERT_TRUE(cnav2_almanac[7-1].WN_a - cnav2_nav_message.cnav2_almanac[7-1].WN_a < FLT_EPSILON);
-	ASSERT_TRUE(cnav2_almanac[7-1].t_oa - cnav2_nav_message.cnav2_almanac[7-1].t_oa < FLT_EPSILON);
-	ASSERT_TRUE(cnav2_almanac[7-1].SatType - cnav2_nav_message.cnav2_almanac[7-1].SatType < FLT_EPSILON);
-	ASSERT_TRUE(cnav2_almanac[7-1].delta_A - cnav2_nav_message.cnav2_almanac[7-1].delta_A < FLT_EPSILON);
-	ASSERT_TRUE(cnav2_almanac[7-1].Omega_0 - cnav2_nav_message.cnav2_almanac[7-1].Omega_0 < FLT_EPSILON);
-	ASSERT_TRUE(cnav2_almanac[7-1].Phi_0 - cnav2_nav_message.cnav2_almanac[7-1].Phi_0 < FLT_EPSILON);
-	ASSERT_TRUE(cnav2_almanac[7-1].Health - cnav2_nav_message.cnav2_almanac[7-1].Health < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_almanac[1].WN_a - cnav2_nav_message.cnav2_almanac[7-1].WN_a < FLT_EPSILON);
+	ASSERT_TRUE(cnav2_almanac[1].t_oa - cnav2_nav_message.cnav2_almanac[7-1].t_oa < FLT_EPSILON);
+	ASSERT_TRUE(cnav2_almanac[1].SatType - cnav2_nav_message.cnav2_almanac[7-1].SatType < FLT_EPSILON);
+	ASSERT_TRUE(cnav2_almanac[1].delta_A - cnav2_nav_message.cnav2_almanac[7-1].delta_A < FLT_EPSILON);
+	ASSERT_TRUE(cnav2_almanac[1].Omega_0 - cnav2_nav_message.cnav2_almanac[7-1].Omega_0 < FLT_EPSILON);
+	ASSERT_TRUE(cnav2_almanac[1].Phi_0 - cnav2_nav_message.cnav2_almanac[7-1].Phi_0 < FLT_EPSILON);
+	ASSERT_TRUE(cnav2_almanac[1].Health - cnav2_nav_message.cnav2_almanac[7-1].Health < FLT_EPSILON);
 
-	ASSERT_TRUE(cnav2_almanac[9-1].WN_a - cnav2_nav_message.cnav2_almanac[9-1].WN_a < FLT_EPSILON);
-	ASSERT_TRUE(cnav2_almanac[9-1].t_oa - cnav2_nav_message.cnav2_almanac[9-1].t_oa < FLT_EPSILON);
-	ASSERT_TRUE(cnav2_almanac[9-1].SatType - cnav2_nav_message.cnav2_almanac[9-1].SatType < FLT_EPSILON);
-	ASSERT_TRUE(cnav2_almanac[9-1].delta_A - cnav2_nav_message.cnav2_almanac[9-1].delta_A < FLT_EPSILON);
-	ASSERT_TRUE(cnav2_almanac[9-1].Omega_0 - cnav2_nav_message.cnav2_almanac[9-1].Omega_0 < FLT_EPSILON);
-	ASSERT_TRUE(cnav2_almanac[9-1].Phi_0 - cnav2_nav_message.cnav2_almanac[9-1].Phi_0 < FLT_EPSILON);
-	ASSERT_TRUE(cnav2_almanac[9-1].Health - cnav2_nav_message.cnav2_almanac[9-1].Health < FLT_EPSILON);
+	ASSERT_TRUE(cnav2_almanac[2].WN_a - cnav2_nav_message.cnav2_almanac[9-1].WN_a < FLT_EPSILON);
+	ASSERT_TRUE(cnav2_almanac[2].t_oa - cnav2_nav_message.cnav2_almanac[9-1].t_oa < FLT_EPSILON);
+	ASSERT_TRUE(cnav2_almanac[2].SatType - cnav2_nav_message.cnav2_almanac[9-1].SatType < FLT_EPSILON);
+	ASSERT_TRUE(cnav2_almanac[2].delta_A - cnav2_nav_message.cnav2_almanac[9-1].delta_A < FLT_EPSILON);
+	ASSERT_TRUE(cnav2_almanac[2].Omega_0 - cnav2_nav_message.cnav2_almanac[9-1].Omega_0 < FLT_EPSILON);
+	ASSERT_TRUE(cnav2_almanac[2].Phi_0 - cnav2_nav_message.cnav2_almanac[9-1].Phi_0 < FLT_EPSILON);
+	ASSERT_TRUE(cnav2_almanac[2].Health - cnav2_nav_message.cnav2_almanac[9-1].Health < FLT_EPSILON);
 }
 
 /*!
@@ -486,7 +486,7 @@ TEST(BeidouCnav2NavigationMessageTest, String6Decoder)
     Beidou_Cnav2_Navigation_Message cnav2_nav_message;
     Beidou_Cnav2_Ephemeris cnav2_ephemeris;
     Beidou_Cnav2_Utc_Model cnav2_utc_model;
-    Beidou_Cnav2_Almanac cnav2_almanac;
+    Beidou_Cnav2_Almanac cnav2_almanac[1];
 
     // Fill out ephemeris values for truth
     cnav2_ephemeris.PRN = 30;
@@ -512,13 +512,13 @@ TEST(BeidouCnav2NavigationMessageTest, String6Decoder)
 	cnav2_utc_model.A_1BGTO = 0.000000000000755839835164807;
 	cnav2_utc_model.A_2BGTO = 0.000000000000000000281214938488428;
 
-	cnav2_almanac[11-1].SatType = 3;
-	cnav2_almanac[11-1].delta_A = -512;
-	cnav2_almanac[11-1].Omega_0 = 0.953125;
-	cnav2_almanac[11-1].Phi_0 = -0.203125;
-	cnav2_almanac[11-1].Health = 0;
-	cnav2_almanac[11-1].WN_a = 645;
-	cnav2_almanac[11-1].t_oa = 380928;
+	cnav2_almanac[0].SatType = 3;
+	cnav2_almanac[0].delta_A = -512;
+	cnav2_almanac[0].Omega_0 = 0.953125;
+	cnav2_almanac[0].Phi_0 = -0.203125;
+	cnav2_almanac[0].Health = 0;
+	cnav2_almanac[0].WN_a = 645;
+	cnav2_almanac[0].t_oa = 380928;
 
 	cnav2_ephemeris.IODC = 333;
 
@@ -551,13 +551,13 @@ TEST(BeidouCnav2NavigationMessageTest, String6Decoder)
 
     ASSERT_TRUE(cnav2_ephemeris.IODC - cnav2_nav_message.cnav2_ephemeris.IODC < FLT_EPSILON);
 
-    ASSERT_TRUE(cnav2_almanac[11-1].SatType - cnav2_nav_message.cnav2_almanac[11-1].SatType < FLT_EPSILON);
-    ASSERT_TRUE(cnav2_almanac[11-1].delta_A - cnav2_nav_message.cnav2_almanac[11-1].delta_A < FLT_EPSILON);
-    ASSERT_TRUE(cnav2_almanac[11-1].Omega_0 - cnav2_nav_message.cnav2_almanac[11-1].Omega_0 < FLT_EPSILON);
-    ASSERT_TRUE(cnav2_almanac[11-1].Phi_0 - cnav2_nav_message.cnav2_almanac[11-1].Phi_0 < FLT_EPSILON);
-    ASSERT_TRUE(cnav2_almanac[11-1].Health - cnav2_nav_message.cnav2_almanac[11-1].Health < FLT_EPSILON);
-    ASSERT_TRUE(cnav2_almanac[11-1].WN_a - cna2_nav_message.cnav2_almanac[11-1].WN_a < FLT_EPSILON);
-    ASSERT_TRUE(cnav2_almanac[11-1].t_oa - cnav2_nav_message.cnav2_almanac[11-1].t_oa < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_almanac[0].SatType - cnav2_nav_message.cnav2_almanac[11-1].SatType < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_almanac[0].delta_A - cnav2_nav_message.cnav2_almanac[11-1].delta_A < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_almanac[0].Omega_0 - cnav2_nav_message.cnav2_almanac[11-1].Omega_0 < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_almanac[0].Phi_0 - cnav2_nav_message.cnav2_almanac[11-1].Phi_0 < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_almanac[0].Health - cnav2_nav_message.cnav2_almanac[11-1].Health < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_almanac[0].WN_a - cnav2_nav_message.cnav2_almanac[11-1].WN_a < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_almanac[0].t_oa - cnav2_nav_message.cnav2_almanac[11-1].t_oa < FLT_EPSILON);
 
 }
 
@@ -664,7 +664,7 @@ TEST(BeidouCnav2NavigationMessageTest, String8Decoder)
     Beidou_Cnav2_Navigation_Message cnav2_nav_message;
     Beidou_Cnav2_Ephemeris cnav2_ephemeris;
     Beidou_Cnav2_Utc_Model cnav2_utc_model;
-    Beidou_Cnav2_Almanac cnav2_almanac;
+    Beidou_Cnav2_Almanac cnav2_almanac[1];
 
     // Fill out ephemeris values for truth
     cnav2_ephemeris.PRN = 30;
@@ -685,19 +685,19 @@ TEST(BeidouCnav2NavigationMessageTest, String8Decoder)
     cnav2_ephemeris.SISAI_oc1 = 0;
     cnav2_ephemeris.SISAI_oc2 = 0;
 
-    cnav2_almanac[41-1].SatType = 0;
-	cnav2_almanac[41-1].WN_a = 6874;
-	cnav2_almanac[41-1].t_oa = 892928;
-	cnav2_almanac[41-1].e = 0.026702880859375;
-	cnav2_almanac[41-1].delta_i = -0.0201416015625;
-	cnav2_almanac[41-1].sqrt_A = 5846.8125;
-	cnav2_almanac[41-1].Omega_0 = 0.854888916015625;
-	cnav2_almanac[41-1].Omega_dot = 0.000000101863406598568;
-	cnav2_almanac[41-1].omega = 0.839202880859375;
-	cnav2_almanac[41-1].M_0 = 0.839202880859375;
-	cnav2_almanac[41-1].a_f0 = 0.000819206237792969;
-	cnav2_almanac[41-1].a_f1 = 0.00000000265572452917695;
-	cnav2_almanac[41-1].Health = 109;
+    cnav2_almanac[0].SatType = 0;
+	cnav2_almanac[0].WN_a = 6874;
+	cnav2_almanac[0].t_oa = 892928;
+	cnav2_almanac[0].e = 0.026702880859375;
+	cnav2_almanac[0].delta_i = -0.0201416015625;
+	cnav2_almanac[0].sqrt_A = 5846.8125;
+	cnav2_almanac[0].Omega_0 = 0.854888916015625;
+	cnav2_almanac[0].Omega_dot = 0.000000101863406598568;
+	cnav2_almanac[0].omega = 0.839202880859375;
+	cnav2_almanac[0].M_0 = 0.839202880859375;
+	cnav2_almanac[0].a_f0 = 0.000819206237792969;
+	cnav2_almanac[0].a_f1 = 0.00000000265572452917695;
+	cnav2_almanac[0].Health = 109;
 
     // Call target test method
     cnav2_nav_message.string_decoder(str8);
@@ -721,18 +721,18 @@ TEST(BeidouCnav2NavigationMessageTest, String8Decoder)
     ASSERT_TRUE(cnav2_ephemeris.SISAI_oc1 - cnav2_nav_message.cnav2_ephemeris.SISAI_oc1 < FLT_EPSILON);
     ASSERT_TRUE(cnav2_ephemeris.SISAI_oc2 - cnav2_nav_message.cnav2_ephemeris.SISAI_oc2 < FLT_EPSILON);
 
-    ASSERT_TRUE(cnav2_almanac[41-1].SatType - cnav2_nav_message.cnav2_almanac[41-1].SatType < FLT_EPSILON);
-    ASSERT_TRUE(cnav2_almanac[41-1].WN_a - cnav2_nav_message.cnav2_almanac[41-1].WN_a < FLT_EPSILON);
-    ASSERT_TRUE(cnav2_almanac[41-1].t_oa - cnav2_nav_message.cnav2_almanac[41-1].t_oa < FLT_EPSILON);
-    ASSERT_TRUE(cnav2_almanac[41-1].e - cnav2_nav_message.cnav2_almanac[41-1].e < FLT_EPSILON);
-    ASSERT_TRUE(cnav2_almanac[41-1].delta_i - cnav2_nav_message.cnav2_almanac[41-1].delta_i < FLT_EPSILON);
-    ASSERT_TRUE(cnav2_almanac[41-1].sqrt_A - cnav2_nav_message.cnav2_almanac[41-1].sqrt_A < FLT_EPSILON);
-    ASSERT_TRUE(cnav2_almanac[41-1].Omega_0 - cnav2_nav_message.cnav2_almanac[41-1].Omega_0 < FLT_EPSILON);
-    ASSERT_TRUE(cnav2_almanac[41-1].Omega_dot - cnav2_nav_message.cnav2_almanac[41-1].Omega_dot < FLT_EPSILON);
-    ASSERT_TRUE(cnav2_almanac[41-1].omega - cnav2_nav_message.cnav2_almanac[41-1].omega < FLT_EPSILON);
-    ASSERT_TRUE(cnav2_almanac[41-1].M_0 - cnav2_nav_message.cnav2_almanac[41-1].M_0 < FLT_EPSILON);
-    ASSERT_TRUE(cnav2_almanac[41-1].a_f0 - cnav2_nav_message.cnav2_almanac[41-1].a_f0 < FLT_EPSILON);
-    ASSERT_TRUE(cnav2_almanac[41-1].a_f1 - cnav2_nav_message.cnav2_almanac[41-1].a_f1 < FLT_EPSILON);
-    ASSERT_TRUE(cnav2_almanac[41-1].Health - cnav2_nav_message.cnav2_almanac[41-1].Health < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_almanac[0].SatType - cnav2_nav_message.cnav2_almanac[41-1].SatType < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_almanac[0].WN_a - cnav2_nav_message.cnav2_almanac[41-1].WN_a < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_almanac[0].t_oa - cnav2_nav_message.cnav2_almanac[41-1].t_oa < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_almanac[0].e - cnav2_nav_message.cnav2_almanac[41-1].e < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_almanac[0].delta_i - cnav2_nav_message.cnav2_almanac[41-1].delta_i < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_almanac[0].sqrt_A - cnav2_nav_message.cnav2_almanac[41-1].sqrt_A < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_almanac[0].Omega_0 - cnav2_nav_message.cnav2_almanac[41-1].Omega_0 < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_almanac[0].Omega_dot - cnav2_nav_message.cnav2_almanac[41-1].Omega_dot < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_almanac[0].omega - cnav2_nav_message.cnav2_almanac[41-1].omega < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_almanac[0].M_0 - cnav2_nav_message.cnav2_almanac[41-1].M_0 < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_almanac[0].a_f0 - cnav2_nav_message.cnav2_almanac[41-1].a_f0 < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_almanac[0].a_f1 - cnav2_nav_message.cnav2_almanac[41-1].a_f1 < FLT_EPSILON);
+    ASSERT_TRUE(cnav2_almanac[0].Health - cnav2_nav_message.cnav2_almanac[41-1].Health < FLT_EPSILON);
 
 }

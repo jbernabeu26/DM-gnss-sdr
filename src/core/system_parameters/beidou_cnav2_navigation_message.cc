@@ -165,6 +165,7 @@ bool Beidou_Cnav2_Navigation_Message::CRC_test(std::bitset<BEIDOU_CNAV2_STRING_B
 		}
 	}
 
+
     crc_compute = crc24q_check(rawBits.data(), rawBits.size());
 
     return crc_compute;
