@@ -641,7 +641,5 @@ bool Beidou_Cnav2_Navigation_Message::have_new_almanac()  //Check if we have a n
                         return true;
                     }
             }
-
-    // todo  fix
     return false;
 }

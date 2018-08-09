@@ -37,6 +37,7 @@
 #include <boost/assign.hpp>
 #include <boost/serialization/nvp.hpp>
 #include "beidou_cnav2_ephemeris.h"
+#include "beidou_cnav2_almanac.h"
 
 //!!! Check
 /*!
@@ -70,10 +71,10 @@ public:
 	double A_2BGTO;		//Drift rate coefficient of BDT time scale relative to GNSS time scale [s/s^2]
 
 	// Clock Correction Parameters
-	double t_oc;
-	double a_0;
-	double a_1;
-	double a_2;
+	double t_oc;		//Clock correction parameters reference time [s] effective range 0~604500
+	double a_0;			//Satellite clock time bias correction coefficient [s]
+	double a_1;			//Satellite clock time drift correction coefficient [s/s]
+	double a_2;			//Satellite clock time drift rate correction coefficient [s/s^2]
 
     template <class Archive>
     /*!
@@ -113,34 +114,20 @@ public:
         archive& make_nvp("a_2", a_2);
     }
 
-    double beidt_to_gpst(const double offset_time, const double glot2utc_corr);
+    double time_of_transmission(Beidou_Cnav2_Almanac const&alm, Beidou_Cnav2_Ephemeris const&eph, double t_sv);
+
+    double beidt_to_gpst(Beidou_Cnav2_Ephemeris const&eph, double beidou_time);
 
     /*!
      * \brief Converts from BEIDOUT to GPST
-     * \details Converts from BEIDOUT to GPST in time of week (TOW) and week number (WN) format
-     * \param[in] tod_offset Is the start of day offset
-     * \param[in] beidt2utc_corr Correction from BEIDOUT to UTC
-     * \param[in] beidt2gpst_corr Correction from BEIDOUT to GPST
-     * \param[out] WN Week Number, not in mod(1024) format
-     * \param[out] TOW Time of Week in seconds of week
+
      */
-    double beidt_to_utc(Beidou_Cnav2_Ephemeris const&eph);
+    double beidt_to_utc(Beidou_Cnav2_Ephemeris const&eph, double t_E, double WN_E, double DN_E);
 
 
     /*!
-     * \brief Converts from BEIDOUT to GPST
-     * \details Converts from BEIDOUT to GPST in time of week (TOW) and week number (WN) format
-     * \param[in] tod_offset Is the start of day offset
-     * \param[in] beidt2utc_corr Correction from BEIDOUT to UTC
-     * \param[in] beidt2gpst_corr Correction from BEIDOUT to GPST
-     * \param[out] WN Week Number, not in mod(1024) format
-     * \param[out] TOW Time of Week in seconds of week
-     */
-
-    double beidt_to_gpst(const Beidou_Cnav2_Ephemeris &eph, double beid_time);
-
-    /*!
-     * Default constructor
+     * \brief Converts from BEIDOUT to UTC
+     * The t_E, WN_E, DN_E are the BDT estimated by the user
      */
 
     double utc_time(double beidou_time);

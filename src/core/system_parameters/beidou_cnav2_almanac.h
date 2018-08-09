@@ -100,6 +100,7 @@ public:
         archive& make_nvp("Health", Health);
     }
 
+    double BDS_time_of_transmission(double t_sv);
     /*!
      * Default constructor
      */

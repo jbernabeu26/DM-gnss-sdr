@@ -98,18 +98,53 @@ Beidou_Cnav2_Ephemeris::Beidou_Cnav2_Ephemeris()
 	SISAI_oc2 = 0.0;	//Satellite clock drift accuracy index
 
 	// Ionospheric Delay Correction Model Parameters
-	alpha_1 = 0.0;
-	alpha_2 = 0.0;
-	alpha_3 = 0.0;
-	alpha_4 = 0.0;
-	alpha_5 = 0.0;
-	alpha_6 = 0.0;
-	alpha_7 = 0.0;
-	alpha_8 = 0.0;
-	alpha_9 = 0.0;
+	alpha_1 = 0.0;		//[TECu]
+	alpha_2 = 0.0;		//[TECu]
+	alpha_3 = 0.0;		//[TECu]
+	alpha_4 = 0.0;		//[TECu]
+	alpha_5 = 0.0;		//[TECu]
+	alpha_6 = 0.0;		//[TECu]
+	alpha_7 = 0.0;		//[TECu]
+	alpha_8 = 0.0;		//[TECu]
+	alpha_9 = 0.0;		//[TECu]
 
 	// Group Delay Differential Parameters
 	T_GDB1Cp = 0.0;	//Group delay differential of the B1C pilot component [s]
 	T_GDB2ap = 0.0;	//Group delay differential of the B2a pilot component [s]
 	ISC_B2ad = 0.0;	//Group delay differential between the B2a data and pilot components [s]
+}
+
+double Beidou_Cnav2_Ephemeris::B2a_ranging_code_phase_correction_w_pilot(double dt_sv)
+{
+	double dt_sv_B2ap;
+	dt_sv_B2ap = dt_sv - T_GDB2ap;
+	return dt_sv_B2ap;
+}
+
+double Beidou_Cnav2_Ephemeris::B2a_ranging_code_phase_correction_w_data(double dt_sv)
+{
+	double dt_sv_B2ad;
+	dt_sv_B2ad = dt_sv - T_GDB2ap - ISC_B2ad;
+	return dt_sv_B2ad;
+}
+
+double Beidou_Cnav2_Ephemeris::B2a_UT1_UTC_difference(double t)
+{
+	return dUT1 -dUT1_dot*(t-t_EOP);
+}
+
+double Beidou_Cnav2_Ephemeris::B2a_Polar_motion_x(double t)
+{
+	double x_p;
+
+	x_p = PM_X + PM_X_dot * (t-t_EOP);
+	return x_p;
+}
+
+double Beidou_Cnav2_Ephemeris::B2a_Polar_motion_y(double t)
+{
+	double y_p;
+
+	y_p = PM_Y + PM_Y_dot * (t-t_EOP);
+	return y_p;
 }

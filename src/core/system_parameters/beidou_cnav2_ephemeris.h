@@ -197,15 +197,15 @@ public:
 		archive& make_nvp("SISAI_oc2", SISAI_oc2);	//Satellite clock drift accuracy index
 
 		// Ionospheric Delay Correction Model Parameters
-		archive& make_nvp("alpha_1", alpha_1);
-		archive& make_nvp("alpha_2", alpha_2);
-		archive& make_nvp("alpha_3", alpha_3);
-		archive& make_nvp("alpha_4", alpha_4);
-		archive& make_nvp("alpha_5", alpha_5);
-		archive& make_nvp("alpha_6", alpha_6);
-		archive& make_nvp("alpha_7", alpha_7);
-		archive& make_nvp("alpha_8", alpha_8);
-		archive& make_nvp("alpha_9", alpha_9);
+		archive& make_nvp("alpha_1", alpha_1);		// Ionosphere a1
+		archive& make_nvp("alpha_2", alpha_2);		// Ionosphere a2
+		archive& make_nvp("alpha_3", alpha_3);		// Ionosphere a3
+		archive& make_nvp("alpha_4", alpha_4);		// Ionosphere a4
+		archive& make_nvp("alpha_5", alpha_5);		// Ionosphere a5
+		archive& make_nvp("alpha_6", alpha_6);		// Ionosphere a6
+		archive& make_nvp("alpha_7", alpha_7);		// Ionosphere a7
+		archive& make_nvp("alpha_8", alpha_8);		// Ionosphere a8
+		archive& make_nvp("alpha_9", alpha_9);		// Ionosphere a9
 
 		// Group Delay Differential Parameters
 		archive& make_nvp("T_GDB1Cp", T_GDB1Cp);	//Group delay differential of the B1C pilot component [s]
@@ -213,6 +213,20 @@ public:
 		archive& make_nvp("ISC_B2ad", ISC_B2ad);	//Group delay differential between the B2a data and pilot components [s]
     }
 
+    double B2a_ranging_code_phase_correction_w_pilot(double dt_sv);
+    // The single frequency user processing pseudorange from the B2a pilot component shall further correct the ranging code phase
+
+    double B2a_ranging_code_phase_correction_w_data(double dt_sv);
+    // The single frequency user processing pseudorange from the B2a data component shall further correct the ranging code phase
+
+    double B2a_UT1_UTC_difference(double t);
+    // UT1-UTC difference at time t
+
+    double B2a_Polar_motion_x(double t);
+    // Polar motion in the X-Axis at time t
+
+    double B2a_Polar_motion_y(double t);
+    // Polar motion in the Y-Axis at time t
 
     Beidou_Cnav2_Ephemeris();
 };

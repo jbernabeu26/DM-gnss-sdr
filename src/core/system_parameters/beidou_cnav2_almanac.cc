@@ -57,3 +57,14 @@ Beidou_Cnav2_Almanac::Beidou_Cnav2_Almanac()
 	Phi_0 = 0.0;				//!< Argument of latitude at reference time
 	//Health = 0.0;				//!< Satellite health information
 }
+
+double Beidou_Cnav2_Almanac::BDS_time_of_transmission(double t_sv)
+{
+	double t;
+	double dt_sv;
+
+	dt_sv = a_f0 + a_f1 * (t-t_oa);
+
+	t = t_sv - dt_sv;
+	return t;
+}
