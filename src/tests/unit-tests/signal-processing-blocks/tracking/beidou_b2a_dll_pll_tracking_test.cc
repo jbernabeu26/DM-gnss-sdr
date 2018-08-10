@@ -48,6 +48,7 @@
 #include "gnss_sdr_valve.h"
 #include "gnss_synchro.h"
 #include "dll_pll_veml_tracking.h"
+#include "beidou_b2a_dll_pll_tracking.h"
 
 
 // ######## GNURADIO BLOCK MESSAGE RECEVER #########

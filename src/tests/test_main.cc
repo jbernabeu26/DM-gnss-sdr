@@ -129,7 +129,7 @@ DECLARE_string(log_dir);
 #include "unit-tests/signal-processing-blocks/tracking/tracking_loop_filter_test.cc"
 #include "unit-tests/signal-processing-blocks/tracking/cpu_multicorrelator_test.cc"
 #include "unit-tests/signal-processing-blocks/tracking/cpu_multicorrelator_real_codes_test.cc"
-//#include "unit-tests/signal-processing-blocks/tracking/beidou_b2a_dll_pll_tracking_test.cc"//TODO This breaks
+#include "unit-tests/signal-processing-blocks/tracking/beidou_b2a_dll_pll_tracking_test.cc"//TODO This breaks
 
 
 
