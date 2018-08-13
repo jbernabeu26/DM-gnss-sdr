@@ -1,9 +1,7 @@
 /*!
  * \file beidou_b2ad_pcps_acquisition_gsoc2018_test.cc
  * \brief  Tests a PCPS acquisition block for Beidou B2a signals
- * \author Gabriel Araujo, 2017. gabriel.araujo.5000(at)gmail.com
- * \author Luis Esteve, 2017. luis(at)epsilon-formacion.com
- * \author Sara Hrbek, 2018. sara.hrbek(at)gmail.com gsoc 2018
+ * \author Sara Hrbek, 2018. sara.hrbek(at)gmail.com. Code added as part of GSoC 2018 program
  *
  *
  * -------------------------------------------------------------------------

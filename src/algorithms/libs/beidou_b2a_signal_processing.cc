@@ -1,7 +1,7 @@
 /*!
  * \file beidou_b2a_signal._processingcc
  * \brief This class implements signal generators for the BEIDOU B2a signals
- * \author Sara Hrbek, 2018. sara.hrbek(at)gmail.com gsoc 2018
+ * \author Sara Hrbek, 2018. sara.hrbek(at)gmail.com. Code added as part of GSoC 2018 program
  *
  * Detailed description of the file here if needed.
  *

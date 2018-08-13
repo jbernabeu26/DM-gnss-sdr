@@ -1,8 +1,6 @@
 /*!
  * \file beidou_b2ad_pcps_acquisition_test.cc
- * \brief  Tests a PCPS acquisition block for Glonass L1 C/A signals
- * \author Gabriel Araujo, 2017. gabriel.araujo.5000(at)gmail.com
- * \author Luis Esteve, 2017. luis(at)epsilon-formacion.com
+ * \brief  Tests a PCPS acquisition block for Beidou B2a signals
  * \author Sara Hrbek, 2018. sara.hrbek(at)gmail.com gsoc 2018
  *
  * -------------------------------------------------------------------------
@@ -135,7 +133,7 @@ void BeidouB2adPcpsAcquisitionTest::init()
     gnss_synchro.Channel_ID = 0;
     gnss_synchro.System = 'C';
     std::string signal = "5C";
-    signal.copy(gnss_synchro.Signal, 2, 0);
+    signal.copy(gnss_synchro.Signal, 2, 0);//TODO what does this one do? Put GPS here?
     gnss_synchro.PRN = 27;
     config->set_property("GNSS-SDR.internal_fs_sps", "25000000");
     config->set_property("Acquisition_5C.item_type", "gr_complex");
@@ -147,7 +145,7 @@ void BeidouB2adPcpsAcquisitionTest::init()
     config->set_property("Acquisition_5C.pfa", "0.01");
     config->set_property("Acquisition_5C.doppler_max", "10000");
     config->set_property("Acquisition_5C.doppler_step", "50");
-    config->set_property("Acquisition.bit_transition_flag", "false");
+    config->set_property("Acquisition_5C.bit_transition_flag", "false");
     //config->set_property("Acquisition_5C.repeat_satellite", "true");
 
 }
@@ -205,25 +203,26 @@ TEST_F(BeidouB2adPcpsAcquisitionTest, ValidationOfResults)
     std::shared_ptr<BeidouB2adPcpsAcquisition> acquisition = std::make_shared<BeidouB2adPcpsAcquisition>(config.get(), "Acquisition_5C", 1, 1);
 
     boost::shared_ptr<BeidouB2adPcpsAcquisitionTest_msg_rx> msg_rx = BeidouB2adPcpsAcquisitionTest_msg_rx_make();
-
     ASSERT_NO_THROW({
         acquisition->set_channel(1);
     }) << "Failure setting channel.";
-
+    std::cout << "We got moose 1aa " << std::endl;
     ASSERT_NO_THROW({
         acquisition->set_gnss_synchro(&gnss_synchro);
     }) << "Failure setting gnss_synchro.";
+    std::cout << "We got moose 1aaa " << std::endl;
 
-    ASSERT_NO_THROW({
-        acquisition->set_threshold(0.005);
-    }) << "Failure setting threshold.";
+    /*ASSERT_NO_THROW({
+        acquisition->set_threshold(0.01);
+    }) << "Failure setting threshold.";*/
 
     ASSERT_NO_THROW({
         acquisition->set_doppler_max(10000);
     }) << "Failure setting doppler_max.";
 
+    std::cout << "We got moose 1aaaaa " << std::endl;
     ASSERT_NO_THROW({
-        acquisition->set_doppler_step(500);
+        acquisition->set_doppler_step(50);
     }) << "Failure setting doppler_step.";
 
     ASSERT_NO_THROW({
@@ -231,7 +230,9 @@ TEST_F(BeidouB2adPcpsAcquisitionTest, ValidationOfResults)
     }) << "Failure connecting acquisition to the top_block.";
 
     acquisition->set_local_code();
+
     acquisition->set_state(1);  // Ensure that acquisition starts at the first sample
+
     acquisition->init();
 
     ASSERT_NO_THROW({
@@ -242,23 +243,23 @@ TEST_F(BeidouB2adPcpsAcquisitionTest, ValidationOfResults)
         top_block->connect(file_source, 0, acquisition->get_left_block(), 0);
         top_block->msg_connect(acquisition->get_right_block(), pmt::mp("events"), msg_rx, pmt::mp("events"));
     }) << "Failure connecting the blocks of acquisition test.";
-
+    std::cout << "We got here 2" << std::endl;
     EXPECT_NO_THROW({
         begin = std::chrono::system_clock::now();
         top_block->run();  // Start threads and wait
         end = std::chrono::system_clock::now();
         elapsed_seconds = end - begin;
     }) << "Failure running the top_block.";
-
+    std::cout << "We got here 3" << std::endl;
     unsigned long int nsamples = gnss_synchro.Acq_samplestamp_samples;
     std::cout << "Acquired " << nsamples << " samples in " << elapsed_seconds.count() * 1e6 << " microseconds" << std::endl;
 
     ASSERT_EQ(1, msg_rx->rx_message) << "Acquisition failure. Expected message: 1=ACQ SUCCESS.";
-
+    std::cout << "We got here 4" << std::endl;
     double delay_error_samples = std::abs(expected_delay_samples - gnss_synchro.Acq_delay_samples);
     float delay_error_chips = static_cast<float>(delay_error_samples) * 10230 / 25000;
     double doppler_error_hz = std::abs(expected_doppler_hz - gnss_synchro.Acq_doppler_hz);
-
+    std::cout << "We got here 5" << std::endl;
     EXPECT_LE(doppler_error_hz, 133.3) << "Doppler error exceeds the expected value: 133.3 Hz = 2/(3*integration period)";
     EXPECT_LT(delay_error_chips, 0.5) << "Delay error exceeds the expected value: 0.5 chips";
 }

@@ -2,8 +2,7 @@
  * \file beidou_b2a_dll_pll_tracking_test.cc
  * \brief  This class implements a tracking test for Beidou_B2a_DLL_PLL_Tracking
  *  implementation based on some input parameters.
- * \author Javier Arribas, 2015. jarribas(at)cttc.es
- * \author Sara Hrbek, 2018 sara.hrbek(at)gmail.com
+ * \author Sara Hrbek, 2018 sara.hrbek(at)gmail.com. Code added as part of GSoC 2018 program
  *
  *
  * -------------------------------------------------------------------------
@@ -181,6 +180,7 @@ TEST_F(BeidouB2aDllPllTrackingTest, ValidationOfResults)
     ASSERT_NO_THROW({
         tracking->connect(top_block);
     }) << "Failure connecting tracking to the top_block.";
+
 
     ASSERT_NO_THROW({
         //gr::analog::sig_source_c::sptr source = gr::analog::sig_source_c::make(fs_in, gr::analog::GR_SIN_WAVE, 1000, 1, gr_complex(0));

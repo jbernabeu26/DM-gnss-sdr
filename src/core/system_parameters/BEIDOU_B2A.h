@@ -1,7 +1,7 @@
 /*!
  * \file BEIDOU_B2A.h
  * \brief  Defines system parameters for BEIDOU B2a signal
- * \author Sara Hrbek, 2018. sara.hrbek(at)gmail.com gsoc 2018
+ * \author Sara Hrbek, 2018. sara.hrbek(at)gmail.com. Code added as part of GSoC 2018 program
  *
  * -------------------------------------------------------------------------
  *

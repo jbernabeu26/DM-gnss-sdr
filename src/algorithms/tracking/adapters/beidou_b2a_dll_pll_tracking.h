@@ -2,7 +2,7 @@
  * \file beidou_b2a_dll_pll_tracking.h
  * \brief  Interface of an adapter of a DLL+PLL tracking loop block
  * for Beidou B2a to a TrackingInterface
- * \author Sara Hrbek, 2018. sara.hrbek(at)gmail.com gsoc 2018
+ * \author Sara Hrbek, 2018. sara.hrbek(at)gmail.com. Code added as part of GSoC 2018 program
  *
  * Code DLL + carrier PLL according to the algorithms described in:
  * K.Borre, D.M.Akos, N.Bertelsen, P.Rinder, and S.H.Jensen,

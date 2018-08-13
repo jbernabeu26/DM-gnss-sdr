@@ -3,7 +3,7 @@
  * \brief Adapts a PCPS acquisition block to an Acquisition Interface for
  *  BEIDOU B2a signals
  * \authors <ul>
- *          <li> Sara Hrbek, 2018. sara.hrbek(at)gmail.com gsoc 2018
+ *          <li> Sara Hrbek, 2018. sara.hrbek(at)gmail.com. Code added as part of GSoC 2018 program
  *          </ul>
  *
  * -------------------------------------------------------------------------
@@ -43,8 +43,8 @@
 #include <volk_gnsssdr/volk_gnsssdr.h>
 #include <string>
 
-#include "../../../core/system_parameters/BEIDOU_B2A.h"
-#include "../../libs/beidou_b2a_signal_processing.h"
+#include "BEIDOU_B2A.h"
+#include "beidou_b2a_signal_processing.h"
 
 
 class ConfigurationInterface;
