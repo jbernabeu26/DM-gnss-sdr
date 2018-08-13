@@ -197,8 +197,8 @@ TEST_F(BeidouB2adPcpsAcquisitionTest, ValidationOfResults)
     std::chrono::duration<double> elapsed_seconds(0);
     top_block = gr::make_top_block("Acquisition test");
 
-    double expected_delay_samples = 18718;//todo sara fix
-    double expected_doppler_hz = 410;//todo sara fix
+    double expected_delay_samples = 18718;//todo adjust
+    double expected_doppler_hz = 410;//todo adjust
     init();
     std::shared_ptr<BeidouB2adPcpsAcquisition> acquisition = std::make_shared<BeidouB2adPcpsAcquisition>(config.get(), "Acquisition_5C", 1, 1);
 
@@ -206,12 +206,12 @@ TEST_F(BeidouB2adPcpsAcquisitionTest, ValidationOfResults)
     ASSERT_NO_THROW({
         acquisition->set_channel(1);
     }) << "Failure setting channel.";
-    std::cout << "We got moose 1aa " << std::endl;
+
     ASSERT_NO_THROW({
         acquisition->set_gnss_synchro(&gnss_synchro);
     }) << "Failure setting gnss_synchro.";
-    std::cout << "We got moose 1aaa " << std::endl;
 
+    //This currently breaks because using pfa
     /*ASSERT_NO_THROW({
         acquisition->set_threshold(0.01);
     }) << "Failure setting threshold.";*/
@@ -220,7 +220,6 @@ TEST_F(BeidouB2adPcpsAcquisitionTest, ValidationOfResults)
         acquisition->set_doppler_max(10000);
     }) << "Failure setting doppler_max.";
 
-    std::cout << "We got moose 1aaaaa " << std::endl;
     ASSERT_NO_THROW({
         acquisition->set_doppler_step(50);
     }) << "Failure setting doppler_step.";
@@ -243,23 +242,22 @@ TEST_F(BeidouB2adPcpsAcquisitionTest, ValidationOfResults)
         top_block->connect(file_source, 0, acquisition->get_left_block(), 0);
         top_block->msg_connect(acquisition->get_right_block(), pmt::mp("events"), msg_rx, pmt::mp("events"));
     }) << "Failure connecting the blocks of acquisition test.";
-    std::cout << "We got here 2" << std::endl;
+
     EXPECT_NO_THROW({
         begin = std::chrono::system_clock::now();
         top_block->run();  // Start threads and wait
         end = std::chrono::system_clock::now();
         elapsed_seconds = end - begin;
     }) << "Failure running the top_block.";
-    std::cout << "We got here 3" << std::endl;
     unsigned long int nsamples = gnss_synchro.Acq_samplestamp_samples;
     std::cout << "Acquired " << nsamples << " samples in " << elapsed_seconds.count() * 1e6 << " microseconds" << std::endl;
 
     ASSERT_EQ(1, msg_rx->rx_message) << "Acquisition failure. Expected message: 1=ACQ SUCCESS.";
-    std::cout << "We got here 4" << std::endl;
+
     double delay_error_samples = std::abs(expected_delay_samples - gnss_synchro.Acq_delay_samples);
     float delay_error_chips = static_cast<float>(delay_error_samples) * 10230 / 25000;
     double doppler_error_hz = std::abs(expected_doppler_hz - gnss_synchro.Acq_doppler_hz);
-    std::cout << "We got here 5" << std::endl;
+
     EXPECT_LE(doppler_error_hz, 133.3) << "Doppler error exceeds the expected value: 133.3 Hz = 2/(3*integration period)";
     EXPECT_LT(delay_error_chips, 0.5) << "Delay error exceeds the expected value: 0.5 chips";
 }
