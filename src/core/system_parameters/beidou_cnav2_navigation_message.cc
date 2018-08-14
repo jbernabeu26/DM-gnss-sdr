@@ -157,7 +157,7 @@ signed long int Beidou_Cnav2_Navigation_Message::read_navigation_signed(std::bit
 
 bool Beidou_Cnav2_Navigation_Message::CRC_test(std::bitset<BEIDOU_CNAV2_STRING_BITS> const &string_bits)
 {
-	std::vector<unsigned char> rawBits(288 / 8,0);
+	std::vector<unsigned char> rawBits(BEIDOU_CNAV2_STRING_BITS / 8,0);
 	for (unsigned i = 0; i < rawBits.size(); ++i) {
 		for (int j = 0; j < 8; ++j) {
 			rawBits[i] |= (string_bits[8*i + j] << (7 - j));
