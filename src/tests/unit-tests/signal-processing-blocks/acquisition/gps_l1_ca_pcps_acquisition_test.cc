@@ -159,7 +159,7 @@ void GpsL1CaPcpsAcquisitionTest::init()
         {
             config->set_property("Acquisition_1C.dump", "false");
         }
-    config->set_property("Acquisition_1C.dump_filename", "/media/sf_VMShare/VMShare/acquisition");
+    config->set_property("Acquisition_1C.dump_filename", "./tmp-acq-gps1/acquisition");
     config->set_property("Acquisition_1C.threshold", "0.00001");
     config->set_property("Acquisition_1C.doppler_max", std::to_string(doppler_max));
     config->set_property("Acquisition_1C.doppler_step", std::to_string(doppler_step));
@@ -171,7 +171,7 @@ void GpsL1CaPcpsAcquisitionTest::init()
 void GpsL1CaPcpsAcquisitionTest::plot_grid()
 {
     //load the measured values
-    std::string basename = "/media/sf_VMShare/VMShare/acquisition_G_1C";
+    std::string basename = "./tmp-acq-gps1/acquisition_G_1C";
     unsigned int sat = static_cast<unsigned int>(gnss_synchro.PRN);
 
     unsigned int samples_per_code = static_cast<unsigned int>(round(4000000 / (GPS_L1_CA_CODE_RATE_HZ / GPS_L1_CA_CODE_LENGTH_CHIPS)));  // !!
