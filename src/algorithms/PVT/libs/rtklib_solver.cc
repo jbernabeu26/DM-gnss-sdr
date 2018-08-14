@@ -144,6 +144,7 @@ bool rtklib_solver::get_PVT(const std::map<int, Gnss_Synchro>& gnss_observables_
     std::map<int, Beidou_Cnav2_Ephemeris>::const_iterator beidou_cnav2_ephemeris_iter;
 
     const Glonass_Gnav_Utc_Model gnav_utc = this->glonass_gnav_utc_model;
+    const Beidou_Cnav2_Utc_Model cnav2_utc = this->beidou_cnav2_utc_model;
 
     this->set_averaging_flag(flag_averaging);
 
@@ -432,7 +433,7 @@ bool rtklib_solver::get_PVT(const std::map<int, Gnss_Synchro>& gnss_observables_
 								beidou_cnav2_ephemeris_iter = beidou_cnav2_ephemeris_map.find(gnss_observables_iter->second.PRN);
 								if (beidou_cnav2_ephemeris_iter != beidou_cnav2_ephemeris_map.cend())
 									{
-										eph_data[valid_obs] = eph_to_rtklib(beidou_cnav2_ephemeris_iter->second);
+										eph_data[valid_obs] = eph_to_rtklib(beidou_cnav2_ephemeris_iter->second, cnav2_utc);
 
 
 									// Needs more work

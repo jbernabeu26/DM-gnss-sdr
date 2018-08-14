@@ -650,6 +650,7 @@ int rtklib_pvt_cc::work(int noutput_items, gr_vector_const_void_star& input_item
                                                     d_rtcm_printer->lock_time(d_ls_pvt->glonass_gnav_ephemeris_map.find(in[i][epoch].PRN)->second, in[i][epoch].RX_time, in[i][epoch]);  // keep track of locking time
                                                 }
                                         }
+                                    /*
                                     if (d_ls_pvt->beidou_cnav2_ephemeris_map.size() > 0)
 										{
 											if (tmp_eph_iter_bds_cnav2 != d_ls_pvt->beidou_cnav2_ephemeris_map.end())
@@ -657,6 +658,7 @@ int rtklib_pvt_cc::work(int noutput_items, gr_vector_const_void_star& input_item
 													d_rtcm_printer->lock_time(d_ls_pvt->beidou_cnav2_ephemeris_map.find(in[i][epoch].PRN)->second, in[i][epoch].RX_time, in[i][epoch]);  // keep track of locking time
 												}
 										}
+										*/
                                 }
                             catch (const boost::exception& ex)
                                 {
@@ -1041,6 +1043,7 @@ int rtklib_pvt_cc::work(int noutput_items, gr_vector_const_void_star& input_item
                                                             b_rinex_header_written = true;  // do not write header anymore
                                                         }
                                                 }
+                                            /*
                                             if (type_of_rx == 32)  // BeiDou B2a
                                                 {
                                                     if (beidou_cnav2_ephemeris_iter != d_ls_pvt->beidou_cnav2_ephemeris_map.cend())
@@ -1093,6 +1096,7 @@ int rtklib_pvt_cc::work(int noutput_items, gr_vector_const_void_star& input_item
 															b_rinex_header_written = true;  // do not write header anymore
 														}
 												}
+												*/
 
                                         }
                                     if (b_rinex_header_written)  // The header is already written, we can now log the navigation message data
