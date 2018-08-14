@@ -157,7 +157,6 @@ DECLARE_string(log_dir);
 
 #include "unit-tests/system-parameters/glonass_gnav_ephemeris_test.cc"
 #include "unit-tests/system-parameters/glonass_gnav_nav_message_test.cc"
-#include "unit-tests/system-parameters/beidou_cnav2_ephemeris_test.cc"
 #include "unit-tests/system-parameters/beidou_cnav2_nav_message_test.cc"
 
 // For GPS NAVIGATION (L1)

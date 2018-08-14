@@ -114,7 +114,7 @@ const int BEIDOU_CNAV2_TELEMETRY_SYMBOLS_PER_BIT = 2;																						//spb
 const int BEIDOU_CNAV2_TELEMETRY_SYMBOLS_PER_PREAMBLE_BIT = 2;																				//spb
 const int BEIDOU_CNAV2_TELEMETRY_RATE_SYMBOLS_SECOND = BEIDOU_CNAV2_TELEMETRY_RATE_BITS_SECOND * BEIDOU_CNAV2_TELEMETRY_SYMBOLS_PER_BIT;	//sps
 const int BEIDOU_CNAV2_STRING_SYMBOLS = 600;																								//Number of symbols per string in the CNAV2 message
-const int BEIDOU_CNAV2_STRING_BITS = 300;																									//Number of bits per string in the CNAV2 message
+const int BEIDOU_CNAV2_STRING_BITS = 288;																									//Number of bits per string in the CNAV2 message
 const int BEIDOU_CNAV2_DATA_SYMBOLS = 576;																									//STRING DATA WITHOUT PREAMBLE
 
 // BEIDOU CNAV2 NAVIGATION MESSAGE STRUCTURE
