@@ -115,7 +115,6 @@ DECLARE_string(log_dir);
 #include "unit-tests/signal-processing-blocks/acquisition/galileo_e5a_pcps_acquisition_gsoc2014_gensource_test.cc"
 #include "unit-tests/signal-processing-blocks/acquisition/glonass_l1_ca_pcps_acquisition_gsoc2017_test.cc"
 // #include "unit-tests/signal-processing-blocks/acquisition/glonass_l2_ca_pcps_acquisition_test.cc"
-//#include "unit-tests/signal-processing-blocks/acquisition/beidou_b2ad_pcps_acquisition_gsoc2018_test.cc" //TODO this breaks
 #include "unit-tests/signal-processing-blocks/acquisition/beidou_b2ad_pcps_acquisition_test.cc"
 
 #if OPENCL_BLOCKS_TEST
@@ -129,7 +128,7 @@ DECLARE_string(log_dir);
 #include "unit-tests/signal-processing-blocks/tracking/tracking_loop_filter_test.cc"
 #include "unit-tests/signal-processing-blocks/tracking/cpu_multicorrelator_test.cc"
 #include "unit-tests/signal-processing-blocks/tracking/cpu_multicorrelator_real_codes_test.cc"
-#include "unit-tests/signal-processing-blocks/tracking/beidou_b2a_dll_pll_tracking_test.cc"//TODO This breaks
+#include "unit-tests/signal-processing-blocks/tracking/beidou_b2a_dll_pll_tracking_test.cc"
 
 
 

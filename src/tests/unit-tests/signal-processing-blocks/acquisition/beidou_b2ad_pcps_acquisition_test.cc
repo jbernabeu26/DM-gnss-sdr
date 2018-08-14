@@ -133,7 +133,7 @@ void BeidouB2adPcpsAcquisitionTest::init()
     gnss_synchro.Channel_ID = 0;
     gnss_synchro.System = 'C';
     std::string signal = "5C";
-    signal.copy(gnss_synchro.Signal, 2, 0);//TODO what does this one do? Put GPS here?
+    signal.copy(gnss_synchro.Signal, 2, 0);
     gnss_synchro.PRN = 27;
     config->set_property("GNSS-SDR.internal_fs_sps", "25000000");
     config->set_property("Acquisition_5C.item_type", "gr_complex");
@@ -146,7 +146,7 @@ void BeidouB2adPcpsAcquisitionTest::init()
     config->set_property("Acquisition_5C.doppler_max", "10000");
     config->set_property("Acquisition_5C.doppler_step", "50");
     config->set_property("Acquisition_5C.bit_transition_flag", "true");
-    //config->set_property("Acquisition_5C.repeat_satellite", "true");
+    config->set_property("Acquisition_5C.repeat_satellite", "true");
 
 }
 
@@ -161,7 +161,7 @@ TEST_F(BeidouB2adPcpsAcquisitionTest, Instantiate)
 TEST_F(BeidouB2adPcpsAcquisitionTest, ConnectAndRun)
 {
     int fs_in = 25000000;
-    int nsamples = 500000;
+    int nsamples = 25000000*0.2;
     std::chrono::time_point<std::chrono::system_clock> begin, end;
     std::chrono::duration<double> elapsed_seconds(0);
     gr::msg_queue::sptr queue = gr::msg_queue::make(0);
@@ -197,8 +197,8 @@ TEST_F(BeidouB2adPcpsAcquisitionTest, ValidationOfResults)
     std::chrono::duration<double> elapsed_seconds(0);
     top_block = gr::make_top_block("Acquisition test");
 
-    double expected_delay_samples = 18718;//todo adjust
-    double expected_doppler_hz = 410;//todo adjust
+    double expected_delay_samples = 18719;//todo adjust
+    double expected_doppler_hz = 400;//todo adjust
     init();
     std::shared_ptr<BeidouB2adPcpsAcquisition> acquisition = std::make_shared<BeidouB2adPcpsAcquisition>(config.get(), "Acquisition_5C", 1, 1);
 
@@ -210,11 +210,6 @@ TEST_F(BeidouB2adPcpsAcquisitionTest, ValidationOfResults)
     ASSERT_NO_THROW({
         acquisition->set_gnss_synchro(&gnss_synchro);
     }) << "Failure setting gnss_synchro.";
-
-    //This currently breaks because using pfa
-    /*ASSERT_NO_THROW({
-        acquisition->set_threshold(0.01);
-    }) << "Failure setting threshold.";*/
 
     ASSERT_NO_THROW({
         acquisition->set_doppler_max(10000);

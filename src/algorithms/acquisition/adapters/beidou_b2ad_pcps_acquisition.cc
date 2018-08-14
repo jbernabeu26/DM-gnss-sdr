@@ -93,9 +93,9 @@ BeidouB2adPcpsAcquisition::BeidouB2adPcpsAcquisition(
         {
             item_size_ = sizeof(gr_complex);
         }
-    acq_parameters.samples_per_code = code_length_*5;
+    acq_parameters.samples_per_code = code_length_;// This *5 is to add the secondary code
     acq_parameters.samples_per_ms = code_length_;
-    acq_parameters.sampled_ms = 1;// TODO possibly adjust for Secondary Code;
+    acq_parameters.sampled_ms = 1;
     acq_parameters.it_size = item_size_;
     acq_parameters.num_doppler_bins_step2 = configuration_->property(role + ".second_nbins", 4);
     acq_parameters.doppler_step2 = configuration_->property(role + ".second_doppler_step", 125.0);
@@ -193,6 +193,7 @@ void BeidouB2adPcpsAcquisition::set_local_code()
 {
 	{
 		beidou_b2ad_code_gen_complex_sampled(code_, gnss_synchro_->PRN, fs_in_);
+		//todo below is a test case for generating the primary code and the secondary code for Beidou, it still needs some work.
 		//beidou_b2ad_code_gen_complex_sampledSecondary(code_, gnss_synchro_->PRN, fs_in_);
 
 	    acquisition_->set_local_code(code_);

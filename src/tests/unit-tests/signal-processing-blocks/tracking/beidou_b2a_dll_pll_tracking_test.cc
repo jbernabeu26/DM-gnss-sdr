@@ -165,22 +165,19 @@ TEST_F(BeidouB2aDllPllTrackingTest, ValidationOfResults)
     std::shared_ptr<TrackingInterface> tracking = std::make_shared<BeidouB2aDllPllTracking>(config.get(), "Tracking_5C", 1, 1);
     boost::shared_ptr<BeidouB2aDllPllTrackingTest_msg_rx> msg_rx = BeidouB2aDllPllTrackingTest_msg_rx_make();
     std::cout << "We got to here 0 " << std::endl;
-    gnss_synchro.Acq_delay_samples = 18718;//todo adjust.
-    gnss_synchro.Acq_doppler_hz = 410;//todo adjust.
+    gnss_synchro.Acq_delay_samples = 18719;
+    gnss_synchro.Acq_doppler_hz = 400;
     gnss_synchro.Acq_samplestamp_samples = 0;//todo adjust.
-    std::cout << "We got to here 1 " << std::endl;
     ASSERT_NO_THROW({
         tracking->set_channel(gnss_synchro.Channel_ID);
     }) << "Failure setting channel.";
-    std::cout << "We got to here 2 " << std::endl;
     ASSERT_NO_THROW({
         tracking->set_gnss_synchro(&gnss_synchro);
     }) << "Failure setting gnss_synchro.";
-    std::cout << "We got to here 3 " << std::endl;
     ASSERT_NO_THROW({
         tracking->connect(top_block);
     }) << "Failure connecting tracking to the top_block.";
-    std::cout << "We got to here 4 " << std::endl;
+
     ASSERT_NO_THROW({
         //gr::analog::sig_source_c::sptr source = gr::analog::sig_source_c::make(fs_in, gr::analog::GR_SIN_WAVE, 1000, 1, gr_complex(0));
         std::string path = std::string(TEST_PATH);
@@ -194,16 +191,16 @@ TEST_F(BeidouB2aDllPllTrackingTest, ValidationOfResults)
         top_block->connect(tracking->get_right_block(), 0, sink, 0);
         top_block->msg_connect(tracking->get_right_block(), pmt::mp("events"), msg_rx, pmt::mp("events"));
     }) << "Failure connecting the blocks of tracking test.";
-    std::cout << "We got to here 5 " << std::endl;
+
     tracking->start_tracking();
-    std::cout << "We got to here 6 " << std::endl;
+   //todo this is where the test stops
     EXPECT_NO_THROW({
         start = std::chrono::system_clock::now();
         top_block->run();  // Start threads and wait
         end = std::chrono::system_clock::now();
         elapsed_seconds = end - start;
     }) << "Failure running the top_block.";
-    std::cout << "We got to here 7 " << std::endl;
+
 
     // TODO: Verify tracking results
     std::cout << "Tracked " << nsamples << " samples in " << elapsed_seconds.count() * 1e6 << " microseconds" << std::endl;

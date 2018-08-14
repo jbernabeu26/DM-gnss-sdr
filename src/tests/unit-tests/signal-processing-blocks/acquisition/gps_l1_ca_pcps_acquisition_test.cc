@@ -157,7 +157,7 @@ void GpsL1CaPcpsAcquisitionTest::init()
         }
     else
         {
-            config->set_property("Acquisition_1C.dump", "true");//was false
+            config->set_property("Acquisition_1C.dump", "false");
         }
     config->set_property("Acquisition_1C.dump_filename", "/media/sf_VMShare/VMShare/acquisition");
     config->set_property("Acquisition_1C.threshold", "0.00001");
