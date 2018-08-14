@@ -89,7 +89,7 @@ double Beidou_Cnav2_Utc_Model::time_of_transmission(Beidou_Cnav2_Almanac const&a
 }
 
 
-double Beidou_Cnav2_Utc_Model::beidt_to_utc(Beidou_Cnav2_Ephemeris const&eph, double t_E, double WN_E, double DN_E)
+double Beidou_Cnav2_Utc_Model::beidt_to_utc(Beidou_Cnav2_Ephemeris const&eph, double time_bds)
 {
 	double t_UTC;
 	double dt_UTC;
@@ -97,26 +97,26 @@ double Beidou_Cnav2_Utc_Model::beidt_to_utc(Beidou_Cnav2_Ephemeris const&eph, do
 
 
 	// DN is not in the past
-	if ((WN_LSF - WN_E)*7 + (DN - DN_E) > 0)
+	if ((WN_LSF - eph.WN)*7 + (DN*24*3600 - eph.t_oe) > 0)
 	{
 		if (abs(dt_LSF) > 6*3600)
 		{
 			// 1) user's present time does not fall within the time span which starts six hours prior to the leap second time and ends six hours after the leap second time
-			dt_UTC = dt_LS + A_0UTC + A_1UTC * (t_E - t_ot + 604800 * (WN_E - WN_ot)) + A_2UTC * (t_E - t_ot + 604800 * (WN_E - WN_ot)) * (t_E - t_ot + 604800 * (WN_E - WN_ot));
-			t_UTC = fmod((t_E - dt_UTC),86400);
+			dt_UTC = dt_LS + A_0UTC + A_1UTC * (eph.t_oe - t_ot + 604800 * (eph.WN - WN_ot)) + A_2UTC * (time_bds - t_ot + 604800 * (eph.WN - WN_ot)) * (time_bds - t_ot + 604800 * (eph.WN - WN_ot));
+			t_UTC = fmod((time_bds - dt_UTC),86400);
 		}
 		else
 		{
 			// 2) user's present time falls within the time span which starts six hours prior to the leap second time and ends six hours after the leap second time
-			W = fmod((t_E - dt_UTC - 43200),86400) + 43200;
+			W = fmod((time_bds - dt_UTC - 43200),86400) + 43200;
 			t_UTC = fmod(W,(86400 + dt_LSF - dt_LS));
 		}
 	}
 	else
 	{
 		 // 3) DN is in the past
-		dt_UTC = dt_LSF + A_0UTC + A_1UTC * (t_E - t_ot + 604800 * (WN_E - WN_ot)) + A_2UTC * (t_E - t_ot + 604800 * (WN_E - WN_ot)) * (t_E - t_ot + 604800 * (WN_E - WN_ot));
-		t_UTC = fmod((t_E - dt_UTC),86400);
+		dt_UTC = dt_LSF + A_0UTC + A_1UTC * (eph.t_oe - t_ot + 604800 * (eph.WN - WN_ot)) + A_2UTC * (time_bds - t_ot + 604800 * (eph.WN - WN_ot)) * (time_bds - t_ot + 604800 * (eph.WN - WN_ot));
+		t_UTC = fmod((time_bds - dt_UTC),86400);
 	}
 
     return t_UTC;

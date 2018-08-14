@@ -39,6 +39,7 @@
 #include "gps_navigation_message.h"
 #include "gps_cnav_navigation_message.h"
 #include "glonass_gnav_navigation_message.h"
+#include "beidou_cnav2_navigation_message.h"
 #include <boost/asio.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <bitset>
@@ -201,6 +202,8 @@ public:
      */
     int read_MT1020(const std::string& message, Glonass_Gnav_Ephemeris& glonass_gnav_eph, Glonass_Gnav_Utc_Model& glonass_gnav_utc_model);
 
+    std::string print_MT1030(const Beidou_Cnav2_Ephemeris& bds_cnav2_eph, const Beidou_Cnav2_Utc_Model& utc_model);
+
     /*!
      * \brief Prints message type 1029 (Unicode Text String)
      */
@@ -340,6 +343,7 @@ public:
      * \return Returns the time period in which GLONASS signals have been continually tracked.
      */
     unsigned int lock_time(const Glonass_Gnav_Ephemeris& eph, double obs_time, const Gnss_Synchro& gnss_synchro);
+    unsigned int lock_time(const Beidou_Cnav2_Ephemeris& eph, double obs_time, const Gnss_Synchro& gnss_synchro);
 
     std::string bin_to_hex(const std::string& s) const;  //<! Returns a string of hexadecimal symbols from a string of binary symbols
     std::string hex_to_bin(const std::string& s) const;  //<! Returns a string of binary symbols from a string of hexadecimal symbols
@@ -486,12 +490,14 @@ private:
     boost::posix_time::ptime compute_GPS_time(const Gps_CNAV_Ephemeris& eph, double obs_time) const;
     boost::posix_time::ptime compute_Galileo_time(const Galileo_Ephemeris& eph, double obs_time) const;
     boost::posix_time::ptime compute_GLONASS_time(const Glonass_Gnav_Ephemeris& eph, double obs_time) const;
+    boost::posix_time::ptime compute_BEIDOU_time(const Beidou_Cnav2_Ephemeris& eph, double obs_time) const;
     boost::posix_time::ptime gps_L1_last_lock_time[64];
     boost::posix_time::ptime gps_L2_last_lock_time[64];
     boost::posix_time::ptime gal_E1_last_lock_time[64];
     boost::posix_time::ptime gal_E5_last_lock_time[64];
     boost::posix_time::ptime glo_L1_last_lock_time[64];
     boost::posix_time::ptime glo_L2_last_lock_time[64];
+    boost::posix_time::ptime bds_E5_last_lock_time[64];
     unsigned int lock_time_indicator(unsigned int lock_time_period_s);
     unsigned int msm_lock_time_indicator(unsigned int lock_time_period_s);
     unsigned int msm_extended_lock_time_indicator(unsigned int lock_time_period_s);

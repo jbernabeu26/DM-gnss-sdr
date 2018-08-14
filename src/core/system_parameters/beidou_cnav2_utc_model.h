@@ -122,7 +122,7 @@ public:
      * \brief Converts from BEIDOUT to GPST
 
      */
-    double beidt_to_utc(Beidou_Cnav2_Ephemeris const&eph, double t_E, double WN_E, double DN_E);
+    double beidt_to_utc(Beidou_Cnav2_Ephemeris const&eph, double time_bds);
 
 
     /*!

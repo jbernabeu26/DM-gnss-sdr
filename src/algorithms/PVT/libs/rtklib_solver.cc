@@ -432,7 +432,10 @@ bool rtklib_solver::get_PVT(const std::map<int, Gnss_Synchro>& gnss_observables_
 								beidou_cnav2_ephemeris_iter = beidou_cnav2_ephemeris_map.find(gnss_observables_iter->second.PRN);
 								if (beidou_cnav2_ephemeris_iter != beidou_cnav2_ephemeris_map.cend())
 									{
-										// Needs more work
+										eph_data[valid_obs] = eph_to_rtklib(beidou_cnav2_ephemeris_iter->second);
+
+
+									// Needs more work
 									/*
 										//convert ephemeris from GNSS-SDR class to RTKLIB structure
 										eph_data[valid_obs] = eph_to_rtklib(beidou_cnav2_ephemeris_iter->second);
@@ -456,6 +459,38 @@ bool rtklib_solver::get_PVT(const std::map<int, Gnss_Synchro>& gnss_observables_
                     DLOG(INFO) << "Hybrid observables: Unknown GNSS";
                     break;
                 }
+
+
+
+            /////
+            // GPS L1
+            // 1 GPS - find the ephemeris for the current GPS SV observation. The SV PRN ID is the map key
+            std::string sig_(gnss_observables_iter->second.Signal);
+            if (sig_.compare("1C") == 0)
+                {
+                    gps_ephemeris_iter = gps_ephemeris_map.find(gnss_observables_iter->second.PRN);
+                    if (gps_ephemeris_iter != gps_ephemeris_map.cend())
+                        {
+                            //convert ephemeris from GNSS-SDR class to RTKLIB structure
+                            eph_data[valid_obs] = eph_to_rtklib(gps_ephemeris_iter->second);
+                            //convert observation from GNSS-SDR class to RTKLIB structure
+                            obsd_t newobs = {{0, 0}, '0', '0', {}, {}, {}, {}, {}, {}};
+                            obs_data[valid_obs + glo_valid_obs] = insert_obs_to_rtklib(newobs,
+                                gnss_observables_iter->second,
+                                gps_ephemeris_iter->second.i_GPS_week,
+                                0);
+                            valid_obs++;
+                        }
+                    else  // the ephemeris are not available for this SV
+                        {
+                            DLOG(INFO) << "No ephemeris data for SV " << gnss_observables_iter->first;
+                        }
+                }
+
+
+
+
+            ////
 
         }
 

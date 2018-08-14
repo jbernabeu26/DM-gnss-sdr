@@ -105,6 +105,7 @@ private:
     int d_rtcm_MT1045_rate_ms;  //!< Galileo Broadcast Ephemeris
     int d_rtcm_MT1019_rate_ms;  //!< GPS Broadcast Ephemeris (orbits)
     int d_rtcm_MT1020_rate_ms;  //!< GLONASS Broadcast Ephemeris (orbits)
+    int d_rtcm_MT1030_rate_ms;  //!< Beidou B2a Broadcast Ephemeris (orbits)
     int d_rtcm_MT1077_rate_ms;  //!< The type 7 Multiple Signal Message format for the USA’s GPS system, popular
     int d_rtcm_MT1087_rate_ms;  //!< GLONASS MSM7. The type 7 Multiple Signal Message format for the Russian GLONASS system
     int d_rtcm_MT1097_rate_ms;  //!< Galileo MSM7. The type 7 Multiple Signal Message format for Europe’s Galileo system
@@ -129,6 +130,7 @@ private:
     double last_pvt_display_T_rx_s;
     double last_RTCM_1019_output_time;
     double last_RTCM_1020_output_time;
+    double last_RTCM_1030_output_time;
     double last_RTCM_1045_output_time;
     double last_RTCM_1077_output_time;
     double last_RTCM_1087_output_time;

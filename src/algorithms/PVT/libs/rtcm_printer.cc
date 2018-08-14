@@ -245,6 +245,7 @@ bool Rtcm_Printer::Print_Rtcm_MSM(unsigned int msm_number, const Gps_Ephemeris& 
     const Gps_CNAV_Ephemeris& gps_cnav_eph,
     const Galileo_Ephemeris& gal_eph,
     const Glonass_Gnav_Ephemeris& glo_gnav_eph,
+	const Beidou_Cnav2_Ephemeris& bds_cnav2_eph,
     double obs_time,
     const std::map<int, Gnss_Synchro>& observables,
     unsigned int clock_steering_indicator,
