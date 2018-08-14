@@ -44,7 +44,7 @@
 
 std::deque<bool> b2ad_g1_shift(std::deque<bool> g1)
 {
-	//!<Polynomial: G1 = 1 + x + x^5 + x^11 + x^13;
+	// Polynomial: G1 = 1 + x + x^5 + x^11 + x^13;
 	std::deque<bool> out(g1.begin(), g1.end() - 1);
 	out.push_front(g1[12] xor g1[10] xor g1[4] xor g1[0]);
 	return out;
@@ -54,7 +54,7 @@ std::deque<bool> b2ad_g1_shift(std::deque<bool> g1)
 
 std::deque<bool> b2ap_g1_shift(std::deque<bool> g1)
 {
-	//!<Polynomial: G1 = 1 + x^3 + x^6 + x^7 + x^13;
+	// Polynomial: G1 = 1 + x^3 + x^6 + x^7 + x^13;
 	std::deque<bool> out(g1.begin(), g1.end() - 1);
 	out.push_front(g1[12] xor g1[6] xor g1[5] xor g1[2]);
 	return out;
@@ -63,7 +63,7 @@ std::deque<bool> b2ap_g1_shift(std::deque<bool> g1)
 
 std::deque<bool> b2ad_g2_shift(std::deque<bool> g2)
 {
-	//!<Polynomial: G2 = 1 + x^3 + x^5 + x^9 + x^11 +x^12 +x^13;
+	// Polynomial: G2 = 1 + x^3 + x^5 + x^9 + x^11 +x^12 +x^13;
     std::deque<bool> out(g2.begin(), g2.end() - 1);
     out.push_front(g2[12] xor g2[11] xor g2[10] xor g2[8] xor g2[4] xor g2[2]);
     return out;
@@ -72,13 +72,13 @@ std::deque<bool> b2ad_g2_shift(std::deque<bool> g2)
 
 std::deque<bool> b2ap_g2_shift(std::deque<bool> g2)
 {
-	/*Polynomial: G2 = 1 + x + x^5 + x^7 gsco+ x^8 +x^12 +x^13;*/
+	//Polynomial: G2 = 1 + x + x^5 + x^7 gsco+ x^8 +x^12 +x^13;
     std::deque<bool> out(g2.begin(), g2.end() - 1);
     out.push_front(g2[12] xor g2[11] xor g2[7] xor g2[6] xor g2[4] xor g2[0]);
     return out;
 }
 
-//!<Make the B2a data G1 sequence
+// Make the B2a data G1 sequence
 std::deque<bool> make_b2ad_g1()
 {
     std::deque<bool> g1 = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
@@ -88,7 +88,7 @@ std::deque<bool> make_b2ad_g1()
         {
             g1_seq[i] = g1[12];
             g1 = b2ad_g1_shift(g1);
-            //!<reset the g1 register
+            // reset the g1 register
             if (i==8189)
             {
             	g1 = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
@@ -97,7 +97,7 @@ std::deque<bool> make_b2ad_g1()
     return g1_seq;
 }
 
-//!<Make the B2a data G2 sequence.
+// Make the B2a data G2 sequence.
 std::deque<bool> make_b2ad_g2(std::deque<bool> g2)
 {
     std::deque<bool> g2_seq(BEIDOU_B2ad_CODE_LENGTH_CHIPS, 0);
@@ -110,7 +110,7 @@ std::deque<bool> make_b2ad_g2(std::deque<bool> g2)
     return g2_seq;
 }
 
-//!<Make the B2a pilot G1 sequence
+// Make the B2a pilot G1 sequence
 std::deque<bool> make_b2ap_g1()
 {
     std::deque<bool> g1 = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
@@ -120,18 +120,18 @@ std::deque<bool> make_b2ap_g1()
         {
             g1_seq[i] = g1[12];
             g1 = b2ap_g1_shift(g1);
-            //!< TODO this sequence should most likely also be reset here
-			//!<reset the g1 register
-			/*if (i==8189)
+
+			//reset the g1 register
+			if (i==8189)
 			{
 				g1 = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
-			}*/
+			}
         }
 
     return g1_seq;
 }
 
-//!<Make the B2a pilot G2 sequence
+// Make the B2a pilot G2 sequence
 std::deque<bool> make_b2ap_g2(std::deque<bool> g2)
 {
     std::deque<bool> g2_seq(BEIDOU_B2ap_CODE_LENGTH_CHIPS, 0);
@@ -144,7 +144,7 @@ std::deque<bool> make_b2ap_g2(std::deque<bool> g2)
     return g2_seq;
 }
 
-//!<Generate the B2a data PRN codes
+// Generate the B2a data PRN codes
 void make_b2ad(int32_t* _dest, int prn)
 {
 	std::deque<bool> g2 = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
@@ -164,10 +164,10 @@ void make_b2ad(int32_t* _dest, int prn)
         }
 }
 
-//!<Generate a version of the B2a Data code with the secondary code included
+// Generate a version of the B2a Data code with the secondary code included
 void make_b2adSecondary(int32_t* _dest, int prn)
 {
-	//!<This is specific to the Beidou B2a data code
+	// This is specific to the Beidou B2a data code
 	bool Secondary1 = 0;
 	bool Secondary2 = 1;
 	std::deque<bool> g2 = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
@@ -193,7 +193,7 @@ void make_b2adSecondary(int32_t* _dest, int prn)
 		}
 }
 
-//!<Generate the B2a pilot code
+// Generate the B2a pilot code
 void make_b2ap(int32_t* _dest, int prn)
 {
 
@@ -213,7 +213,7 @@ void make_b2ap(int32_t* _dest, int prn)
 }
 
 
-//!<Generate a complex version of the B2a data code with the Secondary code
+// Generate a complex version of the B2a data code with the Secondary code
 void beidou_b2ad_code_gen_complexSecondary(std::complex<float>* _dest, unsigned int _prn)
 {
     int32_t* _code = new int32_t[BEIDOU_B2ad_CODE_LENGTH_CHIPS*BEIDOU_B2ad_SECONDARY_CODE_LENGTH];
@@ -231,7 +231,7 @@ void beidou_b2ad_code_gen_complexSecondary(std::complex<float>* _dest, unsigned 
     delete[] _code;
 }
 
-//!<Generate a complex version of the B2a data code
+// Generate a complex version of the B2a data code
 void beidou_b2ad_code_gen_complex(std::complex<float>* _dest, unsigned int _prn)
 {
     int32_t* _code = new int32_t[BEIDOU_B2ad_CODE_LENGTH_CHIPS];
@@ -249,7 +249,7 @@ void beidou_b2ad_code_gen_complex(std::complex<float>* _dest, unsigned int _prn)
     delete[] _code;
 }
 
-//!<Generate a float version of the B2a data code
+// Generate a float version of the B2a data code
 void beidou_b2ad_code_gen_float(float* _dest, unsigned int _prn)
 {
     int32_t* _code = new int32_t[BEIDOU_B2ad_CODE_LENGTH_CHIPS];
@@ -288,7 +288,7 @@ void beidou_b2ad_code_gen_complex_sampled(std::complex<float>* _dest, unsigned i
 
     //--- Find time constants --------------------------------------------------
     _ts = 1.0 / static_cast<float>(_fs);                   // Sampling period in sec
-    _tc = 1.0 / static_cast<float>(BEIDOU_B2ad_CODE_RATE_HZ);  // C/A chip period in sec
+    _tc = 1.0 / static_cast<float>(BEIDOU_B2ad_CODE_RATE_HZ);  // code chip period in sec
 
     for (signed int i = 0; i < _samplesPerCode; i++)
         {
@@ -332,7 +332,7 @@ void beidou_b2ad_code_gen_complex_sampledSecondary(std::complex<float>* _dest, u
 
     //--- Find time constants --------------------------------------------------
     _ts = 1.0 / static_cast<float>(_fs);                   // Sampling period in sec
-    _tc = 1.0 / static_cast<float>(BEIDOU_B2ad_CODE_RATE_HZ);  // C/A chip period in sec
+    _tc = 1.0 / static_cast<float>(BEIDOU_B2ad_CODE_RATE_HZ);  // code chip period in sec
 
     for (signed int i = 0; i < _samplesPerCode; i++)
         {
@@ -356,14 +356,14 @@ void beidou_b2ad_code_gen_complex_sampledSecondary(std::complex<float>* _dest, u
     delete[] _code;
 }
 
-//!<Generates a complex version of the B2a pilot code
+// Generates a complex version of the B2a pilot code
 void beidou_b2ap_code_gen_complex(std::complex<float>* _dest, unsigned int _prn)
 {
     int32_t* _code = new int32_t[BEIDOU_B2ap_CODE_LENGTH_CHIPS];
 
     if (_prn > 0 and _prn < 63)
         {
-            make_b2ap(_code, _prn);//todo -1
+            make_b2ap(_code, _prn);
         }
 
     for (signed int i = 0; i < BEIDOU_B2ap_CODE_LENGTH_CHIPS; i++)
@@ -374,7 +374,7 @@ void beidou_b2ap_code_gen_complex(std::complex<float>* _dest, unsigned int _prn)
     delete[] _code;
 }
 
-//!<Generates a float version of the B2a pilot code
+// Generates a float version of the B2a pilot code
 void beidou_b2ap_code_gen_float(float* _dest, unsigned int _prn)
 {
     int32_t* _code = new int32_t[BEIDOU_B2ap_CODE_LENGTH_CHIPS];
@@ -422,7 +422,7 @@ void beidou_b2ap_code_gen_complex_sampled(std::complex<float>* _dest, unsigned i
             //--- Make index array to read B2a pilot code values -------------------------
             _codeValueIndex = ceil((_ts * (static_cast<float>(i) + 1)) / _tc) - 1;
 
-            //--- Make the digitized version of the L2C code -----------------------
+            //--- Make the digitized version of the B2a code -----------------------
             if (i == _samplesPerCode - 1)
                 {
                     //--- Correct the last index (due to number rounding issues) -----------

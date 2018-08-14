@@ -143,7 +143,7 @@ void BeidouB2aDllPllTrackingTest::init()
     config->set_property("GNSS-SDR.internal_fs_sps", "25000000");
     config->set_property("Tracking_5C.item_type", "gr_complex");
     config->set_property("Tracking_5C.dump", "false");
-    config->set_property("Tracking_5C.dump_filename", "../Beidou_tracking_ch_");
+    config->set_property("Tracking_5C.dump_filename", "/media/sf_VMShare/VMShare/B2a_UT_tracking_ch_");
     config->set_property("Tracking_5C.implementation", "Beidou_B2a_DLL_PLL_Tracking");
     config->set_property("Tracking_5C.early_late_space_chips", "0.5");
     config->set_property("Tracking_5C.order", "2");
@@ -157,31 +157,30 @@ TEST_F(BeidouB2aDllPllTrackingTest, ValidationOfResults)
     std::chrono::time_point<std::chrono::system_clock> start, end;
     std::chrono::duration<double> elapsed_seconds(0.0);
     int fs_in = 25000000;
-    int nsamples = fs_in * 9;//TODO not sure?
+    int nsamples = fs_in * 1;
 
     init();
     queue = gr::msg_queue::make(0);
     top_block = gr::make_top_block("Tracking test");
     std::shared_ptr<TrackingInterface> tracking = std::make_shared<BeidouB2aDllPllTracking>(config.get(), "Tracking_5C", 1, 1);
     boost::shared_ptr<BeidouB2aDllPllTrackingTest_msg_rx> msg_rx = BeidouB2aDllPllTrackingTest_msg_rx_make();
-
+    std::cout << "We got to here 0 " << std::endl;
     gnss_synchro.Acq_delay_samples = 18718;//todo adjust.
     gnss_synchro.Acq_doppler_hz = 410;//todo adjust.
     gnss_synchro.Acq_samplestamp_samples = 0;//todo adjust.
-
+    std::cout << "We got to here 1 " << std::endl;
     ASSERT_NO_THROW({
         tracking->set_channel(gnss_synchro.Channel_ID);
     }) << "Failure setting channel.";
-
+    std::cout << "We got to here 2 " << std::endl;
     ASSERT_NO_THROW({
         tracking->set_gnss_synchro(&gnss_synchro);
     }) << "Failure setting gnss_synchro.";
-
+    std::cout << "We got to here 3 " << std::endl;
     ASSERT_NO_THROW({
         tracking->connect(top_block);
     }) << "Failure connecting tracking to the top_block.";
-
-
+    std::cout << "We got to here 4 " << std::endl;
     ASSERT_NO_THROW({
         //gr::analog::sig_source_c::sptr source = gr::analog::sig_source_c::make(fs_in, gr::analog::GR_SIN_WAVE, 1000, 1, gr_complex(0));
         std::string path = std::string(TEST_PATH);
@@ -195,15 +194,16 @@ TEST_F(BeidouB2aDllPllTrackingTest, ValidationOfResults)
         top_block->connect(tracking->get_right_block(), 0, sink, 0);
         top_block->msg_connect(tracking->get_right_block(), pmt::mp("events"), msg_rx, pmt::mp("events"));
     }) << "Failure connecting the blocks of tracking test.";
-
+    std::cout << "We got to here 5 " << std::endl;
     tracking->start_tracking();
-
+    std::cout << "We got to here 6 " << std::endl;
     EXPECT_NO_THROW({
         start = std::chrono::system_clock::now();
         top_block->run();  // Start threads and wait
         end = std::chrono::system_clock::now();
         elapsed_seconds = end - start;
     }) << "Failure running the top_block.";
+    std::cout << "We got to here 7 " << std::endl;
 
     // TODO: Verify tracking results
     std::cout << "Tracked " << nsamples << " samples in " << elapsed_seconds.count() * 1e6 << " microseconds" << std::endl;

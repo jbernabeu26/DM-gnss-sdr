@@ -138,14 +138,14 @@ void BeidouB2adPcpsAcquisitionTest::init()
     config->set_property("GNSS-SDR.internal_fs_sps", "25000000");
     config->set_property("Acquisition_5C.item_type", "gr_complex");
     config->set_property("Acquisition_5C.if", "0");
-    config->set_property("Acquisition_5C.coherent_integration_time_ms", "1");
+    config->set_property("Acquisition_5C.coherent_integration_time_ms", "5");
     config->set_property("Acquisition_5C.dump", "true");
-    config->set_property("Acquisition_5C.dump_filename", "./acquisition");
+    config->set_property("Acquisition_5C.dump_filename", "/media/sf_VMShare/VMShare/B2aUT_acquisition");
     config->set_property("Acquisition_5C.implementation", "Beidou_B2ad_PCPS_Acquisition");
     config->set_property("Acquisition_5C.pfa", "0.01");
     config->set_property("Acquisition_5C.doppler_max", "10000");
     config->set_property("Acquisition_5C.doppler_step", "50");
-    config->set_property("Acquisition_5C.bit_transition_flag", "false");
+    config->set_property("Acquisition_5C.bit_transition_flag", "true");
     //config->set_property("Acquisition_5C.repeat_satellite", "true");
 
 }
@@ -161,7 +161,7 @@ TEST_F(BeidouB2adPcpsAcquisitionTest, Instantiate)
 TEST_F(BeidouB2adPcpsAcquisitionTest, ConnectAndRun)
 {
     int fs_in = 25000000;
-    int nsamples = 25000;
+    int nsamples = 500000;
     std::chrono::time_point<std::chrono::system_clock> begin, end;
     std::chrono::duration<double> elapsed_seconds(0);
     gr::msg_queue::sptr queue = gr::msg_queue::make(0);
