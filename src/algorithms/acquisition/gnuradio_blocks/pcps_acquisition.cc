@@ -742,6 +742,7 @@ void pcps_acquisition::acquisition_core(uint64_t samp_count)
                                     send_positive_acquisition();
                                     d_step_two = false;
                                     d_state = 0;  // Positive acquisition
+
                                 }
                             else
                                 {
@@ -755,6 +756,7 @@ void pcps_acquisition::acquisition_core(uint64_t samp_count)
                         {
                             send_positive_acquisition();
                             d_state = 0;  // Positive acquisition
+
                         }
                 }
             else
@@ -783,6 +785,8 @@ void pcps_acquisition::acquisition_core(uint64_t samp_count)
                                     send_positive_acquisition();
                                     d_step_two = false;
                                     d_state = 0;  // Positive acquisition
+
+
                                 }
                             else
                                 {
@@ -795,6 +799,7 @@ void pcps_acquisition::acquisition_core(uint64_t samp_count)
                         {
                             send_positive_acquisition();
                             d_state = 0;  // Positive acquisition
+
                         }
                 }
             else

@@ -49,6 +49,8 @@
 #include "gps_l2c_signal.h"
 #include "GPS_L5.h"
 #include "gps_l5_signal.h"
+#include "BEIDOU_B2A.h"
+#include "beidou_b2a_signal_processing.h"
 #include <boost/lexical_cast.hpp>
 #include <glog/logging.h>
 #include <gnuradio/io_signature.h>
@@ -78,7 +80,7 @@ void dll_pll_veml_tracking::forecast(int noutput_items,
 
 
 dll_pll_veml_tracking::dll_pll_veml_tracking(const Dll_Pll_Conf &conf_) : gr::block("dll_pll_veml_tracking", gr::io_signature::make(1, 1, sizeof(gr_complex)),
-                                                                              gr::io_signature::make(1, 1, sizeof(Gnss_Synchro)))
+                                                                       gr::io_signature::make(1, 1, sizeof(Gnss_Synchro)))
 {
     trk_parameters = conf_;
     // Telemetry bit synchronization message port input
@@ -105,6 +107,7 @@ dll_pll_veml_tracking::dll_pll_veml_tracking(const Dll_Pll_Conf &conf_) : gr::bl
     map_signal_pretty_name["2G"] = "L2 C/A";
     map_signal_pretty_name["5X"] = "E5a";
     map_signal_pretty_name["L5"] = "L5";
+    map_signal_pretty_name["5C"] = "B2a";
 
     signal_pretty_name = map_signal_pretty_name[signal_type];
 
@@ -268,6 +271,34 @@ dll_pll_veml_tracking::dll_pll_veml_tracking(const Dll_Pll_Conf &conf_) : gr::bl
                     d_symbols_per_bit = 0;
                 }
         }
+    else if (trk_parameters.system == 'C')
+            {
+                systemName = "Beidou";
+			if (signal_type.compare("5C") == 0)
+					{
+						d_signal_carrier_freq = BEIDOU_B2a_FREQ_HZ;
+						d_code_period = BEIDOU_B2ad_PERIOD;
+						d_code_chip_rate = BEIDOU_B2ad_CODE_RATE_HZ;
+						d_symbols_per_bit = BEIDOU_B2a_SAMPLES_PER_SYMBOL;
+						d_correlation_length_ms = 1;
+						d_code_samples_per_chip = 1;
+						d_code_length_chips = static_cast<unsigned int>(BEIDOU_B2ad_CODE_LENGTH_CHIPS);
+						d_secondary = true;
+						if (trk_parameters.track_pilot)
+							{
+								d_secondary_code_length = static_cast<unsigned int>(BEIDOU_B2ap_SECONDARY_CODE_LENGTH);
+								d_secondary_code_string = const_cast<std::string *>(&BEIDOU_B2ap_SECONDARY_CODE_STR);
+								signal_pretty_name = signal_pretty_name + "Pilot";
+								interchange_iq = true;
+							}
+						else
+							{
+								d_secondary_code_length = static_cast<unsigned int>(BEIDOU_B2ad_SECONDARY_CODE_LENGTH);
+								d_secondary_code_string = const_cast<std::string *>(&BEIDOU_B2ad_SECONDARY_CODE_STR);
+								signal_pretty_name = signal_pretty_name + "Data";
+								interchange_iq = false;
+							}
+					}	
     else
         {
             LOG(WARNING) << "Invalid System argument when instantiating tracking blocks";
@@ -436,6 +467,9 @@ void dll_pll_veml_tracking::start_tracking()
     double T_prn_diff_seconds = T_prn_true_seconds - T_prn_mod_seconds;
     double N_prn_diff = acq_trk_diff_seconds / T_prn_true_seconds;
     double corrected_acq_phase_samples = std::fmod(d_acq_code_phase_samples + T_prn_diff_seconds * N_prn_diff * trk_parameters.fs_in, T_prn_true_samples);
+		//!<TODO Sign was reversed here so that 10.23 MHz signals can step properly into tracking. Double check that this works with all FE's
+		//!<    double corrected_acq_phase_samples = std::fmod(d_acq_code_phase_samples - T_prn_diff_seconds * N_prn_diff * trk_parameters.fs_in, T_prn_true_samples);
+
     if (corrected_acq_phase_samples < 0.0)
         {
             corrected_acq_phase_samples += T_prn_mod_samples;
@@ -471,6 +505,20 @@ void dll_pll_veml_tracking::start_tracking()
             else
                 {
                     gps_l5i_code_gen_float(d_tracking_code, d_acquisition_gnss_synchro->PRN);
+                }
+        }
+    else if (systemName.compare("Beidou") == 0 and signal_type.compare("5C") == 0)
+        {
+            if (trk_parameters.track_pilot)
+                {
+                    beidou_b2ap_code_gen_float(d_tracking_code, d_acquisition_gnss_synchro->PRN);
+                    beidou_b2ad_code_gen_float(d_data_code, d_acquisition_gnss_synchro->PRN);
+                    d_Prompt_Data[0] = gr_complex(0.0, 0.0);
+                    correlator_data_cpu.set_local_code_and_taps(d_code_length_chips, d_data_code, d_prompt_data_shift);
+                }
+            else
+                {
+            		beidou_b2ad_code_gen_float(d_tracking_code, d_acquisition_gnss_synchro->PRN);
                 }
         }
     else if (systemName.compare("Galileo") == 0 and signal_type.compare("1B") == 0)
@@ -1268,7 +1316,7 @@ int dll_pll_veml_tracking::general_work(int noutput_items __attribute__((unused)
                 d_acc_carrier_phase_rad -= d_carrier_phase_step_rad * d_acq_code_phase_samples;
                 d_state = 2;
                 d_sample_counter += static_cast<uint64_t>(samples_offset);  // count for the processed samples
-                consume_each(samples_offset);                               // shift input to perform alignment with local replica
+                consume_each(samples_offset);        // shift input to perform alignment with local replica
                 return 0;
             }
         case 2:  // Wide tracking and symbol synchronization
@@ -1326,24 +1374,24 @@ int dll_pll_veml_tracking::general_work(int noutput_items __attribute__((unused)
                                         if ((d_symbol_history.size() == GPS_CA_PREAMBLE_LENGTH_SYMBOLS))  // and (d_make_correlation or !d_flag_frame_sync))
                                             {
                                                 for (uint32_t i = 0; i < GPS_CA_PREAMBLE_LENGTH_SYMBOLS; i++)
-                                                    {
+                                            {
                                                         if (d_symbol_history.at(i) < 0)  // symbols clipping
                                                             {
                                                                 corr_value -= d_gps_l1ca_preambles_symbols[i];
-                                                            }
-                                                        else
-                                                            {
-                                                                corr_value += d_gps_l1ca_preambles_symbols[i];
-                                                            }
-                                                    }
-                                            }
-                                        if (corr_value == GPS_CA_PREAMBLE_LENGTH_SYMBOLS)
-                                            {
-                                                //std::cout << "Preamble detected at tracking!" << std::endl;
-                                                next_state = true;
                                             }
                                         else
                                             {
+                                                                corr_value += d_gps_l1ca_preambles_symbols[i];
+                                            }
+                                    }
+                                            }
+                                        if (corr_value == GPS_CA_PREAMBLE_LENGTH_SYMBOLS)
+                                    {
+                                                //std::cout << "Preamble detected at tracking!" << std::endl;
+                                                next_state = true;
+                                    }
+                                else
+                                    {
                                                 next_state = false;
                                             }
                                     }

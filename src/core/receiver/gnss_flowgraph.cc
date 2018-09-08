@@ -473,6 +473,12 @@ void GNSSFlowgraph::connect()
                             available_GLO_2G_signals_.remove(signal_value);
                             break;
 
+                      case evGLO_5C:
+                            gnss_system = "Beidou";
+                            signal_value = Gnss_Signal(Gnss_Satellite(gnss_system, sat), gnss_signal);
+                            available_GLO_5C_signals_.remove(signal_value);
+                            break;
+
                         default:
                             LOG(ERROR) << "This should not happen :-(";
                             gnss_system = "GPS";
@@ -863,10 +869,14 @@ void GNSSFlowgraph::apply_action(unsigned int who, unsigned int what)
                             available_GLO_2G_signals_.push_back(channels_[who]->get_signal());
                             break;
 
+                        case evBDS_5C:
+                            available_BDS_5C_signals_.push_back(channels_[who]->get_signal());
+                            break;
+
                         default:
                             LOG(ERROR) << "This should not happen :-(";
                             break;
-                        }
+                }
                 }
             channels_state_[who] = 0;
             acq_channels_count_--;
@@ -929,6 +939,10 @@ void GNSSFlowgraph::apply_action(unsigned int who, unsigned int what)
 
                 case evGLO_2G:
                     available_GLO_2G_signals_.remove(channels_[who]->get_signal());
+                    break;
+
+                case evBDS_5C:
+                    available_BDS_5C_signals_.remove(channels_[who]->get_signal());
                     break;
 
                 default:
@@ -1010,6 +1024,11 @@ void GNSSFlowgraph::apply_action(unsigned int who, unsigned int what)
                                 case evGLO_2G:
                                     available_GLO_2G_signals_.push_back(channels_[who]->get_signal());
                                     break;
+
+                                case evBDS_5C:
+                                    available_BDS_5C_signals_.push_back(channels_[who]->get_signal());
+                                    break;
+
 
                                 default:
                                     LOG(ERROR) << "This should not happen :-(";
@@ -1145,6 +1164,7 @@ void GNSSFlowgraph::init()
     mapStringValues_["5X"] = evGAL_5X;
     mapStringValues_["1G"] = evGLO_1G;
     mapStringValues_["2G"] = evGLO_2G;
+		mapStringValues_["5C"] = evBDS_5C;
 
     // fill the signals queue with the satellites ID's to be searched by the acquisition
     set_signals_list();
@@ -1190,6 +1210,10 @@ void GNSSFlowgraph::set_signals_list()
 
     // Removing satellites sharing same frequency number(1 and 5, 2 and 6, 3 and 7, 4 and 6, 11 and 15, 12 and 16, 14 and 18, 17 and 21
     std::set<unsigned int> available_glonass_prn = {1, 2, 3, 4, 9, 10, 11, 12, 18, 19, 20, 21, 24};
+
+    //!< Create the lists of BEIDOU satellites
+    //!< BeiDou-S3 satellites contain the modernized signals( PRN 31 33 34 32 35). BeiDou-3 contain the new satellites PRN 19 20 27 28 21 22 29 and 30
+    std::set<unsigned int> available_beidou_prn = {19, 21, 22, 27, 28, 30, 31, 33, 34, 32, 35, 29};
 
     std::string sv_list = configuration_->property("Galileo.prns", std::string(""));
 
@@ -1254,6 +1278,21 @@ void GNSSFlowgraph::set_signals_list()
                     available_glonass_prn = tmp_set;
                 }
         }
+    sv_list = configuration_->property("Beidou.prns", std::string(""));
+
+    if (sv_list.length() > 0)
+	   {
+		   // Reset the available prns:
+		   std::set<unsigned int> tmp_set;
+		   boost::tokenizer<> tok(sv_list);
+		   std::transform(tok.begin(), tok.end(), std::inserter(tmp_set, tmp_set.begin()),
+			   boost::lexical_cast<unsigned int, std::string>);
+
+		   if (tmp_set.size() > 0)
+			   {
+				   available_beidou_prn = tmp_set;
+			   }
+	   }
 
     if (configuration_->property("Channels_1C.count", 0) > 0)
         {
@@ -1358,6 +1397,18 @@ void GNSSFlowgraph::set_signals_list()
                         std::string("2G")));
                 }
         }
+    if (configuration_->property("Channels_5C.count", 0) > 0)
+        {
+            // Loop to create BEIDOU B2a signals
+            for (available_gnss_prn_iter = available_beidou_prn.begin();
+                 available_gnss_prn_iter != available_beidou_prn.end();
+                 available_gnss_prn_iter++)
+                {
+                    available_GNSS_signals_.push_back(Gnss_Signal(
+                        Gnss_Satellite(std::string("Beidou"), *available_gnss_prn_iter),
+                        std::string("5C")));
+                }
+        }
 }
 
 
@@ -1400,7 +1451,7 @@ Gnss_Signal GNSSFlowgraph::search_next_signal(std::string searched_signal, bool 
             if (!pop)
                 {
                     available_GPS_1C_signals_.push_back(result);
-                }
+        }
             if (tracked)
                 {
                     if ((configuration_->property("Channels_2S.count", 0) > 0) or (configuration_->property("Channels_L5.count", 0) > 0))
@@ -1587,20 +1638,39 @@ Gnss_Signal GNSSFlowgraph::search_next_signal(std::string searched_signal, bool 
                 }
             break;
 
+        case evBDS_5C:
+            result = available_BDS_5C_signals_.front();
+            available_BDS_5C_signals_.pop_front();
+            if (!pop)
+                {
+                    available_BDS_5C_signals_.push_back(result);
+                }
+            if (tracked)
+                {
+										// Do nothing as of now
+/*
+                    if (configuration_->property("Channels_B1.count", 0) > 0)
+                        {
+                            for (unsigned int ch = 0; ch < channels_count_; ch++)
+                                {
+                                    if ((channels_[ch]->get_signal().get_satellite() == result.get_satellite()) and (channels_[ch]->get_signal().get_signal_str().compare("B1") != 0)) untracked_satellite = false;
+                                }
+                            if (untracked_satellite)
+                                {
+                                    Gnss_Signal gs = Gnss_Signal(result.get_satellite(), "B1");
+                                    available_BDS_1G_signals_.remove(gs);
+                                    available_GLO_1G_signals_.push_front(gs);
+                                }
+                        }
+*/
+                }
+            break;
+
         default:
             LOG(ERROR) << "This should not happen :-(";
             result = available_GPS_1C_signals_.front();
-            if (pop)
-                {
-                    available_GPS_1C_signals_.pop_front();
-                }
-            break;
-        }
-    return result;
-}
-
-std::vector<std::string> GNSSFlowgraph::split_string(const std::string &s, char delim)
-{
+    if (pop)
+        {
     std::vector<std::string> v;
     std::stringstream ss(s);
     std::string item;

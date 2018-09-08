@@ -130,6 +130,7 @@ DECLARE_string(log_dir);
 #include "unit-tests/signal-processing-blocks/acquisition/galileo_e5a_pcps_acquisition_gsoc2014_gensource_test.cc"
 #include "unit-tests/signal-processing-blocks/acquisition/glonass_l1_ca_pcps_acquisition_gsoc2017_test.cc"
 // #include "unit-tests/signal-processing-blocks/acquisition/glonass_l2_ca_pcps_acquisition_test.cc"
+#include "unit-tests/signal-processing-blocks/acquisition/beidou_b2ad_pcps_acquisition_test.cc"
 
 #if OPENCL_BLOCKS_TEST
 #include "unit-tests/signal-processing-blocks/acquisition/gps_l1_ca_pcps_opencl_acquisition_gsoc2013_test.cc"
@@ -143,6 +144,7 @@ DECLARE_string(log_dir);
 #include "unit-tests/signal-processing-blocks/tracking/cpu_multicorrelator_test.cc"
 #include "unit-tests/signal-processing-blocks/tracking/cpu_multicorrelator_real_codes_test.cc"
 #include "unit-tests/signal-processing-blocks/tracking/bayesian_estimation_test.cc"
+#include "unit-tests/signal-processing-blocks/tracking/beidou_b2a_dll_pll_tracking_test.cc"
 
 #if CUDA_BLOCKS_TEST
 #include "unit-tests/signal-processing-blocks/tracking/gpu_multicorrelator_test.cc"
@@ -177,6 +179,9 @@ DECLARE_string(log_dir);
 #include "unit-tests/signal-processing-blocks/telemetry_decoder/gps_l1_ca_telemetry_decoder_test.cc"
 #include "unit-tests/signal-processing-blocks/observables/hybrid_observables_test.cc"
 #endif
+
+#include "unit-tests/system-parameters/glonass_gnav_ephemeris_test.cc"
+#include "unit-tests/system-parameters/glonass_gnav_nav_message_test.cc"
 
 #endif  // UNIT_TESTING_MINIMAL
 
