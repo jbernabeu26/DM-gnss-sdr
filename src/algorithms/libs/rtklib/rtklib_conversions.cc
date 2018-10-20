@@ -74,6 +74,71 @@ obsd_t insert_obs_to_rtklib(obsd_t& rtklib_obs, const Gnss_Synchro& gnss_synchro
     return rtklib_obs;
 }
 
+eph_t eph_to_rtklib(const Beidou_Cnav2_Ephemeris& eph, const Beidou_Cnav2_Utc_Model& utc)
+{
+    eph_t rtklib_sat = {0, 0, 0, 0, 0, 0, 0, 0, {0, 0}, {0, 0}, {0, 0}, 0.0, 0.0, 0.0, 0.0, 0.0,
+        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, {}, {}, 0.0, 0.0 };
+    rtklib_sat.sat = int(eph.PRN);
+    if (eph.SatType==3)
+    {
+    	rtklib_sat.A = 27906100 + eph.dA; // MEO Orbit Satellite
+    }
+    else
+    {
+    	rtklib_sat.A = 42162200 + eph.dA; // IGSO/GEO Orbit Satellite
+    }
+    rtklib_sat.M0 = eph.M_0;
+    rtklib_sat.deln = eph.dn_0;
+    rtklib_sat.OMG0 = eph.Omega_0;
+    rtklib_sat.OMGd = eph.Omega_dot;
+    rtklib_sat.omg = eph.omega;
+    rtklib_sat.i0 = eph.i_0;
+    rtklib_sat.idot = eph.i_0_dot;
+    rtklib_sat.e = eph.e;
+    rtklib_sat.Adot = eph.A_dot;
+    rtklib_sat.ndot = eph.dn_0_dot;
+
+    rtklib_sat.week = eph.WN; /* week of tow */
+    rtklib_sat.cic = eph.C_IC;
+    rtklib_sat.cis = eph.C_IS;
+    rtklib_sat.cuc = eph.C_UC;
+    rtklib_sat.cus = eph.C_US;
+    rtklib_sat.crc = eph.C_RC;
+    rtklib_sat.crs = eph.C_RS;
+    rtklib_sat.f0 = utc.a_0;
+    rtklib_sat.f1 = utc.a_1;
+    rtklib_sat.f2 = utc.a_2;
+    rtklib_sat.tgd[0] = eph.T_GDB2ap;
+    rtklib_sat.tgd[1] = 0.0;
+    rtklib_sat.tgd[2] = 0.0;
+    rtklib_sat.tgd[3] = 0.0;
+    rtklib_sat.toes = eph.t_oe;
+    rtklib_sat.toc = gpst2time(rtklib_sat.week, eph.t_oe);
+    rtklib_sat.ttr = gpst2time(rtklib_sat.week, eph.SOW);
+
+    /* adjustment for week handover */
+    double tow, toc;
+    tow = time2gpst(rtklib_sat.ttr, &rtklib_sat.week);
+    toc = time2gpst(rtklib_sat.toc, NULL);
+    if (rtklib_sat.toes < tow - 302400.0)
+        {
+            rtklib_sat.week++;
+            tow -= 604800.0;
+        }
+    else if (rtklib_sat.toes > tow + 302400.0)
+        {
+            rtklib_sat.week--;
+            tow += 604800.0;
+        }
+    rtklib_sat.toe = gpst2time(rtklib_sat.week, rtklib_sat.toes);
+    rtklib_sat.toc = gpst2time(rtklib_sat.week, toc);
+    rtklib_sat.ttr = gpst2time(rtklib_sat.week, tow);
+
+    return rtklib_sat;
+}
+
+
+
 geph_t eph_to_rtklib(const Glonass_Gnav_Ephemeris& glonass_gnav_eph, const Glonass_Gnav_Utc_Model& gnav_clock_model)
 {
     double week, sec;

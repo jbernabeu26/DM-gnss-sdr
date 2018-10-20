@@ -43,7 +43,7 @@
  * \brief This class represents a GNSS satellite.
  *
  * It contains information about the space vehicles currently operational
- * of GPS, Glonass, SBAS and Galileo constellations.
+ * of GPS, Glonass, SBAS, BEIDOU and Galileo constellations.
  */
 class Gnss_Satellite
 {

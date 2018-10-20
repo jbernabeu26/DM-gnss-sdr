@@ -37,10 +37,10 @@
 #include "dll_pll_conf.h"
 #include "beidou_b2a_dll_pll_tracking.h"
 #include "configuration_interface.h"
-#include "BEIDOU_B2A.h"
 #include "gnss_sdr_flags.h"
 #include "display.h"
 #include <glog/logging.h>
+#include "BEIDOU_B2a.h"
 
 
 using google::LogMessage;

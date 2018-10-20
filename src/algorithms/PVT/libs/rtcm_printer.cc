@@ -233,6 +233,14 @@ bool Rtcm_Printer::Print_Rtcm_MT1020(const Glonass_Gnav_Ephemeris& glonass_gnav_
 }
 
 
+bool Rtcm_Printer::Print_Rtcm_MT1030(const Beidou_Cnav2_Ephemeris& bds_cnav2_eph, const Beidou_Cnav2_Utc_Model& utc_model)
+{
+    std::string m1030 = rtcm->print_MT1030(bds_cnav2_eph, utc_model);
+    Rtcm_Printer::Print_Message(m1030);
+    return true;
+}
+
+
 bool Rtcm_Printer::Print_Rtcm_MT1045(const Galileo_Ephemeris& gal_eph)
 {
     std::string m1045 = rtcm->print_MT1045(gal_eph);
@@ -245,6 +253,7 @@ bool Rtcm_Printer::Print_Rtcm_MSM(uint32_t msm_number, const Gps_Ephemeris& gps_
     const Gps_CNAV_Ephemeris& gps_cnav_eph,
     const Galileo_Ephemeris& gal_eph,
     const Glonass_Gnav_Ephemeris& glo_gnav_eph,
+	const Beidou_Cnav2_Ephemeris& bds_cnav2_eph,
     double obs_time,
     const std::map<int32_t, Gnss_Synchro>& observables,
     uint32_t clock_steering_indicator,
@@ -391,6 +400,12 @@ uint32_t Rtcm_Printer::lock_time(const Galileo_Ephemeris& eph, double obs_time, 
 
 
 uint32_t Rtcm_Printer::lock_time(const Glonass_Gnav_Ephemeris& eph, double obs_time, const Gnss_Synchro& gnss_synchro)
+{
+    return rtcm->lock_time(eph, obs_time, gnss_synchro);
+}
+
+
+uint32_t Rtcm_Printer::lock_time(const Beidou_Cnav2_Ephemeris& eph, double obs_time, const Gnss_Synchro& gnss_synchro)
 {
     return rtcm->lock_time(eph, obs_time, gnss_synchro);
 }

@@ -52,6 +52,10 @@
 #include "glonass_gnav_almanac.h"
 #include "glonass_gnav_utc_model.h"
 
+#include "beidou_cnav2_ephemeris.h"
+#include "beidou_cnav2_almanac.h"
+#include "beidou_cnav2_utc_model.h"
+
 #include <boost/thread.hpp>
 #include <boost/make_shared.hpp>
 #include <boost/filesystem.hpp>
@@ -158,6 +162,7 @@ DECLARE_string(log_dir);
 #include "unit-tests/signal-processing-blocks/telemetry_decoder/galileo_fnav_inav_decoder_test.cc"
 #include "unit-tests/system-parameters/glonass_gnav_ephemeris_test.cc"
 #include "unit-tests/system-parameters/glonass_gnav_nav_message_test.cc"
+#include "unit-tests/system-parameters/beidou_cnav2_nav_message_test.cc"
 
 #include "unit-tests/signal-processing-blocks/pvt/rtcm_test.cc"
 #include "unit-tests/signal-processing-blocks/pvt/rtcm_printer_test.cc"

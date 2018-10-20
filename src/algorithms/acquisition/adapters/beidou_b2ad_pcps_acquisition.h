@@ -43,7 +43,7 @@
 #include <volk_gnsssdr/volk_gnsssdr.h>
 #include <string>
 
-#include "BEIDOU_B2A.h"
+#include "BEIDOU_B2a.h"
 #include "beidou_b2a_signal_processing.h"
 
 

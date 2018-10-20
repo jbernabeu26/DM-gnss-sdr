@@ -54,6 +54,7 @@ set(ACQ_ADAPTER_HEADERS
     galileo_e5a_pcps_acquisition.h
     glonass_l1_ca_pcps_acquisition.h
     glonass_l2_ca_pcps_acquisition.h
+    beidou_b2ad_pcps_acquisition.h
 )
 
 

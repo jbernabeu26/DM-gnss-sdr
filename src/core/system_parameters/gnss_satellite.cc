@@ -552,11 +552,8 @@ std::string Gnss_Satellite::what_block(const std::string& system_, uint32_t PRN_
                 case 135:
                     block_ = std::string("WAAS");  // WAAS Galaxy 15
                     break;
-                case 136:
-                    block_ = std::string("EGNOS");  // EGNOS Operational Platform. SES-5 (a.k.a. Sirius 5 or Astra 4B)
-                    break;
-                case 138:
-                    block_ = std::string("WAAS");  // WAAS Anik F1R
+                case 126:
+                    block_ = std::string("EGNOS");  // EGNOS IOR-W  currently used by Industry to perform various tests on the system.
                     break;
                 default:
                     block_ = std::string("Unknown");

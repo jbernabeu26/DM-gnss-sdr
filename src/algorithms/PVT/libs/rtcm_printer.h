@@ -114,11 +114,23 @@ public:
      */
     bool Print_Rtcm_MT1020(const Glonass_Gnav_Ephemeris& glo_gnav_eph, const Glonass_Gnav_Utc_Model& utc_model);
 
+    /*!
+     * \brief Prints BEIDOU CNAV2 Ephemeris
+     * \details This BEIDOU message should be broadcast every 2 minutes
+     * \note Code added as part of GSoC 2018 program
+     * \param glonass_gnav_eph GLONASS GNAV Broadcast Ephemeris
+     * \param utc_model BEIDOU CNAV2 Clock Information broadcast in string 5
+     * \return true or false upon operation success
+     */		
+	bool Print_Rtcm_MT1030(const Beidou_Cnav2_Ephemeris& bds_cnav2_eph, const Beidou_Cnav2_Utc_Model& utc_model);
+
+
     bool Print_Rtcm_MSM(uint32_t msm_number,
         const Gps_Ephemeris& gps_eph,
         const Gps_CNAV_Ephemeris& gps_cnav_eph,
         const Galileo_Ephemeris& gal_eph,
         const Glonass_Gnav_Ephemeris& glo_gnav_eph,
+		const Beidou_Cnav2_Ephemeris& bds_cnav2_eph,
         double obs_time,
         const std::map<int32_t, Gnss_Synchro>& observables,
         uint32_t clock_steering_indicator,
@@ -131,7 +143,9 @@ public:
     uint32_t lock_time(const Gps_Ephemeris& eph, double obs_time, const Gnss_Synchro& gnss_synchro);
     uint32_t lock_time(const Gps_CNAV_Ephemeris& eph, double obs_time, const Gnss_Synchro& gnss_synchro);
     uint32_t lock_time(const Galileo_Ephemeris& eph, double obs_time, const Gnss_Synchro& gnss_synchro);
-    /*!
+	uint32_t lock_time(const Beidou_Cnav2_Ephemeris& eph, double obs_time, const Gnss_Synchro& gnss_synchro);
+        
+		/*!
      * \brief Locks time for logging given GLONASS GNAV Broadcast Ephemeris
      * \note Code added as part of GSoC 2017 program
      * \params glonass_gnav_eph GLONASS GNAV Broadcast Ephemeris
