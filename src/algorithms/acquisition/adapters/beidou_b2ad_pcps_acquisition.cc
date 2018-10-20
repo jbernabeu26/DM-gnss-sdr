@@ -44,8 +44,8 @@ BeidouB2adPcpsAcquisition::BeidouB2adPcpsAcquisition(
     ConfigurationInterface* configuration, std::string role,
     unsigned int in_streams, unsigned int out_streams) : role_(role), in_streams_(in_streams), out_streams_(out_streams)
 {
-    pcpsconf_t acq_parameters;
-    configuration_ = configuration;
+	Acq_Conf acq_parameters = Acq_Conf();
+	configuration_ = configuration;
     std::string default_item_type = "gr_complex";
     std::string default_dump_filename = "./data/acquisition.dat";
 
@@ -57,7 +57,6 @@ BeidouB2adPcpsAcquisition::BeidouB2adPcpsAcquisition(
     fs_in_ = configuration_->property("GNSS-SDR.internal_fs_sps", fs_in_deprecated);
     acq_parameters.fs_in = fs_in_;
     if_ = configuration_->property(role + ".if", 0);
-    acq_parameters.freq = if_;
     dump_ = configuration_->property(role + ".dump", false);
     acq_parameters.dump = dump_;
     blocking_ = configuration_->property(role + ".blocking", true);
