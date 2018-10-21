@@ -76,10 +76,10 @@ set(SYSTEM_PARAMETERS_HEADERS
      glonass_gnav_almanac.h
      glonass_gnav_utc_model.h
      glonass_gnav_navigation_message.h
-   	 beidou_cnav2_navigation_message.cc
-   	 beidou_cnav2_ephemeris.cc
-   	 beidou_cnav2_almanac.cc
-   	 beidou_cnav2_utc_model.cc
+   	 beidou_cnav2_navigation_message.h
+   	 beidou_cnav2_ephemeris.h
+   	 beidou_cnav2_almanac.h
+   	 beidou_cnav2_utc_model.h
      display.h
      Galileo_E1.h
      Galileo_E5a.h

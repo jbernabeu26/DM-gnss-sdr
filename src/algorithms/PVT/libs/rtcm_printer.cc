@@ -235,8 +235,11 @@ bool Rtcm_Printer::Print_Rtcm_MT1020(const Glonass_Gnav_Ephemeris& glonass_gnav_
 
 bool Rtcm_Printer::Print_Rtcm_MT1030(const Beidou_Cnav2_Ephemeris& bds_cnav2_eph, const Beidou_Cnav2_Utc_Model& utc_model)
 {
-    std::string m1030 = rtcm->print_MT1030(bds_cnav2_eph, utc_model);
-    Rtcm_Printer::Print_Message(m1030);
+	// Todo: Need to clear this for beidou b2a processing
+	(void)bds_cnav2_eph;
+	(void)utc_model;
+    //std::string m1030 = rtcm->print_MT1030(bds_cnav2_eph, utc_model);
+    //Rtcm_Printer::Print_Message(m1030);
     return true;
 }
 
@@ -262,6 +265,8 @@ bool Rtcm_Printer::Print_Rtcm_MSM(uint32_t msm_number, const Gps_Ephemeris& gps_
     bool divergence_free,
     bool more_messages)
 {
+	// todo: dealing with warning until rtcm is added to code
+	(void) bds_cnav2_eph;
     std::string msm;
     if (msm_number == 1)
         {
@@ -407,5 +412,9 @@ uint32_t Rtcm_Printer::lock_time(const Glonass_Gnav_Ephemeris& eph, double obs_t
 
 uint32_t Rtcm_Printer::lock_time(const Beidou_Cnav2_Ephemeris& eph, double obs_time, const Gnss_Synchro& gnss_synchro)
 {
-    return rtcm->lock_time(eph, obs_time, gnss_synchro);
+	(void) eph;
+	(void) obs_time;
+	(void) gnss_synchro;
+	// todo: Need to fix this
+    return 0;
 }

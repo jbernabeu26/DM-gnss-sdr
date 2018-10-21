@@ -34,25 +34,19 @@
  *
  */
 
+#include "crc24q.h"
+
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "crc24q.h"
-
-//#ifdef REBUILD_CRC_TABLE
-/*
- * The crc24q code table below can be regenerated with the following code:
- */
-#include <stdio.h>
-#include <stdlib.h>
-
-unsigned table[256];
-
+#define LO(x)	(unsigned char)((x) & 0xff)
+#define MID(x)	(unsigned char)(((x) >> 8) & 0xff)
+#define HI(x)	(unsigned char)(((x) >> 16) & 0xff)
 #define CRCSEED	0		/* could be NZ to detect leading zeros */
 #define CRCPOLY	0x1864CFB	/* encodes all info about the polynomial */
 
-static void crc_init(unsigned table[256])
+void crc_init(unsigned table[256])
 {
     unsigned i, j;
     unsigned h;
@@ -148,10 +142,6 @@ unsigned crc24q_hash(unsigned char *data, int len)
 
     return crc;
 }
-
-#define LO(x)	(unsigned char)((x) & 0xff)
-#define MID(x)	(unsigned char)(((x) >> 8) & 0xff)
-#define HI(x)	(unsigned char)(((x) >> 16) & 0xff)
 
 void crc24q_sign(unsigned char *data, int len)
 {

@@ -37,6 +37,8 @@
 #ifndef _CRC24Q_H_
 #define _CRC24Q_H_
 
+void crc_init(unsigned table[256]);
+
 void crc24q_sign(unsigned char *data, int len);
 
 bool crc24q_check(unsigned char *data, int len);

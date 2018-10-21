@@ -103,6 +103,7 @@
 #include "galileo_e5a_telemetry_decoder.h"
 #include "glonass_l1_ca_telemetry_decoder.h"
 #include "glonass_l2_ca_telemetry_decoder.h"
+#include "beidou_b2a_telemetry_decoder.h"
 #include "sbas_l1_telemetry_decoder.h"
 #include "hybrid_observables.h"
 #include "rtklib_pvt.h"
@@ -788,6 +789,7 @@ std::unique_ptr<GNSSBlockInterface> GNSSBlockFactory::GetChannel_L5(
     return channel_;
 }
 
+
 //********* BEIDOU B2a  CHANNEL *****************
 std::unique_ptr<GNSSBlockInterface> GNSSBlockFactory::GetChannel_5C(
     std::shared_ptr<ConfigurationInterface> configuration,
@@ -854,6 +856,7 @@ std::unique_ptr<GNSSBlockInterface> GNSSBlockFactory::GetChannel_5C(
 
     return channel_;
 }
+
 
 std::unique_ptr<std::vector<std::unique_ptr<GNSSBlockInterface>>> GNSSBlockFactory::GetChannels(
     std::shared_ptr<ConfigurationInterface> configuration, gr::msg_queue::sptr queue)
@@ -2187,6 +2190,12 @@ std::unique_ptr<TelemetryDecoderInterface> GNSSBlockFactory::GetTlmBlock(
     else if (implementation.compare("GPS_L5_Telemetry_Decoder") == 0)
         {
             std::unique_ptr<TelemetryDecoderInterface> block_(new GpsL5TelemetryDecoder(configuration.get(), role, in_streams,
+                out_streams));
+            block = std::move(block_);
+        }
+    else if (implementation.compare("BEIDOU_B2a_Telemetry_Decoder") == 0)
+        {
+            std::unique_ptr<TelemetryDecoderInterface> block_(new BeidouB2aTelemetryDecoder(configuration.get(), role, in_streams,
                 out_streams));
             block = std::move(block_);
         }

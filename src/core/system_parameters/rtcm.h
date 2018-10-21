@@ -203,10 +203,6 @@ public:
      */
     int32_t read_MT1020(const std::string& message, Glonass_Gnav_Ephemeris& glonass_gnav_eph, Glonass_Gnav_Utc_Model& glonass_gnav_utc_model);
 
-    std::string print_MT1030(const Beidou_Cnav2_Ephemeris& beidou_cnav2_eph, const Beidou_Cnav2_Utc_Model& beidou_cnav2_utc_model);
-
-    int32_t read_MT1030(const std::string& message, Beidou_Cnav2_Ephemeris& beidou_cnav2_eph, Beidou_Cnav2_Utc_Model& beidou_cnav2_utc_model);
-
     /*!
      * \brief Prints message type 1029 (Unicode Text String)
      */

@@ -33,7 +33,10 @@
 
 #include "beidou_b2ad_pcps_acquisition.h"
 #include "configuration_interface.h"
+#include "beidou_b2a_signal_processing.h"
+#include "BEIDOU_B2a.h"
 #include "gnss_sdr_flags.h"
+#include "acq_conf.h"
 #include <boost/math/distributions/exponential.hpp>
 #include <glog/logging.h>
 
@@ -236,18 +239,17 @@ void BeidouB2adPcpsAcquisition::connect(gr::top_block_sptr top_block)
 {
     if (item_type_.compare("gr_complex") == 0)
         {
-            top_block->connect(stream_to_vector_, 0, acquisition_, 0);
+    		// nothing to connect
         }
     else if (item_type_.compare("cshort") == 0)
         {
-            top_block->connect(stream_to_vector_, 0, acquisition_, 0);
+    	// nothing to connect
         }
     else if (item_type_.compare("cbyte") == 0)
         {
             top_block->connect(cbyte_to_float_x2_, 0, float_to_complex_, 0);
             top_block->connect(cbyte_to_float_x2_, 1, float_to_complex_, 1);
             top_block->connect(float_to_complex_, 0, stream_to_vector_, 0);
-            top_block->connect(stream_to_vector_, 0, acquisition_, 0);
         }
     else
         {
@@ -260,11 +262,11 @@ void BeidouB2adPcpsAcquisition::disconnect(gr::top_block_sptr top_block)
 {
     if (item_type_.compare("gr_complex") == 0)
         {
-            top_block->disconnect(stream_to_vector_, 0, acquisition_, 0);
+    		// nothing to disconnect
         }
     else if (item_type_.compare("cshort") == 0)
         {
-            top_block->disconnect(stream_to_vector_, 0, acquisition_, 0);
+    		// nothing to disconnect
         }
     else if (item_type_.compare("cbyte") == 0)
         {
@@ -273,7 +275,6 @@ void BeidouB2adPcpsAcquisition::disconnect(gr::top_block_sptr top_block)
             top_block->disconnect(cbyte_to_float_x2_, 0, float_to_complex_, 0);
             top_block->disconnect(cbyte_to_float_x2_, 1, float_to_complex_, 1);
             top_block->disconnect(float_to_complex_, 0, stream_to_vector_, 0);
-            top_block->disconnect(stream_to_vector_, 0, acquisition_, 0);
         }
     else
         {
@@ -286,11 +287,11 @@ gr::basic_block_sptr BeidouB2adPcpsAcquisition::get_left_block()
 {
     if (item_type_.compare("gr_complex") == 0)
         {
-            return stream_to_vector_;
+            return acquisition_;
         }
     else if (item_type_.compare("cshort") == 0)
         {
-            return stream_to_vector_;
+            return acquisition_;
         }
     else if (item_type_.compare("cbyte") == 0)
         {

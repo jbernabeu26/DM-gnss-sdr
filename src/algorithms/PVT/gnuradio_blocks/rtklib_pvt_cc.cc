@@ -691,7 +691,7 @@ int rtklib_pvt_cc::work(int noutput_items, gr_vector_const_void_star& input_item
             uint32_t gps_channel = 0;
             uint32_t gal_channel = 0;
             uint32_t glo_channel = 0;
-						uint32_t bds_channel = 0;
+			uint32_t bds_channel = 0;
 
             gnss_observables_map.clear();
             const Gnss_Synchro** in = reinterpret_cast<const Gnss_Synchro**>(&input_items[0]);  // Get the input buffer pointer
@@ -1933,6 +1933,7 @@ int rtklib_pvt_cc::work(int noutput_items, gr_vector_const_void_star& input_item
                                                                         }
                                                                 }
                                                         }
+                                                    /*
                                                     if (type_of_rx == 32)  // BeiDou B2a
 														{
 															if (flag_write_RTCM_1030_output == true)
@@ -1972,7 +1973,7 @@ int rtklib_pvt_cc::work(int noutput_items, gr_vector_const_void_star& input_item
                                                                                 }
                                                                         }
                                                                 }
-                                                        }
+                                                        }*/
                                                 }
 
                                             if (!b_rtcm_writing_started)  // the first time
