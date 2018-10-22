@@ -32,10 +32,15 @@
 
 
 #include "beidou_b2a_telemetry_decoder_cc.h"
+#include "control_message_factory.h"
+#include "convolutional.h"
+#include "display.h"
+#include "gnss_synchro.h"
 #include <boost/lexical_cast.hpp>
 #include <gnuradio/io_signature.h>
 #include <glog/logging.h>
-//#include <memory>
+#include <volk_gnsssdr/volk_gnsssdr.h>
+#include <iostream>
 
 #define CRC_ERROR_LIMIT 8
 
@@ -65,18 +70,18 @@ beidou_b2a_telemetry_decoder_cc::beidou_b2a_telemetry_decoder_cc(
     d_samples_per_symbol = (BEIDOU_B2a_CODE_RATE_HZ / BEIDOU_B2a_CODE_LENGTH_CHIPS) / BEIDOU_B2a_SYMBOL_RATE_SPS;
 
     // Set the preamble information
-    unsigned short int preambles_bits[BEIDOU_CNAV2_PREAMBLE_LENGTH_BITS] = BEIDOU_CNAV2_PREAMBLE;
+    uint16_t preambles_bits[BEIDOU_CNAV2_PREAMBLE_LENGTH_BITS] = BEIDOU_CNAV2_PREAMBLE;
     // Since preamble rate is different than navigation data rate we use a constant
     d_symbols_per_preamble = BEIDOU_CNAV2_PREAMBLE_LENGTH_SYMBOLS;
 
-    memcpy(static_cast<unsigned short int *>(this->d_preambles_bits), static_cast<unsigned short int *>(preambles_bits), BEIDOU_CNAV2_PREAMBLE_LENGTH_BITS * sizeof(unsigned short int));
+    memcpy(static_cast<uint16_t *>(this->d_preambles_bits), static_cast<uint16_t *>(preambles_bits), BEIDOU_CNAV2_PREAMBLE_LENGTH_BITS * sizeof(uint16_t));
 
     // preamble bits to sampled symbols
-    d_preambles_symbols = static_cast<signed int *>(malloc(sizeof(signed int) * d_symbols_per_preamble));
-    int n = 0;
-    for (int i = 0; i < BEIDOU_CNAV2_PREAMBLE_LENGTH_BITS; i++)
+    d_preambles_symbols = static_cast<int32_t *>(malloc(sizeof(int32_t) * d_symbols_per_preamble));
+    int32_t n = 0;
+    for (int32_t i = 0; i < BEIDOU_CNAV2_PREAMBLE_LENGTH_BITS; i++)
         {
-            for (unsigned int j = 0; j < BEIDOU_CNAV2_TELEMETRY_SYMBOLS_PER_PREAMBLE_BIT; j++)
+            for (uint32_t j = 0; j < BEIDOU_CNAV2_TELEMETRY_SYMBOLS_PER_PREAMBLE_BIT; j++)
                 {
                     if (d_preambles_bits[i] == 1)
                         {
@@ -232,8 +237,8 @@ void beidou_b2a_telemetry_decoder_cc::set_channel(int channel)
 int beidou_b2a_telemetry_decoder_cc::general_work(int noutput_items __attribute__((unused)), gr_vector_int &ninput_items __attribute__((unused)),
     gr_vector_const_void_star &input_items, gr_vector_void_star &output_items)
 {
-    int corr_value = 0;
-    int preamble_diff = 0;
+	int32_t corr_value = 0;
+	int32_t preamble_diff = 0;
 
     Gnss_Synchro **out = reinterpret_cast<Gnss_Synchro **>(&output_items[0]);            // Get the output buffer pointer
     const Gnss_Synchro **in = reinterpret_cast<const Gnss_Synchro **>(&input_items[0]);  // Get the input buffer pointer

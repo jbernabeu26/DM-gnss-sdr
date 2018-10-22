@@ -84,21 +84,21 @@ private:
 
     //!< Preamble decoding
     unsigned short int d_preambles_bits[BEIDOU_CNAV2_PREAMBLE_LENGTH_BITS];
-    int *d_preambles_symbols;
-    unsigned int d_samples_per_symbol;
-    int d_symbols_per_preamble;
+    int32_t 	*d_preambles_symbols;
+    uint32_t 	d_samples_per_symbol;
+    int32_t 	d_symbols_per_preamble;
 
     //!< Storage for incoming data
     std::deque<Gnss_Synchro> d_symbol_history;
 
     //!< Variables for internal functionality
-    long unsigned int d_sample_counter;  //!< Sample counter as an index (1,2,3,..etc) indicating number of samples processed
-    long unsigned int d_preamble_index;  //!< Index of sample number where preamble was found
-    unsigned int d_stat;                 //!< Status of decoder
+    uint64_t d_sample_counter;  //!< Sample counter as an index (1,2,3,..etc) indicating number of samples processed
+    uint64_t d_preamble_index;  //!< Index of sample number where preamble was found
+    uint32_t d_stat;                 //!< Status of decoder
     bool d_flag_frame_sync;              //!< Indicate when a frame sync is achieved
     bool d_flag_parity;                  //!< Flag indicating when parity check was achieved (crc check)
     bool d_flag_preamble;                //!< Flag indicating when preamble was found
-    int d_CRC_error_counter;             //!< Number of failed CRC operations
+    int32_t d_CRC_error_counter;             //!< Number of failed CRC operations
     bool flag_TOW_set;                   //!< Indicates when time of week is set
     double delta_t;                      //!< GPS-GLONASS time offset !!! check
 
@@ -111,7 +111,7 @@ private:
 
     //!< Satellite Information and logging capacity
     Gnss_Satellite d_satellite;
-    int d_channel;
+    int32_t d_channel;
     bool d_dump;
     std::string d_dump_filename;
     std::ofstream d_dump_file;

@@ -36,6 +36,7 @@
 
 #include "telemetry_decoder_interface.h"
 #include "beidou_b2a_telemetry_decoder_cc.h"
+#include "gnss_satellite.h"
 #include <string>
 
 class ConfigurationInterface;
@@ -66,6 +67,7 @@ public:
     void disconnect(gr::top_block_sptr top_block) override;
     gr::basic_block_sptr get_left_block() override;
     gr::basic_block_sptr get_right_block() override;
+
     void set_satellite(const Gnss_Satellite& satellite) override;
     void set_channel(int channel) override { telemetry_decoder_->set_channel(channel); }
     void reset() override
