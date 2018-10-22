@@ -19,14 +19,12 @@
 add_subdirectory(libswiftcnav)
 
 set(TELEMETRY_DECODER_LIB_SOURCES
-     viterbi_decoder.cc
-     crc24q.cc
+     viterbi_decoder.cc     
 )
 
 set(TELEMETRY_DECODER_LIB_HEADERS
      viterbi_decoder.h
      convolutional.h
-     crc24q.h
 )
 
 include_directories(

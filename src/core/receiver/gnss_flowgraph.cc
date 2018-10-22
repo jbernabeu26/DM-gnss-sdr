@@ -1213,7 +1213,7 @@ void GNSSFlowgraph::set_signals_list()
 
     //!< Create the lists of BEIDOU satellites
     //!< BeiDou-S3 satellites contain the modernized signals( PRN 31 33 34 32 35). BeiDou-3 contain the new satellites PRN 19 20 27 28 21 22 29 and 30
-    std::set<unsigned int> available_beidou_prn = {19, 21, 22, 27, 28, 30, 31, 33, 34, 32, 35, 29};
+    std::set<unsigned int> available_beidou_prn = {19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 32, 33};
 
     std::string sv_list = configuration_->property("Galileo.prns", std::string(""));
 
