@@ -40,7 +40,7 @@
 #include "gnss_sdr_flags.h"
 #include "display.h"
 #include <glog/logging.h>
-#include "BEIDOU_B2a.h"
+#include "Beidou_B2a.h"
 
 
 using google::LogMessage;

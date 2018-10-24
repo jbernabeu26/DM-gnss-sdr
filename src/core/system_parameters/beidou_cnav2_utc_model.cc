@@ -78,6 +78,7 @@ double Beidou_Cnav2_Utc_Model::time_of_transmission(Beidou_Cnav2_Almanac const&a
 	c = 2.99792458e8;	// Speed of light [m/s]
 	mu = 3.986004418e14;	// Geocentric gravitational constant [m^3/s^2]
 	F = -2 *sqrt(mu) / (c * c);
+    t=0; // todo: This needs to be fixed
 
 	dt_r = F * eph.e * alm.sqrt_A * sin(E_k);
 
@@ -99,24 +100,24 @@ double Beidou_Cnav2_Utc_Model::beidt_to_utc(Beidou_Cnav2_Ephemeris const&eph, do
 	// DN is not in the past
 	if ((WN_LSF - eph.WN)*7 + (DN*24*3600 - eph.t_oe) > 0)
 	{
-		if (abs(dt_LSF) > 6*3600)
+		if (std::abs(dt_LSF) > 6*3600)
 		{
 			// 1) user's present time does not fall within the time span which starts six hours prior to the leap second time and ends six hours after the leap second time
 			dt_UTC = dt_LS + A_0UTC + A_1UTC * (eph.t_oe - t_ot + 604800 * (eph.WN - WN_ot)) + A_2UTC * (time_bds - t_ot + 604800 * (eph.WN - WN_ot)) * (time_bds - t_ot + 604800 * (eph.WN - WN_ot));
-			t_UTC = fmod((time_bds - dt_UTC),86400);
+			t_UTC = std::fmod((time_bds - dt_UTC),86400);
 		}
 		else
 		{
 			// 2) user's present time falls within the time span which starts six hours prior to the leap second time and ends six hours after the leap second time
-			W = fmod((time_bds - dt_UTC - 43200),86400) + 43200;
-			t_UTC = fmod(W,(86400 + dt_LSF - dt_LS));
+			W = std::fmod((time_bds - dt_UTC - 43200),86400) + 43200;
+			t_UTC = std::fmod(W,(86400 + dt_LSF - dt_LS));
 		}
 	}
 	else
 	{
 		 // 3) DN is in the past
 		dt_UTC = dt_LSF + A_0UTC + A_1UTC * (eph.t_oe - t_ot + 604800 * (eph.WN - WN_ot)) + A_2UTC * (time_bds - t_ot + 604800 * (eph.WN - WN_ot)) * (time_bds - t_ot + 604800 * (eph.WN - WN_ot));
-		t_UTC = fmod((time_bds - dt_UTC),86400);
+		t_UTC = std::fmod((time_bds - dt_UTC),86400);
 	}
 
     return t_UTC;

@@ -33,14 +33,13 @@
 #ifndef GNSS_SDR_BEIDOU_B2A_TELEMETRY_DECODER_CC_H
 #define GNSS_SDR_BEIDOU_B2A_TELEMETRY_DECODER_CC_H
 
-
 #include "beidou_cnav2_navigation_message.h"
 #include "beidou_cnav2_ephemeris.h"
 #include "beidou_cnav2_almanac.h"
 #include "beidou_cnav2_utc_model.h"
 #include "gnss_satellite.h"
 #include "gnss_synchro.h"
-#include "BEIDOU_B2a.h"
+#include "Beidou_B2a.h"
 #include <gnuradio/block.h>
 #include <fstream>
 #include <string>

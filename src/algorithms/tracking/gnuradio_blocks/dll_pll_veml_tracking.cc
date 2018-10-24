@@ -48,6 +48,7 @@
 #include "GPS_L2C.h"
 #include "gps_l2c_signal.h"
 #include "GPS_L5.h"
+#include "Beidou_B2a.h"
 #include "gps_l5_signal.h"
 #include "beidou_b2a_signal_processing.h"
 #include <boost/lexical_cast.hpp>
@@ -60,7 +61,8 @@
 #include <iostream>
 #include <sstream>
 #include <numeric>
-#include "BEIDOU_B2a.h"
+
+
 
 using google::LogMessage;
 

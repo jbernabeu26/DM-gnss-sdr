@@ -31,15 +31,13 @@
  */
 
 #include "beidou_b2a_signal_processing.h"
-
+#include "Beidou_B2a.h"
 #include <cinttypes>
 #include <cmath>
 #include <complex>
 #include <deque>
 #include <iostream>
 #include <fstream>
-#include "BEIDOU_B2a.h"
-
 
 
 std::deque<bool> b2ad_g1_shift(std::deque<bool> g1)

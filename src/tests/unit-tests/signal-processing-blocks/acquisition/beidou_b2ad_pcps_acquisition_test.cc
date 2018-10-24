@@ -49,7 +49,7 @@
 #include "gnss_sdr_valve.h"
 #include "gnss_synchro.h"
 #include "gnuplot_i.h"
-#include "BEIDOU_B2a.h"
+#include "Beidou_B2a.h"
 #include "test_flags.h"
 #include "acquisition_dump_reader.h"
 #include "beidou_b2ad_pcps_acquisition.h"

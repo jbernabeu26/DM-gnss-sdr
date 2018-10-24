@@ -56,7 +56,7 @@
 #include "GPS_L1_CA.h"
 #include "Galileo_E1.h"
 #include "GLONASS_L1_L2_CA.h"
-#include "BEIDOU_B2a.h"
+#include "Beidou_B2a.h"
 #include <glog/logging.h>
 
 

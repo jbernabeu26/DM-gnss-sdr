@@ -86,7 +86,7 @@ set(SYSTEM_PARAMETERS_HEADERS
      Galileo_E1.h
      Galileo_E5a.h
      GLONASS_L1_L2_CA.h
-		 BEIDOU_B2a.h
+		 Beidou_B2a.h
      gnss_frequencies.h
      gnss_obs_codes.h
      gnss_synchro.h

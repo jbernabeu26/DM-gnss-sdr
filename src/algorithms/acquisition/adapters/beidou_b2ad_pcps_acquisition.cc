@@ -34,7 +34,7 @@
 #include "beidou_b2ad_pcps_acquisition.h"
 #include "configuration_interface.h"
 #include "beidou_b2a_signal_processing.h"
-#include "BEIDOU_B2a.h"
+#include "Beidou_B2a.h"
 #include "gnss_sdr_flags.h"
 #include "acq_conf.h"
 #include <boost/math/distributions/exponential.hpp>
