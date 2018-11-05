@@ -1094,6 +1094,7 @@ std::unique_ptr<std::vector<std::unique_ptr<GNSSBlockInterface>>> GNSSBlockFacto
                         queue);
                     channel_absolute_id++;
                 }
+
             //**************** BEIDOU B2a  CHANNELS **********************
             LOG(INFO) << "Getting " << Channels_5C_count << " BEIDOU B2a channels";
             tracking_implementation = configuration->property("Tracking_5C.implementation", default_implementation);
@@ -1780,6 +1781,12 @@ std::unique_ptr<GNSSBlockInterface> GNSSBlockFactory::GetBlock(
     else if (implementation.compare("GLONASS_L2_CA_Telemetry_Decoder") == 0)
         {
             std::unique_ptr<GNSSBlockInterface> block_(new GlonassL2CaTelemetryDecoder(configuration.get(), role, in_streams,
+                out_streams));
+            block = std::move(block_);
+        }
+    else if (implementation.compare("BEIDOU_B2a_Telemetry_Decoder") == 0)
+        {
+            std::unique_ptr<GNSSBlockInterface> block_(new BeidouB2aTelemetryDecoder(configuration.get(), role, in_streams,
                 out_streams));
             block = std::move(block_);
         }
