@@ -53,13 +53,13 @@ public:
         unsigned int out_streams);
 
     virtual ~BeidouB2aTelemetryDecoder();
-    std::string role() override
+    inline std::string role() override
     {
         return role_;
     }
 
     //! Returns "BEIDOU_B2a_Telemetry_Decoder"
-    std::string implementation() override
+    inline std::string implementation() override
     {
         return "BEIDOU_B2a_Telemetry_Decoder";
     }
@@ -69,12 +69,12 @@ public:
     gr::basic_block_sptr get_right_block() override;
 
     void set_satellite(const Gnss_Satellite& satellite) override;
-    void set_channel(int channel) override { telemetry_decoder_->set_channel(channel); }
-    void reset() override
+    inline void set_channel(int channel) override { telemetry_decoder_->set_channel(channel); }
+    inline void reset() override
     {
         return;
     }
-    size_t item_size() override
+    inline size_t item_size() override
     {
         return 0;
     }
