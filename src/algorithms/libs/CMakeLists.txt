@@ -18,7 +18,7 @@
 
 add_subdirectory(rtklib)
 
-    set(GNSS_SPLIBS_SOURCES
+set(GNSS_SPLIBS_SOURCES
         gps_l2c_signal.cc
         gps_l5_signal.cc
         galileo_e1_signal_processing.cc
@@ -39,6 +39,7 @@ add_subdirectory(rtklib)
         conjugate_cc.cc
         conjugate_sc.cc
         conjugate_ic.cc
+        gnss_sdr_create_directory.cc
 )
 
 set(GNSS_SPLIBS_HEADERS
@@ -62,6 +63,7 @@ set(GNSS_SPLIBS_HEADERS
         conjugate_cc.h
         conjugate_sc.h
         conjugate_ic.h
+        gnss_sdr_create_directory.h
         gnss_circular_deque.h
 )
 
@@ -75,7 +77,7 @@ if(ENABLE_FPGA)
     set(GNSS_SPLIBS_HEADERS ${GNSS_SPLIBS_HEADERS}
         gnss_sdr_time_counter.h
         gnss_sdr_fpga_sample_counter.h
-    )
+	)
 	
 endif(ENABLE_FPGA)
 
@@ -84,7 +86,7 @@ if(OPENCL_FOUND)
                             opencl/fft_execute.cc # Needs OpenCL
                             opencl/fft_setup.cc # Needs OpenCL
                             opencl/fft_kernelstring.cc # Needs OpenCL
-       )
+    )
        
     set(GNSS_SPLIBS_HEADERS ${GNSS_SPLIBS_HEADERS}
                             opencl/fft_execute.h # Needs OpenCL

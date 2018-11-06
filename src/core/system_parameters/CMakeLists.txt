@@ -20,29 +20,30 @@ set(SYSTEM_PARAMETERS_SOURCES
      gnss_satellite.cc
      gnss_signal.cc
      gps_navigation_message.cc
-	 gps_ephemeris.cc
-	 gps_iono.cc
-	 gps_almanac.cc
-	 gps_utc_model.cc
-	 gps_acq_assist.cc
-	 gps_ref_time.cc
-	 gps_ref_location.cc
-	 galileo_utc_model.cc
-	 galileo_ephemeris.cc
-	 galileo_almanac.cc
-	 galileo_iono.cc
-	 galileo_navigation_message.cc
-	 sbas_ephemeris.cc
-	 galileo_fnav_message.cc
-	 gps_cnav_ephemeris.cc
-	 gps_cnav_navigation_message.cc
-	 gps_cnav_iono.cc
-	 gps_cnav_utc_model.cc
-	 rtcm.cc
-   glonass_gnav_ephemeris.cc
-   glonass_gnav_almanac.cc
-   glonass_gnav_utc_model.cc
-   glonass_gnav_navigation_message.cc
+     gps_ephemeris.cc
+     gps_iono.cc
+     gps_almanac.cc
+     gps_utc_model.cc
+     gps_acq_assist.cc
+     gps_ref_time.cc
+     gps_ref_location.cc
+     galileo_utc_model.cc
+     galileo_ephemeris.cc
+     galileo_almanac.cc
+     galileo_almanac_helper.cc
+     galileo_iono.cc
+     galileo_navigation_message.cc
+     sbas_ephemeris.cc
+     galileo_fnav_message.cc
+     gps_cnav_ephemeris.cc
+     gps_cnav_navigation_message.cc
+     gps_cnav_iono.cc
+     gps_cnav_utc_model.cc
+     rtcm.cc
+     glonass_gnav_ephemeris.cc
+     glonass_gnav_almanac.cc
+     glonass_gnav_utc_model.cc
+     glonass_gnav_navigation_message.cc
    beidou_cnav2_navigation_message.cc
    beidou_cnav2_ephemeris.cc
    beidou_cnav2_almanac.cc
@@ -64,6 +65,7 @@ set(SYSTEM_PARAMETERS_HEADERS
      galileo_utc_model.h
      galileo_ephemeris.h
      galileo_almanac.h
+     galileo_almanac_helper.h
      galileo_iono.h
      galileo_navigation_message.h
      sbas_ephemeris.h
@@ -103,7 +105,6 @@ include_directories(
      ${CMAKE_SOURCE_DIR}/src/core/receiver
      ${CMAKE_SOURCE_DIR}/src/algorithms/PVT/libs
      ${CMAKE_SOURCE_DIR}/src/algorithms/libs/rtklib
-     ${CMAKE_SOURCE_DIR}/src/algorithms/telemetry_decoder/libs
      ${GLOG_INCLUDE_DIRS}
      ${Boost_INCLUDE_DIRS}
      ${GFlags_INCLUDE_DIRS}

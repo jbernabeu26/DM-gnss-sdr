@@ -48,9 +48,10 @@
 #include "GPS_L2C.h"
 #include "gps_l2c_signal.h"
 #include "GPS_L5.h"
-#include "Beidou_B2a.h"
 #include "gps_l5_signal.h"
+#include "Beidou_B2a.h"
 #include "beidou_b2a_signal_processing.h"
+#include "gnss_sdr_create_directory.h"
 #include <boost/lexical_cast.hpp>
 #include <glog/logging.h>
 #include <gnuradio/io_signature.h>
@@ -61,8 +62,6 @@
 #include <iostream>
 #include <sstream>
 #include <numeric>
-
-
 
 using google::LogMessage;
 
@@ -83,7 +82,7 @@ void dll_pll_veml_tracking::forecast(int noutput_items,
 
 
 dll_pll_veml_tracking::dll_pll_veml_tracking(const Dll_Pll_Conf &conf_) : gr::block("dll_pll_veml_tracking", gr::io_signature::make(1, 1, sizeof(gr_complex)),
-                                                                       gr::io_signature::make(1, 1, sizeof(Gnss_Synchro)))
+                                                                              gr::io_signature::make(1, 1, sizeof(Gnss_Synchro)))
 {
     trk_parameters = conf_;
     // Telemetry bit synchronization message port input
@@ -449,6 +448,42 @@ dll_pll_veml_tracking::dll_pll_veml_tracking(const Dll_Pll_Conf &conf_) : gr::bl
             d_carr_ph_history.resize(1);
             d_code_ph_history.resize(1);
         }
+
+    d_dump = trk_parameters.dump;
+    d_dump_mat = trk_parameters.dump_mat and d_dump;
+    if (d_dump)
+        {
+            d_dump_filename = trk_parameters.dump_filename;
+            std::string dump_path;
+            // Get path
+            if (d_dump_filename.find_last_of("/") != std::string::npos)
+                {
+                    std::string dump_filename_ = d_dump_filename.substr(d_dump_filename.find_last_of("/") + 1);
+                    dump_path = d_dump_filename.substr(0, d_dump_filename.find_last_of("/"));
+                    d_dump_filename = dump_filename_;
+                }
+            else
+                {
+                    dump_path = std::string(".");
+                }
+            if (d_dump_filename.empty())
+                {
+                    d_dump_filename = "trk_channel_";
+                }
+            // remove extension if any
+            if (d_dump_filename.substr(1).find_last_of(".") != std::string::npos)
+                {
+                    d_dump_filename = d_dump_filename.substr(0, d_dump_filename.find_last_of("."));
+                }
+
+            d_dump_filename = dump_path + boost::filesystem::path::preferred_separator + d_dump_filename;
+            // create directory
+            if (!gnss_sdr_create_directory(dump_path))
+                {
+                    std::cerr << "GNSS-SDR cannot create dump files for the tracking block. Wrong permissions?" << std::endl;
+                    d_dump = false;
+                }
+        }
 }
 
 
@@ -643,17 +678,9 @@ dll_pll_veml_tracking::~dll_pll_veml_tracking()
                     LOG(WARNING) << "Exception in destructor " << ex.what();
                 }
         }
-    if (trk_parameters.dump)
+    if (d_dump_mat)
         {
-            if (d_channel == 0)
-                {
-                    std::cout << "Writing .mat files ...";
-                }
             save_matfile();
-            if (d_channel == 0)
-                {
-                    std::cout << " done." << std::endl;
-                }
         }
     try
         {
@@ -979,7 +1006,7 @@ void dll_pll_veml_tracking::save_correlation_results()
 
 void dll_pll_veml_tracking::log_data(bool integrating)
 {
-    if (trk_parameters.dump)
+    if (d_dump)
         {
             // Dump results to file
             float prompt_I;
@@ -1111,10 +1138,16 @@ int32_t dll_pll_veml_tracking::save_matfile()
     int32_t epoch_size_bytes = sizeof(uint64_t) + sizeof(double) * number_of_double_vars +
                                sizeof(float) * number_of_float_vars + sizeof(uint32_t);
     std::ifstream dump_file;
+    std::string dump_filename_ = d_dump_filename;
+    // add channel number to the filename
+    dump_filename_.append(boost::lexical_cast<std::string>(d_channel));
+    // add extension
+    dump_filename_.append(".dat");
+    std::cout << "Generating .mat file for " << dump_filename_ << std::endl;
     dump_file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
     try
         {
-            dump_file.open(trk_parameters.dump_filename.c_str(), std::ios::binary | std::ios::ate);
+            dump_file.open(dump_filename_.c_str(), std::ios::binary | std::ios::ate);
         }
     catch (const std::ifstream::failure &e)
         {
@@ -1219,7 +1252,7 @@ int32_t dll_pll_veml_tracking::save_matfile()
     // WRITE MAT FILE
     mat_t *matfp;
     matvar_t *matvar;
-    std::string filename = trk_parameters.dump_filename;
+    std::string filename = dump_filename_;
     filename.erase(filename.length() - 4, 4);
     filename.append(".mat");
     matfp = Mat_CreateVer(filename.c_str(), NULL, MAT_FT_MAT73);
@@ -1347,17 +1380,23 @@ void dll_pll_veml_tracking::set_channel(uint32_t channel)
     d_channel = channel;
     LOG(INFO) << "Tracking Channel set to " << d_channel;
     // ############# ENABLE DATA FILE LOG #################
-    if (trk_parameters.dump)
+    if (d_dump)
         {
+            std::string dump_filename_ = d_dump_filename;
+            // add channel number to the filename
+            dump_filename_.append(boost::lexical_cast<std::string>(d_channel));
+            // add extension
+            dump_filename_.append(".dat");
+
             if (!d_dump_file.is_open())
                 {
                     try
                         {
-                            trk_parameters.dump_filename.append(boost::lexical_cast<std::string>(d_channel));
-                            trk_parameters.dump_filename.append(".dat");
+                            //trk_parameters.dump_filename.append(boost::lexical_cast<std::string>(d_channel));
+                            //trk_parameters.dump_filename.append(".dat");
                             d_dump_file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-                            d_dump_file.open(trk_parameters.dump_filename.c_str(), std::ios::out | std::ios::binary);
-                            LOG(INFO) << "Tracking dump enabled on channel " << d_channel << " Log file: " << trk_parameters.dump_filename.c_str();
+                            d_dump_file.open(dump_filename_.c_str(), std::ios::out | std::ios::binary);
+                            LOG(INFO) << "Tracking dump enabled on channel " << d_channel << " Log file: " << dump_filename_.c_str();
                         }
                     catch (const std::ifstream::failure &e)
                         {
@@ -1374,6 +1413,12 @@ void dll_pll_veml_tracking::set_gnss_synchro(Gnss_Synchro *p_gnss_synchro)
     d_acquisition_gnss_synchro = p_gnss_synchro;
 }
 
+
+void dll_pll_veml_tracking::stop_tracking()
+{
+    gr::thread::scoped_lock l(d_setlock);
+    d_state = 0;
+}
 
 int dll_pll_veml_tracking::general_work(int noutput_items __attribute__((unused)), gr_vector_int &ninput_items,
     gr_vector_const_void_star &input_items, gr_vector_void_star &output_items)
@@ -1405,7 +1450,7 @@ int dll_pll_veml_tracking::general_work(int noutput_items __attribute__((unused)
                 d_acc_carrier_phase_rad -= d_carrier_phase_step_rad * d_acq_code_phase_samples;
                 d_state = 2;
                 d_sample_counter += static_cast<uint64_t>(samples_offset);  // count for the processed samples
-                consume_each(samples_offset);        // shift input to perform alignment with local replica
+                consume_each(samples_offset);                               // shift input to perform alignment with local replica
                 return 0;
             }
         case 2:  // Wide tracking and symbol synchronization
@@ -1463,24 +1508,24 @@ int dll_pll_veml_tracking::general_work(int noutput_items __attribute__((unused)
                                         if ((d_symbol_history.size() == GPS_CA_PREAMBLE_LENGTH_SYMBOLS))  // and (d_make_correlation or !d_flag_frame_sync))
                                             {
                                                 for (uint32_t i = 0; i < GPS_CA_PREAMBLE_LENGTH_SYMBOLS; i++)
-                                            {
+                                                    {
                                                         if (d_symbol_history.at(i) < 0)  // symbols clipping
                                                             {
                                                                 corr_value -= d_gps_l1ca_preambles_symbols[i];
+                                                            }
+                                                        else
+                                                            {
+                                                                corr_value += d_gps_l1ca_preambles_symbols[i];
+                                                            }
+                                                    }
+                                            }
+                                        if (corr_value == GPS_CA_PREAMBLE_LENGTH_SYMBOLS)
+                                            {
+                                                //std::cout << "Preamble detected at tracking!" << std::endl;
+                                                next_state = true;
                                             }
                                         else
                                             {
-                                                                corr_value += d_gps_l1ca_preambles_symbols[i];
-                                            }
-                                    }
-                                            }
-                                        if (corr_value == GPS_CA_PREAMBLE_LENGTH_SYMBOLS)
-                                    {
-                                                //std::cout << "Preamble detected at tracking!" << std::endl;
-                                                next_state = true;
-                                    }
-                                else
-                                    {
                                                 next_state = false;
                                             }
                                     }
