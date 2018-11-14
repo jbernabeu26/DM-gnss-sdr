@@ -45,6 +45,11 @@
 
 using google::LogMessage;
 
+void BeidouB2aDllPllTracking::stop_tracking()
+{
+    tracking_->stop_tracking();
+}
+
 BeidouB2aDllPllTracking::BeidouB2aDllPllTracking(
     ConfigurationInterface* configuration, std::string role,
     unsigned int in_streams, unsigned int out_streams) : role_(role), in_streams_(in_streams), out_streams_(out_streams)

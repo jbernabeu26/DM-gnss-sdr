@@ -101,11 +101,11 @@ const double BEIDOU_LEAP_SECONDS = -33; // uniform scale and 33 seconds behind T
 //const double BEIDOU_STARTOFFSET_ms = 68.802;  //[ms] Initial sign. travel time (this cannot go here)
 
 // NAVIGATION MESSAGE DEMODULATION AND DECODING
-#define BEIDOU_CNAV2_PREAMBLE                                                                    \
+//#define BEIDOU_CNAV2_PREAMBLE                                                                    \
     {                                                                                            \
 	1, 1, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 0, 0						 \
     }
-
+const std::string BEIDOU_CNAV2_PREAMBLE = {"111000100100110111101000"};
 const double BEIDOU_CNAV2_PREAMBLE_DURATION_S = 0.120;	//[s]
 const int32_t BEIDOU_CNAV2_PREAMBLE_LENGTH_BITS = 24;		//[bits]
 const int32_t BEIDOU_CNAV2_PREAMBLE_LENGTH_SYMBOLS = 24;	//[symbols]
@@ -113,11 +113,12 @@ const int32_t BEIDOU_CNAV2_PREAMBLE_LENGTH_SYMBOLS = 24;	//[symbols]
 const int32_t BEIDOU_CNAV2_PREAMBLE_PERIOD_SYMBOLS = 600;
 const int32_t BEIDOU_CNAV2_TELEMETRY_RATE_BITS_SECOND = 100;																					//bps
 const int32_t BEIDOU_CNAV2_TELEMETRY_SYMBOLS_PER_BIT = 2;																						//spb
-const int32_t BEIDOU_CNAV2_TELEMETRY_SYMBOLS_PER_PREAMBLE_BIT = 2;																				//spb
+const int32_t BEIDOU_CNAV2_TELEMETRY_SYMBOLS_PER_PREAMBLE_BIT = 5;																				//spb
 const int32_t BEIDOU_CNAV2_TELEMETRY_RATE_SYMBOLS_SECOND = BEIDOU_CNAV2_TELEMETRY_RATE_BITS_SECOND * BEIDOU_CNAV2_TELEMETRY_SYMBOLS_PER_BIT;	//sps
-const int32_t BEIDOU_CNAV2_STRING_SYMBOLS = 600;																								//Number of symbols per string in the CNAV2 message
-const int32_t BEIDOU_CNAV2_STRING_BITS = 288;																									//Number of bits per string in the CNAV2 message
-const int32_t BEIDOU_CNAV2_DATA_SYMBOLS = 576;																									//STRING DATA WITHOUT PREAMBLE
+const int32_t BEIDOU_CNAV2_FRAME_SYMBOLS = 600;																								//Number of symbols per string in the CNAV2 message
+const int32_t BEIDOU_CNAV2_DATA_BITS = 288;																									//Number of bits per string in the CNAV2 message
+const int32_t BEIDOU_CNAV2_MESSAGE_SYMBOLS = 576;																									//STRING DATA WITHOUT PREAMBLE
+const int32_t BEIDOU_CNAV2_CODES_PER_SYMBOLS = 5;
 
 //!< carrier and code frequencies
 const int32_t BEIDOU_B2a_CNAV_DATA_PAGE_BITS = 300;
@@ -128,6 +129,7 @@ const int32_t BEIDOU_B2a_CNAV_DATA_PAGE_SYMBOLS = 600;
 const double BEIDOU_B2ad_CODE_RATE_HZ = 10.23e6;  //!< BEIDOU_B2a data code rate [chips/s]
 const int32_t BEIDOU_B2ad_CODE_LENGTH_CHIPS = 10230;  //!< BEIDOU_B2a data  code length [chips]
 const double BEIDOU_B2ad_PERIOD = 0.001;          //!< BEIDOU_B2a data code period [seconds]
+const int32_t BEIDOU_B2ad_PERIOD_MS = 1;
 
 const double BEIDOU_B2ap_CODE_RATE_HZ = 10.23e6;  //!< BEIDOU_B2a pilot code rate [chips/s]
 const int32_t BEIDOU_B2ap_CODE_LENGTH_CHIPS = 10230;  //!< BEIDOU_B2a pilot code length [chips]
@@ -137,14 +139,12 @@ const int32_t BEIDOU_B2a_HISTORY_DEEP = 5;
 
 //!<Beidou secondary codes. Data component has a fixed sequence as secondary code which are the same for every satellite
 const int32_t BEIDOU_B2ad_SECONDARY_CODE_LENGTH = 5;// Each bit is 1 ms (one primary code sequence)
-const int32_t BEIDOU_B2ad_SECONDARY_CODE[5] = {0, 0, 0, 1, 0,};
-const std::string BEIDOU_B2ad_SECONDARY_CODE_STR = "00010";
+const std::string BEIDOU_B2ad_SECONDARY_CODE = "00010";
 
 //!<TODO Beidou pilot code is a Weil code which is currently not implemented
 //!<Beidou secondary codes. Pilot component has a truncated Weill sequence, each satellite has it's own code
 const int32_t BEIDOU_B2ap_SECONDARY_CODE_LENGTH = 100;//B2a code is 100 chips long; Each bit is 1 ms (one primary code sequence)
-const int32_t BEIDOU_B2ap_SECONDARY_CODE[100] = {0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,};
-const std::string BEIDOU_B2ap_SECONDARY_CODE_STR = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+const std::string BEIDOU_B2ap_SECONDARY_CODE = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
 
 
 //!<Initialization registers for the primary codes for B2a data signal

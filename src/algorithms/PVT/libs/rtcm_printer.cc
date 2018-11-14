@@ -301,7 +301,6 @@ bool Rtcm_Printer::Print_Rtcm_MSM(uint32_t msm_number, const Gps_Ephemeris& gps_
     const Gps_CNAV_Ephemeris& gps_cnav_eph,
     const Galileo_Ephemeris& gal_eph,
     const Glonass_Gnav_Ephemeris& glo_gnav_eph,
-	const Beidou_Cnav2_Ephemeris& bds_cnav2_eph,
     double obs_time,
     const std::map<int32_t, Gnss_Synchro>& observables,
     uint32_t clock_steering_indicator,
@@ -310,9 +309,7 @@ bool Rtcm_Printer::Print_Rtcm_MSM(uint32_t msm_number, const Gps_Ephemeris& gps_
     bool divergence_free,
     bool more_messages)
 {
-	// todo: dealing with warning until rtcm is added to code
-	(void) bds_cnav2_eph;
-    std::string msm;
+	 std::string msm;
     if (msm_number == 1)
         {
             msm = rtcm->print_MSM_1(gps_eph, gps_cnav_eph, gal_eph, glo_gnav_eph, obs_time, observables, station_id, clock_steering_indicator, external_clock_indicator, smooth_int, divergence_free, more_messages);

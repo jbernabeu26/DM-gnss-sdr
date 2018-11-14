@@ -32,7 +32,7 @@ addpath('./libs');
 samplingFreq       = 6625000;     %[Hz]
 channels=5;
 path='/archive/';
-observables_log_path=[path 'glo_observables.dat'];
+observables_log_path=[path 'bds_b2a_observables.dat'];
 GNSS_observables= read_hybrid_observables_dump(channels,observables_log_path);
 
 %%

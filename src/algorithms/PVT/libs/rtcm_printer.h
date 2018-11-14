@@ -130,7 +130,6 @@ public:
         const Gps_CNAV_Ephemeris& gps_cnav_eph,
         const Galileo_Ephemeris& gal_eph,
         const Glonass_Gnav_Ephemeris& glo_gnav_eph,
-		const Beidou_Cnav2_Ephemeris& bds_cnav2_eph,
         double obs_time,
         const std::map<int32_t, Gnss_Synchro>& observables,
         uint32_t clock_steering_indicator,

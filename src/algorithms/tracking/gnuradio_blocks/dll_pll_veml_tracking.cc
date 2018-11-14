@@ -289,14 +289,14 @@ dll_pll_veml_tracking::dll_pll_veml_tracking(const Dll_Pll_Conf &conf_) : gr::bl
 						if (trk_parameters.track_pilot)
 							{
 								d_secondary_code_length = static_cast<unsigned int>(BEIDOU_B2ap_SECONDARY_CODE_LENGTH);
-								d_secondary_code_string = const_cast<std::string *>(&BEIDOU_B2ap_SECONDARY_CODE_STR);
+								d_secondary_code_string = const_cast<std::string *>(&BEIDOU_B2ap_SECONDARY_CODE);
 								signal_pretty_name = signal_pretty_name + "Pilot";
 								interchange_iq = true;
 							}
 						else
 							{
 								d_secondary_code_length = static_cast<unsigned int>(BEIDOU_B2ad_SECONDARY_CODE_LENGTH);
-								d_secondary_code_string = const_cast<std::string *>(&BEIDOU_B2ad_SECONDARY_CODE_STR);
+								d_secondary_code_string = const_cast<std::string *>(&BEIDOU_B2ad_SECONDARY_CODE);
 								signal_pretty_name = signal_pretty_name + "Data";
 								interchange_iq = false;
 							}

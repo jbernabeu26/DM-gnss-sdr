@@ -34,7 +34,7 @@
  *
  */
 
-#include "../../../core/system_parameters/crc24q.h"
+#include "crc24q.h"
 
 #include <stdbool.h>
 #include <stdio.h>

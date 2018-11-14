@@ -76,19 +76,22 @@ private:
 	beidou_b2a_make_telemetry_decoder_cc(const Gnss_Satellite &satellite, bool dump);
     beidou_b2a_telemetry_decoder_cc(const Gnss_Satellite &satellite, bool dump);
 
-    void decode_string(double *symbols, int frame_length);
-
-    //!< Help with coherent tracking
-    double d_preamble_time_samples;
+    void decode_string(double *symbols, int32_t frame_length);
 
     //!< Preamble decoding
     unsigned short int d_preambles_bits[BEIDOU_CNAV2_PREAMBLE_LENGTH_BITS];
-    int32_t 	*d_preambles_symbols;
+    int32_t 	*d_preamble_samples;
+    int32_t 	*d_secondary_code_samples;
     uint32_t 	d_samples_per_symbol;
     int32_t 	d_symbols_per_preamble;
+    int32_t     d_samples_per_preamble;
+    int32_t    d_preamble_period_samples;
+    double 		*d_frame_symbols;
+    uint32_t 	d_frame_length_symbols;
+    uint32_t    d_required_symbols;
 
     //!< Storage for incoming data
-    std::deque<Gnss_Synchro> d_symbol_history;
+    std::deque<float> d_symbol_history;
 
     //!< Variables for internal functionality
     uint64_t d_sample_counter;  //!< Sample counter as an index (1,2,3,..etc) indicating number of samples processed
@@ -99,13 +102,13 @@ private:
     bool d_flag_preamble;                //!< Flag indicating when preamble was found
     int32_t d_CRC_error_counter;             //!< Number of failed CRC operations
     bool flag_TOW_set;                   //!< Indicates when time of week is set
-    double delta_t;                      //!< GPS-GLONASS time offset !!! check
 
     //!< Navigation Message variable
     Beidou_Cnav2_Navigation_Message d_nav;
 
     //!< Values to populate gnss synchronization structure
-    double d_TOW_at_current_symbol;
+    uint32_t d_TOW_at_Preamble_ms;
+    uint32_t d_TOW_at_current_symbol_ms;
     bool Flag_valid_word;
 
     //!< Satellite Information and logging capacity

@@ -40,9 +40,7 @@ void Beidou_Cnav2_Navigation_Message::reset()
 {
     // Satellite Identification
     i_satellite_PRN = 0;
-    i_alm_satellite_slot_number = 0;  //!< SV Orbit Slot Number
-    flag_update_slot_number = false;
-
+    i_alm_satellite_slot_number = 0;
     // Ephemeris Flags
     flag_all_ephemeris = false;
     flag_ephemeris_str_10 = false;
@@ -90,13 +88,13 @@ Beidou_Cnav2_Navigation_Message::Beidou_Cnav2_Navigation_Message()
 }
 
 
-bool Beidou_Cnav2_Navigation_Message::read_navigation_bool(std::bitset<BEIDOU_CNAV2_STRING_BITS> const &bits, const std::vector<std::pair<int, int>> &parameter)
+bool Beidou_Cnav2_Navigation_Message::read_navigation_bool(std::bitset<BEIDOU_CNAV2_DATA_BITS> const &bits, const std::vector<std::pair<int, int>> &parameter)
 {
     bool value;
 
     // bitset::any() (bits.any())
 
-    if (bits[BEIDOU_CNAV2_STRING_BITS - parameter[0].first] == 1)
+    if (bits[BEIDOU_CNAV2_DATA_BITS - parameter[0].first] == 1)
         {
             value = true;
         }
@@ -108,7 +106,7 @@ bool Beidou_Cnav2_Navigation_Message::read_navigation_bool(std::bitset<BEIDOU_CN
 }
 
 
-unsigned long int Beidou_Cnav2_Navigation_Message::read_navigation_unsigned(std::bitset<BEIDOU_CNAV2_STRING_BITS> const &bits, const std::vector<std::pair<int, int>> &parameter)
+unsigned long int Beidou_Cnav2_Navigation_Message::read_navigation_unsigned(std::bitset<BEIDOU_CNAV2_DATA_BITS> const &bits, const std::vector<std::pair<int, int>> &parameter)
 {
     unsigned long int value = 0;
     int num_of_slices = parameter.size();
@@ -117,7 +115,7 @@ unsigned long int Beidou_Cnav2_Navigation_Message::read_navigation_unsigned(std:
             for (int j = 0; j < parameter[i].second; j++)
                 {
                     value <<= 1;  //shift left
-                    if (bits[BEIDOU_CNAV2_STRING_BITS - parameter[i].first - j] == 1)
+                    if (bits[BEIDOU_CNAV2_DATA_BITS - parameter[i].first - j] == 1)
                         {
                             value |= 1;  // insert the bit
                         }
@@ -127,13 +125,13 @@ unsigned long int Beidou_Cnav2_Navigation_Message::read_navigation_unsigned(std:
 }
 
 
-signed long int Beidou_Cnav2_Navigation_Message::read_navigation_signed(std::bitset<BEIDOU_CNAV2_STRING_BITS> const &bits, const std::vector<std::pair<int, int>> &parameter)
+signed long int Beidou_Cnav2_Navigation_Message::read_navigation_signed(std::bitset<BEIDOU_CNAV2_DATA_BITS> const &bits, const std::vector<std::pair<int, int>> &parameter)
 {
     signed long int value = 0;
     signed long int sign = 0;
     int num_of_slices = parameter.size();
     // read the MSB and perform the sign extension
-    if (bits[BEIDOU_CNAV2_STRING_BITS - parameter[0].first] == 1)
+    if (bits[BEIDOU_CNAV2_DATA_BITS - parameter[0].first] == 1)
         {
             sign = -1;
         }
@@ -146,7 +144,7 @@ signed long int Beidou_Cnav2_Navigation_Message::read_navigation_signed(std::bit
             for (int j = 1; j < parameter[i].second; j++)
                 {
                     value <<= 1;  //shift left
-                    if (bits[BEIDOU_CNAV2_STRING_BITS - parameter[i].first - j] == 1)
+                    if (bits[BEIDOU_CNAV2_DATA_BITS - parameter[i].first - j] == 1)
                         {
                             value |= 1;  // insert the bit
                         }
@@ -156,23 +154,29 @@ signed long int Beidou_Cnav2_Navigation_Message::read_navigation_signed(std::bit
 }
 
 
-bool Beidou_Cnav2_Navigation_Message::CRC_test(std::bitset<BEIDOU_CNAV2_STRING_BITS> const &string_bits)
+bool Beidou_Cnav2_Navigation_Message::CRC_test(std::string &string_bits)
 {
-	std::vector<unsigned char> rawBits(BEIDOU_CNAV2_STRING_BITS / 8,0);
-	for (unsigned i = 0; i < rawBits.size(); ++i) {
-		for (int j = 0; j < 8; ++j) {
-			rawBits[i] |= (string_bits[8*i + j] << (7 - j));
-		}
-	}
-    crc_compute = crc24q_check(rawBits.data(), rawBits.size());
-    return crc_compute;
+	uint32_t crc_check;
+    uint32_t crc_comp;
+
+	// Get data and crc values
+	std::string tmp_data_bits = string_bits.substr (0, 263);
+	std::bitset<24> crc_bits(string_bits.substr (264, 287));
+
+	unsigned char* data_bits = (unsigned char*) tmp_data_bits.c_str();
+	int32_t len = tmp_data_bits.size();
+
+	crc_comp  = crc24q_hash(data_bits, len);
+	//crc_check = static_cast<uint32_t>(read_navigation_unsigned(crc_bits, WN_10));		//[week] effective range 0~8191
+
+	return crc_compute;
 }
 
 
 int Beidou_Cnav2_Navigation_Message::string_decoder(std::string const &frame_string)
 {
     // Unpack bytes to bits
-    std::bitset<BEIDOU_CNAV2_STRING_BITS> string_bits(frame_string);
+    std::bitset<BEIDOU_CNAV2_DATA_BITS> string_bits(frame_string);
     // Perform data verification and exit code if error in bit sequence
 
     //flag_CRC_test = CRC_test(string_bits); still has bugs
@@ -188,7 +192,6 @@ int Beidou_Cnav2_Navigation_Message::string_decoder(std::string const &frame_str
         {
         case 10:
             //--- It is Type 10 -----------------------------------------------
-
         	cnav2_ephemeris.PRN = static_cast<unsigned int>(read_navigation_unsigned(string_bits, PRN));
         	//cnav2_ephemeris.MesType = static_cast<double>(read_navigation_unsigned(string_bits, MesType));
         	cnav2_ephemeris.SOW = static_cast<double>(read_navigation_unsigned(string_bits, SOW))*3;	//[s] effective range 0~604797
@@ -214,47 +217,49 @@ int Beidou_Cnav2_Navigation_Message::string_decoder(std::string const &frame_str
         	cnav2_ephemeris.omega = static_cast<double>(read_navigation_signed(string_bits, omega_10))*TWO_N32;		//[pi]
         	// Ephemeris I End
 
+        	// Set flags relative to time and message
+        	flag_TOW_set = true;
+        	flag_TOW_10  = true;
             flag_ephemeris_str_10 = true;
-
-            //cnav2_utc_model.beidt_to_utc(cnav2_ephemeris, 0, 1142341);
 
             break;
 
         case 11:
             //--- It is Type 11 -----------------------------------------------
+			cnav2_ephemeris.PRN = static_cast<unsigned int>(read_navigation_unsigned(string_bits, PRN));
+			//cnav2_ephemeris.MesType = static_cast<double>(read_navigation_unsigned(string_bits, MesType));
+			cnav2_ephemeris.SOW = static_cast<double>(read_navigation_unsigned(string_bits, SOW))*3;		//[s] effective range 0~604797
+			cnav2_ephemeris.HS = static_cast<double>(read_navigation_unsigned(string_bits, HS_11));
+			cnav2_ephemeris.DIF = static_cast<double>(read_navigation_unsigned(string_bits, DIF_11));
+			cnav2_ephemeris.SIF = static_cast<double>(read_navigation_unsigned(string_bits, SIF_11));
+			cnav2_ephemeris.AIF = static_cast<double>(read_navigation_unsigned(string_bits, AIF_11));
+			cnav2_ephemeris.SISMAI = static_cast<double>(read_navigation_unsigned(string_bits, SISMAI_11));
+			cnav2_ephemeris.DIF_B1C = static_cast<double>(read_navigation_unsigned(string_bits, DIF_B1C_11));
+			cnav2_ephemeris.SIF_B1C = static_cast<double>(read_navigation_unsigned(string_bits, SIF_B1C_11));
+			cnav2_ephemeris.AIF_B1C = static_cast<double>(read_navigation_unsigned(string_bits, AIF_B1C_11));
 
-            	cnav2_ephemeris.PRN = static_cast<unsigned int>(read_navigation_unsigned(string_bits, PRN));
-            	//cnav2_ephemeris.MesType = static_cast<double>(read_navigation_unsigned(string_bits, MesType));
-            	cnav2_ephemeris.SOW = static_cast<double>(read_navigation_unsigned(string_bits, SOW))*3;		//[s] effective range 0~604797
-            	cnav2_ephemeris.HS = static_cast<double>(read_navigation_unsigned(string_bits, HS_11));
-            	cnav2_ephemeris.DIF = static_cast<double>(read_navigation_unsigned(string_bits, DIF_11));
-				cnav2_ephemeris.SIF = static_cast<double>(read_navigation_unsigned(string_bits, SIF_11));
-				cnav2_ephemeris.AIF = static_cast<double>(read_navigation_unsigned(string_bits, AIF_11));
-				cnav2_ephemeris.SISMAI = static_cast<double>(read_navigation_unsigned(string_bits, SISMAI_11));
-				cnav2_ephemeris.DIF_B1C = static_cast<double>(read_navigation_unsigned(string_bits, DIF_B1C_11));
-				cnav2_ephemeris.SIF_B1C = static_cast<double>(read_navigation_unsigned(string_bits, SIF_B1C_11));
-				cnav2_ephemeris.AIF_B1C = static_cast<double>(read_navigation_unsigned(string_bits, AIF_B1C_11));
+			// Ephemeris II Start
+			cnav2_ephemeris.Omega_0 = static_cast<double>(read_navigation_signed(string_bits, Omega_0_11))*TWO_N32;		//[pi]
+			cnav2_ephemeris.i_0 = static_cast<double>(read_navigation_signed(string_bits, i_0_11))*TWO_N32;				//[pi]
+			cnav2_ephemeris.Omega_dot = static_cast<double>(read_navigation_signed(string_bits, Omega_dot_11))*TWO_N44;	//[pi/s]
+			cnav2_ephemeris.i_0_dot = static_cast<double>(read_navigation_signed(string_bits, i_0_dot_11))*TWO_N44;		//[pi/s]
+			cnav2_ephemeris.C_IS = static_cast<double>(read_navigation_signed(string_bits, C_IS_11))*TWO_N30;				//[rad]
+			cnav2_ephemeris.C_IC = static_cast<double>(read_navigation_signed(string_bits, C_IC_11))*TWO_N30;				//[rad]
+			cnav2_ephemeris.C_RS = static_cast<double>(read_navigation_signed(string_bits, C_RS_11))*TWO_N8;				//[m]
+			cnav2_ephemeris.C_RC = static_cast<double>(read_navigation_signed(string_bits, C_RC_11))*TWO_N8;				//[m]
+			cnav2_ephemeris.C_US = static_cast<double>(read_navigation_signed(string_bits, C_US_11))*TWO_N30;				//[rad]
+			cnav2_ephemeris.C_UC = static_cast<double>(read_navigation_signed(string_bits, C_UC_11))*TWO_N30;				//[rad]
+			// Ephemeris II End
 
-            	// Ephemeris II Start
-				cnav2_ephemeris.Omega_0 = static_cast<double>(read_navigation_signed(string_bits, Omega_0_11))*TWO_N32;		//[pi]
-				cnav2_ephemeris.i_0 = static_cast<double>(read_navigation_signed(string_bits, i_0_11))*TWO_N32;				//[pi]
-				cnav2_ephemeris.Omega_dot = static_cast<double>(read_navigation_signed(string_bits, Omega_dot_11))*TWO_N44;	//[pi/s]
-				cnav2_ephemeris.i_0_dot = static_cast<double>(read_navigation_signed(string_bits, i_0_dot_11))*TWO_N44;		//[pi/s]
-				cnav2_ephemeris.C_IS = static_cast<double>(read_navigation_signed(string_bits, C_IS_11))*TWO_N30;				//[rad]
-				cnav2_ephemeris.C_IC = static_cast<double>(read_navigation_signed(string_bits, C_IC_11))*TWO_N30;				//[rad]
-				cnav2_ephemeris.C_RS = static_cast<double>(read_navigation_signed(string_bits, C_RS_11))*TWO_N8;				//[m]
-				cnav2_ephemeris.C_RC = static_cast<double>(read_navigation_signed(string_bits, C_RC_11))*TWO_N8;				//[m]
-				cnav2_ephemeris.C_US = static_cast<double>(read_navigation_signed(string_bits, C_US_11))*TWO_N30;				//[rad]
-				cnav2_ephemeris.C_UC = static_cast<double>(read_navigation_signed(string_bits, C_UC_11))*TWO_N30;				//[rad]
-				// Ephemeris II End
-
-                flag_ephemeris_str_11 = true;
+			// Set flags relative to time and message
+			flag_TOW_set = true;
+			flag_TOW_11  = true;
+			flag_ephemeris_str_11 = true;
 
             break;
 
         case 30:
             // --- It is Type 30 ----------------------------------------------
-
         	cnav2_ephemeris.PRN = static_cast<unsigned int>(read_navigation_unsigned(string_bits, PRN));
         	//cnav2_ephemeris.MesType = static_cast<double>(read_navigation_unsigned(string_bits, MesType));
         	cnav2_ephemeris.SOW = static_cast<double>(read_navigation_unsigned(string_bits, SOW))*3;	//[s] effective range 0~604797
@@ -272,8 +277,8 @@ int Beidou_Cnav2_Navigation_Message::string_decoder(std::string const &frame_str
         	cnav2_utc_model.a_0 = static_cast<double>(read_navigation_signed(string_bits, a_0_30))*TWO_N34;				//[s]
         	cnav2_utc_model.a_1 = static_cast<double>(read_navigation_signed(string_bits, a_1_30))*TWO_N50;				//[s/s]
         	cnav2_utc_model.a_2 = static_cast<double>(read_navigation_signed(string_bits, a_2_30))*TWO_N66;				//[s/s^2]
-        	// Clock Correction Parameters End
 
+        	// Clock Correction Parameters End
         	cnav2_ephemeris.IODC = static_cast<double>(read_navigation_unsigned(string_bits, IODC_30));
         	cnav2_ephemeris.T_GDB2ap = static_cast<double>(read_navigation_signed(string_bits, T_GDB2ap_30))*TWO_N34;		//[s]
         	cnav2_ephemeris.ISC_B2ad = static_cast<double>(read_navigation_unsigned(string_bits, ISC_B2ad_30))*TWO_N34;	//[s]
@@ -288,17 +293,19 @@ int Beidou_Cnav2_Navigation_Message::string_decoder(std::string const &frame_str
         	cnav2_ephemeris.alpha_7 = static_cast<double>(read_navigation_signed(string_bits, alpha_7_30))*TWO_N3;			//[TECu]
         	cnav2_ephemeris.alpha_8 = static_cast<double>(read_navigation_signed(string_bits, alpha_8_30))*TWO_N3;			//[TECu]
         	cnav2_ephemeris.alpha_9 = static_cast<double>(read_navigation_signed(string_bits, alpha_9_30))*TWO_N3;			//[TECu]
-        	// Ionospheric Delay Correction Model Parameters End
 
+        	// Ionospheric Delay Correction Model Parameters End
         	cnav2_ephemeris.T_GDB1Cp = static_cast<double>(read_navigation_signed(string_bits, T_GDB1Cp_30))*TWO_N34;		//[s]
         	cnav2_ephemeris.Rev = static_cast<double>(read_navigation_unsigned(string_bits, Rev_30));
 
+        	// Set flags relative to time and message
+        	flag_TOW_set = true;
+        	flag_TOW_30  = true;
         	flag_ephemeris_str_30 = true;
             break;
 
         case 31:
             // --- It is Type 31 ----------------------------------------------
-
         	cnav2_ephemeris.PRN = static_cast<unsigned int>(read_navigation_unsigned(string_bits, PRN));
 			//cnav2_ephemeris.MesType = static_cast<double>(read_navigation_unsigned(string_bits, MesType));
 			cnav2_ephemeris.SOW = static_cast<double>(read_navigation_unsigned(string_bits, SOW))*3;	//[s] effective range 0~604797
@@ -316,8 +323,8 @@ int Beidou_Cnav2_Navigation_Message::string_decoder(std::string const &frame_str
 			cnav2_utc_model.a_0 = static_cast<double>(read_navigation_signed(string_bits, a_0_31))*TWO_N34; //[s]
 			cnav2_utc_model.a_1 = static_cast<double>(read_navigation_signed(string_bits, a_1_31))*TWO_N50; //[s/s]
 			cnav2_utc_model.a_2 = static_cast<double>(read_navigation_signed(string_bits, a_2_31))*TWO_N66; //[s/s^2]
-			// Clock Correction Parameters End
 
+			// Clock Correction Parameters End
 			cnav2_ephemeris.IODC = static_cast<double>(read_navigation_unsigned(string_bits, IODC_31));
 
 			// Reduced Almanac Parameters Sat 1(38 bits)
@@ -351,16 +358,19 @@ int Beidou_Cnav2_Navigation_Message::string_decoder(std::string const &frame_str
 			cnav2_almanac[i_alm_satellite_slot_number-1].Omega_0 = static_cast<double>(read_navigation_signed(string_bits, Omega_03_31))*TWO_N6;	//[pi]
 			cnav2_almanac[i_alm_satellite_slot_number-1].Phi_0 = static_cast<double>(read_navigation_signed(string_bits, Phi_03_31))*TWO_N6;		//[pi] Phi = M0 + omega, e=0, delta_i=0, MEO/IGSO i=55, GEO i=0
 			cnav2_almanac[i_alm_satellite_slot_number-1].Health = static_cast<double>(read_navigation_unsigned(string_bits, Health3_31));			//[dimensionless]
-			// Reduced Almanac Parameters End
 
+			// Reduced Almanac Parameters End
 			cnav2_ephemeris.Rev = static_cast<double>(read_navigation_unsigned(string_bits, Rev_31));
+
+			// Set flags relative to time and message
+			flag_TOW_set = true;
+			flag_TOW_31  = true;
 			flag_ephemeris_str_31 = true;
 			flag_almanac_str_31 = true;
             break;
 
         case 32:
             // --- It is Type 32 ----------------------------------------------
-
         	cnav2_ephemeris.PRN = static_cast<unsigned int>(read_navigation_unsigned(string_bits, PRN));
 			//cnav2_ephemeris.MesType = static_cast<double>(read_navigation_unsigned(string_bits, MesType));
 			cnav2_ephemeris.SOW = static_cast<double>(read_navigation_unsigned(string_bits, SOW))*3;	//[s] effective range 0~604797
@@ -378,8 +388,8 @@ int Beidou_Cnav2_Navigation_Message::string_decoder(std::string const &frame_str
 			cnav2_utc_model.a_0 = static_cast<double>(read_navigation_signed(string_bits, a_0_32))*TWO_N34; //[s]
 			cnav2_utc_model.a_1 = static_cast<double>(read_navigation_signed(string_bits, a_1_32))*TWO_N50; //[s/s]
 			cnav2_utc_model.a_2 = static_cast<double>(read_navigation_signed(string_bits, a_2_32))*TWO_N66; //[s/s^2]
-        	// Clock Correction Parameters End
 
+			// Clock Correction Parameters End
 			cnav2_ephemeris.IODC = static_cast<double>(read_navigation_unsigned(string_bits, IODC_32));
 
         	// EOP Parameters (138 bits)
@@ -390,17 +400,19 @@ int Beidou_Cnav2_Navigation_Message::string_decoder(std::string const &frame_str
 			cnav2_ephemeris.PM_Y_dot = static_cast<double>(read_navigation_signed(string_bits, PM_Y_dot_32))*TWO_N21;		//[arc-seconds/day]
 			cnav2_ephemeris.dUT1 = static_cast<double>(read_navigation_signed(string_bits, dUT1_32))*TWO_N24;				//[s]
 			cnav2_ephemeris.dUT1_dot = static_cast<double>(read_navigation_signed(string_bits, dUT1_dot_32))*TWO_N25; 		//[s/day]
-        	// EOP Parameters End
 
+			// EOP Parameters End
 			cnav2_ephemeris.Rev = static_cast<double>(read_navigation_unsigned(string_bits, Rev_32));
 
+			// Set flags relative to time and message
+			flag_TOW_set = true;
+			flag_TOW_32  = true;
 			flag_ephemeris_str_32 = true;
 			flag_utc_model_str_32 = true;
             break;
 
         case 33:
             // --- It is Type 33 ----------------------------------------------
-
         	cnav2_ephemeris.PRN = static_cast<unsigned int>(read_navigation_unsigned(string_bits, PRN));
 			//cnav2_ephemeris.MesType = static_cast<double>(read_navigation_unsigned(string_bits, MesType));
 			cnav2_ephemeris.SOW = static_cast<double>(read_navigation_unsigned(string_bits, SOW))*3;	//[s] effective range 0~604797
@@ -443,6 +455,9 @@ int Beidou_Cnav2_Navigation_Message::string_decoder(std::string const &frame_str
 			cnav2_almanac[i_alm_satellite_slot_number-1].t_oa = static_cast<double>(read_navigation_unsigned(string_bits, t_oa_33))*TWO_P12;	//[s] effective range 0~602112
 			cnav2_ephemeris.Rev = static_cast<double>(read_navigation_unsigned(string_bits, Rev_33));
 
+			// Set flags relative to time and message
+			flag_TOW_set = true;
+			flag_TOW_33  = true;
 			flag_almanac_str_33 = true;
 			flag_utc_model_str_33 = true;
             break;
@@ -492,6 +507,9 @@ int Beidou_Cnav2_Navigation_Message::string_decoder(std::string const &frame_str
 
         	cnav2_ephemeris.Rev = static_cast<double>(read_navigation_unsigned(string_bits, Rev_34));
 
+        	// Set flags relative to time and message
+        	flag_TOW_set = true;
+        	flag_TOW_34 = true;
         	flag_ephemeris_str_34 = true;
         	flag_utc_model_str_34 = true;
             break;
@@ -538,6 +556,9 @@ int Beidou_Cnav2_Navigation_Message::string_decoder(std::string const &frame_str
 
         	cnav2_ephemeris.Rev = static_cast<double>(read_navigation_unsigned(string_bits, Rev_40));
 
+        	// Set flags relative to time and message
+        	flag_TOW_set = true;
+        	flag_TOW_40  = true;
         	flag_almanac_str_40 = true;
         	flag_ephemeris_str_40 = true;
             break;

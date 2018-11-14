@@ -50,15 +50,14 @@
 class Beidou_Cnav2_Navigation_Message
 {
 private:
-    unsigned long int read_navigation_unsigned(std::bitset<BEIDOU_CNAV2_STRING_BITS> const &bits, const std::vector<std::pair<int, int>> &parameter);
-    signed long int read_navigation_signed(std::bitset<BEIDOU_CNAV2_STRING_BITS> const &bits, const std::vector<std::pair<int, int>> &parameter);
-    bool read_navigation_bool(std::bitset<BEIDOU_CNAV2_STRING_BITS> const &bits, const std::vector<std::pair<int, int>> &parameter);
+    unsigned long int read_navigation_unsigned(std::bitset<BEIDOU_CNAV2_DATA_BITS> const &bits, const std::vector<std::pair<int, int>> &parameter);
+    signed long int read_navigation_signed(std::bitset<BEIDOU_CNAV2_DATA_BITS> const &bits, const std::vector<std::pair<int, int>> &parameter);
+    bool read_navigation_bool(std::bitset<BEIDOU_CNAV2_DATA_BITS> const &bits, const std::vector<std::pair<int, int>> &parameter);
 
 public:
     bool flag_CRC_test;				//!< Flag indicating CRC test
     unsigned int i_string_MesType;	//!< Flag indicating MesType
-    bool flag_update_slot_number;	//!< Flag indicating change in slot number
-
+    int32_t i_alm_satellite_slot_number;
     int i_channel_ID;				//!< PRN of the channel
     unsigned int i_satellite_PRN;	//!< Satellite PRN
 
@@ -70,7 +69,6 @@ public:
     bool flag_all_ephemeris;    //!< Flag indicating that all strings containing ephemeris have been received
     bool flag_ephemeris_str_10;  //!< Flag indicating that ephemeris 1/2 (Type 10) have been received
     bool flag_ephemeris_str_11;  //!< Flag indicating that ephemeris 2/2 (Type 11) have been received
-
     bool flag_ephemeris_str_30; //!< Flag indicating that (Type 30) have been received
     bool flag_ephemeris_str_31; //!< Flag indicating that (Type 31) have been received
     bool flag_ephemeris_str_32; //!< Flag indicating that (Type 32) have been received
@@ -82,8 +80,6 @@ public:
     bool flag_almanac_str_33; //!< Flag indicating that almanac of Type 33 have been received
     bool flag_almanac_str_40; //!< Flag indicating that almanac of Type 40 have been received
 
-    unsigned int i_alm_satellite_slot_number;  //!< SV Orbit Slot Number
-
     // UTC and System Clocks Flags
     bool flag_utc_model_valid;  //!< If set, it indicates that the UTC model parameters are filled
     bool flag_utc_model_str_32; //!< If set, it indicates that the UTC model parameters of Type 32 have been received
@@ -93,6 +89,14 @@ public:
 
     bool flag_TOW_set;  //!< Flag indicating when the TOW has been set
     bool flag_TOW_new;  //!< Flag indicating when a new TOW has been computed
+    bool flag_TOW_10;
+    bool flag_TOW_11;
+    bool flag_TOW_30;
+    bool flag_TOW_31;
+    bool flag_TOW_32;
+    bool flag_TOW_33;
+    bool flag_TOW_34;
+    bool flag_TOW_40;
 
     double d_satClkCorr;   //!<  Satellite clock error
     double d_dtr;          //!<  Relativistic clock correction term
@@ -109,7 +113,7 @@ public:
      * \brief Compute CRC for BEIDOU CNAV2 strings
      * \param bits Bits of the string message where to compute CRC
      */
-    bool CRC_test(std::bitset<BEIDOU_CNAV2_STRING_BITS> const &bits);
+    bool CRC_test(std::string &bits);
 
     /*!
      * \brief Computes the frame number being decoded given the satellite slot number
