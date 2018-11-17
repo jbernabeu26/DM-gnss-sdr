@@ -33,7 +33,12 @@
 #include "beidou_cnav2_navigation_message.h"
 #include "gnss_satellite.h"
 #include <glog/logging.h>
-#include "crc24q.h"
+#include <boost/crc.hpp>  // for boost::crc_basic, boost::crc_optimal
+#include <boost/dynamic_bitset.hpp>
+#include <glog/logging.h>
+#include <iostream>
+
+typedef boost::crc_optimal<24, 0x1864CFBu, 0x0, 0x0, false, false> Crc_Beidou_Cnav2_type;
 
 
 void Beidou_Cnav2_Navigation_Message::reset()
@@ -61,7 +66,7 @@ void Beidou_Cnav2_Navigation_Message::reset()
     flag_TOW_set = false;
     flag_TOW_new = false;
 
-    flag_CRC_test = false;
+    flag_crc_test = false;
     i_string_MesType = 0;
     i_channel_ID = 0;
 
@@ -154,35 +159,44 @@ signed long int Beidou_Cnav2_Navigation_Message::read_navigation_signed(std::bit
 }
 
 
-bool Beidou_Cnav2_Navigation_Message::CRC_test(std::string &string_bits)
+bool Beidou_Cnav2_Navigation_Message::crc_test(std::bitset<BEIDOU_CNAV2_DATA_BITS> bits, uint32_t crc_decoded)
 {
-	uint32_t crc_check;
-    uint32_t crc_comp;
+	Crc_Beidou_Cnav2_type Crc_Beidou_Cnav2;
 
-	// Get data and crc values
-	std::string tmp_data_bits = string_bits.substr (0, 263);
-	std::bitset<24> crc_bits(string_bits.substr (264, 287));
+    uint32_t crc_computed;
 
-	unsigned char* data_bits = (unsigned char*) tmp_data_bits.c_str();
-	int32_t len = tmp_data_bits.size();
+    boost::dynamic_bitset<uint8_t> frame_bits(std::string(bits.to_string()));
+    std::vector<uint8_t> bytes;
+    boost::to_block_range(frame_bits, std::back_inserter(bytes));
+    std::reverse(bytes.begin(), bytes.end());
 
-	crc_comp  = crc24q_hash(data_bits, len);
-	//crc_check = static_cast<uint32_t>(read_navigation_unsigned(crc_bits, WN_10));		//[week] effective range 0~8191
+    // Only include data without 3 lsb from crc
+    Crc_Beidou_Cnav2.process_bytes(bytes.data(), BEIDOU_CNAV2_DATA_BYTES-3);
+    crc_computed = Crc_Beidou_Cnav2.checksum();
 
-	return crc_compute;
+    if (crc_decoded == crc_computed)
+        {
+            return true;
+        }
+    else
+        {
+            return false;
+        }
 }
 
 
 int Beidou_Cnav2_Navigation_Message::string_decoder(std::string const &frame_string)
 {
-    // Unpack bytes to bits
+    // Gets the message data
     std::bitset<BEIDOU_CNAV2_DATA_BITS> string_bits(frame_string);
+
+    // Gets the crc data for comparison, last 24 bits from 288 bit data frame
+    std::bitset<BEIDOU_CNAV2_CRC_BITS> checksum( frame_string.substr(264, 24));
+
     // Perform data verification and exit code if error in bit sequence
+    flag_crc_test = crc_test(string_bits, checksum.to_ulong());
 
-    //flag_CRC_test = CRC_test(string_bits); still has bugs
-	flag_CRC_test = true;
-
-	if (flag_CRC_test == false)
+	if (flag_crc_test == false)
 		return 0;
 
     i_string_MesType = static_cast<unsigned int>(read_navigation_unsigned(string_bits, MesType));

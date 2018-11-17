@@ -78,7 +78,7 @@ eph_t eph_to_rtklib(const Beidou_Cnav2_Ephemeris& eph, const Beidou_Cnav2_Utc_Mo
 {
     eph_t rtklib_sat = {0, 0, 0, 0, 0, 0, 0, 0, {0, 0}, {0, 0}, {0, 0}, 0.0, 0.0, 0.0, 0.0, 0.0,
         0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, {}, {}, 0.0, 0.0 };
-    rtklib_sat.sat = int(eph.PRN);
+    rtklib_sat.sat = int(eph.PRN) + NSATGPS + NSATGLO + NSATGAL + NSATQZS;
     if (eph.SatType==3)
     {
     	rtklib_sat.A = 27906100 + eph.dA; // MEO Orbit Satellite
@@ -136,8 +136,6 @@ eph_t eph_to_rtklib(const Beidou_Cnav2_Ephemeris& eph, const Beidou_Cnav2_Utc_Mo
 
     return rtklib_sat;
 }
-
-
 
 geph_t eph_to_rtklib(const Glonass_Gnav_Ephemeris& glonass_gnav_eph, const Glonass_Gnav_Utc_Model& gnav_clock_model)
 {

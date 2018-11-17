@@ -40,44 +40,27 @@
  * the author coded to perform proper decoding of BEIDOU CNAV2 signals.
  * This still has some bugs
  */
-/*
 TEST(BeidouCnav2NavigationMessageTest, CRCTestSuccess)
 {
     // Variables declarations in code
     bool test_result;
 
-    std::string string_bits = "011110001010100001001011110001000101000010111111111110001000110101001100110000000000011110010110001011111111111000001000011100010100000110001100000000000111001101111111111000001101101111000100111101000000000011111010100101100110011111110011010110011100101111001111011001001001100111111010";
+    std::string frame_string = "011110001010100001001011110001000101000010111111111110001000110101001100110000000000011110010110001011111111111000001000011100010100000110001100000000000111001101111111111000001101101111000100111101000000000011111010100101100110011111110011010110011100101111001111011001001001100111111010";
     Beidou_Cnav2_Navigation_Message cnav2_nav_message;
     cnav2_nav_message.reset();
 
+    // Gets the message data
+    std::bitset<BEIDOU_CNAV2_DATA_BITS> frame_bits(frame_string);
+
+    // Gets the crc data for comparison, last 24 bits from 288 bit data frame
+    std::bitset<BEIDOU_CNAV2_CRC_BITS> checksum( frame_string.substr(264, 24));
+
     // Call function to test
-    test_result = cnav2_nav_message.CRC_test(string_bits);
+    test_result = cnav2_nav_message.crc_test(frame_bits, checksum.to_ulong());
 
     // Check results in unit test assertions
     ASSERT_TRUE(test_result);
 
-}
-*/
-
-/*!
- * \brief Testing CRC computation for BEIDOU CNAV2 data bits of a string
- * \test The provided string was generated with a version of MATLAB GNSS-SDR that
- * the author coded to perform proper decoding of BEIDOU CNAV2 signals.
- */
-TEST(BeidouCnav2NavigationMessageTest, CRCTestFailure)
-{
-    // Variables declarations in code
-    bool test_result;
-    // Constructor of string to bitset will flip the order of the bits. Needed for CRC computation
-    std::string string_bits = "011110001010100001001011110001000101000010111111111110001000110101001100110000000000011110010110001011111111111000001000011100010100000110001100000000000111001101111111111000001101101111000100111101000000000011111010100101100110011111110011010110011100101111001111011001001001100111111010101000000101001110101000110101000000101011001010111101001110001000100001101100001100000101010110010100101000101100110011010100001001011010000010110010110010001001100110101111011100001110010101010001110010111111101110000110110111101110101100010110001101111010010110001110110110110000011000";
-    Beidou_Cnav2_Navigation_Message cnav2_nav_message;
-    cnav2_nav_message.reset();
-
-    // Call function to test
-    test_result = cnav2_nav_message.CRC_test(string_bits);
-
-    // Check results in unit test assertions
-    ASSERT_FALSE(test_result);
 }
 
 

@@ -56,8 +56,9 @@ beidou_b2a_make_telemetry_decoder_cc(const Gnss_Satellite &satellite, bool dump)
 
 beidou_b2a_telemetry_decoder_cc::beidou_b2a_telemetry_decoder_cc(
     const Gnss_Satellite &satellite,
-    bool dump) : gr::block("beidou_b2a_telemetry_decoder_cc", gr::io_signature::make(1, 1, sizeof(Gnss_Synchro)),
-                     gr::io_signature::make(1, 1, sizeof(Gnss_Synchro)))
+    bool dump) : gr::block("beidou_b2a_telemetry_decoder_cc",
+    		     gr::io_signature::make(1, 1, sizeof(Gnss_Synchro)),
+                 gr::io_signature::make(1, 1, sizeof(Gnss_Synchro)))
 {
     // Ephemeris data port out
     this->message_port_register_out(pmt::mp("telemetry"));
@@ -127,7 +128,6 @@ beidou_b2a_telemetry_decoder_cc::beidou_b2a_telemetry_decoder_cc(
 
     d_flag_frame_sync = false;
 
-    d_flag_parity = false;
     d_TOW_at_current_symbol_ms = 0;
     Flag_valid_word = false;
     d_CRC_error_counter = 0;
@@ -168,14 +168,12 @@ void beidou_b2a_telemetry_decoder_cc::decode_string(double *frame_symbols, int32
     	data_bits.push_back( (frame_symbols[ii] > 0) ? ('1') : ('0') );
     }
 
-
-    // 2. Call the BEIDOU CNAV2 string decoder
     d_nav.string_decoder(data_bits);
 
     // 3. Check operation executed correctly
-    if (d_nav.flag_CRC_test == true)
+    if (d_nav.flag_crc_test == true)
         {
-            LOG(INFO) << "BeiDou CNAV2 CRC correct in channel " << d_channel << " from satellite " << d_satellite;
+    		LOG(INFO) << "BeiDou CNAV2 CRC correct in channel " << d_channel << " from satellite " << d_satellite;
         }
     else
         {
@@ -353,7 +351,7 @@ int beidou_b2a_telemetry_decoder_cc::general_work(int noutput_items __attribute_
 
                     //call the decoder
                     decode_string(d_frame_symbols, d_frame_length_symbols);
-                    if (d_nav.flag_CRC_test == true)
+                    if (d_nav.flag_crc_test == true)
                         {
                             d_CRC_error_counter = 0;
                             d_flag_preamble = true;               //valid preamble indicator (initialized to false every work())

@@ -116,9 +116,14 @@ const int32_t BEIDOU_CNAV2_TELEMETRY_SYMBOLS_PER_BIT = 2;																						/
 const int32_t BEIDOU_CNAV2_TELEMETRY_SYMBOLS_PER_PREAMBLE_BIT = 5;																				//spb
 const int32_t BEIDOU_CNAV2_TELEMETRY_RATE_SYMBOLS_SECOND = BEIDOU_CNAV2_TELEMETRY_RATE_BITS_SECOND * BEIDOU_CNAV2_TELEMETRY_SYMBOLS_PER_BIT;	//sps
 const int32_t BEIDOU_CNAV2_FRAME_SYMBOLS = 600;																								//Number of symbols per string in the CNAV2 message
-const int32_t BEIDOU_CNAV2_DATA_BITS = 288;																									//Number of bits per string in the CNAV2 message
+const int32_t BEIDOU_CNAV2_DATA_BITS = 288;
+const int32_t BEIDOU_CNAV2_DATA_BYTES = 36;//Number of bits per string in the CNAV2 message
 const int32_t BEIDOU_CNAV2_MESSAGE_SYMBOLS = 576;																									//STRING DATA WITHOUT PREAMBLE
 const int32_t BEIDOU_CNAV2_CODES_PER_SYMBOLS = 5;
+
+const int32_t BEIDOU_CNAV2_CRC_BITS = 24;
+const int32_t BEIDOU_CNAV2_CRC_SEED = 0;
+const int32_t BEIDOU_CNAV2_CRC_POLY = 0x1864CFB;
 
 //!< carrier and code frequencies
 const int32_t BEIDOU_B2a_CNAV_DATA_PAGE_BITS = 300;
@@ -287,7 +292,8 @@ const int32_t BEIDOU_B2ap_INIT_REG[63][13] =
 // BEIDOU CNAV2 NAVIGATION MESSAGE STRUCTURE
 // NAVIGATION MESSAGE FIELDS POSITIONS
 
-// Types
+// CRC
+const std::vector<std::pair<int32_t, int32_t>> CRC24({{264, 24}});
 
 // Common
 const std::vector<std::pair<int32_t, int32_t>> PRN({{1, 6}});

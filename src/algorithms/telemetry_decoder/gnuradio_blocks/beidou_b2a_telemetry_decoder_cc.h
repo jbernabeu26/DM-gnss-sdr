@@ -98,7 +98,6 @@ private:
     uint64_t d_preamble_index;  //!< Index of sample number where preamble was found
     uint32_t d_stat;                 //!< Status of decoder
     bool d_flag_frame_sync;              //!< Indicate when a frame sync is achieved
-    bool d_flag_parity;                  //!< Flag indicating when parity check was achieved (crc check)
     bool d_flag_preamble;                //!< Flag indicating when preamble was found
     int32_t d_CRC_error_counter;             //!< Number of failed CRC operations
     bool flag_TOW_set;                   //!< Indicates when time of week is set

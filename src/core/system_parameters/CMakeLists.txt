@@ -48,7 +48,6 @@ set(SYSTEM_PARAMETERS_SOURCES
    beidou_cnav2_ephemeris.cc
    beidou_cnav2_almanac.cc
    beidou_cnav2_utc_model.cc
-   crc24q.cc
 )
 
 set(SYSTEM_PARAMETERS_HEADERS
@@ -83,7 +82,6 @@ set(SYSTEM_PARAMETERS_HEADERS
    	 beidou_cnav2_ephemeris.h
    	 beidou_cnav2_almanac.h
    	 beidou_cnav2_utc_model.h
-   	 crc24q.h
      display.h
      Galileo_E1.h
      Galileo_E5a.h

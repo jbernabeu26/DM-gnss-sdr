@@ -19,7 +19,7 @@
 add_subdirectory(libswiftcnav)
 
 set(TELEMETRY_DECODER_LIB_SOURCES
-     viterbi_decoder.cc     
+     viterbi_decoder.cc   
 )
 
 set(TELEMETRY_DECODER_LIB_HEADERS

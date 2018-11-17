@@ -55,7 +55,7 @@ private:
     bool read_navigation_bool(std::bitset<BEIDOU_CNAV2_DATA_BITS> const &bits, const std::vector<std::pair<int, int>> &parameter);
 
 public:
-    bool flag_CRC_test;				//!< Flag indicating CRC test
+    bool flag_crc_test;				//!< Flag indicating CRC test
     unsigned int i_string_MesType;	//!< Flag indicating MesType
     int32_t i_alm_satellite_slot_number;
     int i_channel_ID;				//!< PRN of the channel
@@ -113,7 +113,7 @@ public:
      * \brief Compute CRC for BEIDOU CNAV2 strings
      * \param bits Bits of the string message where to compute CRC
      */
-    bool CRC_test(std::string &bits);
+    bool crc_test(std::bitset<BEIDOU_CNAV2_DATA_BITS> bits, uint32_t crc_decoded);
 
     /*!
      * \brief Computes the frame number being decoded given the satellite slot number
