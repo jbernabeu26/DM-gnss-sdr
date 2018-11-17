@@ -56,11 +56,6 @@ Beidou_Cnav2_Utc_Model::Beidou_Cnav2_Utc_Model()
 	A_1BGTO = 0.0;		//Drift coefficient of BDT time scale relative to GNSS time scale [s/s]
 	A_2BGTO = 0.0;		//Drift rate coefficient of BDT time scale relative to GNSS time scale [s/s^2]
 
-	// Clock Correction Parameters
-	t_oc = 0.0;			//Clock correction parameters reference time [s] effective range 0~604500
-	a_0 = 0.0;			//Satellite clock time bias correction coefficient [s]
-	a_1 = 0.0;			//Satellite clock time drift correction coefficient [s/s]
-	a_2 = 0.0;			//Satellite clock time drift rate correction coefficient [s/s^2]
 }
 
 double Beidou_Cnav2_Utc_Model::time_of_transmission(Beidou_Cnav2_Almanac const&alm, Beidou_Cnav2_Ephemeris const&eph, double t_sv)
@@ -82,7 +77,7 @@ double Beidou_Cnav2_Utc_Model::time_of_transmission(Beidou_Cnav2_Almanac const&a
 
 	dt_r = F * eph.e * alm.sqrt_A * sin(E_k);
 
-	dt_sv = a_0 + a_1*(t-t_oc) + a_2*(t-t_oc)*(t-t_oc) + dt_r;
+	dt_sv = eph.a_0 + eph.a_1*(t-eph.t_oc) + eph.a_2*(t-eph.t_oc)*(t-eph.t_oc) + dt_r;
 
 	t = t_sv - dt_sv;
 

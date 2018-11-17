@@ -38,6 +38,7 @@
 #include "beidou_cnav2_ephemeris.h"
 #include "beidou_cnav2_almanac.h"
 #include "beidou_cnav2_utc_model.h"
+#include "beidou_cnav2_iono.h"
 #include <bitset>
 #include "Beidou_B2a.h"
 
@@ -56,35 +57,40 @@ private:
 
 public:
     bool flag_crc_test;				//!< Flag indicating CRC test
-    unsigned int i_string_MesType;	//!< Flag indicating MesType
+    unsigned int i_string_mes_type;	//!< Flag indicating MesType
     int32_t i_alm_satellite_slot_number;
     int i_channel_ID;				//!< PRN of the channel
     unsigned int i_satellite_PRN;	//!< Satellite PRN
 
     Beidou_Cnav2_Ephemeris cnav2_ephemeris;                   //!< Ephemeris information decoded
     Beidou_Cnav2_Utc_Model cnav2_utc_model;                   //!< UTC model information
-    Beidou_Cnav2_Almanac cnav2_almanac[BEIDOU_NBR_SATS];  //!< Almanac information for all 63 satellites
+    Beidou_Cnav2_Iono cnav2_iono;                             //!< UTC model information
+    Beidou_Cnav2_Almanac cnav2_almanac[BEIDOU_NBR_SATS];      //!< Almanac information for all 63 satellites
 
     // Ephemeris Flags and control variables
     bool flag_all_ephemeris;    //!< Flag indicating that all strings containing ephemeris have been received
-    bool flag_ephemeris_str_10;  //!< Flag indicating that ephemeris 1/2 (Type 10) have been received
-    bool flag_ephemeris_str_11;  //!< Flag indicating that ephemeris 2/2 (Type 11) have been received
-    bool flag_ephemeris_str_30; //!< Flag indicating that (Type 30) have been received
-    bool flag_ephemeris_str_31; //!< Flag indicating that (Type 31) have been received
-    bool flag_ephemeris_str_32; //!< Flag indicating that (Type 32) have been received
-    bool flag_ephemeris_str_34; //!< Flag indicating that (Type 34) have been received
-    bool flag_ephemeris_str_40; //!< Flag indicating that (Type 40) have been received
+    bool flag_ephemeris_mes_type_10;  //!< Flag indicating that ephemeris 1/2 (Type 10) have been received
+    bool flag_ephemeris_mes_type_11;  //!< Flag indicating that ephemeris 2/2 (Type 11) have been received
+    bool flag_ephemeris_mes_type_30; //!< Flag indicating that (Type 30) have been received
+    bool flag_ephemeris_mes_type_31; //!< Flag indicating that (Type 31) have been received
+    bool flag_ephemeris_mes_type_32; //!< Flag indicating that (Type 32) have been received
+    bool flag_ephemeris_mes_type_34; //!< Flag indicating that (Type 34) have been received
+    bool flag_ephemeris_mes_type_40; //!< Flag indicating that (Type 40) have been received
 
     // Almanac Flags
-    bool flag_almanac_str_31; //!< Flag indicating that almanac of Type 31 have been received
-    bool flag_almanac_str_33; //!< Flag indicating that almanac of Type 33 have been received
-    bool flag_almanac_str_40; //!< Flag indicating that almanac of Type 40 have been received
+    bool flag_almanac_mes_type_31; //!< Flag indicating that almanac of Type 31 have been received
+    bool flag_almanac_mes_type_33; //!< Flag indicating that almanac of Type 33 have been received
+    bool flag_almanac_mes_type_40; //!< Flag indicating that almanac of Type 40 have been received
 
     // UTC and System Clocks Flags
     bool flag_utc_model_valid;  //!< If set, it indicates that the UTC model parameters are filled
-    bool flag_utc_model_str_32; //!< If set, it indicates that the UTC model parameters of Type 32 have been received
-    bool flag_utc_model_str_33; //!< If set, it indicates that the UTC model parameters of Type 33 have been received
-    bool flag_utc_model_str_34; //!< If set, it indicates that the UTC model parameters of Type 34 have been received
+    bool flag_utc_model_mes_type_32; //!< If set, it indicates that the UTC model parameters of Type 32 have been received
+    bool flag_utc_model_mes_type_33; //!< If set, it indicates that the UTC model parameters of Type 33 have been received
+    bool flag_utc_model_mes_type_34; //!< If set, it indicates that the UTC model parameters of Type 34 have been received
+
+    // Iono Flgas
+    bool flag_iono_valid;  //!< If set, it indicates that the UTC model parameters are filled
+    bool flag_iono_mes_type_30; //!< If set, it indicates that the UTC model parameters of Type 32 have been received
 
 
     bool flag_TOW_set;  //!< Flag indicating when the TOW has been set
@@ -138,6 +144,11 @@ public:
     Beidou_Cnav2_Utc_Model get_utc_model();
 
     /*!
+     * \brief Obtain a BEIDOU CNAV2 Iono model parameters class filled with current SV data
+     */
+    Beidou_Cnav2_Iono get_iono();
+
+    /*!
      * \brief Returns a Beidou_Cnav2_Almanac object filled with the latest navigation data received
      * \param satellite_slot_number Slot number identifier for the satellite
      * \returns Returns the Beidou_Cnav2_Almanac object for the input slot number
@@ -153,6 +164,11 @@ public:
      * \brief Returns true if new Beidou_Cnav2_Utc_Model object has arrived
      */
     bool have_new_utc_model();
+
+    /*!
+     * \brief Returns true if new Beidou_Cnav2_Iono object has arrived
+     */
+    bool have_new_iono();
 
     /*!
      * \brief Returns true if new Beidou_Cnav2_Almanac object has arrived.

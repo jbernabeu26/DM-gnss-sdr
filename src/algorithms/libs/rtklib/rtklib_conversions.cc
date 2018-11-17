@@ -74,7 +74,7 @@ obsd_t insert_obs_to_rtklib(obsd_t& rtklib_obs, const Gnss_Synchro& gnss_synchro
     return rtklib_obs;
 }
 
-eph_t eph_to_rtklib(const Beidou_Cnav2_Ephemeris& eph, const Beidou_Cnav2_Utc_Model& utc)
+eph_t eph_to_rtklib(const Beidou_Cnav2_Ephemeris& eph)
 {
     eph_t rtklib_sat = {0, 0, 0, 0, 0, 0, 0, 0, {0, 0}, {0, 0}, {0, 0}, 0.0, 0.0, 0.0, 0.0, 0.0,
         0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, {}, {}, 0.0, 0.0 };
@@ -105,21 +105,21 @@ eph_t eph_to_rtklib(const Beidou_Cnav2_Ephemeris& eph, const Beidou_Cnav2_Utc_Mo
     rtklib_sat.cus = eph.C_US;
     rtklib_sat.crc = eph.C_RC;
     rtklib_sat.crs = eph.C_RS;
-    rtklib_sat.f0 = utc.a_0;
-    rtklib_sat.f1 = utc.a_1;
-    rtklib_sat.f2 = utc.a_2;
-    rtklib_sat.tgd[0] = eph.T_GDB2ap;
-    rtklib_sat.tgd[1] = 0.0;
+    rtklib_sat.f0 = eph.a_0;
+    rtklib_sat.f1 = eph.a_1;
+    rtklib_sat.f2 = eph.a_2;
+    rtklib_sat.tgd[0] = 0.0;
+    rtklib_sat.tgd[1] = eph.T_GDB2ap;
     rtklib_sat.tgd[2] = 0.0;
     rtklib_sat.tgd[3] = 0.0;
     rtklib_sat.toes = eph.t_oe;
-    rtklib_sat.toc = gpst2time(rtklib_sat.week, eph.t_oe);
-    rtklib_sat.ttr = gpst2time(rtklib_sat.week, eph.SOW);
+    rtklib_sat.toc = bdt2time(rtklib_sat.week, eph.t_oc);
+    rtklib_sat.ttr = bdt2time(rtklib_sat.week, eph.SOW);
 
     /* adjustment for week handover */
     double tow, toc;
-    tow = time2gpst(rtklib_sat.ttr, &rtklib_sat.week);
-    toc = time2gpst(rtklib_sat.toc, NULL);
+    tow = time2bdt(rtklib_sat.ttr, &rtklib_sat.week);
+    toc = time2bdt(rtklib_sat.toc, NULL);
     if (rtklib_sat.toes < tow - 302400.0)
         {
             rtklib_sat.week++;
@@ -130,9 +130,9 @@ eph_t eph_to_rtklib(const Beidou_Cnav2_Ephemeris& eph, const Beidou_Cnav2_Utc_Mo
             rtklib_sat.week--;
             tow += 604800.0;
         }
-    rtklib_sat.toe = gpst2time(rtklib_sat.week, rtklib_sat.toes);
-    rtklib_sat.toc = gpst2time(rtklib_sat.week, toc);
-    rtklib_sat.ttr = gpst2time(rtklib_sat.week, tow);
+    rtklib_sat.toe = bdt2time(rtklib_sat.week, rtklib_sat.toes);
+    rtklib_sat.toc = bdt2time(rtklib_sat.week, toc);
+    rtklib_sat.ttr = bdt2time(rtklib_sat.week, tow);
 
     return rtklib_sat;
 }

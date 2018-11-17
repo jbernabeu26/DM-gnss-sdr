@@ -109,21 +109,16 @@ public:
 	double SISAI_oc1;	//Satellite clock bias accuracy index
 	double SISAI_oc2;	//Satellite clock drift accuracy index
 
-	// Ionospheric Delay Correction Model Parameters
-	double alpha_1;		//[TECu]
-	double alpha_2;		//[TECu]
-	double alpha_3;		//[TECu]
-	double alpha_4;		//[TECu]
-	double alpha_5;		//[TECu]
-	double alpha_6;		//[TECu]
-	double alpha_7;		//[TECu]
-	double alpha_8;		//[TECu]
-	double alpha_9;		//[TECu]
-
 	// Group Delay Differential Parameters
 	double T_GDB1Cp;	//Group delay differential of the B1C pilot component [s]
 	double T_GDB2ap;	//Group delay differential of the B2a pilot component [s]
 	double ISC_B2ad;	//Group delay differential between the B2a data and pilot components [s]
+
+	// Clock Correction Parameters
+	double t_oc;		//Clock correction parameters reference time [s] effective range 0~604500
+	double a_0;			//Satellite clock time bias correction coefficient [s]
+	double a_1;			//Satellite clock time drift correction coefficient [s/s]
+	double a_2;			//Satellite clock time drift rate correction coefficient [s/s^2]
 
     template <class Archive>
 
@@ -196,21 +191,16 @@ public:
 		archive& make_nvp("SISAI_oc1", SISAI_oc1);	//Satellite clock bias accuracy index
 		archive& make_nvp("SISAI_oc2", SISAI_oc2);	//Satellite clock drift accuracy index
 
-		// Ionospheric Delay Correction Model Parameters
-		archive& make_nvp("alpha_1", alpha_1);		// Ionosphere a1
-		archive& make_nvp("alpha_2", alpha_2);		// Ionosphere a2
-		archive& make_nvp("alpha_3", alpha_3);		// Ionosphere a3
-		archive& make_nvp("alpha_4", alpha_4);		// Ionosphere a4
-		archive& make_nvp("alpha_5", alpha_5);		// Ionosphere a5
-		archive& make_nvp("alpha_6", alpha_6);		// Ionosphere a6
-		archive& make_nvp("alpha_7", alpha_7);		// Ionosphere a7
-		archive& make_nvp("alpha_8", alpha_8);		// Ionosphere a8
-		archive& make_nvp("alpha_9", alpha_9);		// Ionosphere a9
-
 		// Group Delay Differential Parameters
 		archive& make_nvp("T_GDB1Cp", T_GDB1Cp);	//Group delay differential of the B1C pilot component [s]
 		archive& make_nvp("T_GDB2ap", T_GDB2ap);	//Group delay differential of the B2a pilot component [s]
 		archive& make_nvp("ISC_B2ad", ISC_B2ad);	//Group delay differential between the B2a data and pilot components [s]
+
+        // Clock Correction Parameters
+        archive& make_nvp("t_oc", t_oc);
+        archive& make_nvp("a_0", a_0);
+        archive& make_nvp("a_1", a_1);
+        archive& make_nvp("a_2", a_2);
     }
 
     double B2a_ranging_code_phase_correction_w_pilot(double dt_sv);

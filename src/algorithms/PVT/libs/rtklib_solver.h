@@ -116,9 +116,9 @@ public:
     Glonass_Gnav_Utc_Model glonass_gnav_utc_model;  //!< Map storing GLONASS GNAV UTC Model
     Glonass_Gnav_Almanac glonass_gnav_almanac;      //!< Map storing GLONASS GNAV Almanac Model
 
-    Beidou_Cnav2_Ephemeris beidou_cnav2_ephemeris;  //!< Map storing BEIDOU_CNAV2_Ephemeris
+    Beidou_Cnav2_Iono beidou_cnav2_iono;  //!< Map storing BEIDOU_CNAV2_Ephemeris
     Beidou_Cnav2_Utc_Model beidou_cnav2_utc_model;  //!< Map storing BEIDOU_CNAV2_UTC_Model
-	  Beidou_Cnav2_Almanac beidou_cnav2_almanac;      //!< Map storing BEIDOU_CNAV2_Almanac_Model
+    std::map<int, Beidou_Cnav2_Almanac> beidou_cnav2_almanac_map;      //!< Map storing BEIDOU_CNAV2_Almanac_Model
 
     int count_valid_position;
 };

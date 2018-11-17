@@ -70,12 +70,6 @@ public:
 	double A_1BGTO;		//Drift coefficient of BDT time scale relative to GNSS time scale [s/s]
 	double A_2BGTO;		//Drift rate coefficient of BDT time scale relative to GNSS time scale [s/s^2]
 
-	// Clock Correction Parameters
-	double t_oc;		//Clock correction parameters reference time [s] effective range 0~604500
-	double a_0;			//Satellite clock time bias correction coefficient [s]
-	double a_1;			//Satellite clock time drift correction coefficient [s/s]
-	double a_2;			//Satellite clock time drift rate correction coefficient [s/s^2]
-
     template <class Archive>
     /*!
      * \brief Serialize is a boost standard method to be called by the boost XML serialization. Here is used to save the almanac data on disk file.
@@ -107,11 +101,6 @@ public:
         archive& make_nvp("A_1BGTO", A_1BGTO);
         archive& make_nvp("A_2BGTO", A_2BGTO);
 
-        // Clock Correction Parameters
-        archive& make_nvp("t_oc", t_oc);
-        archive& make_nvp("a_0", a_0);
-        archive& make_nvp("a_1", a_1);
-        archive& make_nvp("a_2", a_2);
     }
 
     double time_of_transmission(Beidou_Cnav2_Almanac const&alm, Beidou_Cnav2_Ephemeris const&eph, double t_sv);

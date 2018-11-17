@@ -97,21 +97,17 @@ Beidou_Cnav2_Ephemeris::Beidou_Cnav2_Ephemeris()
 	SISAI_oc1 = 0.0;	//Satellite clock bias accuracy index
 	SISAI_oc2 = 0.0;	//Satellite clock drift accuracy index
 
-	// Ionospheric Delay Correction Model Parameters
-	alpha_1 = 0.0;		//[TECu]
-	alpha_2 = 0.0;		//[TECu]
-	alpha_3 = 0.0;		//[TECu]
-	alpha_4 = 0.0;		//[TECu]
-	alpha_5 = 0.0;		//[TECu]
-	alpha_6 = 0.0;		//[TECu]
-	alpha_7 = 0.0;		//[TECu]
-	alpha_8 = 0.0;		//[TECu]
-	alpha_9 = 0.0;		//[TECu]
-
 	// Group Delay Differential Parameters
 	T_GDB1Cp = 0.0;	//Group delay differential of the B1C pilot component [s]
 	T_GDB2ap = 0.0;	//Group delay differential of the B2a pilot component [s]
 	ISC_B2ad = 0.0;	//Group delay differential between the B2a data and pilot components [s]
+
+	// Clock Correction Parameters
+	t_oc = 0.0;			//Clock correction parameters reference time [s] effective range 0~604500
+	a_0 = 0.0;			//Satellite clock time bias correction coefficient [s]
+	a_1 = 0.0;			//Satellite clock time drift correction coefficient [s/s]
+	a_2 = 0.0;			//Satellite clock time drift rate correction coefficient [s/s^2]
+
 }
 
 double Beidou_Cnav2_Ephemeris::B2a_ranging_code_phase_correction_w_pilot(double dt_sv)

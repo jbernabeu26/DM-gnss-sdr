@@ -194,7 +194,15 @@ void beidou_b2a_telemetry_decoder_cc::decode_string(double *frame_symbols, int32
             std::shared_ptr<Beidou_Cnav2_Utc_Model> tmp_obj = std::make_shared<Beidou_Cnav2_Utc_Model>(d_nav.get_utc_model());
             this->message_port_pub(pmt::mp("telemetry"), pmt::make_any(tmp_obj));
             LOG(INFO) << "BEIDOU CNAV2 UTC Model have been received in channel" << d_channel << " from satellite " << d_satellite;
-            std::cout << "New BEIDOU B2a CNAV2 message received in channel " << d_channel << ": UTC model parameters from satellite " << d_satellite << std::endl;
+            std::cout << "New BEIDOU B2a CNAV2 utc model message received in channel " << d_channel << ": UTC model parameters from satellite " << d_satellite << std::endl;
+        }
+    if (d_nav.have_new_iono() == true)
+        {
+            // get object for this SV (mandatory)
+            std::shared_ptr<Beidou_Cnav2_Iono> tmp_obj = std::make_shared<Beidou_Cnav2_Iono>(d_nav.get_iono());
+            this->message_port_pub(pmt::mp("telemetry"), pmt::make_any(tmp_obj));
+            LOG(INFO) << "BEIDOU CNAV2 Iono have been received in channel" << d_channel << " from satellite " << d_satellite;
+            std::cout << "New BEIDOU B2a CNAV2 Iono message received in channel " << d_channel << ": UTC model parameters from satellite " << d_satellite << std::endl;
         }
     if (d_nav.have_new_almanac() == true)
         {
