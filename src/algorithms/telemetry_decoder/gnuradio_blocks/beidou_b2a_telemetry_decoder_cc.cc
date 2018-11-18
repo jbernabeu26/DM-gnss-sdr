@@ -206,7 +206,7 @@ void beidou_b2a_telemetry_decoder_cc::decode_string(double *frame_symbols, int32
         }
     if (d_nav.have_new_almanac() == true)
         {
-            unsigned int slot_nbr = d_nav.i_alm_satellite_slot_number;
+            unsigned int slot_nbr = d_nav.i_alm_satellite_PRN;
             std::shared_ptr<Beidou_Cnav2_Almanac> tmp_obj = std::make_shared<Beidou_Cnav2_Almanac>(d_nav.get_almanac(slot_nbr));
             this->message_port_pub(pmt::mp("telemetry"), pmt::make_any(tmp_obj));
             LOG(INFO) << "BEIDOU CNAV2 Almanac have been received in channel" << d_channel << " in slot number " << slot_nbr;

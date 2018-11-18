@@ -476,7 +476,7 @@ const std::vector<std::pair<int32_t, int32_t>> A_1BGTO_33({{160, 13}});
 const std::vector<std::pair<int32_t, int32_t>> A_2BGTO_33({{173, 7}});
 // BGTO Parameters End
 // Reduced Almanac Parameters (38 bits)
-const std::vector<std::pair<int32_t, int32_t>> PRN_a_33({{180, 6}});
+const std::vector<std::pair<int32_t, int32_t>> PRN_ALM_33({{180, 6}});
 const std::vector<std::pair<int32_t, int32_t>> SatType_33({{186, 2}});
 const std::vector<std::pair<int32_t, int32_t>> delta_A_33({{188, 8}});
 const std::vector<std::pair<int32_t, int32_t>> Omega_0_33({{196, 7}});
@@ -484,7 +484,7 @@ const std::vector<std::pair<int32_t, int32_t>> Phi_0_33({{203, 7}});
 const std::vector<std::pair<int32_t, int32_t>> Health_33({{210, 8}});
 // Reduced Almanac Parameters End
 const std::vector<std::pair<int32_t, int32_t>> IODC_33({{218, 10}});
-const std::vector<std::pair<int32_t, int32_t>> WN_a_33({{228, 13}});
+const std::vector<std::pair<int32_t, int32_t>> WN_ALM_33({{228, 13}});
 const std::vector<std::pair<int32_t, int32_t>> t_oa_33({{241, 8}});
 const std::vector<std::pair<int32_t, int32_t>> Rev_33({{249, 16}});
 

@@ -58,7 +58,7 @@ private:
 public:
     bool flag_crc_test;				//!< Flag indicating CRC test
     unsigned int i_string_mes_type;	//!< Flag indicating MesType
-    int32_t i_alm_satellite_slot_number;
+    int32_t i_alm_satellite_PRN;
     int i_channel_ID;				//!< PRN of the channel
     unsigned int i_satellite_PRN;	//!< Satellite PRN
 

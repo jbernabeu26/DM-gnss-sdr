@@ -46,9 +46,9 @@ class Beidou_Cnav2_Almanac
 public:
 	// Midi Almanac Parameters
 
-	unsigned int PRN_a;				//!< PRN number of the corresponding almanac data [dimnsionless]
+	unsigned int i_satellite_PRN;				//!< PRN number of the corresponding almanac data [dimnsionless]
 	double SatType;				//!< Satellite orbit type [dimnsionless]
-	double WN_a;				//!< Alamanc reference week number [week]
+	double WN;				//!< Alamanc reference week number [week]
 	double t_oa;				//!< Almanac reference time [s]
 	double e;					//!< Eccentricity [dimnsionless]
 	double delta_i;				//!< Correction of inclination angle relative to reference value at reference time [pi]
@@ -77,9 +77,9 @@ public:
             {
             };
 
-        archive& make_nvp("PRN_a", PRN_a);
+        archive& make_nvp("i_satellite_PRN", i_satellite_PRN);
         archive& make_nvp("SatType", SatType);
-        archive& make_nvp("WN_a", WN_a);
+        archive& make_nvp("WN", WN);
         archive& make_nvp("t_oa", t_oa);
         archive& make_nvp("e", e);
         archive& make_nvp("delta_i", delta_i);
@@ -92,7 +92,7 @@ public:
         archive& make_nvp("a_f1", a_f1);
         archive& make_nvp("Health", Health);
 
-        archive& make_nvp("PRN_a", PRN_a);
+        archive& make_nvp("PRN", i_satellite_PRN);
         archive& make_nvp("SatType", SatType);
         archive& make_nvp("delta_A", delta_A);
         archive& make_nvp("Omega_0", Omega_0);

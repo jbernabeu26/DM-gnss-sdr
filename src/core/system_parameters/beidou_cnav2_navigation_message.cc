@@ -45,7 +45,7 @@ void Beidou_Cnav2_Navigation_Message::reset()
 {
     // Satellite Identification
     i_satellite_PRN = 0;
-    i_alm_satellite_slot_number = 0;
+    i_alm_satellite_PRN = 0;
     // Ephemeris Flags
     flag_all_ephemeris = false;
     flag_ephemeris_mes_type_10 = false;
@@ -206,7 +206,7 @@ int Beidou_Cnav2_Navigation_Message::string_decoder(std::string const &frame_str
         {
         case 10:
             //--- It is Type 10 -----------------------------------------------
-        	cnav2_ephemeris.PRN = static_cast<unsigned int>(read_navigation_unsigned(string_bits, PRN));
+        	cnav2_ephemeris.i_satellite_PRN = static_cast<unsigned int>(read_navigation_unsigned(string_bits, PRN));
         	//cnav2_ephemeris.MesType = static_cast<double>(read_navigation_unsigned(string_bits, MesType));
         	cnav2_ephemeris.SOW = static_cast<double>(read_navigation_unsigned(string_bits, SOW))*3;	//[s] effective range 0~604797
         	cnav2_ephemeris.WN = static_cast<double>(read_navigation_unsigned(string_bits, WN_10));		//[week] effective range 0~8191
@@ -240,7 +240,7 @@ int Beidou_Cnav2_Navigation_Message::string_decoder(std::string const &frame_str
 
         case 11:
             //--- It is Type 11 -----------------------------------------------
-			cnav2_ephemeris.PRN = static_cast<unsigned int>(read_navigation_unsigned(string_bits, PRN));
+			cnav2_ephemeris.i_satellite_PRN = static_cast<unsigned int>(read_navigation_unsigned(string_bits, PRN));
 			//cnav2_ephemeris.MesType = static_cast<double>(read_navigation_unsigned(string_bits, MesType));
 			cnav2_ephemeris.SOW = static_cast<double>(read_navigation_unsigned(string_bits, SOW))*3;		//[s] effective range 0~604797
 			cnav2_ephemeris.HS = static_cast<double>(read_navigation_unsigned(string_bits, HS_11));
@@ -274,7 +274,7 @@ int Beidou_Cnav2_Navigation_Message::string_decoder(std::string const &frame_str
 
         case 30:
             // --- It is Type 30 ----------------------------------------------
-        	cnav2_ephemeris.PRN = static_cast<unsigned int>(read_navigation_unsigned(string_bits, PRN));
+        	cnav2_ephemeris.i_satellite_PRN = static_cast<unsigned int>(read_navigation_unsigned(string_bits, PRN));
         	//cnav2_ephemeris.MesType = static_cast<double>(read_navigation_unsigned(string_bits, MesType));
         	cnav2_ephemeris.SOW = static_cast<double>(read_navigation_unsigned(string_bits, SOW))*3;	//[s] effective range 0~604797
         	cnav2_ephemeris.HS = static_cast<double>(read_navigation_unsigned(string_bits, HS_30));
@@ -321,7 +321,7 @@ int Beidou_Cnav2_Navigation_Message::string_decoder(std::string const &frame_str
 
         case 31:
             // --- It is Type 31 ----------------------------------------------
-        	cnav2_ephemeris.PRN = static_cast<unsigned int>(read_navigation_unsigned(string_bits, PRN));
+        	cnav2_ephemeris.i_satellite_PRN = static_cast<unsigned int>(read_navigation_unsigned(string_bits, PRN));
 			//cnav2_ephemeris.MesType = static_cast<double>(read_navigation_unsigned(string_bits, MesType));
 			cnav2_ephemeris.SOW = static_cast<double>(read_navigation_unsigned(string_bits, SOW))*3;	//[s] effective range 0~604797
 			cnav2_ephemeris.HS = static_cast<double>(read_navigation_unsigned(string_bits, HS_31));
@@ -343,36 +343,39 @@ int Beidou_Cnav2_Navigation_Message::string_decoder(std::string const &frame_str
 			cnav2_ephemeris.IODC = static_cast<double>(read_navigation_unsigned(string_bits, IODC_31));
 
 			// Reduced Almanac Parameters Sat 1(38 bits)
-			i_alm_satellite_slot_number = static_cast<unsigned int>(read_navigation_unsigned(string_bits, PRN_a1_31));								//[dimensionless] effective range 1~63
-			cnav2_almanac[i_alm_satellite_slot_number-1].WN_a = static_cast<double>(read_navigation_unsigned(string_bits, WN_a_31));				//[week] effective range 0~8191
-			cnav2_almanac[i_alm_satellite_slot_number-1].t_oa = static_cast<double>(read_navigation_unsigned(string_bits, t_oa_31))*TWO_P12;		//[s] effective range 0~602112
-			cnav2_almanac[i_alm_satellite_slot_number-1].SatType = static_cast<double>(read_navigation_unsigned(string_bits, SatType1_31));			//[dimensionless] binary, 01:GEO, 10:IGSO, 11:MEO, 00:Reserved
-			cnav2_almanac[i_alm_satellite_slot_number-1].delta_A = static_cast<double>(read_navigation_signed(string_bits, delta_A1_31))*TWO_P9;	//[m] reference MEO: 27906100m, IGSO/GEO: 42162200m
-			cnav2_almanac[i_alm_satellite_slot_number-1].Omega_0 = static_cast<double>(read_navigation_signed(string_bits, Omega_01_31))*TWO_N6;	//[pi]
-			cnav2_almanac[i_alm_satellite_slot_number-1].Phi_0 = static_cast<double>(read_navigation_signed(string_bits, Phi_01_31))*TWO_N6;		//[pi] Phi = M0 + omega, e=0, delta_i=0, MEO/IGSO i=55, GEO i=0
-			cnav2_almanac[i_alm_satellite_slot_number-1].Health = static_cast<double>(read_navigation_unsigned(string_bits, Health1_31));			//[dimensionless]
+			i_alm_satellite_PRN = static_cast<unsigned int>(read_navigation_unsigned(string_bits, PRN_a1_31));								//[dimensionless] effective range 1~63
+			cnav2_almanac[i_alm_satellite_PRN-1].i_satellite_PRN = i_alm_satellite_PRN;
+			cnav2_almanac[i_alm_satellite_PRN-1].WN = static_cast<double>(read_navigation_unsigned(string_bits, WN_a_31));				//[week] effective range 0~8191
+			cnav2_almanac[i_alm_satellite_PRN-1].t_oa = static_cast<double>(read_navigation_unsigned(string_bits, t_oa_31))*TWO_P12;		//[s] effective range 0~602112
+			cnav2_almanac[i_alm_satellite_PRN-1].SatType = static_cast<double>(read_navigation_unsigned(string_bits, SatType1_31));			//[dimensionless] binary, 01:GEO, 10:IGSO, 11:MEO, 00:Reserved
+			cnav2_almanac[i_alm_satellite_PRN-1].delta_A = static_cast<double>(read_navigation_signed(string_bits, delta_A1_31))*TWO_P9;	//[m] reference MEO: 27906100m, IGSO/GEO: 42162200m
+			cnav2_almanac[i_alm_satellite_PRN-1].Omega_0 = static_cast<double>(read_navigation_signed(string_bits, Omega_01_31))*TWO_N6;	//[pi]
+			cnav2_almanac[i_alm_satellite_PRN-1].Phi_0 = static_cast<double>(read_navigation_signed(string_bits, Phi_01_31))*TWO_N6;		//[pi] Phi = M0 + omega, e=0, delta_i=0, MEO/IGSO i=55, GEO i=0
+			cnav2_almanac[i_alm_satellite_PRN-1].Health = static_cast<double>(read_navigation_unsigned(string_bits, Health1_31));			//[dimensionless]
 			// Reduced Almanac Parameters End
 
 			// Reduced Almanac Parameters Sat 2(38 bits)
-			i_alm_satellite_slot_number = static_cast<unsigned int>(read_navigation_unsigned(string_bits, PRN_a2_31));								//[dimensionless] effective range 1~63
-			cnav2_almanac[i_alm_satellite_slot_number-1].WN_a = static_cast<double>(read_navigation_unsigned(string_bits, WN_a_31));				//[week] effective range 0~8191
-			cnav2_almanac[i_alm_satellite_slot_number-1].t_oa = static_cast<double>(read_navigation_unsigned(string_bits, t_oa_31))*TWO_P12;		//[s] effective range 0~602112
-			cnav2_almanac[i_alm_satellite_slot_number-1].SatType = static_cast<double>(read_navigation_unsigned(string_bits, SatType2_31));			//[dimensionless] binary, 01:GEO, 10:IGSO, 11:MEO, 00:Reserved
-			cnav2_almanac[i_alm_satellite_slot_number-1].delta_A = static_cast<double>(read_navigation_signed(string_bits, delta_A2_31))*TWO_P9;	//[m] reference MEO: 27906100m, IGSO/GEO: 42162200m
-			cnav2_almanac[i_alm_satellite_slot_number-1].Omega_0 = static_cast<double>(read_navigation_signed(string_bits, Omega_02_31))*TWO_N6;	//[pi]
-			cnav2_almanac[i_alm_satellite_slot_number-1].Phi_0 = static_cast<double>(read_navigation_signed(string_bits, Phi_02_31))*TWO_N6;		//[pi] Phi = M0 + omega, e=0, delta_i=0, MEO/IGSO i=55, GEO i=0
-			cnav2_almanac[i_alm_satellite_slot_number-1].Health = static_cast<double>(read_navigation_unsigned(string_bits, Health2_31));			//[dimensionless]
+			i_alm_satellite_PRN = static_cast<unsigned int>(read_navigation_unsigned(string_bits, PRN_a2_31));								//[dimensionless] effective range 1~63
+			cnav2_almanac[i_alm_satellite_PRN-1].i_satellite_PRN = i_alm_satellite_PRN;
+			cnav2_almanac[i_alm_satellite_PRN-1].WN = static_cast<double>(read_navigation_unsigned(string_bits, WN_a_31));				//[week] effective range 0~8191
+			cnav2_almanac[i_alm_satellite_PRN-1].t_oa = static_cast<double>(read_navigation_unsigned(string_bits, t_oa_31))*TWO_P12;		//[s] effective range 0~602112
+			cnav2_almanac[i_alm_satellite_PRN-1].SatType = static_cast<double>(read_navigation_unsigned(string_bits, SatType2_31));			//[dimensionless] binary, 01:GEO, 10:IGSO, 11:MEO, 00:Reserved
+			cnav2_almanac[i_alm_satellite_PRN-1].delta_A = static_cast<double>(read_navigation_signed(string_bits, delta_A2_31))*TWO_P9;	//[m] reference MEO: 27906100m, IGSO/GEO: 42162200m
+			cnav2_almanac[i_alm_satellite_PRN-1].Omega_0 = static_cast<double>(read_navigation_signed(string_bits, Omega_02_31))*TWO_N6;	//[pi]
+			cnav2_almanac[i_alm_satellite_PRN-1].Phi_0 = static_cast<double>(read_navigation_signed(string_bits, Phi_02_31))*TWO_N6;		//[pi] Phi = M0 + omega, e=0, delta_i=0, MEO/IGSO i=55, GEO i=0
+			cnav2_almanac[i_alm_satellite_PRN-1].Health = static_cast<double>(read_navigation_unsigned(string_bits, Health2_31));			//[dimensionless]
 			// Reduced Almanac Parameters End
 
 			// Reduced Almanac Parameters Sat 3(38 bits)
-			i_alm_satellite_slot_number = static_cast<unsigned int>(read_navigation_unsigned(string_bits, PRN_a3_31));								//[dimensionless] effective range 1~63
-			cnav2_almanac[i_alm_satellite_slot_number-1].WN_a = static_cast<double>(read_navigation_unsigned(string_bits, WN_a_31));				//[week] effective range 0~8191
-			cnav2_almanac[i_alm_satellite_slot_number-1].t_oa = static_cast<double>(read_navigation_unsigned(string_bits, t_oa_31))*TWO_P12;		//[s] effective range 0~602112
-			cnav2_almanac[i_alm_satellite_slot_number-1].SatType = static_cast<double>(read_navigation_unsigned(string_bits, SatType3_31));			//[dimensionless] binary, 01:GEO, 10:IGSO, 11:MEO, 00:Reserved
-			cnav2_almanac[i_alm_satellite_slot_number-1].delta_A = static_cast<double>(read_navigation_signed(string_bits, delta_A3_31))*TWO_P9;	//[m] reference MEO: 27906100m, IGSO/GEO: 42162200m
-			cnav2_almanac[i_alm_satellite_slot_number-1].Omega_0 = static_cast<double>(read_navigation_signed(string_bits, Omega_03_31))*TWO_N6;	//[pi]
-			cnav2_almanac[i_alm_satellite_slot_number-1].Phi_0 = static_cast<double>(read_navigation_signed(string_bits, Phi_03_31))*TWO_N6;		//[pi] Phi = M0 + omega, e=0, delta_i=0, MEO/IGSO i=55, GEO i=0
-			cnav2_almanac[i_alm_satellite_slot_number-1].Health = static_cast<double>(read_navigation_unsigned(string_bits, Health3_31));			//[dimensionless]
+			i_alm_satellite_PRN = static_cast<unsigned int>(read_navigation_unsigned(string_bits, PRN_a3_31));								//[dimensionless] effective range 1~63
+			cnav2_almanac[i_alm_satellite_PRN-1].i_satellite_PRN = i_alm_satellite_PRN;
+			cnav2_almanac[i_alm_satellite_PRN-1].WN = static_cast<double>(read_navigation_unsigned(string_bits, WN_a_31));				//[week] effective range 0~8191
+			cnav2_almanac[i_alm_satellite_PRN-1].t_oa = static_cast<double>(read_navigation_unsigned(string_bits, t_oa_31))*TWO_P12;		//[s] effective range 0~602112
+			cnav2_almanac[i_alm_satellite_PRN-1].SatType = static_cast<double>(read_navigation_unsigned(string_bits, SatType3_31));			//[dimensionless] binary, 01:GEO, 10:IGSO, 11:MEO, 00:Reserved
+			cnav2_almanac[i_alm_satellite_PRN-1].delta_A = static_cast<double>(read_navigation_signed(string_bits, delta_A3_31))*TWO_P9;	//[m] reference MEO: 27906100m, IGSO/GEO: 42162200m
+			cnav2_almanac[i_alm_satellite_PRN-1].Omega_0 = static_cast<double>(read_navigation_signed(string_bits, Omega_03_31))*TWO_N6;	//[pi]
+			cnav2_almanac[i_alm_satellite_PRN-1].Phi_0 = static_cast<double>(read_navigation_signed(string_bits, Phi_03_31))*TWO_N6;		//[pi] Phi = M0 + omega, e=0, delta_i=0, MEO/IGSO i=55, GEO i=0
+			cnav2_almanac[i_alm_satellite_PRN-1].Health = static_cast<double>(read_navigation_unsigned(string_bits, Health3_31));			//[dimensionless]
 
 			// Reduced Almanac Parameters End
 			cnav2_ephemeris.Rev = static_cast<double>(read_navigation_unsigned(string_bits, Rev_31));
@@ -386,7 +389,7 @@ int Beidou_Cnav2_Navigation_Message::string_decoder(std::string const &frame_str
 
         case 32:
             // --- It is Type 32 ----------------------------------------------
-        	cnav2_ephemeris.PRN = static_cast<unsigned int>(read_navigation_unsigned(string_bits, PRN));
+        	cnav2_ephemeris.i_satellite_PRN = static_cast<unsigned int>(read_navigation_unsigned(string_bits, PRN));
 			//cnav2_ephemeris.MesType = static_cast<double>(read_navigation_unsigned(string_bits, MesType));
 			cnav2_ephemeris.SOW = static_cast<double>(read_navigation_unsigned(string_bits, SOW))*3;	//[s] effective range 0~604797
 			cnav2_ephemeris.HS = static_cast<double>(read_navigation_unsigned(string_bits, HS_32));
@@ -428,7 +431,7 @@ int Beidou_Cnav2_Navigation_Message::string_decoder(std::string const &frame_str
 
         case 33:
             // --- It is Type 33 ----------------------------------------------
-        	cnav2_ephemeris.PRN = static_cast<unsigned int>(read_navigation_unsigned(string_bits, PRN));
+        	cnav2_ephemeris.i_satellite_PRN = static_cast<unsigned int>(read_navigation_unsigned(string_bits, PRN));
 			//cnav2_ephemeris.MesType = static_cast<double>(read_navigation_unsigned(string_bits, MesType));
 			cnav2_ephemeris.SOW = static_cast<double>(read_navigation_unsigned(string_bits, SOW))*3;	//[s] effective range 0~604797
 			cnav2_ephemeris.HS = static_cast<double>(read_navigation_unsigned(string_bits, HS_33));
@@ -457,17 +460,18 @@ int Beidou_Cnav2_Navigation_Message::string_decoder(std::string const &frame_str
         	// BGTO Parameters End
 
         	// Reduced Almanac Parameters (38 bits)
-			i_alm_satellite_slot_number = static_cast<unsigned int>(read_navigation_unsigned(string_bits, PRN_a_33));								//[dimensionless] effective range 1~63
-			cnav2_almanac[i_alm_satellite_slot_number-1].SatType = static_cast<double>(read_navigation_unsigned(string_bits, SatType_33));			//[dimensionless] binary, 01:GEO, 10:IGSO, 11:MEO, 00:Reserved
-			cnav2_almanac[i_alm_satellite_slot_number-1].delta_A = static_cast<double>(read_navigation_signed(string_bits, delta_A_33))*TWO_P9;	//[m] reference MEO: 27906100m, IGSO/GEO: 42162200m
-			cnav2_almanac[i_alm_satellite_slot_number-1].Omega_0 = static_cast<double>(read_navigation_signed(string_bits, Omega_0_33))*TWO_N6;	//[pi]
-			cnav2_almanac[i_alm_satellite_slot_number-1].Phi_0 = static_cast<double>(read_navigation_signed(string_bits, Phi_0_33))*TWO_N6;		//[pi] Phi = M0 + omega, e=0, delta_i=0, MEO/IGSO i=55, GEO i=0
-			cnav2_almanac[i_alm_satellite_slot_number-1].Health = static_cast<double>(read_navigation_unsigned(string_bits, Health_33));			//[dimensionless]
+			i_alm_satellite_PRN = static_cast<unsigned int>(read_navigation_unsigned(string_bits, PRN_ALM_33));								//[dimensionless] effective range 1~63
+			cnav2_almanac[i_alm_satellite_PRN-1].i_satellite_PRN = i_alm_satellite_PRN;
+			cnav2_almanac[i_alm_satellite_PRN-1].SatType = static_cast<double>(read_navigation_unsigned(string_bits, SatType_33));			//[dimensionless] binary, 01:GEO, 10:IGSO, 11:MEO, 00:Reserved
+			cnav2_almanac[i_alm_satellite_PRN-1].delta_A = static_cast<double>(read_navigation_signed(string_bits, delta_A_33))*TWO_P9;	//[m] reference MEO: 27906100m, IGSO/GEO: 42162200m
+			cnav2_almanac[i_alm_satellite_PRN-1].Omega_0 = static_cast<double>(read_navigation_signed(string_bits, Omega_0_33))*TWO_N6;	//[pi]
+			cnav2_almanac[i_alm_satellite_PRN-1].Phi_0 = static_cast<double>(read_navigation_signed(string_bits, Phi_0_33))*TWO_N6;		//[pi] Phi = M0 + omega, e=0, delta_i=0, MEO/IGSO i=55, GEO i=0
+			cnav2_almanac[i_alm_satellite_PRN-1].Health = static_cast<double>(read_navigation_unsigned(string_bits, Health_33));			//[dimensionless]
         	// Reduced Almanac Parameters End
 
 			cnav2_ephemeris.IODC = static_cast<double>(read_navigation_unsigned(string_bits, IODC_33));
-			cnav2_almanac[i_alm_satellite_slot_number-1].WN_a = static_cast<double>(read_navigation_unsigned(string_bits, WN_a_33));			//[week] effective range 0~8191
-			cnav2_almanac[i_alm_satellite_slot_number-1].t_oa = static_cast<double>(read_navigation_unsigned(string_bits, t_oa_33))*TWO_P12;	//[s] effective range 0~602112
+			cnav2_almanac[i_alm_satellite_PRN-1].WN = static_cast<double>(read_navigation_unsigned(string_bits, WN_ALM_33));			//[week] effective range 0~8191
+			cnav2_almanac[i_alm_satellite_PRN-1].t_oa = static_cast<double>(read_navigation_unsigned(string_bits, t_oa_33))*TWO_P12;	//[s] effective range 0~602112
 			cnav2_ephemeris.Rev = static_cast<double>(read_navigation_unsigned(string_bits, Rev_33));
 
 			// Set flags relative to time and message
@@ -480,7 +484,7 @@ int Beidou_Cnav2_Navigation_Message::string_decoder(std::string const &frame_str
         case 34:
             // --- It is Type 34 ----------------------------------------------
 
-        	cnav2_ephemeris.PRN = static_cast<unsigned int>(read_navigation_unsigned(string_bits, PRN));
+        	cnav2_ephemeris.i_satellite_PRN = static_cast<unsigned int>(read_navigation_unsigned(string_bits, PRN));
 			//cnav2_ephemeris.MesType = static_cast<double>(read_navigation_unsigned(string_bits, MesType));
 			cnav2_ephemeris.SOW = static_cast<double>(read_navigation_unsigned(string_bits, SOW))*3;	//[s] effective range 0~604797
 			cnav2_ephemeris.HS = static_cast<double>(read_navigation_unsigned(string_bits, HS_34));
@@ -532,7 +536,7 @@ int Beidou_Cnav2_Navigation_Message::string_decoder(std::string const &frame_str
         case 40:
             // --- It is Type 40 ----------------------------------------------
 
-        	cnav2_ephemeris.PRN = static_cast<unsigned int>(read_navigation_unsigned(string_bits, PRN));
+        	cnav2_ephemeris.i_satellite_PRN = static_cast<unsigned int>(read_navigation_unsigned(string_bits, PRN));
 			//cnav2_ephemeris.MesType = static_cast<double>(read_navigation_unsigned(string_bits, MesType));
 			cnav2_ephemeris.SOW = static_cast<double>(read_navigation_unsigned(string_bits, SOW))*3;	//[s] effective range 0~604797
 			cnav2_ephemeris.HS = static_cast<double>(read_navigation_unsigned(string_bits, HS_40));
@@ -553,20 +557,21 @@ int Beidou_Cnav2_Navigation_Message::string_decoder(std::string const &frame_str
         	// SISAI_OC End
 
         	// Midi Almanac Parameters (156 bits)
-			i_alm_satellite_slot_number = static_cast<unsigned int>(read_navigation_unsigned(string_bits, PRN_a_40));					//[dimensionless] effective range 1~63
-        	cnav2_almanac[i_alm_satellite_slot_number-1].SatType = static_cast<double>(read_navigation_unsigned(string_bits, SatType_40));				//[dimensionless] binary, 01:GEO, 10:IGSO, 11:MEO, 00:Reserved
-        	cnav2_almanac[i_alm_satellite_slot_number-1].WN_a = static_cast<double>(read_navigation_unsigned(string_bits, WN_a_40));					//[week] effective range 0~8191
-        	cnav2_almanac[i_alm_satellite_slot_number-1].t_oa = static_cast<double>(read_navigation_unsigned(string_bits, t_oa_40))*TWO_P12;			//[s] effective range 0~602112
-        	cnav2_almanac[i_alm_satellite_slot_number-1].e = static_cast<double>(read_navigation_unsigned(string_bits, e_40))*TWO_N16;					//[dimensionless]
-        	cnav2_almanac[i_alm_satellite_slot_number-1].delta_i = static_cast<double>(read_navigation_signed(string_bits, delta_i_40))*TWO_N14;		//[pi]
-        	cnav2_almanac[i_alm_satellite_slot_number-1].sqrt_A = static_cast<double>(read_navigation_unsigned(string_bits, sqrt_A_40))*TWO_N4; 		//[m^0.5]
-        	cnav2_almanac[i_alm_satellite_slot_number-1].Omega_0 = static_cast<double>(read_navigation_signed(string_bits, Omega_0_40))*TWO_N15;		//[pi]
-        	cnav2_almanac[i_alm_satellite_slot_number-1].Omega_dot = static_cast<double>(read_navigation_signed(string_bits, Omega_dot_40))*TWO_N33;	//[pi/s]
-        	cnav2_almanac[i_alm_satellite_slot_number-1].omega = static_cast<double>(read_navigation_signed(string_bits, omega_40))*TWO_N15;			//[pi]
-        	cnav2_almanac[i_alm_satellite_slot_number-1].M_0 = static_cast<double>(read_navigation_signed(string_bits, M_0_40))*TWO_N15;				//[pi]
-        	cnav2_almanac[i_alm_satellite_slot_number-1].a_f0 = static_cast<double>(read_navigation_signed(string_bits, a_f0_40))*TWO_N20;				//[s]
-        	cnav2_almanac[i_alm_satellite_slot_number-1].a_f1 = static_cast<double>(read_navigation_signed(string_bits, a_f1_40))*TWO_N37;				//[s/s]
-        	cnav2_almanac[i_alm_satellite_slot_number-1].Health = static_cast<double>(read_navigation_unsigned(string_bits, Health_40));				//[dimensionless] 8th(MSB):Satellite, 7th:B1C, 6th:B2a, 5th~1st:reserve, 0:normal/health, 1:abnormal
+			i_alm_satellite_PRN = static_cast<unsigned int>(read_navigation_unsigned(string_bits, PRN_a_40));					//[dimensionless] effective range 1~63
+			cnav2_almanac[i_alm_satellite_PRN-1].i_satellite_PRN = i_alm_satellite_PRN;
+        	cnav2_almanac[i_alm_satellite_PRN-1].SatType = static_cast<double>(read_navigation_unsigned(string_bits, SatType_40));				//[dimensionless] binary, 01:GEO, 10:IGSO, 11:MEO, 00:Reserved
+        	cnav2_almanac[i_alm_satellite_PRN-1].WN = static_cast<double>(read_navigation_unsigned(string_bits, WN_a_40));					//[week] effective range 0~8191
+        	cnav2_almanac[i_alm_satellite_PRN-1].t_oa = static_cast<double>(read_navigation_unsigned(string_bits, t_oa_40))*TWO_P12;			//[s] effective range 0~602112
+        	cnav2_almanac[i_alm_satellite_PRN-1].e = static_cast<double>(read_navigation_unsigned(string_bits, e_40))*TWO_N16;					//[dimensionless]
+        	cnav2_almanac[i_alm_satellite_PRN-1].delta_i = static_cast<double>(read_navigation_signed(string_bits, delta_i_40))*TWO_N14;		//[pi]
+        	cnav2_almanac[i_alm_satellite_PRN-1].sqrt_A = static_cast<double>(read_navigation_unsigned(string_bits, sqrt_A_40))*TWO_N4; 		//[m^0.5]
+        	cnav2_almanac[i_alm_satellite_PRN-1].Omega_0 = static_cast<double>(read_navigation_signed(string_bits, Omega_0_40))*TWO_N15;		//[pi]
+        	cnav2_almanac[i_alm_satellite_PRN-1].Omega_dot = static_cast<double>(read_navigation_signed(string_bits, Omega_dot_40))*TWO_N33;	//[pi/s]
+        	cnav2_almanac[i_alm_satellite_PRN-1].omega = static_cast<double>(read_navigation_signed(string_bits, omega_40))*TWO_N15;			//[pi]
+        	cnav2_almanac[i_alm_satellite_PRN-1].M_0 = static_cast<double>(read_navigation_signed(string_bits, M_0_40))*TWO_N15;				//[pi]
+        	cnav2_almanac[i_alm_satellite_PRN-1].a_f0 = static_cast<double>(read_navigation_signed(string_bits, a_f0_40))*TWO_N20;				//[s]
+        	cnav2_almanac[i_alm_satellite_PRN-1].a_f1 = static_cast<double>(read_navigation_signed(string_bits, a_f1_40))*TWO_N37;				//[s/s]
+        	cnav2_almanac[i_alm_satellite_PRN-1].Health = static_cast<double>(read_navigation_unsigned(string_bits, Health_40));				//[dimensionless] 8th(MSB):Satellite, 7th:B1C, 6th:B2a, 5th~1st:reserve, 0:normal/health, 1:abnormal
         	// Midi Almanac Parameters End
 
         	cnav2_ephemeris.Rev = static_cast<double>(read_navigation_unsigned(string_bits, Rev_40));
@@ -665,7 +670,7 @@ bool Beidou_Cnav2_Navigation_Message::have_new_almanac()  //Check if we have a n
 {
     if (flag_almanac_mes_type_31 == true)
         {
-            if (d_previous_Na[i_alm_satellite_slot_number] != cnav2_almanac[i_alm_satellite_slot_number-1].t_oa)
+            if (d_previous_Na[i_alm_satellite_PRN] != cnav2_almanac[i_alm_satellite_PRN-1].t_oa)
                 {
                     //All almanac have been received for this satellite
                     flag_almanac_mes_type_31 = false;
@@ -674,7 +679,7 @@ bool Beidou_Cnav2_Navigation_Message::have_new_almanac()  //Check if we have a n
         }
     if (flag_almanac_mes_type_33 == true)
             {
-                if (d_previous_Na[i_alm_satellite_slot_number] != cnav2_almanac[i_alm_satellite_slot_number-1].t_oa)
+                if (d_previous_Na[i_alm_satellite_PRN] != cnav2_almanac[i_alm_satellite_PRN-1].t_oa)
                     {
                         //All almanac have been received for this satellite
                         flag_almanac_mes_type_33 = false;
@@ -683,7 +688,7 @@ bool Beidou_Cnav2_Navigation_Message::have_new_almanac()  //Check if we have a n
             }
     if (flag_almanac_mes_type_40 == true)
             {
-                if (d_previous_Na[i_alm_satellite_slot_number] != cnav2_almanac[i_alm_satellite_slot_number-1].t_oa)
+                if (d_previous_Na[i_alm_satellite_PRN] != cnav2_almanac[i_alm_satellite_PRN-1].t_oa)
                     {
                         //All almanac have been received for this satellite
                         flag_almanac_mes_type_40 = false;

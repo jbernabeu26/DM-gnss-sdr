@@ -190,6 +190,45 @@ void rtklib_pvt_cc::msg_handler_telemetry(pmt::pmt_t msg)
                     d_ls_pvt->galileo_almanac_map[galileo_alm->i_satellite_PRN] = *galileo_alm;
                 }
 
+            // **************** BeiDou telemetry ********************
+            else if (pmt::any_ref(msg).type() == typeid(std::shared_ptr<Beidou_Cnav2_Ephemeris>))
+                {
+                    // ### Galileo EPHEMERIS ###
+                    std::shared_ptr<Beidou_Cnav2_Ephemeris> beidou_cnav2_eph;
+                    beidou_cnav2_eph = boost::any_cast<std::shared_ptr<Beidou_Cnav2_Ephemeris>>(pmt::any_ref(msg));
+                    // insert new ephemeris record
+                    DLOG(INFO) << "Beidou New Ephemeris record inserted in global map with TOW =" << beidou_cnav2_eph->SOW
+                               << ", BeiDou Week Number =" << beidou_cnav2_eph->WN
+                               << " and Ephemeris IOD = " << beidou_cnav2_eph->IODE;
+                    // update/insert new ephemeris record to the global ephemeris map
+                    d_ls_pvt->beidou_cnav2_ephemeris_map[beidou_cnav2_eph->i_satellite_PRN] = *beidou_cnav2_eph;
+                }
+            else if (pmt::any_ref(msg).type() == typeid(std::shared_ptr<Beidou_Cnav2_Iono>))
+                {
+                    // ### Galileo IONO ###
+                    std::shared_ptr<Beidou_Cnav2_Iono> beidou_cnav2_iono;
+                    beidou_cnav2_iono = boost::any_cast<std::shared_ptr<Beidou_Cnav2_Iono>>(pmt::any_ref(msg));
+                    d_ls_pvt->beidou_cnav2_iono = *beidou_cnav2_iono;
+                    DLOG(INFO) << "New BeiDou CNAV2 IONO record has arrived ";
+                }
+            else if (pmt::any_ref(msg).type() == typeid(std::shared_ptr<Beidou_Cnav2_Utc_Model>))
+                {
+                    // ### Galileo UTC MODEL ###
+                    std::shared_ptr<Beidou_Cnav2_Utc_Model> beidou_cnav2_utc_model;
+                    beidou_cnav2_utc_model = boost::any_cast<std::shared_ptr<Beidou_Cnav2_Utc_Model>>(pmt::any_ref(msg));
+                    d_ls_pvt->beidou_cnav2_utc_model = *beidou_cnav2_utc_model;
+                    DLOG(INFO) << "New BeiDou CNAV2 UTC record has arrived ";
+                }
+            else if (pmt::any_ref(msg).type() == typeid(std::shared_ptr<Beidou_Cnav2_Almanac>))
+                {
+                    // ### Galileo Almanac ###
+                    std::shared_ptr<Beidou_Cnav2_Almanac> beidou_cnav2_alm;
+                    beidou_cnav2_alm = boost::any_cast<std::shared_ptr<Beidou_Cnav2_Almanac>>(pmt::any_ref(msg));
+                    // update/insert new almanac record to the global almanac map
+                    d_ls_pvt->beidou_cnav2_almanac_map[beidou_cnav2_alm->i_satellite_PRN] = *beidou_cnav2_alm;
+                    DLOG(INFO) << "New BeiDou CNAV2 Almanac record has arrived ";
+                }
+
             // **************** GLONASS GNAV Telemetry **************************
             else if (pmt::any_ref(msg).type() == typeid(std::shared_ptr<Glonass_Gnav_Ephemeris>))
                 {
@@ -798,6 +837,94 @@ rtklib_pvt_cc::~rtklib_pvt_cc()
                 {
                     LOG(INFO) << "Failed to save GLONASS GNAV ephemeris, not valid data";
                 }
+
+            // save BeiDou CNAV2 ephemeris to XML file
+            file_name = xml_base_path + "beidou_cnav2_ephemeris.xml";
+            if (d_ls_pvt->beidou_cnav2_ephemeris_map.empty() == false)
+                {
+                    std::ofstream ofs;
+                    try
+                        {
+                            ofs.open(file_name.c_str(), std::ofstream::trunc | std::ofstream::out);
+                            boost::archive::xml_oarchive xml(ofs);
+                            xml << boost::serialization::make_nvp("GNSS-SDR_beidou_cnav2_ephemeris_map", d_ls_pvt->beidou_cnav2_ephemeris_map);
+                            LOG(INFO) << "Saved BeiDou CNAV2 Ephemeris map data";
+                        }
+                    catch (std::exception& e)
+                        {
+                            LOG(WARNING) << e.what();
+                        }
+                }
+            else
+                {
+                    LOG(INFO) << "Failed to save BeiDou CNAV2 Ephemeris, map is empty";
+                }
+
+            // Save BeiDou CNAV2 UTC model parameters
+            file_name = xml_base_path + "beidou_cnav2_utc_model.xml";
+            if (d_ls_pvt->beidou_cnav2_utc_model.valid)
+                {
+                    std::ofstream ofs;
+                    try
+                        {
+                            ofs.open(file_name.c_str(), std::ofstream::trunc | std::ofstream::out);
+                            boost::archive::xml_oarchive xml(ofs);
+                            xml << boost::serialization::make_nvp("GNSS-SDR_beidou_cnav2_utc_model", d_ls_pvt->beidou_cnav2_utc_model);
+                            LOG(INFO) << "Saved BeiDou CNAV2 UTC model parameters";
+                        }
+                    catch (std::exception& e)
+                        {
+                            LOG(WARNING) << e.what();
+                        }
+                }
+            else
+                {
+                    LOG(INFO) << "Failed to save BeiDou CNAV2 UTC model parameters, not valid data";
+                }
+
+            // Save BeiDou iono parameters
+            file_name = xml_base_path + "beidou_cnav2_iono.xml";
+            if (d_ls_pvt->beidou_cnav2_iono.d_flag_valid == true)
+                {
+                    std::ofstream ofs;
+                    try
+                        {
+                            ofs.open(file_name.c_str(), std::ofstream::trunc | std::ofstream::out);
+                            boost::archive::xml_oarchive xml(ofs);
+                            xml << boost::serialization::make_nvp("GNSS-SDR_beidou_cnav2_iono_model", d_ls_pvt->beidou_cnav2_iono);
+                            LOG(INFO) << "Saved BeiDou CNAV2 ionospheric model parameters";
+                        }
+                    catch (std::exception& e)
+                        {
+                            LOG(WARNING) << e.what();
+                        }
+                }
+            else
+                {
+                    LOG(INFO) << "Failed to save BeiDou CNAV2 ionospheric model parameters, not valid data";
+                }
+
+            // save GPS almanac to XML file
+			file_name = xml_base_path + "beidou_cnav2_almanac.xml";
+			if (d_ls_pvt->beidou_cnav2_almanac_map.empty() == false)
+				{
+					std::ofstream ofs;
+					try
+						{
+							ofs.open(file_name.c_str(), std::ofstream::trunc | std::ofstream::out);
+							boost::archive::xml_oarchive xml(ofs);
+							xml << boost::serialization::make_nvp("GNSS-SDR_beidou_cnav2_almanac_map", d_ls_pvt->beidou_cnav2_almanac_map);
+							LOG(INFO) << "Saved BeiDou CNAV2 almanac map data";
+						}
+					catch (const std::exception& e)
+						{
+							LOG(WARNING) << e.what();
+						}
+				}
+			else
+				{
+					LOG(INFO) << "Failed to save BeiDou CNAV2 almanac, map is empty";
+				}
         }
 }
 

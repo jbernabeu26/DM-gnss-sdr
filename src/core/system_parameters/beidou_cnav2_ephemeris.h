@@ -49,7 +49,7 @@ class Beidou_Cnav2_Ephemeris
 
 public:
 	// Other values
-	unsigned int PRN;	//Pseudo-Random Noise, Satellite ID
+	unsigned int i_satellite_PRN;	//Pseudo-Random Noise, Satellite ID
 	double SOW;			//Seconds of week [s]
 	double WN;			//Week number [week]
 	double Rev;			//Unspecified in ICD. Probably Reserved
@@ -132,7 +132,7 @@ public:
             {
             };
     	// Others values
-    	archive& make_nvp("PRN", PRN);
+    	archive& make_nvp("i_satellite_PRN", i_satellite_PRN);
     	archive& make_nvp("SOW", SOW);
     	archive& make_nvp("WN", WN);
 

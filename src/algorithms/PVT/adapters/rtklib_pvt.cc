@@ -170,11 +170,14 @@ RtklibPvt::RtklibPvt(ConfigurationInterface* configuration,
      *    27   |  Galileo E1B + GLONASS L1 C/A
      *    28   |  GPS L2C + GLONASS L1 C/A
      *    ... missing
-     *    32   |  Beidou B2a
-     *    33   |  GPS L1 C/A + BEIDOU B2a
-     *    34   |  Galileo E1B + BEIDOU B2a
-     *    35   |  GPS L2C + BEIDOU B2a
-     *    36   |  GLONASS L1 C/A + BEIDOU B2a
+     *    42   |  Beidou B2a
+     *    43   |  GPS L1 C/A + BEIDOU B2a
+     *    44   |  Galileo E1B + BEIDOU B2a
+     *    45   |  GPS L2C + BEIDOU B2a
+     *    46   |  GLONASS L1 C/A + BEIDOU B2a
+     *    47   |  GPS L5 + BEIDOU B2a
+     *    48   |  Gal E5a + BEIDOU B2a
+     *    49   |  GPS L5 + Gal E5a + BEIDOU B2a
      */
     int gps_1C_count = configuration->property("Channels_1C.count", 0);
     int gps_2S_count = configuration->property("Channels_2S.count", 0);
@@ -184,7 +187,7 @@ RtklibPvt::RtklibPvt(ConfigurationInterface* configuration,
     int gal_E5b_count = configuration->property("Channels_7X.count", 0);
     int glo_1G_count = configuration->property("Channels_1G.count", 0);
     int glo_2G_count = configuration->property("Channels_2G.count", 0);
-    int bds_B2a_count = configuration->property("Channels_7X.count", 0);
+    int bds_B2a_count = configuration->property("Channels_5C.count", 0);
 
     if ((gps_1C_count != 0) && (gps_2S_count == 0) && (gps_L5_count == 0) && (gal_1B_count == 0) && (gal_E5a_count == 0) && (gal_E5b_count == 0) && (glo_1G_count == 0) && (glo_2G_count == 0) && (bds_B2a_count == 0)) pvt_output_parameters.type_of_receiver = 1;  // L1
     if ((gps_1C_count == 0) && (gps_2S_count != 0) && (gps_L5_count == 0) && (gal_1B_count == 0) && (gal_E5a_count == 0) && (gal_E5b_count == 0) && (glo_1G_count == 0) && (glo_2G_count == 0) && (bds_B2a_count == 0)) pvt_output_parameters.type_of_receiver = 2;
@@ -219,13 +222,16 @@ RtklibPvt::RtklibPvt(ConfigurationInterface* configuration,
     if ((gps_1C_count == 0) && (gps_2S_count == 0) && (gps_L5_count == 0) && (gal_1B_count != 0) && (gal_E5a_count == 0) && (gal_E5b_count == 0) && (glo_1G_count == 0) && (glo_2G_count != 0) && (bds_B2a_count == 0)) pvt_output_parameters.type_of_receiver = 30;
     if ((gps_1C_count == 0) && (gps_2S_count != 0) && (gps_L5_count == 0) && (gal_1B_count == 0) && (gal_E5a_count == 0) && (gal_E5b_count == 0) && (glo_1G_count == 0) && (glo_2G_count != 0) && (bds_B2a_count == 0)) pvt_output_parameters.type_of_receiver = 31;
 
-    if ((gps_1C_count != 0) && (gps_2S_count == 0) && (gps_L5_count != 0) && (gal_1B_count != 0) && (gal_E5a_count != 0) && (gal_E5b_count == 0) && (glo_1G_count == 0) && (glo_2G_count == 0)) pvt_output_parameters.type_of_receiver = 32;  // L1+E1+L5+E5a
+    if ((gps_1C_count != 0) && (gps_2S_count == 0) && (gps_L5_count != 0) && (gal_1B_count != 0) && (gal_E5a_count != 0) && (gal_E5b_count == 0) && (glo_1G_count == 0) && (glo_2G_count == 0) && (bds_B2a_count != 0)) pvt_output_parameters.type_of_receiver = 32;  // L1+E1+L5+E5a
 
     if ((gps_1C_count == 0) && (gps_2S_count == 0) && (gps_L5_count == 0) && (gal_1B_count == 0) && (gal_E5a_count == 0) && (gal_E5b_count == 0) && (glo_1G_count == 0) && (glo_2G_count == 0) && (bds_B2a_count != 0)) pvt_output_parameters.type_of_receiver = 42;
     if ((gps_1C_count != 0) && (gps_2S_count == 0) && (gps_L5_count == 0) && (gal_1B_count == 0) && (gal_E5a_count == 0) && (gal_E5b_count == 0) && (glo_1G_count == 0) && (glo_2G_count == 0) && (bds_B2a_count != 0)) pvt_output_parameters.type_of_receiver = 43;
     if ((gps_1C_count == 0) && (gps_2S_count == 0) && (gps_L5_count == 0) && (gal_1B_count != 0) && (gal_E5a_count == 0) && (gal_E5b_count == 0) && (glo_1G_count == 0) && (glo_2G_count == 0) && (bds_B2a_count != 0)) pvt_output_parameters.type_of_receiver = 44;
     if ((gps_1C_count == 0) && (gps_2S_count != 0) && (gps_L5_count == 0) && (gal_1B_count == 0) && (gal_E5a_count == 0) && (gal_E5b_count == 0) && (glo_1G_count == 0) && (glo_2G_count == 0) && (bds_B2a_count != 0)) pvt_output_parameters.type_of_receiver = 45;
     if ((gps_1C_count == 0) && (gps_2S_count == 0) && (gps_L5_count == 0) && (gal_1B_count == 0) && (gal_E5a_count == 0) && (gal_E5b_count == 0) && (glo_1G_count != 0) && (glo_2G_count == 0) && (bds_B2a_count != 0)) pvt_output_parameters.type_of_receiver = 46;
+    if ((gps_1C_count == 0) && (gps_2S_count == 0) && (gps_L5_count != 0) && (gal_1B_count == 0) && (gal_E5a_count == 0) && (gal_E5b_count == 0) && (glo_1G_count == 0) && (glo_2G_count == 0) && (bds_B2a_count != 0)) pvt_output_parameters.type_of_receiver = 47;
+    if ((gps_1C_count == 0) && (gps_2S_count == 0) && (gps_L5_count == 0) && (gal_1B_count == 0) && (gal_E5a_count != 0) && (gal_E5b_count == 0) && (glo_1G_count == 0) && (glo_2G_count == 0) && (bds_B2a_count != 0)) pvt_output_parameters.type_of_receiver = 48;
+    if ((gps_1C_count == 0) && (gps_2S_count == 0) && (gps_L5_count != 0) && (gal_1B_count == 0) && (gal_E5a_count != 0) && (gal_E5b_count == 0) && (glo_1G_count == 0) && (glo_2G_count == 0) && (bds_B2a_count != 0)) pvt_output_parameters.type_of_receiver = 49;
     //RTKLIB PVT solver options
     // Settings 1
     int positioning_mode = -1;

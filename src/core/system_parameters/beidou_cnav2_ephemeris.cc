@@ -38,7 +38,7 @@
 Beidou_Cnav2_Ephemeris::Beidou_Cnav2_Ephemeris()
 {
 	// Other values
-	PRN = 0;
+	i_satellite_PRN = 0;
 	SOW = 0.0;
 	WN = 0.0;
 
