@@ -145,27 +145,32 @@ public:
     /*!
     *  \brief Generates the BeiDou B2a CNAV2 Navigation Data header
     */
-    void rinex_nav_header(std::fstream& out, const Beidou_Cnav2_Ephemeris& bds_cnav2_eph, const Beidou_Cnav2_Utc_Model& bds_cnav2_utc, const Beidou_Cnav2_Almanac& bds_cnav2_alm);
+    void rinex_nav_header(std::fstream& out, const Beidou_Cnav2_Iono& bds_cnav2_iono, const Beidou_Cnav2_Utc_Model& bds_cnav2_utc);
 
     /*!
     *  \brief Generates the Mixed (GPS L1 C/A + BeiDou B2a) Navigation Data header
     */
-    void rinex_nav_header(std::fstream& out, const Beidou_Cnav2_Ephemeris& bds_cnav2_eph, const Beidou_Cnav2_Utc_Model& bds_cnav2_utc, const Beidou_Cnav2_Almanac& bds_cnav2_alm, const Gps_Iono& iono, const Gps_Utc_Model& utc_model);
+    void rinex_nav_header(std::fstream& out, const Gps_Iono& gps_iono, const Gps_Utc_Model& gps_utc_model, const Beidou_Cnav2_Iono& bds_cnav2_iono, const Beidou_Cnav2_Utc_Model& bds_cnav2_utc);
 
     /*!
     *  \brief Generates the Mixed (Galileo E1b + BeiDou B2a) Navigation Data header
     */
-    void rinex_nav_header(std::fstream& out, const Beidou_Cnav2_Ephemeris& bds_cnav2_eph, const Beidou_Cnav2_Utc_Model& bds_cnav2_utc, const Beidou_Cnav2_Almanac& bds_cnav2_alm, const Galileo_Iono& iono, const Galileo_Utc_Model& utc_model, const Galileo_Almanac& galileo_almanac);
+    void rinex_nav_header(std::fstream& out, const Galileo_Iono& galileo_iono, const Galileo_Utc_Model& galileo_utc_model, const Beidou_Cnav2_Iono& bds_cnav2_iono, const Beidou_Cnav2_Utc_Model& bds_cnav2_utc);
 
     /*!
     *  \brief Generates the Mixed (GPS L2C + BeiDou B2a) Navigation Data header
     */
-    void rinex_nav_header(std::fstream& out, const Beidou_Cnav2_Ephemeris& bds_cnav2_eph, const Beidou_Cnav2_Utc_Model& bds_cnav2_utc, const Beidou_Cnav2_Almanac& bds_cnav2_alm, const Gps_CNAV_Iono& iono, const Gps_CNAV_Utc_Model& utc_model);
+    void rinex_nav_header(std::fstream& out, const Gps_CNAV_Iono& iono, const Gps_CNAV_Utc_Model& utc_model, const Beidou_Cnav2_Iono& bds_cnav2_iono, const Beidou_Cnav2_Utc_Model& bds_cnav2_utc);
 
     /*!
     *  \brief Generates the Mixed (GLONASS L1 C/A + BeiDou B2a) Navigation Data header
     */
-    void rinex_nav_header(std::fstream& out, const Beidou_Cnav2_Ephemeris& bds_cnav2_eph, const Beidou_Cnav2_Utc_Model& bds_cnav2_utc, const Beidou_Cnav2_Almanac& bds_cnav2_alm, const Glonass_Gnav_Utc_Model& glonass_gnav_utc_model, const Glonass_Gnav_Almanac& glonass_gnav_almanac);
+    void rinex_nav_header(std::fstream& out, const Beidou_Cnav2_Iono& bds_cnav2_iono, const Beidou_Cnav2_Utc_Model& bds_cnav2_utc, const Glonass_Gnav_Utc_Model& glonass_gnav_utc_model, const Glonass_Gnav_Almanac& glonass_gnav_almanac);
+
+    /*!
+    *  \brief Generates the Mixed (GPS L5 + Gal E5a + BeiDou B2a) Navigation Data header
+    */
+    void rinex_nav_header(std::fstream& out, const Gps_Iono& gps_iono, const Gps_Utc_Model& gps_utc_model, const Galileo_Iono& galileo_iono, const Galileo_Utc_Model& galileo_utc_model, const Beidou_Cnav2_Iono& bds_cnav2_iono, const Beidou_Cnav2_Utc_Model& bds_cnav2_utc);
 
     /*!
      *  \brief Generates the GPS Observation data header
@@ -225,27 +230,27 @@ public:
     /*!
      *  \brief Generates the BEIDOU B2a CNAV2 Observation data header.
 	 */
-	void rinex_obs_header(std::fstream& out, const Beidou_Cnav2_Ephemeris& bds_cnav2_eph, const double d_TOW_first_observation, const std::string glo_bands = "7X");
+	void rinex_obs_header(std::fstream& out, const Beidou_Cnav2_Ephemeris& bds_cnav2_eph, const double d_TOW_first_observation, const std::string _bands = "5X");
 
 	/*!
 	 *  \brief Generates the Mixed (GPS L1 C/A + BeiDou B2a) Observation data header.
 	 */
-	void rinex_obs_header(std::fstream& out, const Beidou_Cnav2_Ephemeris& bds_cnav2_eph, const Gps_Ephemeris& eph, const double d_TOW_first_observation, const std::string bds_bands = "7X");
+	void rinex_obs_header(std::fstream& out, const Gps_Ephemeris& eph, const Beidou_Cnav2_Ephemeris& bds_cnav2_eph, const double d_TOW_first_observation, const std::string gps_bands = "5X", const std::string bds_bands = "5X");
 
 	/*!
 	 *  \brief Generates the Mixed (Galileo E1b + BeiDou B2a) Observation data header.
 	 */
-	void rinex_obs_header(std::fstream& out, const Beidou_Cnav2_Ephemeris& bds_cnav2_eph, const Galileo_Ephemeris& galileo_eph, const double d_TOW_first_observation, const std::string bds_bands = "7X", const std::string gal_bands = "1B");
+	void rinex_obs_header(std::fstream& out, const Galileo_Ephemeris& galileo_eph, const Beidou_Cnav2_Ephemeris& bds_cnav2_eph, const double d_TOW_first_observation, const std::string bds_bands = "5X", const std::string gal_bands = "5X");
 
 	/*!
 	 *  \brief Generates the Mixed (GPS L2C + BeiDou B2a) Observation data header.
 	 */
-	void rinex_obs_header(std::fstream& out, const Beidou_Cnav2_Ephemeris& bds_cnav2_eph, const Gps_CNAV_Ephemeris& eph, const double d_TOW_first_observation, const std::string bds_bands = "7X");
+	void rinex_obs_header(std::fstream& out, const Gps_CNAV_Ephemeris& gps_cnav_eph, const Beidou_Cnav2_Ephemeris& bds_cnav2_eph, const double d_TOW_first_observation, const std::string gps_bands = "2S", const std::string bds_bands = "5X");
 
 	/*!
-	 *  \brief Generates the Mixed (GLONASS L1 C/A + BeiDou B2a) Observation data header.
+	 *  \brief Generates the Mixed (GPS L5 + BeiDou B2a) Observation data header.
 	 */
-	void rinex_obs_header(std::fstream& out, const Beidou_Cnav2_Ephemeris& bds_cnav2_eph, const Glonass_Gnav_Ephemeris& glonass_gnav_eph,const double d_TOW_first_observation, const std::string bds_bands = "7X", const std::string glo_bands = "2G");
+	void rinex_obs_header(std::fstream& out, const Gps_Ephemeris& eph, const Galileo_Ephemeris& galileo_eph, const Beidou_Cnav2_Ephemeris& bds_cnav2_eph, const double d_TOW_first_observation, const std::string gps_bands = "5X", const std::string galileo_bands = "5X", const std::string bds_bands = "5X");
 
     /*!
      *  \brief Generates the SBAS raw data header
@@ -438,6 +443,8 @@ public:
 
     void update_nav_header(std::fstream& out, const Galileo_Iono& galileo_iono, const Galileo_Utc_Model& galileo_utc_model, const Glonass_Gnav_Utc_Model& glonass_gnav_utc_model, const Glonass_Gnav_Almanac& glonass_gnav_almanac);
 
+    void update_nav_header(std::fstream& out, const Gps_Iono& gps_iono, const Gps_Utc_Model& gps_utc_model, const Beidou_Cnav2_Iono& beidou_cnav2_iono, const Beidou_Cnav2_Utc_Model& beidou_cnav2_utc_model);
+
     void update_obs_header(std::fstream& out, const Gps_Utc_Model& utc_model);
 
     void update_obs_header(std::fstream& out, const Gps_CNAV_Utc_Model& utc_model);
@@ -446,7 +453,8 @@ public:
 
     void update_obs_header(std::fstream& out, const Glonass_Gnav_Utc_Model& glonass_gnav_utc_model);
 
-    std::map<std::string, std::string> satelliteSystem;  //<! GPS, GLONASS, SBAS payload, Galileo or Compass
+
+    std::map<std::string, std::string> satelliteSystem;  //<! GPS, GLONASS, SBAS payload, Galileo or BeiDou
     std::map<std::string, std::string> observationType;  //<! PSEUDORANGE, CARRIER_PHASE, DOPPLER, SIGNAL_STRENGTH
     std::map<std::string, std::string> observationCode;  //<! GNSS observation descriptors
     std::string stringVersion;                           //<! RINEX version (2.10/2.11 or 3.01/3.02)
