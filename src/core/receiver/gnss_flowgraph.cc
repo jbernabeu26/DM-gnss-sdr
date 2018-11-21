@@ -1347,7 +1347,7 @@ void GNSSFlowgraph::init()
     mapStringValues_["5X"] = evGAL_5X;
     mapStringValues_["1G"] = evGLO_1G;
     mapStringValues_["2G"] = evGLO_2G;
-		mapStringValues_["5C"] = evBDS_5C;
+	mapStringValues_["5C"] = evBDS_5C;
 
     // fill the signals queue with the satellites ID's to be searched by the acquisition
     set_signals_list();
@@ -1396,9 +1396,8 @@ void GNSSFlowgraph::set_signals_list()
 
     //!< Create the lists of BEIDOU satellites
     //!< BeiDou-S3 satellites contain the modernized signals( PRN 31 33 34 32 35). BeiDou-3 contain the new satellites PRN 19 20 27 28 21 22 29 and 30
-    std::set<unsigned int> available_beidou_prn = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
-            11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28,
-            29, 30, 31, 32, 33, 34, 35, 36};
+    std::set<unsigned int> available_beidou_prn = {11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
+    		23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 47, 48};
 
     std::string sv_list = configuration_->property("Galileo.prns", std::string(""));
 

@@ -444,6 +444,18 @@ std::string Gnss_Satellite::what_block(const std::string& system_, uint32_t PRN_
                 	case 33:
 						block_ = std::string("BEIDOU 3M14");  //!<Slot B-3; launched 2018/09/19
 						break;
+                	case 34:
+						block_ = std::string("BEIDOU 3M15");  //!<Slot A-01; launched 2018/10/15
+						break;
+                	case 35:
+						block_ = std::string("BEIDOU 3M16");  //!<Slot A-07; launched 2018/10/15
+						break;
+                	case 36:
+						block_ = std::string("BEIDOU 3M17");  //!<Slot B-02; launched 2018/11/18
+						break;
+                	case 37:
+						block_ = std::string("BEIDOU 3M18");  //!<Slot B-02; launched 2018/11/18
+						break;
 					default:
                         block_ = std::string("Unknown");
                     }
