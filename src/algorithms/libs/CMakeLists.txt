@@ -40,6 +40,7 @@ set(GNSS_SPLIBS_SOURCES
         conjugate_sc.cc
         conjugate_ic.cc
         gnss_sdr_create_directory.cc
+    geofunctions.cc
 )
 
 set(GNSS_SPLIBS_HEADERS
@@ -65,21 +66,21 @@ set(GNSS_SPLIBS_HEADERS
         conjugate_ic.h
         gnss_sdr_create_directory.h
         gnss_circular_deque.h
+    geofunctions.h
 )
 
-
 if(ENABLE_FPGA)
-    set(GNSS_SPLIBS_SOURCES ${GNSS_SPLIBS_SOURCES}
+    set(GNSS_SPLIBS_SOURCES
+        ${GNSS_SPLIBS_SOURCES}
         gnss_sdr_time_counter.cc
         gnss_sdr_fpga_sample_counter.cc
 	)
-
-    set(GNSS_SPLIBS_HEADERS ${GNSS_SPLIBS_HEADERS}
+    set(GNSS_SPLIBS_HEADERS
+        ${GNSS_SPLIBS_HEADERS}
         gnss_sdr_time_counter.h
         gnss_sdr_fpga_sample_counter.h
 	)
-	
-endif(ENABLE_FPGA)
+endif()
 
 if(OPENCL_FOUND)
     set(GNSS_SPLIBS_SOURCES ${GNSS_SPLIBS_SOURCES}
@@ -87,13 +88,12 @@ if(OPENCL_FOUND)
                             opencl/fft_setup.cc # Needs OpenCL
                             opencl/fft_kernelstring.cc # Needs OpenCL
     )
-       
     set(GNSS_SPLIBS_HEADERS ${GNSS_SPLIBS_HEADERS}
                             opencl/fft_execute.h # Needs OpenCL
                             opencl/fft_setup.h # Needs OpenCL
                             opencl/fft_kernelstring.h # Needs OpenCL
-    )       
-endif(OPENCL_FOUND)
+    )
+endif()
 
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
@@ -103,6 +103,7 @@ include_directories(
     ${Boost_INCLUDE_DIRS}
     ${GLOG_INCLUDE_DIRS}
     ${GFlags_INCLUDE_DIRS}
+    ${ARMADILLO_INCLUDE_DIRS}
     ${GNURADIO_RUNTIME_INCLUDE_DIRS}
     ${GNURADIO_BLOCKS_INCLUDE_DIRS}
     ${VOLK_INCLUDE_DIRS}
@@ -113,10 +114,10 @@ if(OPENCL_FOUND)
     include_directories( ${OPENCL_INCLUDE_DIRS} )
     if(OS_IS_MACOSX)
         set(OPT_LIBRARIES ${OPT_LIBRARIES} "-framework OpenCL")
-    else(OS_IS_MACOSX)
+    else()
         set(OPT_LIBRARIES ${OPT_LIBRARIES} ${OPENCL_LIBRARIES})
-    endif(OS_IS_MACOSX)
-endif(OPENCL_FOUND)
+    endif()
+endif()
 
 add_definitions(-DGNSSSDR_INSTALL_DIR="${CMAKE_INSTALL_PREFIX}")
 
@@ -126,10 +127,12 @@ list(SORT GNSS_SPLIBS_SOURCES)
 add_library(gnss_sp_libs ${GNSS_SPLIBS_SOURCES} ${GNSS_SPLIBS_HEADERS})
 source_group(Headers FILES ${GNSS_SPLIBS_HEADERS})
 
-target_link_libraries(gnss_sp_libs ${GNURADIO_RUNTIME_LIBRARIES}
+target_link_libraries(gnss_sp_libs
+    ${GNURADIO_RUNTIME_LIBRARIES}
     ${VOLK_LIBRARIES} ${ORC_LIBRARIES}
     ${VOLK_GNSSSDR_LIBRARIES}  ${ORC_LIBRARIES}
     ${GFlags_LIBS}
+    ${ARMADILLO_LIBRARIES}
     ${GNURADIO_BLOCKS_LIBRARIES}
     ${GNURADIO_FFT_LIBRARIES}
     ${GNURADIO_FILTER_LIBRARIES}
@@ -137,13 +140,16 @@ target_link_libraries(gnss_sp_libs ${GNURADIO_RUNTIME_LIBRARIES}
     gnss_rx
 )
 
-if(NOT VOLK_GNSSSDR_FOUND)
-    add_dependencies(gnss_sp_libs volk_gnsssdr_module)
-endif(NOT VOLK_GNSSSDR_FOUND)
+if(NOT VOLKGNSSSDR_FOUND)
+    add_dependencies(gnss_sp_libs volk_gnsssdr_module
+        armadillo-${armadillo_RELEASE})
+else()
+    add_dependencies(gnss_sp_libs armadillo-${armadillo_RELEASE})
+endif()
 
 if(${GFLAGS_GREATER_20})
     add_definitions(-DGFLAGS_GREATER_2_0=1)
-endif(${GFLAGS_GREATER_20})
+endif()
 
 add_library(gnss_sdr_flags gnss_sdr_flags.cc gnss_sdr_flags.h)
 source_group(Headers FILES gnss_sdr_flags.h)

@@ -16,6 +16,7 @@
 # along with GNSS-SDR. If not, see <https://www.gnu.org/licenses/>.
 #
 
+
 set(SYSTEM_PARAMETERS_SOURCES
      gnss_satellite.cc
      gnss_signal.cc
@@ -25,8 +26,8 @@ set(SYSTEM_PARAMETERS_SOURCES
      gps_almanac.cc
      gps_utc_model.cc
      gps_acq_assist.cc
-     gps_ref_time.cc
-     gps_ref_location.cc
+     agnss_ref_time.cc
+     agnss_ref_location.cc
      galileo_utc_model.cc
      galileo_ephemeris.cc
      galileo_almanac.cc
@@ -60,8 +61,8 @@ set(SYSTEM_PARAMETERS_HEADERS
      gps_almanac.h
      gps_utc_model.h
      gps_acq_assist.h
-     gps_ref_time.h
-     gps_ref_location.h
+     agnss_ref_time.h
+     agnss_ref_location.h
      galileo_utc_model.h
      galileo_ephemeris.h
      galileo_almanac.h
@@ -96,9 +97,8 @@ set(SYSTEM_PARAMETERS_HEADERS
      GPS_L1_CA.h
      GPS_L2C.h
      GPS_L5.h
-     MATH_CONSTANTS.h     
+     MATH_CONSTANTS.h
 )
-
 
 include_directories(
      ${CMAKE_CURRENT_SOURCE_DIR}
@@ -110,12 +110,16 @@ include_directories(
      ${GFlags_INCLUDE_DIRS}
 )
 
-link_directories(${Boost_LIBRARY_DIR})
-
 list(SORT SYSTEM_PARAMETERS_HEADERS)
 list(SORT SYSTEM_PARAMETERS_SOURCES)
 
-add_library(gnss_system_parameters ${SYSTEM_PARAMETERS_SOURCES} ${SYSTEM_PARAMETERS_HEADERS})
+add_library(gnss_system_parameters
+    ${SYSTEM_PARAMETERS_SOURCES}
+    ${SYSTEM_PARAMETERS_HEADERS}
+)
+
 source_group(Headers FILES ${SYSTEM_PARAMETERS_HEADERS})
+
 add_dependencies(gnss_system_parameters rtklib_lib glog-${glog_RELEASE})
+
 target_link_libraries(gnss_system_parameters rtklib_lib ${Boost_LIBRARIES})

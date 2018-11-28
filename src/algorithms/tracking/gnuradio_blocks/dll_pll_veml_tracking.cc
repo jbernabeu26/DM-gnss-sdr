@@ -52,7 +52,7 @@
 #include "Beidou_B2a.h"
 #include "beidou_b2a_signal_processing.h"
 #include "gnss_sdr_create_directory.h"
-#include <boost/lexical_cast.hpp>
+#include <boost/filesystem/path.hpp>
 #include <glog/logging.h>
 #include <gnuradio/io_signature.h>
 #include <matio.h>
@@ -1140,7 +1140,7 @@ int32_t dll_pll_veml_tracking::save_matfile()
     std::ifstream dump_file;
     std::string dump_filename_ = d_dump_filename;
     // add channel number to the filename
-    dump_filename_.append(boost::lexical_cast<std::string>(d_channel));
+    dump_filename_.append(std::to_string(d_channel));
     // add extension
     dump_filename_.append(".dat");
     std::cout << "Generating .mat file for " << dump_filename_ << std::endl;
@@ -1384,7 +1384,7 @@ void dll_pll_veml_tracking::set_channel(uint32_t channel)
         {
             std::string dump_filename_ = d_dump_filename;
             // add channel number to the filename
-            dump_filename_.append(boost::lexical_cast<std::string>(d_channel));
+            dump_filename_.append(std::to_string(d_channel));
             // add extension
             dump_filename_.append(".dat");
 

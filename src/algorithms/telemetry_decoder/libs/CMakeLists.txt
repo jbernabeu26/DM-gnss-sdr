@@ -16,10 +16,11 @@
 # along with GNSS-SDR. If not, see <https://www.gnu.org/licenses/>.
 #
 
+
 add_subdirectory(libswiftcnav)
 
 set(TELEMETRY_DECODER_LIB_SOURCES
-     viterbi_decoder.cc   
+     viterbi_decoder.cc
 )
 
 set(TELEMETRY_DECODER_LIB_HEADERS
@@ -41,6 +42,10 @@ include_directories(
 list(SORT TELEMETRY_DECODER_LIB_HEADERS)
 list(SORT TELEMETRY_DECODER_LIB_SOURCES)
 
-add_library(telemetry_decoder_lib ${TELEMETRY_DECODER_LIB_SOURCES} ${TELEMETRY_DECODER_LIB_HEADERS})
+add_library(telemetry_decoder_lib
+    ${TELEMETRY_DECODER_LIB_SOURCES}
+    ${TELEMETRY_DECODER_LIB_HEADERS}
+)
 source_group(Headers FILES ${TELEMETRY_DECODER_LIB_HEADERS})
+
 target_link_libraries(telemetry_decoder_lib gnss_system_parameters)
