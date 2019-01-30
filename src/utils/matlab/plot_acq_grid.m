@@ -26,15 +26,15 @@
 % -------------------------------------------------------------------------
 %
 
-%%%%%%%%% ?????? CONFIGURE !!! %%%%%%%%%%%%%
+%% Configuration
 
 path = '/archive/';
-file = 'acq';
+file = 'gps_l5_acq';
 
-sat = 7;
+sat = 12;
 
 channel = 0;
-execution = 1;
+execution = 2;
 % Signal:
 %     1 GPS  L1
 %     2 GPS  L2M
@@ -42,16 +42,21 @@ execution = 1;
 %     4 Gal. E1B
 %     5 Gal. E5
 %     6 Glo. 1G
+%     7 Glo. 2G
+%     8 BDS. B1
+%     9 BDS. B3
+%    10 BDS. B2a
 
-signal_type = 1;
+signal_type = 3;
 
 %%% True for light grid representation
 lite_view = true;
 
 %%% If lite_view, it sets the number of samples per chip in the graphical representation
 n_samples_per_chip = 3;
+d_samples_per_code = 25000;
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Load data
 
 switch(signal_type)
     case 1
@@ -78,20 +83,40 @@ switch(signal_type)
         n_chips = 511;
         system = 'R';
         signal = '1G';
+    case 7
+        n_chips = 511;
+        system = 'R';
+        signal = '2G';
+    case 8
+        n_chips = 2048;
+        system = 'C';
+        signal = 'B1';
+    case 9
+        n_chips = 10230;
+        system = 'C';
+        signal = 'B3';        
+    case 10
+        n_chips = 10230;
+        system = 'C';
+        signal = '5C';
 end
 filename = [path file '_' system '_' signal '_ch_' num2str(channel) '_' num2str(execution) '_sat_' num2str(sat) '.mat'];
 load(filename);
-[n_fft n_dop_bins] = size(grid);
-[d_max f_max] = find(grid == max(max(grid)));
-freq = (0 : n_dop_bins - 1) * doppler_step - doppler_max;
+[n_fft n_dop_bins] = size(acq_grid);
+[d_max f_max] = find(acq_grid == max(max(acq_grid)));
+freq = (0 : n_dop_bins - 1) * double(doppler_step) - double(doppler_max);
 delay = (0 : n_fft - 1) / n_fft * n_chips;
+
+
+%% Plot data
+%--- Acquisition grid (3D)
 figure(1)
 if(lite_view == false)
-    surf(freq, delay, grid, 'FaceColor', 'interp', 'LineStyle', 'none')
+    surf(freq, delay, acq_grid, 'FaceColor', 'interp', 'LineStyle', 'none')
     ylim([min(delay) max(delay)])
 else
     delay_interp = (0 : n_samples_per_chip * n_chips - 1) / n_samples_per_chip;
-    grid_interp = spline(delay, grid', delay_interp)';
+    grid_interp = spline(delay, acq_grid', delay_interp)';
     surf(freq, delay_interp, grid_interp, 'FaceColor', 'interp', 'LineStyle', 'none')
     ylim([min(delay_interp) max(delay_interp)])
 end
@@ -99,9 +124,11 @@ xlabel('Doppler shift / Hz')
 xlim([min(freq) max(freq)])
 ylabel('Code delay / chips')
 zlabel('Test statistics')
+
+%--- Acquisition grid (2D)
 figure(2)
 subplot(2,1,1)
-plot(freq, grid(d_max, :))
+plot(freq, acq_grid(d_max, :))
 xlim([min(freq) max(freq)])
 xlabel('Doppler shift / Hz')
 ylabel('Test statistics')
