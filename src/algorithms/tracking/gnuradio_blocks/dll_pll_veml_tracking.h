@@ -1,6 +1,7 @@
 /*!
  * \file dll_pll_veml_tracking.h
  * \brief Implementation of a code DLL + carrier PLL tracking block.
+ * \author Javier Arribas, 2018. jarribas(at)cttc.es
  * \author Antonio Ramos, 2018 antonio.ramosdet(at)gmail.com
  *
  * -------------------------------------------------------------------------
@@ -31,22 +32,24 @@
 #ifndef GNSS_SDR_DLL_PLL_VEML_TRACKING_H
 #define GNSS_SDR_DLL_PLL_VEML_TRACKING_H
 
+#include "cpu_multicorrelator_real_codes.h"
 #include "dll_pll_conf.h"
-#include "gnss_synchro.h"
 #include "tracking_2nd_DLL_filter.h"
 #include "tracking_2nd_PLL_filter.h"
-#include "cpu_multicorrelator_real_codes.h"
-#include <gnuradio/block.h>
-#include <fstream>
-#include <string>
-#include <map>
-#include <queue>
-#include <utility>
 #include <boost/circular_buffer.hpp>
+#include <boost/shared_ptr.hpp>   // for boost::shared_ptr
+#include <gnuradio/block.h>       // for block
+#include <gnuradio/gr_complex.h>  // for gr_complex
+#include <gnuradio/types.h>       // for gr_vector_int, gr_vector...
+#include <pmt/pmt.h>              // for pmt_t
+#include <cstdint>                // for int32_t
+#include <fstream>                // for string, ofstream
+#include <utility>                // for pair
 
+class Gnss_Synchro;
 class dll_pll_veml_tracking;
 
-typedef boost::shared_ptr<dll_pll_veml_tracking> dll_pll_veml_tracking_sptr;
+using dll_pll_veml_tracking_sptr = boost::shared_ptr<dll_pll_veml_tracking>;
 
 dll_pll_veml_tracking_sptr dll_pll_veml_make_tracking(const Dll_Pll_Conf &conf_);
 
@@ -91,7 +94,7 @@ private:
     uint32_t d_channel;
     Gnss_Synchro *d_acquisition_gnss_synchro;
 
-    //Signal parameters
+    // Signal parameters
     bool d_secondary;
     bool interchange_iq;
     double d_signal_carrier_freq;
@@ -106,12 +109,14 @@ private:
     std::string *d_secondary_code_string;
     std::string signal_pretty_name;
 
-    int32_t *d_gps_l1ca_preambles_symbols;
+    int32_t *d_preambles_symbols;
+    int32_t d_preamble_length_symbols;
     boost::circular_buffer<float> d_symbol_history;
 
-    //tracking state machine
+    // tracking state machine
     int32_t d_state;
-    //Integration period in samples
+
+    // Integration period in samples
     int32_t d_correlation_length_ms;
     int32_t d_n_correlator_taps;
 
@@ -119,8 +124,8 @@ private:
     float *d_data_code;
     float *d_local_code_shift_chips;
     float *d_prompt_data_shift;
-    cpu_multicorrelator_real_codes multicorrelator_cpu;
-    cpu_multicorrelator_real_codes correlator_data_cpu;  //for data channel
+    Cpu_Multicorrelator_Real_Codes multicorrelator_cpu;
+    Cpu_Multicorrelator_Real_Codes correlator_data_cpu;  //for data channel
     /*  TODO: currently the multicorrelator does not support adding extra correlator
         with different local code, thus we need extra multicorrelator instance.
         Implement this functionality inside multicorrelator class
@@ -173,7 +178,6 @@ private:
     double d_carrier_doppler_hz;
     double d_acc_carrier_phase_rad;
     double d_rem_code_phase_chips;
-    double d_code_phase_samples;
     double T_chip_seconds;
     double T_prn_seconds;
     double T_prn_samples;
@@ -187,11 +191,10 @@ private:
     // CN0 estimation and lock detector
     int32_t d_cn0_estimation_counter;
     int32_t d_carrier_lock_fail_counter;
-    std::deque<float> d_carrier_lock_detector_queue;
     double d_carrier_lock_test;
     double d_CN0_SNV_dB_Hz;
     double d_carrier_lock_threshold;
-    std::deque<gr_complex> d_Prompt_buffer_deque;
+    boost::circular_buffer<gr_complex> d_Prompt_circular_buffer;
     gr_complex *d_Prompt_buffer;
 
     // file dump

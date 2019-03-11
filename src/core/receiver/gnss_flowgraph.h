@@ -37,29 +37,27 @@
 #ifndef GNSS_SDR_GNSS_FLOWGRAPH_H_
 #define GNSS_SDR_GNSS_FLOWGRAPH_H_
 
-#include "GPS_L1_CA.h"
-#include "gnss_signal.h"
 #include "gnss_sdr_sample_counter.h"
-#include "gnss_synchro_monitor.h"
-#include "gnss_block_interface.h"
+#include "gnss_signal.h"
 #include "pvt_interface.h"
-#include "channel_interface.h"
-#include "configuration_interface.h"
-#include "gnss_block_factory.h"
-#include <gnuradio/top_block.h>
-#include <gnuradio/msg_queue.h>
-#include <list>
-#include <map>
-#include <memory>
-#include <mutex>
-#include <queue>
-#include <string>
-#include <vector>
-
+#include <gnuradio/msg_queue.h>      // for msg_queue, msg_queue::sptr
+#include <gnuradio/runtime_types.h>  // for basic_block_sptr, top_block_sptr
+#include <pmt/pmt.h>                 // for pmt_t
+#include <list>                      // for list
+#include <map>                       // for map
+#include <memory>                    // for for shared_ptr, dynamic_pointer_cast
+#include <mutex>                     // for mutex
+#include <string>                    // for string
+#include <utility>                   // for pair
+#include <vector>                    // for vector
 #if ENABLE_FPGA
 #include "gnss_sdr_fpga_sample_counter.h"
 #endif
 
+class ChannelInterface;
+class ConfigurationInterface;
+class GNSSBlockInterface;
+class Gnss_Satellite;
 
 /*! \brief This class represents a GNSS flow graph.
  *
@@ -72,7 +70,7 @@ public:
     /*!
      * \brief Constructor that initializes the receiver flow graph
      */
-    GNSSFlowgraph(std::shared_ptr<ConfigurationInterface> configuration, gr::msg_queue::sptr queue);
+    GNSSFlowgraph(std::shared_ptr<ConfigurationInterface> configuration, const gr::msg_queue::sptr queue);  // NOLINT(performance-unnecessary-value-param)
 
     /*!
      * \brief Destructor
@@ -95,9 +93,11 @@ public:
     void disconnect();
 
     void wait();
-
+#ifdef ENABLE_FPGA
     void start_acquisition_helper();
 
+    void perform_hw_reset();
+#endif
     /*!
      * \brief Applies an action to the flow graph
      *
@@ -128,7 +128,7 @@ public:
      *
      * It is used to assist the receiver with external ephemeris data
      */
-    bool send_telemetry_msg(pmt::pmt_t msg);
+    bool send_telemetry_msg(const pmt::pmt_t& msg);
 
     /*!
      * \brief Returns a smart pointer to the PVT object
@@ -148,7 +148,7 @@ private:
     void set_signals_list();
     void set_channels_state();  // Initializes the channels state (start acquisition or keep standby)
                                 // using the configuration parameters (number of channels and max channels in acquisition)
-    Gnss_Signal search_next_signal(std::string searched_signal, bool pop, bool tracked = false);
+    Gnss_Signal search_next_signal(const std::string& searched_signal, bool pop, bool tracked = false);
     bool connected_;
     bool running_;
     int sources_count_;
@@ -166,6 +166,7 @@ private:
     std::shared_ptr<GNSSBlockInterface> observables_;
     std::shared_ptr<GNSSBlockInterface> pvt_;
 
+    std::map<std::string, gr::basic_block_sptr> acq_resamplers_;
     std::vector<std::shared_ptr<ChannelInterface>> channels_;
     gnss_sdr_sample_counter_sptr ch_out_sample_counter;
 #if ENABLE_FPGA
@@ -182,6 +183,8 @@ private:
     std::list<Gnss_Signal> available_GAL_5X_signals_;
     std::list<Gnss_Signal> available_GLO_1G_signals_;
     std::list<Gnss_Signal> available_GLO_2G_signals_;
+    std::list<Gnss_Signal> available_BDS_B1_signals_;
+    std::list<Gnss_Signal> available_BDS_B3_signals_;
     std::list<Gnss_Signal> available_BDS_5C_signals_;
     enum StringValue
     {
@@ -193,7 +196,9 @@ private:
         evGAL_5X,
         evGLO_1G,
         evGLO_2G,
-		evBDS_5C
+        evBDS_B1,
+        evBDS_B3,
+        evBDS_5C
     };
     std::map<std::string, StringValue> mapStringValues_;
 

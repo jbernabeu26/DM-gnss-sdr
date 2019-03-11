@@ -33,16 +33,13 @@
 #include "GPS_L1_CA.h"
 #include "geofunctions.h"
 #include <glog/logging.h>
-#include <exception>
 #include <stdexcept>
-
-
-using google::LogMessage;
 
 
 Ls_Pvt::Ls_Pvt() : Pvt_Solution()
 {
 }
+
 
 arma::vec Ls_Pvt::bancroftPos(const arma::mat& satpos, const arma::vec& obs)
 {
@@ -94,7 +91,7 @@ arma::vec Ls_Pvt::bancroftPos(const arma::mat& satpos, const arma::vec& obs)
                         {
                             int z = B(i, 2);
                             double rho = (x - pos(0)) * (x - pos(0)) + (y - pos(1)) * (y - pos(1)) + (z - pos(2)) * (z - pos(2));
-                            traveltime = sqrt(rho) / GPS_C_m_s;
+                            traveltime = sqrt(rho) / GPS_C_M_S;
                         }
                     double angle = traveltime * 7.292115147e-5;
                     double cosa = cos(angle);
@@ -227,15 +224,15 @@ arma::vec Ls_Pvt::leastSquarePos(const arma::mat& satpos, const arma::vec& obs, 
                                        (X(1, i) - pos(1)) +
                                    (X(2, i) - pos(2)) *
                                        (X(2, i) - pos(2));
-                            traveltime = sqrt(rho2) / GPS_C_m_s;
+                            traveltime = sqrt(rho2) / GPS_C_M_S;
 
                             //--- Correct satellite position (do to earth rotation) --------
                             Rot_X = Ls_Pvt::rotateSatellite(traveltime, X.col(i));  //armadillo
 
                             //--- Find DOA and range of satellites
-                            double* azim = 0;
-                            double* elev = 0;
-                            double* dist = 0;
+                            double* azim = nullptr;
+                            double* elev = nullptr;
+                            double* dist = nullptr;
                             topocent(azim, elev, dist, pos.subvec(0, 2), Rot_X - pos.subvec(0, 2));
 
                             if (traveltime < 0.1 && nmbOfSatellites > 3)
@@ -252,7 +249,10 @@ arma::vec Ls_Pvt::leastSquarePos(const arma::mat& satpos, const arma::vec& obs, 
                                         {
                                             //--- Find delay due to troposphere (in meters)
                                             Ls_Pvt::tropo(&trop, sin(*elev * GPS_PI / 180.0), h / 1000.0, 1013.0, 293.0, 50.0, 0.0, 0.0, 0.0);
-                                            if (trop > 5.0) trop = 0.0;  //check for erratic values
+                                            if (trop > 5.0)
+                                                {
+                                                    trop = 0.0;  //check for erratic values
+                                                }
                                         }
                                 }
                         }
@@ -279,9 +279,9 @@ arma::vec Ls_Pvt::leastSquarePos(const arma::mat& satpos, const arma::vec& obs, 
         }
 
     // check the consistency of the PVT solution
-    if (((fabs(pos(3)) * 1000.0) / GPS_C_m_s) > GPS_STARTOFFSET_ms * 2)
+    if (((fabs(pos(3)) * 1000.0) / GPS_C_M_S) > GPS_STARTOFFSET_MS * 2)
         {
-            LOG(WARNING) << "Receiver time offset out of range! Estimated RX Time error [s]:" << pos(3) / GPS_C_m_s;
+            LOG(WARNING) << "Receiver time offset out of range! Estimated RX Time error [s]:" << pos(3) / GPS_C_M_S;
             throw std::runtime_error("Receiver time offset out of range!");
         }
     return pos;

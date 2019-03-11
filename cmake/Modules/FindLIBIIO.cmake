@@ -1,4 +1,4 @@
-# Copyright (C) 2011-2018 (see AUTHORS file for a list of contributors)
+# Copyright (C) 2011-2019 (see AUTHORS file for a list of contributors)
 #
 # This file is part of GNSS-SDR.
 #
@@ -15,6 +15,11 @@
 # You should have received a copy of the GNU General Public License
 # along with GNSS-SDR. If not, see <https://www.gnu.org/licenses/>.
 
+#
+# Provides the following imported target:
+# Iio::iio
+#
+
 include(FindPkgConfig)
 pkg_check_modules(PC_LIBIIO libiio)
 
@@ -27,6 +32,8 @@ find_path(
           /usr/local/include
           /usr/include
           /opt/local/include
+          ${LIBIIO_ROOT}/include
+          $ENV{LIBIIO_ROOT}/include
 )
 
 find_library(
@@ -63,8 +70,23 @@ find_library(
           /usr/lib/x86_64-linux-gnux32
           /usr/lib/sh4-linux-gnu
           /Library/Frameworks/iio.framework/
+          ${LIBIIO_ROOT}/lib
+          $ENV{LIBIIO_ROOT}/lib
+          ${LIBIIO_ROOT}/lib64
+          $ENV{LIBIIO_ROOT}/lib64
 )
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(LIBIIO DEFAULT_MSG LIBIIO_LIBRARIES LIBIIO_INCLUDE_DIRS)
+
+if(LIBIIO_FOUND AND NOT TARGET Iio::iio)
+    add_library(Iio::iio SHARED IMPORTED)
+    set_target_properties(Iio::iio PROPERTIES
+        IMPORTED_LINK_INTERFACE_LANGUAGES "CXX"
+        IMPORTED_LOCATION "${LIBIIO_LIBRARIES}"
+        INTERFACE_INCLUDE_DIRECTORIES "${LIBIIO_INCLUDE_DIRS}"
+        INTERFACE_LINK_LIBRARIES "${LIBIIO_LIBRARIES}"
+    )
+endif()
+
 mark_as_advanced(LIBIIO_LIBRARIES LIBIIO_INCLUDE_DIRS)

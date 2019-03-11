@@ -31,10 +31,9 @@
 #ifndef GNSS_SDR_PVT_CONF_H_
 #define GNSS_SDR_PVT_CONF_H_
 
-#include <cstddef>
 #include <cstdint>
-#include <string>
 #include <map>
+#include <string>
 
 class Pvt_Conf
 {
@@ -79,6 +78,10 @@ public:
     std::string kml_output_path;
     std::string xml_output_path;
     std::string rtcm_output_file_path;
+
+    bool monitor_enabled;
+    std::string udp_addresses;
+    int udp_port;
 
     Pvt_Conf();
 };

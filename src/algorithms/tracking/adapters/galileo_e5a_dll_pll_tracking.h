@@ -2,8 +2,6 @@
  * \file galileo_e5a_dll_pll_tracking.h
  * \brief Adapts a code DLL + carrier PLL
  *  tracking block to a TrackingInterface for Galileo E5a signals
- * \brief Adapts a PCPS acquisition block to an AcquisitionInterface for
- *  Galileo E5a data and pilot Signals
  * \author Marc Sales, 2014. marcsales92(at)gmail.com
  * \based on work from:
  *          <ul>
@@ -39,8 +37,8 @@
 #ifndef GNSS_SDR_GALILEO_E5A_DLL_PLL_TRACKING_H_
 #define GNSS_SDR_GALILEO_E5A_DLL_PLL_TRACKING_H_
 
-#include "tracking_interface.h"
 #include "dll_pll_veml_tracking.h"
+#include "tracking_interface.h"
 #include <string>
 
 class ConfigurationInterface;
@@ -52,7 +50,7 @@ class GalileoE5aDllPllTracking : public TrackingInterface
 {
 public:
     GalileoE5aDllPllTracking(ConfigurationInterface* configuration,
-        std::string role,
+        const std::string& role,
         unsigned int in_streams,
         unsigned int out_streams);
 

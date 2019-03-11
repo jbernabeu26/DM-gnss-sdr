@@ -36,8 +36,8 @@
 
 #include "rtcm.h"
 #include <fstream>  // std::ofstream
-#include <memory>   // std::shared_ptr
-
+#include <map>
+#include <memory>  // std::shared_ptr
 
 /*!
  * \brief This class provides a implementation of a subset of the RTCM Standard 10403.2 messages
@@ -48,7 +48,7 @@ public:
     /*!
      * \brief Default constructor.
      */
-    Rtcm_Printer(std::string filename, bool flag_rtcm_file_dump, bool flag_rtcm_server, bool flag_rtcm_tty_port, uint16_t rtcm_tcp_port, uint16_t rtcm_station_id, std::string rtcm_dump_filename, bool time_tag_name = true, const std::string& base_path = ".");
+    Rtcm_Printer(const std::string& filename, bool flag_rtcm_file_dump, bool flag_rtcm_server, bool flag_rtcm_tty_port, uint16_t rtcm_tcp_port, uint16_t rtcm_station_id, const std::string& rtcm_dump_devname, bool time_tag_name = true, const std::string& base_path = ".");
 
     /*!
      * \brief Default destructor.
@@ -112,18 +112,7 @@ public:
      * \param utc_model GLONASS GNAV Clock Information broadcast in string 5
      * \return true or false upon operation success
      */
-    bool Print_Rtcm_MT1020(const Glonass_Gnav_Ephemeris& glo_gnav_eph, const Glonass_Gnav_Utc_Model& utc_model);
-
-    /*!
-     * \brief Prints BEIDOU CNAV2 Ephemeris
-     * \details This BEIDOU message should be broadcast every 2 minutes
-     * \note Code added as part of GSoC 2018 program
-     * \param glonass_gnav_eph GLONASS GNAV Broadcast Ephemeris
-     * \param utc_model BEIDOU CNAV2 Clock Information broadcast in string 5
-     * \return true or false upon operation success
-     */		
-	bool Print_Rtcm_MT1030(const Beidou_Cnav2_Ephemeris& bds_cnav2_eph, const Beidou_Cnav2_Utc_Model& utc_model);
-
+    bool Print_Rtcm_MT1020(const Glonass_Gnav_Ephemeris& glonass_gnav_eph, const Glonass_Gnav_Utc_Model& utc_model);
 
     bool Print_Rtcm_MSM(uint32_t msm_number,
         const Gps_Ephemeris& gps_eph,
@@ -142,7 +131,6 @@ public:
     uint32_t lock_time(const Gps_Ephemeris& eph, double obs_time, const Gnss_Synchro& gnss_synchro);
     uint32_t lock_time(const Gps_CNAV_Ephemeris& eph, double obs_time, const Gnss_Synchro& gnss_synchro);
     uint32_t lock_time(const Galileo_Ephemeris& eph, double obs_time, const Gnss_Synchro& gnss_synchro);
-	uint32_t lock_time(const Beidou_Cnav2_Ephemeris& eph, double obs_time, const Gnss_Synchro& gnss_synchro);
         
 		/*!
      * \brief Locks time for logging given GLONASS GNAV Broadcast Ephemeris
@@ -161,8 +149,8 @@ private:
     std::string rtcm_devname;
     uint16_t port;
     uint16_t station_id;
-    int32_t rtcm_dev_descriptor;                     // RTCM serial device descriptor (i.e. COM port)
-    int32_t init_serial(std::string serial_device);  //serial port control
+    int32_t rtcm_dev_descriptor;                            // RTCM serial device descriptor (i.e. COM port)
+    int32_t init_serial(const std::string& serial_device);  //serial port control
     void close_serial();
     std::shared_ptr<Rtcm> rtcm;
     bool Print_Message(const std::string& message);

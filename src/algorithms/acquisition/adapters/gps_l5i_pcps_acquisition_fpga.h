@@ -1,14 +1,15 @@
 /*!
- * \file GPS_L5i_PCPS_Acquisition.h
+ * \file GPS_L5i_PCPS_Acquisition_fpga.h
  * \brief Adapts a PCPS acquisition block to an AcquisitionInterface for
- *  GPS L5i signals
+ *  GPS L5i signals for the FPGA
  * \authors <ul>
- *          <li> Javier Arribas, 2017. jarribas(at)cttc.es
+ *          <li> Marc Majoral, 2019. mmajoral(at)cttc.es
+ *          <li> Javier Arribas, 2019. jarribas(at)cttc.es
  *          </ul>
  *
  * -------------------------------------------------------------------------
  *
- * Copyright (C) 2010-2017  (see AUTHORS file for a list of contributors)
+ * Copyright (C) 2010-2019  (see AUTHORS file for a list of contributors)
  *
  * GNSS-SDR is a software defined Global Navigation
  *          Satellite Systems receiver
@@ -35,11 +36,11 @@
 #define GNSS_SDR_GPS_L5i_PCPS_ACQUISITION_FPGA_H_
 
 #include "acquisition_interface.h"
+#include "complex_byte_to_float_x2.h"
 #include "gnss_synchro.h"
 #include "pcps_acquisition_fpga.h"
-#include "complex_byte_to_float_x2.h"
-#include <gnuradio/blocks/stream_to_vector.h>
 #include <gnuradio/blocks/float_to_complex.h>
+#include <gnuradio/blocks/stream_to_vector.h>
 #include <volk_gnsssdr/volk_gnsssdr.h>
 #include <string>
 
@@ -54,7 +55,8 @@ class GpsL5iPcpsAcquisitionFpga : public AcquisitionInterface
 {
 public:
     GpsL5iPcpsAcquisitionFpga(ConfigurationInterface* configuration,
-        std::string role, unsigned int in_streams,
+        const std::string& role,
+        unsigned int in_streams,
         unsigned int out_streams);
 
     virtual ~GpsL5iPcpsAcquisitionFpga();
@@ -65,16 +67,16 @@ public:
     }
 
     /*!
-     * \brief Returns "GPS_L5i_PCPS_Acquisition"
+     * \brief Returns "GPS_L5i_PCPS_Acquisition_Fpga"
      */
     inline std::string implementation() override
     {
-        return "GPS_L5i_PCPS_Acquisition";
+        return "GPS_L5i_PCPS_Acquisition_Fpga";
     }
 
     inline size_t item_size() override
     {
-        return item_size_;
+        return sizeof(int);
     }
 
     void connect(gr::top_block_sptr top_block) override;
@@ -139,30 +141,19 @@ public:
      */
     void stop_acquisition() override;
 
+    void set_resampler_latency(uint32_t latency_samples __attribute__((unused))) override{};
+
 private:
     ConfigurationInterface* configuration_;
-    //pcps_acquisition_sptr acquisition_;
     pcps_acquisition_fpga_sptr acquisition_fpga_;
     gr::blocks::stream_to_vector::sptr stream_to_vector_;
     gr::blocks::float_to_complex::sptr float_to_complex_;
     complex_byte_to_float_x2_sptr cbyte_to_float_x2_;
-    size_t item_size_;
     std::string item_type_;
-    unsigned int vector_length_;
-    unsigned int code_length_;
-    bool bit_transition_flag_;
-    bool use_CFAR_algorithm_flag_;
-    unsigned int channel_;
-    float threshold_;
-    unsigned int doppler_max_;
-    unsigned int doppler_step_;
-    unsigned int max_dwells_;
-    long fs_in_;
-    //long if_;
-    bool dump_;
-    bool blocking_;
+    uint32_t channel_;
+    uint32_t doppler_max_;
+    uint32_t doppler_step_;
     std::string dump_filename_;
-    std::complex<float>* code_;
     Gnss_Synchro* gnss_synchro_;
     std::string role_;
     unsigned int in_streams_;

@@ -42,7 +42,7 @@
 #include "gnss_synchro.h"
 
 template <typename Data>
-class concurrent_queue;
+class Concurrent_Queue;
 
 /*! \brief This abstract class represents an interface to an acquisition GNSS block.
  *
@@ -65,6 +65,7 @@ public:
     virtual signed int mag() = 0;
     virtual void reset() = 0;
     virtual void stop_acquisition() = 0;
+    virtual void set_resampler_latency(uint32_t latency_samples) = 0;
 };
 
 #endif /* GNSS_SDR_ACQUISITION_INTERFACE */

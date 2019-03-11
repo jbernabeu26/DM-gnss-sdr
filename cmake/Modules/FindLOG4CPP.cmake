@@ -1,4 +1,4 @@
-# Copyright (C) 2011-2018 (see AUTHORS file for a list of contributors)
+# Copyright (C) 2011-2019 (see AUTHORS file for a list of contributors)
 #
 # This file is part of GNSS-SDR.
 #
@@ -21,7 +21,10 @@
 #  LOG4CPP_INCLUDE_DIR - where to find LOG4CPP.h, etc.
 #  LOG4CPP_LIBRARIES   - List of libraries when using LOG4CPP.
 #  LOG4CPP_FOUND       - True if LOG4CPP found.
-
+#
+# Provides the following imported target:
+# Log4cpp::log4cpp
+#
 
 if(LOG4CPP_INCLUDE_DIR)
   # Already in cache, be silent
@@ -32,6 +35,8 @@ find_path(LOG4CPP_INCLUDE_DIR log4cpp/Category.hh
   /opt/local/include
   /usr/local/include
   /usr/include
+  ${LOG4CPP_ROOT}/include
+  $ENV{LOG4CPP_ROOT}/include
 )
 
 set(LOG4CPP_NAMES log4cpp)
@@ -68,6 +73,10 @@ find_library(LOG4CPP_LIBRARY
         /usr/lib
         /usr/local/lib
         /opt/local/lib
+        ${LOG4CPP_ROOT}/lib
+        $ENV{LOG4CPP_ROOT}/lib
+        ${LOG4CPP_ROOT}/lib64
+        $ENV{LOG4CPP_ROOT}/lib64
 )
 
 if(LOG4CPP_INCLUDE_DIR AND LOG4CPP_LIBRARY)
@@ -84,3 +93,18 @@ endif()
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(LOG4CPP DEFAULT_MSG LOG4CPP_INCLUDE_DIRS LOG4CPP_LIBRARIES)
+
+if (LOG4CPP_FOUND AND NOT TARGET Log4cpp::log4cpp)
+  add_library(Log4cpp::log4cpp SHARED IMPORTED)
+  set_target_properties(Log4cpp::log4cpp PROPERTIES
+      IMPORTED_LINK_INTERFACE_LANGUAGES "CXX"
+      IMPORTED_LOCATION "${LOG4CPP_LIBRARIES}"
+      INTERFACE_INCLUDE_DIRECTORIES "${LOG4CPP_INCLUDE_DIRS}"
+      INTERFACE_LINK_LIBRARIES "${LOG4CPP_LIBRARIES}"
+  )
+endif()
+
+mark_as_advanced(
+  LOG4CPP_LIBRARIES
+  LOG4CPP_INCLUDE_DIRS
+)

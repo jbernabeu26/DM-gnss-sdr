@@ -37,15 +37,15 @@
 #include <boost/filesystem/path.hpp>         // for path, operator<<
 #include <boost/filesystem/path_traits.hpp>  // for filesystem
 #include <glog/logging.h>
+#include <cstdint>
+#include <exception>
+#include <fcntl.h>  // for O_RDWR
 #include <iomanip>
-#include <fcntl.h>    // for O_RDWR
 #include <termios.h>  // for tcgetattr
+#include <utility>
 
 
-using google::LogMessage;
-
-
-Rtcm_Printer::Rtcm_Printer(std::string filename, bool flag_rtcm_file_dump, bool flag_rtcm_server, bool flag_rtcm_tty_port, uint16_t rtcm_tcp_port, uint16_t rtcm_station_id, std::string rtcm_dump_devname, bool time_tag_name, const std::string& base_path)
+Rtcm_Printer::Rtcm_Printer(const std::string& filename, bool flag_rtcm_file_dump, bool flag_rtcm_server, bool flag_rtcm_tty_port, uint16_t rtcm_tcp_port, uint16_t rtcm_station_id, const std::string& rtcm_dump_devname, bool time_tag_name, const std::string& base_path)
 {
     boost::posix_time::ptime pt = boost::posix_time::second_clock::local_time();
     tm timeinfo = boost::posix_time::to_tm(pt);
@@ -77,7 +77,7 @@ Rtcm_Printer::Rtcm_Printer(std::string filename, bool flag_rtcm_file_dump, bool 
                 {
                     rtcm_base_path = p.string();
                 }
-            if (rtcm_base_path.compare(".") != 0)
+            if (rtcm_base_path != ".")
                 {
                     std::cout << "RTCM binary file will be stored at " << rtcm_base_path << std::endl;
                 }
@@ -186,15 +186,32 @@ Rtcm_Printer::~Rtcm_Printer()
         }
     if (rtcm_file_descriptor.is_open())
         {
-            long pos;
+            int64_t pos;
             pos = rtcm_file_descriptor.tellp();
-            rtcm_file_descriptor.close();
+            try
+                {
+                    rtcm_file_descriptor.close();
+                }
+            catch (const std::exception& e)
+                {
+                    std::cerr << e.what() << '\n';
+                }
             if (pos == 0)
                 {
-                    if (remove(rtcm_filename.c_str()) != 0) LOG(INFO) << "Error deleting temporary RTCM file";
+                    if (remove(rtcm_filename.c_str()) != 0)
+                        {
+                            LOG(INFO) << "Error deleting temporary RTCM file";
+                        }
                 }
         }
-    close_serial();
+    try
+        {
+            close_serial();
+        }
+    catch (const std::exception& e)
+        {
+            std::cerr << e.what() << '\n';
+        }
 }
 
 
@@ -278,17 +295,6 @@ bool Rtcm_Printer::Print_Rtcm_MT1020(const Glonass_Gnav_Ephemeris& glonass_gnav_
 }
 
 
-bool Rtcm_Printer::Print_Rtcm_MT1030(const Beidou_Cnav2_Ephemeris& bds_cnav2_eph, const Beidou_Cnav2_Utc_Model& utc_model)
-{
-	// Todo: Need to clear this for beidou b2a processing
-	(void)bds_cnav2_eph;
-	(void)utc_model;
-    //std::string m1030 = rtcm->print_MT1030(bds_cnav2_eph, utc_model);
-    //Rtcm_Printer::Print_Message(m1030);
-    return true;
-}
-
-
 bool Rtcm_Printer::Print_Rtcm_MT1045(const Galileo_Ephemeris& gal_eph)
 {
     std::string m1045 = rtcm->print_MT1045(gal_eph);
@@ -348,24 +354,30 @@ bool Rtcm_Printer::Print_Rtcm_MSM(uint32_t msm_number, const Gps_Ephemeris& gps_
 }
 
 
-int Rtcm_Printer::init_serial(std::string serial_device)
+int Rtcm_Printer::init_serial(const std::string& serial_device)
 {
     /*
      * Opens the serial device and sets the default baud rate for a RTCM transmission (9600,8,N,1)
      */
     int32_t fd = 0;
     struct termios options;
-    long BAUD;
-    long DATABITS;
-    long STOPBITS;
-    long PARITYON;
-    long PARITY;
+    int64_t BAUD;
+    int64_t DATABITS;
+    int64_t STOPBITS;
+    int64_t PARITYON;
+    int64_t PARITY;
 
-    fd = open(serial_device.c_str(), O_RDWR | O_NOCTTY | O_NDELAY);
-    if (fd == -1) return fd;  // failed to open TTY port
+    fd = open(serial_device.c_str(), O_RDWR | O_NOCTTY | O_NDELAY | O_CLOEXEC);
+    if (fd == -1)
+        {
+            return fd;  // failed to open TTY port
+        }
 
-    if (fcntl(fd, F_SETFL, 0) == -1) LOG(INFO) << "Error enabling direct I/O";  // clear all flags on descriptor, enable direct I/O
-    tcgetattr(fd, &options);                                                    // read serial port options
+    if (fcntl(fd, F_SETFL, 0) == -1)
+        {
+            LOG(INFO) << "Error enabling direct I/O";  // clear all flags on descriptor, enable direct I/O
+        }
+    tcgetattr(fd, &options);  // read serial port options
 
     BAUD = B9600;
     //BAUD  =  B38400;
@@ -454,12 +466,3 @@ uint32_t Rtcm_Printer::lock_time(const Glonass_Gnav_Ephemeris& eph, double obs_t
     return rtcm->lock_time(eph, obs_time, gnss_synchro);
 }
 
-
-uint32_t Rtcm_Printer::lock_time(const Beidou_Cnav2_Ephemeris& eph, double obs_time, const Gnss_Synchro& gnss_synchro)
-{
-	(void) eph;
-	(void) obs_time;
-	(void) gnss_synchro;
-	// todo: Need to fix this
-    return 0;
-}

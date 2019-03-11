@@ -33,10 +33,6 @@
 #include "GPS_L1_CA.h"
 #include "geofunctions.h"
 #include <glog/logging.h>
-#include <exception>
-
-
-using google::LogMessage;
 
 
 Pvt_Solution::Pvt_Solution()
@@ -56,6 +52,7 @@ Pvt_Solution::Pvt_Solution()
     d_rx_pos = arma::zeros(3, 1);
     d_rx_dt_s = 0.0;
 }
+
 
 arma::vec Pvt_Solution::rotateSatellite(double const traveltime, const arma::vec &X_sat)
 {
@@ -188,7 +185,7 @@ int Pvt_Solution::tropo(double *ddr_m, double sinel, double hsta_km, double p_mb
     double b;
     double rtop;
 
-    while (1)
+    while (true)
         {
             rtop = pow((a_e + htop), 2) - pow((a_e + hsta_km), 2) * (1 - pow(sinel, 2));
 

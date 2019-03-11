@@ -32,11 +32,10 @@
 
 #include "rtl_tcp_signal_source_c.h"
 #include "rtl_tcp_commands.h"
-#include <glog/logging.h>
 #include <boost/thread/thread.hpp>
+#include <glog/logging.h>
 #include <map>
 
-using google::LogMessage;
 
 namespace ip = boost::asio::ip;
 using boost::asio::ip::tcp;
@@ -51,7 +50,7 @@ enum
 
 rtl_tcp_signal_source_c_sptr
 rtl_tcp_make_signal_source_c(const std::string &address,
-    short port,
+    int16_t port,
     bool flip_iq)
 {
     return gnuradio::get_initial_sptr(new rtl_tcp_signal_source_c(address,
@@ -61,7 +60,7 @@ rtl_tcp_make_signal_source_c(const std::string &address,
 
 
 rtl_tcp_signal_source_c::rtl_tcp_signal_source_c(const std::string &address,
-    short port,
+    int16_t port,
     bool flip_iq)
     : gr::sync_block("rtl_tcp_signal_source_c",
           gr::io_signature::make(0, 0, 0),
@@ -152,7 +151,7 @@ rtl_tcp_signal_source_c::rtl_tcp_signal_source_c(const std::string &address,
 }
 
 
-rtl_tcp_signal_source_c::~rtl_tcp_signal_source_c()
+rtl_tcp_signal_source_c::~rtl_tcp_signal_source_c()  // NOLINT(modernize-use-equals-default)
 {
     mutex_.unlock();
     io_service_.stop();
@@ -205,7 +204,7 @@ void rtl_tcp_signal_source_c::set_agc_mode(bool agc)
 
 void rtl_tcp_signal_source_c::set_gain(int gain)
 {
-    unsigned clipped = static_cast<unsigned>(info_.clip_gain(gain) * 10.0);
+    auto clipped = static_cast<unsigned>(info_.clip_gain(gain) * 10.0);
     boost::system::error_code ec = rtl_tcp_command(RTL_TCP_SET_GAIN, clipped, socket_);
     if (ec)
         {
@@ -222,7 +221,7 @@ void rtl_tcp_signal_source_c::set_if_gain(int gain)
     {
         double start, stop, step;
     };
-    if (info_.get_tuner_type() != rtl_tcp_dongle_info::TUNER_E4000)
+    if (info_.get_tuner_type() != Rtl_Tcp_Dongle_Info::TUNER_E4000)
         {
             return;
         }
@@ -333,7 +332,7 @@ int rtl_tcp_signal_source_c::work(int noutput_items,
     gr_vector_const_void_star & /*input_items*/,
     gr_vector_void_star &output_items)
 {
-    gr_complex *out = reinterpret_cast<gr_complex *>(output_items[0]);
+    auto *out = reinterpret_cast<gr_complex *>(output_items[0]);
     int i = 0;
     if (io_service_.stopped())
         {

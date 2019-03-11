@@ -1,4 +1,4 @@
-# Copyright (C) 2011-2018 (see AUTHORS file for a list of contributors)
+# Copyright (C) 2011-2019 (see AUTHORS file for a list of contributors)
 #
 # This file is part of GNSS-SDR.
 #
@@ -30,6 +30,8 @@ find_path(
     PATHS ${CMAKE_INSTALL_PREFIX}/include
           /usr/include
           /usr/local/include
+          ${GRDBFCTTC_ROOT}/include
+          $ENV{GRDBFCTTC_ROOT}/include
 )
 
 find_library(
@@ -43,8 +45,23 @@ find_library(
           /usr/lib64
           /usr/local/lib
           /usr/local/lib64
+          ${GRDBFCTTC_ROOT}/lib
+          $ENV{GRDBFCTTC_ROOT}/lib
+          ${GRDBFCTTC_ROOT}/lib64
+          $ENV{GRDBFCTTC_ROOT}/lib64
 )
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(GRDBFCTTC DEFAULT_MSG GR_DBFCTTC_LIBRARIES GR_DBFCTTC_INCLUDE_DIRS)
+
+if(GRDBFCTTC_FOUND AND NOT TARGET Gnuradio::dbfcttc)
+    add_library(Gnuradio::dbfcttc SHARED IMPORTED)
+    set_target_properties(Gnuradio::dbfcttc PROPERTIES
+        IMPORTED_LINK_INTERFACE_LANGUAGES "CXX"
+        IMPORTED_LOCATION "${GR_DBFCTTC_LIBRARIES}"
+        INTERFACE_INCLUDE_DIRECTORIES "${GR_DBFCTTC_INCLUDE_DIRS}"
+        INTERFACE_LINK_LIBRARIES "${GR_DBFCTTC_LIBRARIES}"
+    )
+endif()
+
 mark_as_advanced(GR_DBFCTTC_LIBRARIES GR_DBFCTTC_INCLUDE_DIRS)

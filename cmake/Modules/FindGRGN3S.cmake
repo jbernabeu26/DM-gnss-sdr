@@ -1,4 +1,4 @@
-# Copyright (C) 2011-2018 (see AUTHORS file for a list of contributors)
+# Copyright (C) 2011-2019 (see AUTHORS file for a list of contributors)
 #
 # This file is part of GNSS-SDR.
 #
@@ -30,6 +30,8 @@ find_path(
     PATHS ${CMAKE_INSTALL_PREFIX}/include
           /usr/local/include
           /usr/include
+          ${GRGN3S_ROOT}/include
+          $ENV{GRGN3S_ROOT}/include
 )
 
 find_library(
@@ -43,8 +45,23 @@ find_library(
           /usr/local/lib64
           /usr/lib
           /usr/lib64
+          ${GRGN3S_ROOT}/lib
+          $ENV{GRGN3S_ROOT}/lib
+          ${GRGN3S_ROOT}/lib64
+          $ENV{GRGN3S_ROOT}/lib64
 )
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(GRGN3S DEFAULT_MSG GR_GN3S_LIBRARIES GR_GN3S_INCLUDE_DIRS)
+
+if(GRGN3S_FOUND AND NOT TARGET Gnuradio::gn3s)
+    add_library(Gnuradio::gn3s SHARED IMPORTED)
+    set_target_properties(Gnuradio::gn3s PROPERTIES
+        IMPORTED_LINK_INTERFACE_LANGUAGES "CXX"
+        IMPORTED_LOCATION "${GR_GN3S_LIBRARIES}"
+        INTERFACE_INCLUDE_DIRECTORIES "${GR_GN3S_INCLUDE_DIRS}"
+        INTERFACE_LINK_LIBRARIES "${GR_GN3S_LIBRARIES}"
+    )
+endif()
+
 mark_as_advanced(GR_GN3S_LIBRARIES GR_GN3S_INCLUDE_DIRS)

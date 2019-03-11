@@ -41,11 +41,6 @@
 #include <glog/logging.h>
 
 
-using google::LogMessage;
-
-void BeidouB2adPcpsAcquisition::stop_acquisition()
-{
-}
 
 BeidouB2adPcpsAcquisition::BeidouB2adPcpsAcquisition(
     ConfigurationInterface* configuration, std::string role,
@@ -131,6 +126,11 @@ BeidouB2adPcpsAcquisition::~BeidouB2adPcpsAcquisition()
 }
 
 
+void BeidouB2adPcpsAcquisition::stop_acquisition()
+{
+}
+
+
 void BeidouB2adPcpsAcquisition::set_channel(unsigned int channel)
 {
     channel_ = channel;
@@ -168,6 +168,7 @@ void BeidouB2adPcpsAcquisition::set_doppler_max(unsigned int doppler_max)
     acquisition_->set_doppler_max(doppler_max_);
 }
 
+
 void BeidouB2adPcpsAcquisition::set_doppler_step(unsigned int doppler_step)
 {
     doppler_step_ = doppler_step;
@@ -195,6 +196,7 @@ void BeidouB2adPcpsAcquisition::init()
     acquisition_->init();
 }
 
+
 void BeidouB2adPcpsAcquisition::set_local_code()
 {
 	{
@@ -212,6 +214,7 @@ void BeidouB2adPcpsAcquisition::reset()
 {
     acquisition_->set_active(true);
 }
+
 
 void BeidouB2adPcpsAcquisition::set_state(int state)
 {
@@ -312,4 +315,10 @@ gr::basic_block_sptr BeidouB2adPcpsAcquisition::get_left_block()
 gr::basic_block_sptr BeidouB2adPcpsAcquisition::get_right_block()
 {
     return acquisition_;
+}
+
+
+void BeidouB2adPcpsAcquisition::set_resampler_latency(uint32_t latency_samples)
+{
+    acquisition_->set_resampler_latency(latency_samples);
 }

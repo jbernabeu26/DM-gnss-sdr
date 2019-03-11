@@ -1,9 +1,8 @@
 /*!
- * \file gps_l2_m_dll_pll_tracking.h
+ * \file gps_l2_m_dll_pll_tracking_fpga.h
  * \brief  Interface of an adapter of a DLL+PLL tracking loop block
- * for GPS L1 C/A to a TrackingInterface
- * \author Carlos Aviles, 2010. carlos.avilesr(at)googlemail.com
- *         Javier Arribas, 2011. jarribas(at)cttc.es
+ * for GPS L2C to a TrackingInterface
+ * \author Marc Majoral, 2019, mmajoral(at)cttc.es
  *
  * Code DLL + carrier PLL according to the algorithms described in:
  * K.Borre, D.M.Akos, N.Bertelsen, P.Rinder, and S.H.Jensen,
@@ -52,7 +51,7 @@ class GpsL2MDllPllTrackingFpga : public TrackingInterface
 {
 public:
     GpsL2MDllPllTrackingFpga(ConfigurationInterface* configuration,
-        std::string role,
+        const std::string& role,
         unsigned int in_streams,
         unsigned int out_streams);
 
@@ -63,7 +62,7 @@ public:
         return role_;
     }
 
-    //! Returns "GPS_L2_M_DLL_PLL_Tracking"
+    //! Returns "GPS_L2_M_DLL_PLL_Tracking_Fpga"
     inline std::string implementation() override
     {
         return "GPS_L2_M_DLL_PLL_Tracking_Fpga";
@@ -71,7 +70,7 @@ public:
 
     inline size_t item_size() override
     {
-        return item_size_;
+        return sizeof(int);
     }
 
     void connect(gr::top_block_sptr top_block) override;
@@ -99,7 +98,6 @@ public:
 private:
     //dll_pll_veml_tracking_sptr tracking_;
     dll_pll_veml_tracking_fpga_sptr tracking_fpga_sc;
-    size_t item_size_;
     unsigned int channel_;
     std::string role_;
     unsigned int in_streams_;

@@ -1,4 +1,4 @@
-# Copyright (C) 2011-2018 (see AUTHORS file for a list of contributors)
+# Copyright (C) 2011-2019 (see AUTHORS file for a list of contributors)
 #
 # This file is part of GNSS-SDR.
 #
@@ -33,15 +33,26 @@
 # GROSMOSDR_FOUND System has gr-osmosdr libs/headers
 # GROSMOSDR_LIBRARIES The gr-osmosdr libraries (gnuradio-osmosdr)
 # GROSMOSDR_INCLUDE_DIR The location of gr-osmosdr headers
+#
+# Provides the following imported target:
+# Gnuradio::osmosdr
+#
 
+
+include(FindPkgConfig)
 pkg_check_modules(GROSMOSDR_PKG gnuradio-osmosdr)
+
 find_path(GROSMOSDR_INCLUDE_DIR
-  NAMES osmosdr/source.h
+  NAMES
+    osmosdr/source.h
     osmosdr/api.h
   PATHS
-  ${GROSMOSDR_PKG_INCLUDE_DIRS}
-  /usr/include
-  /usr/local/include
+    ${GROSMOSDR_PKG_INCLUDE_DIRS}
+    /usr/include
+    /usr/local/include
+    /opt/local/include
+    ${GROSMOSDR_ROOT}/include
+    $ENV{GROSMOSDR_ROOT}/include
 )
 
 find_library(GROSMOSDR_LIBRARIES
@@ -50,6 +61,7 @@ find_library(GROSMOSDR_LIBRARIES
     ${GROSMOSDR_PKG_LIBRARY_DIRS}
     /usr/lib
     /usr/local/lib
+    /opt/local/lib
     /usr/lib/x86_64-linux-gnu
     /usr/lib/i386-linux-gnu
     /usr/lib/arm-linux-gnueabihf
@@ -74,8 +86,23 @@ find_library(GROSMOSDR_LIBRARIES
     /usr/lib/x86_64-linux-gnux32
     /usr/lib/alpha-linux-gnu
     /usr/lib64
+    ${GROSMOSDR_ROOT}/lib
+    $ENV{GROSMOSDR_ROOT}/lib
+    ${GROSMOSDR_ROOT}/lib64
+    $ENV{GROSMOSDR_ROOT}/lib64
 )
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(GROSMOSDR DEFAULT_MSG GROSMOSDR_LIBRARIES GROSMOSDR_INCLUDE_DIR)
+
+if(GROSMOSDR_FOUND AND NOT TARGET Gnuradio::osmosdr)
+    add_library(Gnuradio::osmosdr SHARED IMPORTED)
+    set_target_properties(Gnuradio::osmosdr PROPERTIES
+        IMPORTED_LINK_INTERFACE_LANGUAGES "CXX"
+        IMPORTED_LOCATION "${GROSMOSDR_LIBRARIES}"
+        INTERFACE_INCLUDE_DIRECTORIES "${GROSMOSDR_INCLUDE_DIR};${GROSMOSDR_INCLUDE_DIR}/osmosdr"
+        INTERFACE_LINK_LIBRARIES "${GROSMOSDR_LIBRARIES}"
+    )
+endif()
+
 mark_as_advanced(GROSMOSDR_LIBRARIES GROSMOSDR_INCLUDE_DIR)

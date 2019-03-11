@@ -46,10 +46,6 @@
 // Physical constants
 const double BEIDOU_C_m_s = SPEED_OF_LIGHT;                   //!< The speed of light, [m/s]
 const double BEIDOU_C_m_ms = 299792.4580;                     //!< The speed of light, [m/ms]
-const double BEIDOU_PI = 3.1415926535898;                     //!< Pi as defined in IS-GPS-200E
-const double BEIDOU_TWO_PI = 6.283185307179586;               //!< 2Pi as defined in IS-GPS-200E
-const double BEIDOU_OMEGA_EARTH_DOT = 7.292115e-5;            //!< Earth rotation rate, [rad/s]
-const double BEIDOU_GM = 398600.4418e9;                       //!< Geocentric gravitational constant, [m^3/s^2]
 const double BEIDOU_fM_a = 0.35e9;                            //!< Gravitational constant of atmosphere [m^3/s^2]
 const double BEIDOU_SEMI_MAJOR_AXIS = 6378137;                //!< Semi-major axis of Earth [m]
 const double BEIDOU_FLATTENING = 1 / 298.257222101;                //!< Flattening parameter

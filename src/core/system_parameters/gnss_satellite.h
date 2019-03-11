@@ -34,16 +34,16 @@
 
 #include <cstdint>
 #include <map>
-#include <string>
+#include <ostream>
 #include <set>
-#include <map>
+#include <string>
 
 
 /*!
  * \brief This class represents a GNSS satellite.
  *
  * It contains information about the space vehicles currently operational
- * of GPS, Glonass, SBAS, BEIDOU and Galileo constellations.
+ * of GPS, Glonass, SBAS and Galileo constellations.
  */
 class Gnss_Satellite
 {
@@ -58,8 +58,9 @@ public:
     std::string get_system_short() const;                                   //!< Gets the satellite system {"G", "R", "SBAS", "E", "C"}
     std::string get_block() const;                                          //!< Gets the satellite block. If GPS, returns {"IIA", "IIR", "IIR-M", "IIF"}
     std::string what_block(const std::string& system_, uint32_t PRN_);      //!< Gets the block of a given satellite
-    friend bool operator==(const Gnss_Satellite&, const Gnss_Satellite&);   //!< operator== for comparison
-    friend std::ostream& operator<<(std::ostream&, const Gnss_Satellite&);  //!< operator<< for pretty printing
+
+    friend bool operator==(const Gnss_Satellite& /*sat1*/, const Gnss_Satellite& /*sat2*/);  //!< operator== for comparison
+    friend std::ostream& operator<<(std::ostream& /*out*/, const Gnss_Satellite& /*sat*/);   //!< operator<< for pretty printing
     //Gnss_Satellite& operator=(const Gnss_Satellite &);
 private:
     uint32_t PRN;

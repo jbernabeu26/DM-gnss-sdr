@@ -1,4 +1,4 @@
-# Copyright (C) 2011-2018 (see AUTHORS file for a list of contributors)
+# Copyright (C) 2011-2019 (see AUTHORS file for a list of contributors)
 #
 # This file is part of GNSS-SDR.
 #
@@ -15,6 +15,12 @@
 # You should have received a copy of the GNU General Public License
 # along with GNSS-SDR. If not, see <https://www.gnu.org/licenses/>.
 
+#
+# Provides the following imported target:
+# Volkgnsssdr::volkgnsssdr
+#
+
+
 ########################################################################
 # Find VOLK (Vector-Optimized Library of Kernels) GNSS-SDR library
 ########################################################################
@@ -22,28 +28,43 @@
 include(FindPkgConfig)
 pkg_check_modules(PC_VOLK_GNSSSDR volk_gnsssdr)
 
-find_path(
-    VOLK_GNSSSDR_INCLUDE_DIRS
+find_path(VOLK_GNSSSDR_INCLUDE_DIRS
     NAMES volk_gnsssdr/volk_gnsssdr.h
     HINTS $ENV{VOLK_GNSSSDR_DIR}/include
-        ${PC_VOLK_GNSSSDR_INCLUDEDIR}
+          ${PC_VOLK_GNSSSDR_INCLUDEDIR}
     PATHS /usr/local/include
           /usr/include
           ${GNURADIO_INSTALL_PREFIX}/include
+          ${VOLKGNSSSDR_ROOT}/include
+          $ENV{VOLKGNSSSDR_ROOT}/include
 )
 
-find_library(
-    VOLK_GNSSSDR_LIBRARIES
+find_library(VOLK_GNSSSDR_LIBRARIES
     NAMES volk_gnsssdr
     HINTS $ENV{VOLK_GNSSSDR_DIR}/lib
-        ${PC_VOLK_GNSSSDR_LIBDIR}
+          ${PC_VOLK_GNSSSDR_LIBDIR}
     PATHS /usr/local/lib
           /usr/local/lib64
           /usr/lib
           /usr/lib64
           ${GNURADIO_INSTALL_PREFIX}/lib
+          ${VOLKGNSSSDR_ROOT}/lib
+          $ENV{VOLKGNSSSDR_ROOT}/lib
+          ${VOLKGNSSSDR_ROOT}/lib64
+          $ENV{VOLKGNSSSDR_ROOT}/lib64
 )
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(VOLKGNSSSDR DEFAULT_MSG VOLK_GNSSSDR_LIBRARIES VOLK_GNSSSDR_INCLUDE_DIRS)
 mark_as_advanced(VOLK_GNSSSDR_LIBRARIES VOLK_GNSSSDR_INCLUDE_DIRS)
+
+
+if(VOLKGNSSSDR_FOUND AND NOT TARGET Volkgnsssdr::volkgnsssdr)
+    add_library(Volkgnsssdr::volkgnsssdr SHARED IMPORTED)
+    set_target_properties(Volkgnsssdr::volkgnsssdr PROPERTIES
+        IMPORTED_LINK_INTERFACE_LANGUAGES "CXX"
+        IMPORTED_LOCATION "${VOLK_GNSSSDR_LIBRARIES}"
+        INTERFACE_INCLUDE_DIRECTORIES "${VOLK_GNSSSDR_INCLUDE_DIRS}"
+        INTERFACE_LINK_LIBRARIES "${VOLK_GNSSSDR_LIBRARIES}"
+    )
+endif()

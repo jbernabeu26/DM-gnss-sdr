@@ -18,29 +18,44 @@
 include(FindPkgConfig)
 pkg_check_modules(PC_TELEORBIT teleorbit)
 
-find_path(
-    TELEORBIT_INCLUDE_DIRS
+find_path(TELEORBIT_INCLUDE_DIRS
     NAMES teleorbit/api.h
     HINTS $ENV{TELEORBIT_DIR}/include
-        ${PC_TELEORBIT_INCLUDEDIR}
+          ${PC_TELEORBIT_INCLUDEDIR}
     PATHS ${CMAKE_INSTALL_PREFIX}/include
           /usr/local/include
           /usr/include
+          ${TELEORBIT_ROOT}/include
+          $ENV{TELEORBIT_ROOT}/include
 )
 
-find_library(
-    TELEORBIT_LIBRARIES
+find_library(TELEORBIT_LIBRARIES
     NAMES gnuradio-teleorbit
     HINTS $ENV{TELEORBIT_DIR}/lib
-        ${PC_TELEORBIT_LIBDIR}
+          ${PC_TELEORBIT_LIBDIR}
     PATHS ${CMAKE_INSTALL_PREFIX}/lib
           ${CMAKE_INSTALL_PREFIX}/lib64
           /usr/local/lib
           /usr/local/lib64
           /usr/lib
           /usr/lib64
+          ${TELEORBIT_ROOT}/lib
+          $ENV{TELEORBIT_ROOT}/lib
+          ${TELEORBIT_ROOT}/lib64
+          $ENV{TELEORBIT_ROOT}/lib64
 )
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(TELEORBIT DEFAULT_MSG TELEORBIT_LIBRARIES TELEORBIT_INCLUDE_DIRS)
+
+if(TELEORBIT_FOUND AND NOT TARGET Gnuradio::teleorbit)
+    add_library(Gnuradio::teleorbit SHARED IMPORTED)
+    set_target_properties(Gnuradio::teleorbit PROPERTIES
+        IMPORTED_LINK_INTERFACE_LANGUAGES "CXX"
+        IMPORTED_LOCATION "${TELEORBIT_LIBRARIES}"
+        INTERFACE_INCLUDE_DIRECTORIES "${TELEORBIT_INCLUDE_DIRS};${TELEORBIT_INCLUDE_DIRS}/teleorbit"
+        INTERFACE_LINK_LIBRARIES "${TELEORBIT_LIBRARIES}"
+    )
+endif()
+
 mark_as_advanced(TELEORBIT_LIBRARIES TELEORBIT_INCLUDE_DIRS)

@@ -35,9 +35,9 @@
 #define GNSS_SDR_BEIDOU_B2A_TELEMETRY_DECODER_H_
 
 #include "telemetry_decoder_interface.h"
-#include "beidou_b2a_telemetry_decoder_cc.h"
 #include "gnss_satellite.h"
 #include <string>
+#include "beidou_b2a_telemetry_decoder_gs.h"
 
 class ConfigurationInterface;
 
@@ -80,7 +80,7 @@ public:
     }
 
 private:
-    beidou_b2a_telemetry_decoder_cc_sptr telemetry_decoder_;
+    beidou_b2a_telemetry_decoder_gs_sptr telemetry_decoder_;
     Gnss_Satellite satellite_;
     int channel_;
     bool dump_;

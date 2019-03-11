@@ -29,7 +29,21 @@
  */
 
 #include "rtklib_conversions.h"
+#include "MATH_CONSTANTS.h"          // for PI, PI_2
+#include "beidou_dnav_ephemeris.h"   // for Beidou_Dnav_Ephemeris
+#include "beidou_cnav2_ephemeris.h"   // for Beidou_Cnav2_Ephemeris
+#include "galileo_almanac.h"         // for Galileo_Almanac
+#include "galileo_ephemeris.h"       // for Galileo_Ephemeris
+#include "glonass_gnav_ephemeris.h"  // for Glonass_Gnav_Ephemeris
+#include "glonass_gnav_utc_model.h"  // for Glonass_Gnav_Utc_Model
+#include "gnss_obs_codes.h"          // for CODE_L1C, CODE_L2S, CODE_L5X
+#include "gnss_synchro.h"            // for Gnss_Synchro
+#include "gps_almanac.h"             // for Gps_Almanac
+#include "gps_cnav_ephemeris.h"      // for Gps_CNAV_Ephemeris
+#include "gps_ephemeris.h"           // for Gps_Ephemeris
 #include "rtklib_rtkcmn.h"
+#include <cmath>
+#include <cstdint>
 
 obsd_t insert_obs_to_rtklib(obsd_t& rtklib_obs, const Gnss_Synchro& gnss_synchro, int week, int band)
 {
@@ -49,9 +63,15 @@ obsd_t insert_obs_to_rtklib(obsd_t& rtklib_obs, const Gnss_Synchro& gnss_synchro
             break;
         }
     double CN0_dB_Hz_est = gnss_synchro.CN0_dB_hz;
-    if (CN0_dB_Hz_est > 63.75) CN0_dB_Hz_est = 63.75;
-    if (CN0_dB_Hz_est < 0.0) CN0_dB_Hz_est = 0.0;
-    unsigned char CN0_dB_Hz = static_cast<unsigned char>(std::round(CN0_dB_Hz_est / 0.25));
+    if (CN0_dB_Hz_est > 63.75)
+        {
+            CN0_dB_Hz_est = 63.75;
+        }
+    if (CN0_dB_Hz_est < 0.0)
+        {
+            CN0_dB_Hz_est = 0.0;
+        }
+    auto CN0_dB_Hz = static_cast<unsigned char>(std::round(CN0_dB_Hz_est / 0.25));
     rtklib_obs.SNR[band] = CN0_dB_Hz;
     //Galileo is the third satellite system for RTKLIB, so, add the required offset to discriminate Galileo ephemeris
     switch (gnss_synchro.System)
@@ -65,10 +85,25 @@ obsd_t insert_obs_to_rtklib(obsd_t& rtklib_obs, const Gnss_Synchro& gnss_synchro
         case 'R':
             rtklib_obs.sat = gnss_synchro.PRN + NSATGPS;
             break;
+        case 'C':
+            rtklib_obs.sat = gnss_synchro.PRN + NSATGPS + NSATGLO + NSATGAL + NSATQZS;
+            break;
 
         default:
             rtklib_obs.sat = gnss_synchro.PRN;
         }
+
+    // Mote that BeiDou week numbers do not need adjustment for foreseeable future. Consider change
+    // to more elegant solution
+    //    if(gnss_synchro.System == 'C')
+    //		{
+    //    		rtklib_obs.time = bdt2gpst(bdt2time(week, gnss_synchro.RX_time));
+    //		}
+    //    else
+    //    	{
+    //    		rtklib_obs.time = gpst2time(adjgpsweek(week), gnss_synchro.RX_time);
+    //    	}
+    //
     rtklib_obs.time = gpst2time(adjgpsweek(week), gnss_synchro.RX_time);
     rtklib_obs.rcv = 1;
     return rtklib_obs;
@@ -215,7 +250,7 @@ eph_t eph_to_rtklib(const Galileo_Ephemeris& gal_eph)
     /* adjustment for week handover */
     double tow, toc;
     tow = time2gpst(rtklib_sat.ttr, &rtklib_sat.week);
-    toc = time2gpst(rtklib_sat.toc, NULL);
+    toc = time2gpst(rtklib_sat.toc, nullptr);
     if (rtklib_sat.toes < tow - 302400.0)
         {
             rtklib_sat.week++;
@@ -272,7 +307,7 @@ eph_t eph_to_rtklib(const Gps_Ephemeris& gps_eph)
     /* adjustment for week handover */
     double tow, toc;
     tow = time2gpst(rtklib_sat.ttr, &rtklib_sat.week);
-    toc = time2gpst(rtklib_sat.toc, NULL);
+    toc = time2gpst(rtklib_sat.toc, nullptr);
     if (rtklib_sat.toes < tow - 302400.0)
         {
             rtklib_sat.week++;
@@ -284,6 +319,69 @@ eph_t eph_to_rtklib(const Gps_Ephemeris& gps_eph)
             tow += 604800.0;
         }
     rtklib_sat.toe = gpst2time(rtklib_sat.week, rtklib_sat.toes);
+    rtklib_sat.toc = gpst2time(rtklib_sat.week, toc);
+    rtklib_sat.ttr = gpst2time(rtklib_sat.week, tow);
+
+    return rtklib_sat;
+}
+
+eph_t eph_to_rtklib(const Beidou_Dnav_Ephemeris& bei_eph)
+{
+    eph_t rtklib_sat = {0, 0, 0, 0, 0, 0, 0, 0, {0, 0}, {0, 0}, {0, 0}, 0.0, 0.0, 0.0, 0.0, 0.0,
+        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, {}, {}, 0.0, 0.0};
+    rtklib_sat.sat = bei_eph.i_satellite_PRN + NSATGPS + NSATGLO + NSATGAL + NSATQZS;
+    rtklib_sat.A = bei_eph.d_sqrt_A * bei_eph.d_sqrt_A;
+    rtklib_sat.M0 = bei_eph.d_M_0;
+    rtklib_sat.deln = bei_eph.d_Delta_n;
+    rtklib_sat.OMG0 = bei_eph.d_OMEGA0;
+    rtklib_sat.OMGd = bei_eph.d_OMEGA_DOT;
+    rtklib_sat.omg = bei_eph.d_OMEGA;
+    rtklib_sat.i0 = bei_eph.d_i_0;
+    rtklib_sat.idot = bei_eph.d_IDOT;
+    rtklib_sat.e = bei_eph.d_eccentricity;
+    rtklib_sat.Adot = 0;  //only in CNAV;
+    rtklib_sat.ndot = 0;  //only in CNAV;
+
+    rtklib_sat.code = bei_eph.i_sig_type;                   /*B1I data*/
+    rtklib_sat.flag = bei_eph.i_nav_type;                   /*MEO/IGSO satellite*/
+    rtklib_sat.iode = static_cast<int32_t>(bei_eph.d_AODE); /* AODE */
+    rtklib_sat.iodc = static_cast<int32_t>(bei_eph.d_AODC); /* AODC */
+
+    rtklib_sat.week = bei_eph.i_BEIDOU_week; /* week of tow */
+    rtklib_sat.cic = bei_eph.d_Cic;
+    rtklib_sat.cis = bei_eph.d_Cis;
+    rtklib_sat.cuc = bei_eph.d_Cuc;
+    rtklib_sat.cus = bei_eph.d_Cus;
+    rtklib_sat.crc = bei_eph.d_Crc;
+    rtklib_sat.crs = bei_eph.d_Crs;
+    rtklib_sat.f0 = bei_eph.d_A_f0;
+    rtklib_sat.f1 = bei_eph.d_A_f1;
+    rtklib_sat.f2 = bei_eph.d_A_f2;
+    rtklib_sat.tgd[0] = bei_eph.d_TGD1;
+    rtklib_sat.tgd[1] = bei_eph.d_TGD2;
+    rtklib_sat.tgd[2] = 0.0;
+    rtklib_sat.tgd[3] = 0.0;
+    rtklib_sat.toes = bei_eph.d_Toe;
+    rtklib_sat.toe = bdt2gpst(bdt2time(rtklib_sat.week, bei_eph.d_Toe));
+    rtklib_sat.toc = bdt2gpst(bdt2time(rtklib_sat.week, bei_eph.d_Toc));
+    rtklib_sat.ttr = bdt2gpst(bdt2time(rtklib_sat.week, bei_eph.d_TOW));
+    /* adjustment for week handover */
+    double tow, toc, toe;
+    tow = time2gpst(rtklib_sat.ttr, &rtklib_sat.week);
+    toc = time2gpst(rtklib_sat.toc, nullptr);
+    toe = time2gpst(rtklib_sat.toe, nullptr);
+
+    if (rtklib_sat.toes < tow - 302400.0)
+        {
+            rtklib_sat.week++;
+            tow -= 604800.0;
+        }
+    else if (rtklib_sat.toes > tow + 302400.0)
+        {
+            rtklib_sat.week--;
+            tow += 604800.0;
+        }
+    rtklib_sat.toe = gpst2time(rtklib_sat.week, toe);
     rtklib_sat.toc = gpst2time(rtklib_sat.week, toc);
     rtklib_sat.ttr = gpst2time(rtklib_sat.week, tow);
 
@@ -337,7 +435,7 @@ eph_t eph_to_rtklib(const Gps_CNAV_Ephemeris& gps_cnav_eph)
     /* adjustment for week handover */
     double tow, toc;
     tow = time2gpst(rtklib_sat.ttr, &rtklib_sat.week);
-    toc = time2gpst(rtklib_sat.toc, NULL);
+    toc = time2gpst(rtklib_sat.toc, nullptr);
     if (rtklib_sat.toes < tow - 302400.0)
         {
             rtklib_sat.week++;
@@ -367,6 +465,7 @@ alm_t alm_to_rtklib(const Gps_Almanac& gps_alm)
     rtklib_alm.week = gps_alm.i_WNa;
     gtime_t toa;
     toa.time = gps_alm.i_Toa;
+    toa.sec = 0.0;
     rtklib_alm.toa = toa;
     rtklib_alm.A = gps_alm.d_sqrt_A * gps_alm.d_sqrt_A;
     rtklib_alm.e = gps_alm.d_e_eccentricity;
@@ -395,6 +494,7 @@ alm_t alm_to_rtklib(const Galileo_Almanac& gal_alm)
     rtklib_alm.week = gal_alm.i_WNa;
     gtime_t toa;
     toa.time = gal_alm.i_Toa;
+    toa.sec = 0.0;
     rtklib_alm.toa = toa;
     rtklib_alm.A = 5440.588203494 + gal_alm.d_Delta_sqrt_A;
     rtklib_alm.A = rtklib_alm.A * rtklib_alm.A;

@@ -1,5 +1,5 @@
 /*!
- * \file kml_printer.cc
+ * \file nmea_printer.cc
  * \brief Implementation of a NMEA 2.1 printer for GNSS-SDR
  * This class provides a implementation of a subset of the NMEA-0183 standard for interfacing
  * marine electronic devices as defined by the National Marine Electronics Association (NMEA).
@@ -41,14 +41,12 @@
 #include <boost/filesystem/path_traits.hpp>  // for filesystem
 #include <glog/logging.h>
 #include <cstdint>
+#include <exception>
 #include <fcntl.h>
 #include <termios.h>
 
 
-using google::LogMessage;
-
-
-Nmea_Printer::Nmea_Printer(std::string filename, bool flag_nmea_output_file, bool flag_nmea_tty_port, std::string nmea_dump_devname, const std::string& base_path)
+Nmea_Printer::Nmea_Printer(const std::string& filename, bool flag_nmea_output_file, bool flag_nmea_tty_port, std::string nmea_dump_devname, const std::string& base_path)
 {
     nmea_base_path = base_path;
     d_flag_nmea_output_file = flag_nmea_output_file;
@@ -79,7 +77,7 @@ Nmea_Printer::Nmea_Printer(std::string filename, bool flag_nmea_output_file, boo
                     nmea_base_path = p.string();
                 }
 
-            if ((nmea_base_path.compare(".") != 0) and (d_flag_nmea_output_file == true))
+            if ((nmea_base_path != ".") and (d_flag_nmea_output_file == true))
                 {
                     std::cout << "NMEA files will be stored at " << nmea_base_path << std::endl;
                 }
@@ -99,10 +97,10 @@ Nmea_Printer::Nmea_Printer(std::string filename, bool flag_nmea_output_file, boo
                 }
         }
 
-    nmea_devname = nmea_dump_devname;
+    nmea_devname = std::move(nmea_dump_devname);
     if (flag_nmea_tty_port == true)
         {
-            nmea_dev_descriptor = init_serial(nmea_devname.c_str());
+            nmea_dev_descriptor = init_serial(nmea_devname);
             if (nmea_dev_descriptor != -1)
                 {
                     DLOG(INFO) << "NMEA printer writing on " << nmea_devname.c_str();
@@ -118,32 +116,58 @@ Nmea_Printer::Nmea_Printer(std::string filename, bool flag_nmea_output_file, boo
 
 Nmea_Printer::~Nmea_Printer()
 {
-    if (nmea_file_descriptor.is_open())
+    try
         {
-            nmea_file_descriptor.close();
+            if (nmea_file_descriptor.is_open())
+                {
+                    nmea_file_descriptor.close();
+                }
         }
-    close_serial();
+    catch (const std::ofstream::failure& e)
+        {
+            std::cerr << "Problem closing NMEA dump file: " << nmea_filename << '\n';
+        }
+    catch (const std::exception& e)
+        {
+            std::cerr << e.what() << '\n';
+        }
+    try
+        {
+            close_serial();
+        }
+    catch (const std::exception& e)
+        {
+            std::cerr << e.what() << '\n';
+        }
 }
 
 
-int Nmea_Printer::init_serial(std::string serial_device)
+int Nmea_Printer::init_serial(const std::string& serial_device)
 {
     /*!
      * Opens the serial device and sets the default baud rate for a NMEA transmission (9600,8,N,1)
      */
     int fd = 0;
-    struct termios options;
+    struct termios options
+    {
+    };
     int64_t BAUD;
     int64_t DATABITS;
     int64_t STOPBITS;
     int64_t PARITYON;
     int64_t PARITY;
 
-    fd = open(serial_device.c_str(), O_RDWR | O_NOCTTY | O_NDELAY);
-    if (fd == -1) return fd;  // failed to open TTY port
+    fd = open(serial_device.c_str(), O_RDWR | O_NOCTTY | O_NDELAY | O_CLOEXEC);
+    if (fd == -1)
+        {
+            return fd;  // failed to open TTY port
+        }
 
-    if (fcntl(fd, F_SETFL, 0) == -1) LOG(INFO) << "Error enabling direct I/O";  // clear all flags on descriptor, enable direct I/O
-    tcgetattr(fd, &options);                                                    // read serial port options
+    if (fcntl(fd, F_SETFL, 0) == -1)
+        {
+            LOG(INFO) << "Error enabling direct I/O";  // clear all flags on descriptor, enable direct I/O
+        }
+    tcgetattr(fd, &options);  // read serial port options
 
     BAUD = B9600;
     // BAUD  =  B38400;
@@ -172,7 +196,7 @@ void Nmea_Printer::close_serial()
 }
 
 
-bool Nmea_Printer::Print_Nmea_Line(const std::shared_ptr<rtklib_solver>& pvt_data, bool print_average_values)
+bool Nmea_Printer::Print_Nmea_Line(const std::shared_ptr<Rtklib_Solver>& pvt_data, bool print_average_values)
 {
     std::string GPRMC;
     std::string GPGGA;
@@ -246,9 +270,9 @@ char Nmea_Printer::checkSum(std::string sentence)
 {
     char check = 0;
     // iterate over the string, XOR each byte with the total sum:
-    for (unsigned int c = 0; c < sentence.length(); c++)
+    for (char c : sentence)
         {
-            check = char(check ^ sentence.at(c));
+            check = char(check ^ c);
         }
     // return the result
     return check;
@@ -346,13 +370,22 @@ std::string Nmea_Printer::get_UTC_NMEA_time(boost::posix_time::ptime d_position_
     utc_seconds = td.seconds();
     utc_milliseconds = td.total_milliseconds() - td.total_seconds() * 1000;
 
-    if (utc_hours < 10) sentence_str << "0";  //  two digits for hours
+    if (utc_hours < 10)
+        {
+            sentence_str << "0";  //  two digits for hours
+        }
     sentence_str << utc_hours;
 
-    if (utc_mins < 10) sentence_str << "0";  //  two digits for minutes
+    if (utc_mins < 10)
+        {
+            sentence_str << "0";  //  two digits for minutes
+        }
     sentence_str << utc_mins;
 
-    if (utc_seconds < 10) sentence_str << "0";  //  two digits for seconds
+    if (utc_seconds < 10)
+        {
+            sentence_str << "0";  //  two digits for seconds
+        }
     sentence_str << utc_seconds;
 
     if (utc_milliseconds < 10)

@@ -43,15 +43,20 @@
 #  PCAP_INCLUDE_DIRS - where to find pcap.h, etc.
 #  PCAP_LIBRARIES   - List of libraries when using pcap.
 #  PCAP_FOUND       - True if pcap found.
-
+#
+# Provides the following imported target:
+# Pcap::pcap
+#
 
 if(EXISTS $ENV{PCAPDIR})
   find_path(PCAP_INCLUDE_DIR
     NAMES
-    pcap/pcap.h
-    pcap.h
+      pcap/pcap.h
+      pcap.h
     PATHS
       $ENV{PCAPDIR}
+      ${PCAP_ROOT}/include
+      $ENV{PCAP_ROOT}/include
     NO_DEFAULT_PATH
   )
   find_library(PCAP_LIBRARY
@@ -59,18 +64,25 @@ if(EXISTS $ENV{PCAPDIR})
       pcap
     PATHS
       $ENV{PCAPDIR}
+      ${PCAP_ROOT}/lib
+      $ENV{PCAP_ROOT}/lib
     NO_DEFAULT_PATH
   )
 else()
   find_path(PCAP_INCLUDE_DIR
     NAMES
-    pcap/pcap.h
-    pcap.h
+      pcap/pcap.h
+      pcap.h
+    HINTS
+      ${PCAP_ROOT}/include
+      $ENV{PCAP_ROOT}/include
   )
-
   find_library(PCAP_LIBRARY
     NAMES
       pcap
+    HINTS
+      ${PCAP_ROOT}/lib
+      $ENV{PCAP_ROOT}/lib
   )
 endif()
 
@@ -104,10 +116,20 @@ check_function_exists("pcap_list_datalinks" HAVE_PCAP_LIST_DATALINKS)
 check_function_exists("pcap_open_dead" HAVE_PCAP_OPEN_DEAD)
 check_function_exists("pcap_set_datalink" HAVE_PCAP_SET_DATALINK)
 
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(PCAP DEFAULT_MSG PCAP_INCLUDE_DIRS PCAP_LIBRARIES)
+
+if(PCAP_FOUND AND NOT TARGET Pcap::pcap)
+    add_library(Pcap::pcap SHARED IMPORTED)
+    set_target_properties(Pcap::pcap PROPERTIES
+        IMPORTED_LINK_INTERFACE_LANGUAGES "CXX"
+        IMPORTED_LOCATION "${PCAP_LIBRARIES}"
+        INTERFACE_INCLUDE_DIRECTORIES "${PCAP_INCLUDE_DIRS}"
+        INTERFACE_LINK_LIBRARIES "${PCAP_LIBRARIES}"
+    )
+endif()
+
 mark_as_advanced(
   PCAP_LIBRARIES
   PCAP_INCLUDE_DIRS
 )
-
-include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(PCAP DEFAULT_MSG PCAP_INCLUDE_DIRS PCAP_LIBRARIES)

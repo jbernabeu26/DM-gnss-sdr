@@ -1,4 +1,4 @@
-# Copyright (C) 2011-2018 (see AUTHORS file for a list of contributors)
+# Copyright (C) 2011-2019 (see AUTHORS file for a list of contributors)
 #
 # This file is part of GNSS-SDR.
 #
@@ -24,7 +24,7 @@
 # Variables used by this module, they can change the default behaviour and need
 # to be set before calling find_package:
 #
-# Gperftools_ROOT_DIR Set this variable to the root installation of
+# GPERFTOOLS_ROOT Set this variable to the root installation of
 # Gperftools if the module has problems finding
 # the proper installation path.
 #
@@ -33,22 +33,53 @@
 # GPERFTOOLS_FOUND System has Gperftools libs/headers
 # GPERFTOOLS_LIBRARIES The Gperftools libraries (tcmalloc & profiler)
 # GPERFTOOLS_INCLUDE_DIR The location of Gperftools headers
+#
+# Provides the following imported targets:
+# Gperftools::tcmalloc
+# Gperftools::profiler
+# Gperftools::gperftools
+#
 
 find_library(GPERFTOOLS_TCMALLOC
   NAMES tcmalloc
-  HINTS ${Gperftools_ROOT_DIR}/lib)
+  HINTS ${Gperftools_ROOT_DIR}/lib
+        ${GPERFTOOLS_ROOT}/lib
+        $ENV{GPERFTOOLS_ROOT}/lib
+        ${GPERFTOOLS_ROOT}/lib64
+        $ENV{GPERFTOOLS_ROOT}/lib64
+        /usr/lib
+        /usr/lib64
+)
 
 find_library(GPERFTOOLS_PROFILER
   NAMES profiler
-  HINTS ${Gperftools_ROOT_DIR}/lib)
+  HINTS ${Gperftools_ROOT_DIR}/lib
+        ${GPERFTOOLS_ROOT}/lib
+        $ENV{GPERFTOOLS_ROOT}/lib
+        ${GPERFTOOLS_ROOT}/lib64
+        $ENV{GPERFTOOLS_ROOT}/lib64
+        /usr/lib
+        /usr/lib64
+)
 
 find_library(GPERFTOOLS_TCMALLOC_AND_PROFILER
   NAMES tcmalloc_and_profiler
-  HINTS ${Gperftools_ROOT_DIR}/lib)
+  HINTS ${Gperftools_ROOT_DIR}/lib
+        ${GPERFTOOLS_ROOT}/lib
+        $ENV{GPERFTOOLS_ROOT}/lib
+        ${GPERFTOOLS_ROOT}/lib64
+        $ENV{GPERFTOOLS_ROOT}/lib64
+        /usr/lib
+        /usr/lib64
+)
 
 find_path(GPERFTOOLS_INCLUDE_DIR
   NAMES gperftools/heap-profiler.h
-  HINTS ${Gperftools_ROOT_DIR}/include)
+  HINTS ${Gperftools_ROOT_DIR}/include
+        ${GPERFTOOLS_ROOT}/include
+        $ENV{GPERFTOOLS_ROOT}/include
+        /usr/include
+)
 
 set(GPERFTOOLS_LIBRARIES ${GPERFTOOLS_TCMALLOC_AND_PROFILER})
 
@@ -58,10 +89,42 @@ find_package_handle_standard_args(
   DEFAULT_MSG
   GPERFTOOLS_LIBRARIES
   GPERFTOOLS_INCLUDE_DIR
+  GPERFTOOLS_TCMALLOC
+  GPERFTOOLS_PROFILER
+
 )
 
+if(GPERFTOOLS_FOUND AND NOT TARGET Gperftools::tcmalloc)
+    add_library(Gperftools::tcmalloc SHARED IMPORTED)
+    set_target_properties(Gperftools::tcmalloc PROPERTIES
+        IMPORTED_LINK_INTERFACE_LANGUAGES "CXX"
+        IMPORTED_LOCATION "${GPERFTOOLS_TCMALLOC}"
+        INTERFACE_INCLUDE_DIRECTORIES "${GPERFTOOLS_INCLUDE_DIR}"
+        INTERFACE_LINK_LIBRARIES "${GPERFTOOLS_TCMALLOC}"
+    )
+endif()
+
+if(GPERFTOOLS_FOUND AND NOT TARGET Gperftools::profiler)
+    add_library(Gperftools::profiler SHARED IMPORTED)
+    set_target_properties(Gperftools::profiler PROPERTIES
+        IMPORTED_LINK_INTERFACE_LANGUAGES "CXX"
+        IMPORTED_LOCATION "${GPERFTOOLS_PROFILER}"
+        INTERFACE_INCLUDE_DIRECTORIES "${GPERFTOOLS_INCLUDE_DIR}"
+        INTERFACE_LINK_LIBRARIES "${GPERFTOOLS_PROFILER}"
+    )
+endif()
+
+if(GPERFTOOLS_FOUND AND NOT TARGET Gperftools::gperftools)
+    add_library(Gperftools::gperftools SHARED IMPORTED)
+    set_target_properties(Gperftools::gperftools PROPERTIES
+        IMPORTED_LINK_INTERFACE_LANGUAGES "CXX"
+        IMPORTED_LOCATION "${GPERFTOOLS_TCMALLOC_AND_PROFILER}"
+        INTERFACE_INCLUDE_DIRECTORIES "${GPERFTOOLS_INCLUDE_DIR}"
+        INTERFACE_LINK_LIBRARIES "${GPERFTOOLS_TCMALLOC_AND_PROFILER}"
+    )
+endif()
+
 mark_as_advanced(
-  Gperftools_ROOT_DIR
   GPERFTOOLS_TCMALLOC
   GPERFTOOLS_PROFILER
   GPERFTOOLS_TCMALLOC_AND_PROFILER

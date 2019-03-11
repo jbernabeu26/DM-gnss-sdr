@@ -36,9 +36,8 @@
 #include <boost/filesystem/path.hpp>         // for path, operator<<
 #include <boost/filesystem/path_traits.hpp>  // for filesystem
 #include <glog/logging.h>
+#include <exception>
 #include <sstream>
-
-using google::LogMessage;
 
 
 Kml_Printer::Kml_Printer(const std::string& base_path)
@@ -70,7 +69,7 @@ Kml_Printer::Kml_Printer(const std::string& base_path)
         {
             kml_base_path = p.string();
         }
-    if (kml_base_path.compare(".") != 0)
+    if (kml_base_path != ".")
         {
             std::cout << "KML files will be stored at " << kml_base_path << std::endl;
         }
@@ -87,7 +86,7 @@ Kml_Printer::Kml_Printer(const std::string& base_path)
 }
 
 
-bool Kml_Printer::set_headers(std::string filename, bool time_tag_name)
+bool Kml_Printer::set_headers(const std::string& filename, bool time_tag_name)
 {
     boost::posix_time::ptime pt = boost::posix_time::second_clock::local_time();
     tm timeinfo = boost::posix_time::to_tm(pt);
@@ -143,14 +142,14 @@ bool Kml_Printer::set_headers(std::string filename, bool time_tag_name)
         {
             DLOG(INFO) << "KML printer writing on " << filename.c_str();
             // Set iostream numeric format and precision
-            kml_file.setf(kml_file.fixed, kml_file.floatfield);
+            kml_file.setf(kml_file.std::ofstream::fixed, kml_file.std::ofstream::floatfield);
             kml_file << std::setprecision(14);
 
-            tmp_file.setf(tmp_file.fixed, tmp_file.floatfield);
+            tmp_file.setf(tmp_file.std::ofstream::fixed, tmp_file.std::ofstream::floatfield);
             tmp_file << std::setprecision(14);
 
-            kml_file << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" << std::endl
-                     << "<kml xmlns=\"http://www.opengis.net/kml/2.2\" xmlns:gx=\"http://www.google.com/kml/ext/2.2\">" << std::endl
+            kml_file << R"(<?xml version="1.0" encoding="UTF-8"?>)" << std::endl
+                     << R"(<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2">)" << std::endl
                      << indent << "<Document>" << std::endl
                      << indent << indent << "<name>GNSS Track</name>" << std::endl
                      << indent << indent << "<description><![CDATA[" << std::endl
@@ -206,15 +205,12 @@ bool Kml_Printer::set_headers(std::string filename, bool time_tag_name)
 
             return true;
         }
-    else
-        {
-            std::cout << "File " << kml_filename << " cannot be saved. Wrong permissions?" << std::endl;
-            return false;
-        }
+    std::cout << "File " << kml_filename << " cannot be saved. Wrong permissions?" << std::endl;
+    return false;
 }
 
 
-bool Kml_Printer::print_position(const std::shared_ptr<rtklib_solver>& position, bool print_average_values)
+bool Kml_Printer::print_position(const std::shared_ptr<Rtklib_Solver>& position, bool print_average_values)
 {
     double latitude;
     double longitude;
@@ -222,7 +218,7 @@ bool Kml_Printer::print_position(const std::shared_ptr<rtklib_solver>& position,
 
     positions_printed = true;
 
-    std::shared_ptr<rtklib_solver> position_ = position;
+    const std::shared_ptr<Rtklib_Solver>& position_ = position;
 
     double speed_over_ground = position_->get_speed_over_ground();    // expressed in m/s
     double course_over_ground = position_->get_course_over_ground();  // expressed in deg
@@ -231,7 +227,10 @@ bool Kml_Printer::print_position(const std::shared_ptr<rtklib_solver>& position,
     double vdop = position_->get_vdop();
     double pdop = position_->get_pdop();
     std::string utc_time = to_iso_extended_string(position_->get_position_UTC_time());
-    if (utc_time.length() < 23) utc_time += ".";
+    if (utc_time.length() < 23)
+        {
+            utc_time += ".";
+        }
     utc_time.resize(23, '0');  // time up to ms
     utc_time.append("Z");      // UTC time zone
 
@@ -282,10 +281,7 @@ bool Kml_Printer::print_position(const std::shared_ptr<rtklib_solver>& position,
 
             return true;
         }
-    else
-        {
-            return false;
-        }
+    return false;
 }
 
 
@@ -319,18 +315,25 @@ bool Kml_Printer::close_file()
 
             return true;
         }
-    else
-        {
-            return false;
-        }
+    return false;
 }
 
 
 Kml_Printer::~Kml_Printer()
 {
-    close_file();
+    try
+        {
+            close_file();
+        }
+    catch (const std::exception& e)
+        {
+            std::cerr << e.what() << '\n';
+        }
     if (!positions_printed)
         {
-            if (remove(kml_filename.c_str()) != 0) LOG(INFO) << "Error deleting temporary KML file";
+            if (remove(kml_filename.c_str()) != 0)
+                {
+                    LOG(INFO) << "Error deleting temporary KML file";
+                }
         }
 }

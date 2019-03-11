@@ -1,7 +1,7 @@
 /*!
  * \file tcp_cmd_interface.h
  *
- * \brief Class that implements a TCP telecontrol command line interface
+ * \brief Class that implements a TCP/IP telecommand command line interface
  * for GNSS-SDR
  * \author Javier Arribas jarribas (at) cttc.es
  * -------------------------------------------------------------------------
@@ -28,23 +28,21 @@
  *
  * -------------------------------------------------------------------------
  */
-#ifndef GNSS_SDR_TCPCMDINTERFACE_H_
-#define GNSS_SDR_TCPCMDINTERFACE_H_
+#ifndef GNSS_SDR_TCP_CMD_INTERFACE_H_
+#define GNSS_SDR_TCP_CMD_INTERFACE_H_
 
-#include "pvt_interface.h"
-#include <functional>
-#include <iostream>
-#include <string>
-#include <vector>
-#include <unordered_map>
-#include <algorithm>
-#include <boost/asio.hpp>
-#include <glog/logging.h>
-#include <cstdint>
-#include <gnuradio/message.h>
-#include <gnuradio/msg_queue.h>
+
 #include <armadillo>
+#include <gnuradio/msg_queue.h>
+#include <cstdint>
 #include <ctime>
+#include <functional>
+#include <memory>
+#include <string>
+#include <unordered_map>
+#include <vector>
+
+class PvtInterface;
 
 class TcpCmdInterface
 {
@@ -53,10 +51,12 @@ public:
     virtual ~TcpCmdInterface();
     void run_cmd_server(int tcp_port);
     void set_msg_queue(gr::msg_queue::sptr control_queue);
+
     /*!
      * \brief gets the UTC time parsed from the last TC command issued
      */
     time_t get_utc_time();
+
     /*!
      * \brief gets the Latitude, Longitude and Altitude vector from the last TC command issued
      */
@@ -89,4 +89,4 @@ private:
     std::shared_ptr<PvtInterface> PVT_sptr_;
 };
 
-#endif /* GNSS_SDR_TCPCMDINTERFACE_H_ */
+#endif /* GNSS_SDR_TCP_CMD_INTERFACE_H_ */

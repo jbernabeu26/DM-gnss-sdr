@@ -33,12 +33,10 @@
 #define GNSS_SDR_PVT_SOLUTION_H_
 
 
+#include <armadillo>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <deque>
-#include <armadillo>
 
-const unsigned int PVT_MAX_CHANNELS = 90;
-const unsigned int PVT_MAX_PRN = 127;  // 126 is SBAS
 
 /*!
  * \brief Base class for a PVT solution
