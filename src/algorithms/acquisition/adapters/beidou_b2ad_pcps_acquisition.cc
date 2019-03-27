@@ -32,22 +32,21 @@
  */
 
 #include "beidou_b2ad_pcps_acquisition.h"
-#include "configuration_interface.h"
-#include "beidou_b2a_signal_processing.h"
 #include "Beidou_B2a.h"
-#include "gnss_sdr_flags.h"
 #include "acq_conf.h"
+#include "beidou_b2a_signal_processing.h"
+#include "configuration_interface.h"
+#include "gnss_sdr_flags.h"
 #include <boost/math/distributions/exponential.hpp>
 #include <glog/logging.h>
-
 
 
 BeidouB2adPcpsAcquisition::BeidouB2adPcpsAcquisition(
     ConfigurationInterface* configuration, std::string role,
     unsigned int in_streams, unsigned int out_streams) : role_(role), in_streams_(in_streams), out_streams_(out_streams)
 {
-	Acq_Conf acq_parameters = Acq_Conf();
-	configuration_ = configuration;
+    Acq_Conf acq_parameters = Acq_Conf();
+    configuration_ = configuration;
     std::string default_item_type = "gr_complex";
     std::string default_dump_filename = "./data/acquisition.dat";
 
@@ -55,7 +54,7 @@ BeidouB2adPcpsAcquisition::BeidouB2adPcpsAcquisition(
 
     item_type_ = configuration_->property(role + ".item_type", default_item_type);
 
-    long fs_in_deprecated = configuration_->property("GNSS-SDR.internal_fs_hz", 25000000);
+    int64_t fs_in_deprecated = configuration_->property("GNSS-SDR.internal_fs_hz", 25000000);
     fs_in_ = configuration_->property("GNSS-SDR.internal_fs_sps", fs_in_deprecated);
     acq_parameters.fs_in = fs_in_;
     if_ = configuration_->property(role + ".if", 0);
@@ -94,7 +93,7 @@ BeidouB2adPcpsAcquisition::BeidouB2adPcpsAcquisition(
         {
             item_size_ = sizeof(gr_complex);
         }
-    acq_parameters.samples_per_code = code_length_;// This *5 is to add the secondary code
+    acq_parameters.samples_per_code = code_length_;  // This *5 is to add the secondary code
     acq_parameters.samples_per_ms = code_length_;
     acq_parameters.sampled_ms = 1;
     acq_parameters.it_size = item_size_;
@@ -116,7 +115,16 @@ BeidouB2adPcpsAcquisition::BeidouB2adPcpsAcquisition(
     channel_ = 0;
     threshold_ = 0.0;
     doppler_step_ = 0;
-    gnss_synchro_ = 0;
+    gnss_synchro_ = nullptr;
+    channel_fsm_ = nullptr;
+    if (in_streams_ > 1)
+        {
+            LOG(ERROR) << "This implementation only supports one input stream";
+        }
+    if (out_streams_ > 0)
+        {
+            LOG(ERROR) << "This implementation does not provide an output stream";
+        }
 }
 
 
@@ -199,14 +207,13 @@ void BeidouB2adPcpsAcquisition::init()
 
 void BeidouB2adPcpsAcquisition::set_local_code()
 {
-	{
-		beidou_b2ad_code_gen_complex_sampled(code_, gnss_synchro_->PRN, fs_in_);
-		//todo below is a test case for generating the primary code and the secondary code for Beidou, it still needs some work.
-		//beidou_b2ad_code_gen_complex_sampledSecondary(code_, gnss_synchro_->PRN, fs_in_);
+    {
+        beidou_b2ad_code_gen_complex_sampled(code_, gnss_synchro_->PRN, fs_in_);
+        //todo below is a test case for generating the primary code and the secondary code for Beidou, it still needs some work.
+        //beidou_b2ad_code_gen_complex_sampledSecondary(code_, gnss_synchro_->PRN, fs_in_);
 
-	    acquisition_->set_local_code(code_);
-	}
-
+        acquisition_->set_local_code(code_);
+    }
 }
 
 
@@ -246,11 +253,11 @@ void BeidouB2adPcpsAcquisition::connect(gr::top_block_sptr top_block)
 {
     if (item_type_.compare("gr_complex") == 0)
         {
-    		// nothing to connect
+            // nothing to connect
         }
     else if (item_type_.compare("cshort") == 0)
         {
-    	// nothing to connect
+            // nothing to connect
         }
     else if (item_type_.compare("cbyte") == 0)
         {
@@ -269,11 +276,11 @@ void BeidouB2adPcpsAcquisition::disconnect(gr::top_block_sptr top_block)
 {
     if (item_type_.compare("gr_complex") == 0)
         {
-    		// nothing to disconnect
+            // nothing to disconnect
         }
     else if (item_type_.compare("cshort") == 0)
         {
-    		// nothing to disconnect
+            // nothing to disconnect
         }
     else if (item_type_.compare("cbyte") == 0)
         {

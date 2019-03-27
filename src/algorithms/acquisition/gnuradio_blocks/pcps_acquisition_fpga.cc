@@ -33,9 +33,12 @@
 
 
 #include "pcps_acquisition_fpga.h"
+#include "gnss_synchro.h"
 #include <glog/logging.h>
-#include <gnuradio/io_signature.h>
-#include <utility>
+#include <cmath>     // for ceil
+#include <iostream>  // for operator<<
+#include <utility>   // for move
+
 
 #define AQ_DOWNSAMPLING_DELAY 40  // delay due to the downsampling filter in the acquisition
 
@@ -46,12 +49,8 @@ pcps_acquisition_fpga_sptr pcps_make_acquisition_fpga(pcpsconf_fpga_t conf_)
 }
 
 
-pcps_acquisition_fpga::pcps_acquisition_fpga(pcpsconf_fpga_t conf_) : gr::block("pcps_acquisition_fpga",
-                                                                          gr::io_signature::make(0, 0, 0),
-                                                                          gr::io_signature::make(0, 0, 0))
+pcps_acquisition_fpga::pcps_acquisition_fpga(pcpsconf_fpga_t conf_)
 {
-    this->message_port_register_out(pmt::mp("events"));
-
     acq_parameters = std::move(conf_);
     d_sample_counter = 0ULL;  // SAMPLE COUNTER
     d_active = false;
@@ -133,7 +132,7 @@ void pcps_acquisition_fpga::set_state(int32_t state)
 void pcps_acquisition_fpga::send_positive_acquisition()
 {
     // Declare positive acquisition using a message port
-    //0=STOP_CHANNEL 1=ACQ_SUCCEES 2=ACQ_FAIL
+    // 0=STOP_CHANNEL 1=ACQ_SUCCEES 2=ACQ_FAIL
     DLOG(INFO) << "positive acquisition"
                << ", satellite " << d_gnss_synchro->System << " " << d_gnss_synchro->PRN
                << ", sample_stamp " << d_sample_counter
@@ -144,7 +143,8 @@ void pcps_acquisition_fpga::send_positive_acquisition()
                << ", magnitude " << d_mag
                << ", input signal power " << d_input_power;
 
-    this->message_port_pub(pmt::mp("events"), pmt::from_long(1));
+    //the channel FSM is set, so, notify it directly the positive acquisition to minimize delays
+    d_channel_fsm->Event_valid_acquisition();
 }
 
 
@@ -161,7 +161,14 @@ void pcps_acquisition_fpga::send_negative_acquisition()
                << ", magnitude " << d_mag
                << ", input signal power " << d_input_power;
 
-    this->message_port_pub(pmt::mp("events"), pmt::from_long(2));
+    if (acq_parameters.repeat_satellite == true)
+        {
+            d_channel_fsm->Event_failed_acquisition_repeat();
+        }
+    else
+        {
+            d_channel_fsm->Event_failed_acquisition_no_repeat();
+        }
 }
 
 
@@ -249,16 +256,6 @@ void pcps_acquisition_fpga::set_active(bool active)
             d_active = false;
             send_negative_acquisition();
         }
-}
-
-
-int pcps_acquisition_fpga::general_work(int noutput_items __attribute__((unused)),
-    gr_vector_int& ninput_items __attribute__((unused)),
-    gr_vector_const_void_star& input_items __attribute__((unused)),
-    gr_vector_void_star& output_items __attribute__((unused)))
-{
-    // the general work is not used with the acquisition that uses the FPGA
-    return noutput_items;
 }
 
 

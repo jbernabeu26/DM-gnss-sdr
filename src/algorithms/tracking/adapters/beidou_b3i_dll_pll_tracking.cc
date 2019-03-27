@@ -11,7 +11,7 @@
  *
  * -------------------------------------------------------------------------
  *
- * Copyright (C) 2010-2018  (see AUTHORS file for a list of contributors)
+ * Copyright (C) 2010-2019  (see AUTHORS file for a list of contributors)
  *
  * GNSS-SDR is a software defined Global Navigation
  *          Satellite Systems receiver
@@ -34,21 +34,21 @@
  * -------------------------------------------------------------------------
  */
 
-#include "dll_pll_conf.h"
 #include "beidou_b3i_dll_pll_tracking.h"
-#include "configuration_interface.h"
-#include "gnss_sdr_flags.h"
-#include "display.h"
-#include <glog/logging.h>
 #include "Beidou_B3I.h"
+#include "configuration_interface.h"
+#include "display.h"
+#include "dll_pll_conf.h"
+#include "gnss_sdr_flags.h"
+#include <glog/logging.h>
 
 using google::LogMessage;
 
 BeidouB3iDllPllTracking::BeidouB3iDllPllTracking(
-    ConfigurationInterface* configuration, std::string role,
+    ConfigurationInterface* configuration, const std::string& role,
     unsigned int in_streams, unsigned int out_streams) : role_(role), in_streams_(in_streams), out_streams_(out_streams)
 {
-	Dll_Pll_Conf trk_param = Dll_Pll_Conf();
+    Dll_Pll_Conf trk_param = Dll_Pll_Conf();
     DLOG(INFO) << "role " << role;
     //################# CONFIGURATION PARAMETERS ########################
     std::string default_item_type = "gr_complex";
@@ -68,6 +68,49 @@ BeidouB3iDllPllTracking::BeidouB3iDllPllTracking(
     float dll_bw_hz = configuration->property(role + ".dll_bw_hz", 2.0);
     if (FLAGS_dll_bw_hz != 0.0) dll_bw_hz = static_cast<float>(FLAGS_dll_bw_hz);
     trk_param.dll_bw_hz = dll_bw_hz;
+
+    int dll_filter_order = configuration->property(role + ".dll_filter_order", 2);
+    if (dll_filter_order < 1)
+        {
+            LOG(WARNING) << "dll_filter_order parameter must be 1, 2 or 3. Set to 1.";
+            dll_filter_order = 1;
+        }
+    if (dll_filter_order > 3)
+        {
+            LOG(WARNING) << "dll_filter_order parameter must be 1, 2 or 3. Set to 3.";
+            dll_filter_order = 3;
+        }
+    trk_param.dll_filter_order = dll_filter_order;
+
+    int pll_filter_order = configuration->property(role + ".pll_filter_order", 3);
+    if (pll_filter_order < 2)
+        {
+            LOG(WARNING) << "pll_filter_order parameter must be 2 or 3. Set to 2.";
+            pll_filter_order = 2;
+        }
+    if (pll_filter_order > 3)
+        {
+            LOG(WARNING) << "pll_filter_order parameter must be 2 or 3. Set to 3.";
+            pll_filter_order = 3;
+        }
+    trk_param.pll_filter_order = pll_filter_order;
+
+    if (pll_filter_order == 2)
+        {
+            trk_param.fll_filter_order = 1;
+        }
+    if (pll_filter_order == 3)
+        {
+            trk_param.fll_filter_order = 2;
+        }
+
+    bool enable_fll_pull_in = configuration->property(role + ".enable_fll_pull_in", false);
+    trk_param.enable_fll_pull_in = enable_fll_pull_in;
+    float fll_bw_hz = configuration->property(role + ".fll_bw_hz", 35.0);
+    trk_param.fll_bw_hz = fll_bw_hz;
+    float pull_in_time_s = configuration->property(role + ".pull_in_time_s", 2.0);
+    trk_param.pull_in_time_s = pull_in_time_s;
+
     float early_late_space_chips = configuration->property(role + ".early_late_space_chips", 0.5);
     trk_param.early_late_space_chips = early_late_space_chips;
     float early_late_space_narrow_chips = configuration->property(role + ".early_late_space_narrow_chips", 0.5);
@@ -118,7 +161,7 @@ BeidouB3iDllPllTracking::BeidouB3iDllPllTracking(
     trk_param.carrier_lock_th = carrier_lock_th;
 
     //################# MAKE TRACKING GNURadio object ###################
-    if (item_type.compare("gr_complex") == 0)
+    if (item_type == "gr_complex")
         {
             item_size_ = sizeof(gr_complex);
             tracking_ = dll_pll_veml_make_tracking(trk_param);
@@ -141,15 +184,14 @@ BeidouB3iDllPllTracking::BeidouB3iDllPllTracking(
 }
 
 
-BeidouB3iDllPllTracking::~BeidouB3iDllPllTracking()
-{
-}
+BeidouB3iDllPllTracking::~BeidouB3iDllPllTracking() = default;
 
 
 void BeidouB3iDllPllTracking::start_tracking()
 {
     tracking_->start_tracking();
 }
+
 
 void BeidouB3iDllPllTracking::stop_tracking()
 {

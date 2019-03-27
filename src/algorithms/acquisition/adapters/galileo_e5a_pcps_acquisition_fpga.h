@@ -33,15 +33,22 @@
 #define GNSS_SDR_GALILEO_E5A_PCPS_ACQUISITION_FPGA_H_
 
 
-#include "acquisition_interface.h"
-#include "gnss_synchro.h"
+#include "channel_fsm.h"
 #include "pcps_acquisition_fpga.h"
-#include <gnuradio/blocks/stream_to_vector.h>
-#include <volk_gnsssdr/volk_gnsssdr.h>
+#include <gnuradio/runtime_types.h>  // for basic_block_sptr, top_block_sptr
+#include <volk/volk_complex.h>       // for lv_16sc_t
+#include <cstddef>                   // for size_t
+#include <cstdint>
 #include <string>
 
+class Gnss_Synchro;
 class ConfigurationInterface;
 
+
+/*!
+ * \brief This class adapts a PCPS acquisition block off-loaded on an FPGA
+ * to an AcquisitionInterface for Galileo E5a signals
+ */
 class GalileoE5aPcpsAcquisitionFpga : public AcquisitionInterface
 {
 public:
@@ -67,7 +74,7 @@ public:
 
     inline size_t item_size() override
     {
-        return sizeof(int);
+        return sizeof(lv_16sc_t);
     }
 
     void connect(gr::top_block_sptr top_block) override;
@@ -78,14 +85,27 @@ public:
     /*!
      * \brief Set acquisition/tracking common Gnss_Synchro object pointer
      * to efficiently exchange synchronization data between acquisition and
-     *  tracking blocks
+     * tracking blocks
      */
     void set_gnss_synchro(Gnss_Synchro* p_gnss_synchro) override;
 
     /*!
      * \brief Set acquisition channel unique ID
      */
-    void set_channel(unsigned int channel) override;
+    inline void set_channel(unsigned int channel) override
+    {
+        channel_ = channel;
+        acquisition_fpga_->set_channel(channel_);
+    }
+
+    /*!
+      * \brief Set channel fsm associated to this acquisition instance
+      */
+    inline void set_channel_fsm(std::shared_ptr<ChannelFsm> channel_fsm) override
+    {
+        channel_fsm_ = channel_fsm;
+        acquisition_fpga_->set_channel_fsm(channel_fsm);
+    }
 
     /*!
      * \brief Set statistics threshold of PCPS algorithm
@@ -146,9 +166,7 @@ public:
 
 private:
     ConfigurationInterface* configuration_;
-
     pcps_acquisition_fpga_sptr acquisition_fpga_;
-    gr::blocks::stream_to_vector::sptr stream_to_vector_;
 
     std::string item_type_;
     std::string dump_filename_;
@@ -158,6 +176,7 @@ private:
     bool acq_iq_;
 
     uint32_t channel_;
+    std::shared_ptr<ChannelFsm> channel_fsm_;
     uint32_t doppler_max_;
     uint32_t doppler_step_;
     unsigned int in_streams_;

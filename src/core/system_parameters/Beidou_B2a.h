@@ -34,87 +34,39 @@
 #ifndef GNSS_SDR_BEIDOU_B2a_H_
 #define GNSS_SDR_BEIDOU_B2a_H_
 
-#include "gnss_frequencies.h"
 #include "MATH_CONSTANTS.h"
+#include "gnss_frequencies.h"
 #include <cstdint>
 #include <map>
-#include <vector>
-#include <utility>  // std::pair
 #include <string>
+#include <utility>
+#include <vector>
 
 
-// Physical constants
-const double BEIDOU_C_m_s = SPEED_OF_LIGHT;                   //!< The speed of light, [m/s]
-const double BEIDOU_C_m_ms = 299792.4580;                     //!< The speed of light, [m/ms]
-const double BEIDOU_fM_a = 0.35e9;                            //!< Gravitational constant of atmosphere [m^3/s^2]
-const double BEIDOU_SEMI_MAJOR_AXIS = 6378137;                //!< Semi-major axis of Earth [m]
-const double BEIDOU_FLATTENING = 1 / 298.257222101;                //!< Flattening parameter
-const double BEIDOU_GRAVITY = 97803284;                       //!< Equatorial acceleration of gravity [mGal]
-const double BEIDOU_GRAVITY_CORRECTION = 0.87;                //!< Correction to acceleration of gravity at sea-level due to Atmosphere[мGal]
-const double BEIDOU_J2 = 1082625.75e-9;                       //!< Second zonal harmonic of the geopotential
-const double BEIDOU_J4 = -2370.89e-9;                         //!< Fourth zonal harmonic of the geopotential
-const double BEIDOU_J6 = 6.08e-9;                             //!< Sixth zonal harmonic of the geopotential
-const double BEIDOU_J8 = 1.40e-11;                            //!< Eighth zonal harmonic of the geopotential
-const double BEIDOU_U0 = 62636861.4;                          //!< Normal potential at surface of common terrestrial ellipsoid [m^2/s^2]
-const double BEIDOU_C20 = -1082.63e-6;                        //!< Second zonal coefficient of spherical harmonic expansion
-const double BEIDOU_EARTH_RADIUS = 6378.136;                  //!< Equatorial radius of Earth [km]
-const double BEIDOU_EARTH_INCLINATION = 0.000409148809899e3;  //!< Mean inclination of ecliptic to equator (23 deg 26 min 33 sec) [rad]
+const double BEIDOU_B2a_FREQ_HZ = FREQ5;                      //!< BEIDOU B2a carrier frequency [Hz]
+const double BEIDOU_B2a_CODE_RATE_HZ = 10.23e6;               //!< BEIDOU B2a code rate [chips/s]
+const double BEIDOU_B2a_CODE_LENGTH_CHIPS = 10230;            //!< BEIDOU B2a C/A code length [chips]
+const double BEIDOU_B2a_CODE_PERIOD = 0.001;                  //!< BEIDOU B2a C/A code period [seconds]
+const double BEIDOU_B2a_CHIP_PERIOD = 9.775171065493646e-08;  //!< BEIDOU B2a C/A chip period [seconds]
+const double BEIDOU_B2a_SYMBOL_RATE_SPS = 200;                //BEIDOU symbol rate
 
-const double BEIDOU_TAU_0 = -0.005835151531174e3;  //!< (-334 deg 19 min 46.40 sec) [rad];
-const double BEIDOU_TAU_1 = 0.071018041257371e3;   //!< (4069 deg 02 min 02.52 sec) [rad];
+const int32_t BEIDOU_NBR_SATS = 63;      // Total number of satellites
+const double BEIDOU_LEAP_SECONDS = -33;  // uniform scale and 33 seconds behind TAI. However, this should be in the broadcast message
 
-const double BEIDOU_MOON_Q0 = -0.001115184961435e3;          //!< (-63 deg 53 min 43.41 sec) [rad]
-const double BEIDOU_MOON_Q1 = 8.328691103668023e3;           //!< (477198 deg 50 min 56.79 sec) [rad]
-const double BEIDOU_MOON_OMEGA_0 = 0.004523601514852e3;      //!< (259 deg 10 min 59.79 sec) [rad]
-const double BEIDOU_MOON_OMEGA_1 = -0.033757146246552e3;     //!< (-1934 deg 08 min 31.23 sec) [rad]
-const double BEIDOU_MOON_GM = 4902.835;                      //!< Lunar gravitational constant [km^3/s^2]
-const double BEIDOU_MOON_SEMI_MAJOR_AXIS = 3.84385243e5;     //!< Semi-major axis of lunar orbit [km];
-const double BEIDOU_MOON_ECCENTRICITY = 0.054900489;         //!< Eccentricity of lunar orbit
-const double BEIDOU_MOON_INCLINATION = 0.000089803977407e3;  //!< Inclination of lunar orbit to ecliptic plane (5 deg 08 min 43.4 sec) [rad]
-
-const double BEIDOU_SUN_OMEGA = 0.004908229466869e3;  //!< TODO What is this operation in the seconds with T?(281 deg 13 min 15.0 + 6189.03*Т sec) [rad]
-const double BEIDOU_SUN_Q0 = 0.006256583774423e3;     //!< (358 deg 28 min 33.04 sec) [rad]
-const double BEIDOU_SUN_Q1 = 0e3;                     //!< TODO Why is the value greater than 60?(129596579.10 sec) [rad]
-const double BEIDOU_SUN_GM = 0.1325263e12;            //!< Solar gravitational constant [km^3/s^2]
-const double BEIDOU_SUN_SEMI_MAJOR_AXIS = 1.49598e8;  //!< Semi-major axis of solar orbit [km];
-const double BEIDOU_SUN_ECCENTRICITY = 0.016719;      //!< Eccentricity of solar orbit
-
-const double BEIDOU_B2a_FREQ_HZ = FREQ5;        //!< BEIDOU B2a carrier frequency [Hz]
-const double BEIDOU_B2a_CODE_RATE_HZ = 10.23e6;     //!< BEIDOU B2a code rate [chips/s]
-const double BEIDOU_B2a_CODE_LENGTH_CHIPS = 10230;  //!< BEIDOU B2a C/A code length [chips]
-const double BEIDOU_B2a_CODE_PERIOD = 0.001;        //!< BEIDOU B2a C/A code period [seconds]
-const double BEIDOU_B2a_CHIP_PERIOD = 9.775171065493646e-08;   //!< BEIDOU B2a C/A chip period [seconds]
-const double BEIDOU_B2a_SYMBOL_RATE_SPS = 200;		//BEIDOU symbol rate
-//const double BEIDOU_B2a_SYMBOL_Length = 600;
-
-const int32_t BEIDOU_NBR_SATS = 63;  // Total number of satellites
-
-/*!
- * \brief Record of leap seconds definition for BDT to UTC conversion and vice versa
- */
-const double BEIDOU_LEAP_SECONDS = -33; // uniform scale and 33 seconds behind TAI. However, this should be in the broadcast message
-
-//const double BEIDOU_STARTOFFSET_ms = 68.802;  //[ms] Initial sign. travel time (this cannot go here)
-
-// NAVIGATION MESSAGE DEMODULATION AND DECODING
-//#define BEIDOU_CNAV2_PREAMBLE                                                                    \
-    {                                                                                            \
-	1, 1, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 0, 0						 \
-    }
 const std::string BEIDOU_CNAV2_PREAMBLE = {"111000100100110111101000"};
-const double BEIDOU_CNAV2_PREAMBLE_DURATION_S = 0.120;	//[s]
-const int32_t BEIDOU_CNAV2_PREAMBLE_LENGTH_BITS = 24;		//[bits]
-const int32_t BEIDOU_CNAV2_PREAMBLE_LENGTH_SYMBOLS = 24;	//[symbols]
+const double BEIDOU_CNAV2_PREAMBLE_DURATION_S = 0.120;    //[s]
+const int32_t BEIDOU_CNAV2_PREAMBLE_LENGTH_BITS = 24;     //[bits]
+const int32_t BEIDOU_CNAV2_PREAMBLE_LENGTH_SYMBOLS = 24;  //[symbols]
 
 const int32_t BEIDOU_CNAV2_PREAMBLE_PERIOD_SYMBOLS = 600;
-const int32_t BEIDOU_CNAV2_TELEMETRY_RATE_BITS_SECOND = 100;																					//bps
-const int32_t BEIDOU_CNAV2_TELEMETRY_SYMBOLS_PER_BIT = 2;																						//spb
-const int32_t BEIDOU_CNAV2_TELEMETRY_SYMBOLS_PER_PREAMBLE_BIT = 5;																				//spb
-const int32_t BEIDOU_CNAV2_TELEMETRY_RATE_SYMBOLS_SECOND = BEIDOU_CNAV2_TELEMETRY_RATE_BITS_SECOND * BEIDOU_CNAV2_TELEMETRY_SYMBOLS_PER_BIT;	//sps
-const int32_t BEIDOU_CNAV2_FRAME_SYMBOLS = 600;																								//Number of symbols per string in the CNAV2 message
+const int32_t BEIDOU_CNAV2_TELEMETRY_RATE_BITS_SECOND = 100;                                                                                  //bps
+const int32_t BEIDOU_CNAV2_TELEMETRY_SYMBOLS_PER_BIT = 2;                                                                                     //spb
+const int32_t BEIDOU_CNAV2_TELEMETRY_SYMBOLS_PER_PREAMBLE_BIT = 5;                                                                            //spb
+const int32_t BEIDOU_CNAV2_TELEMETRY_RATE_SYMBOLS_SECOND = BEIDOU_CNAV2_TELEMETRY_RATE_BITS_SECOND * BEIDOU_CNAV2_TELEMETRY_SYMBOLS_PER_BIT;  //sps
+const int32_t BEIDOU_CNAV2_FRAME_SYMBOLS = 600;                                                                                               //Number of symbols per string in the CNAV2 message
 const int32_t BEIDOU_CNAV2_DATA_BITS = 288;
-const int32_t BEIDOU_CNAV2_DATA_BYTES = 36;//Number of bits per string in the CNAV2 message
-const int32_t BEIDOU_CNAV2_MESSAGE_SYMBOLS = 576;																									//STRING DATA WITHOUT PREAMBLE
+const int32_t BEIDOU_CNAV2_DATA_BYTES = 36;        //Number of bits per string in the CNAV2 message
+const int32_t BEIDOU_CNAV2_MESSAGE_SYMBOLS = 576;  //STRING DATA WITHOUT PREAMBLE
 const int32_t BEIDOU_CNAV2_CODES_PER_SYMBOLS = 5;
 
 const int32_t BEIDOU_CNAV2_CRC_BITS = 24;
@@ -126,164 +78,163 @@ const int32_t BEIDOU_B2a_CNAV_DATA_PAGE_BITS = 300;
 const int32_t BEIDOU_B2a_SYMBOLS_PER_BIT = 1;
 const int32_t BEIDOU_B2a_SAMPLES_PER_SYMBOL = 5;
 const int32_t BEIDOU_B2a_CNAV_DATA_PAGE_SYMBOLS = 600;
-
-const double BEIDOU_B2ad_CODE_RATE_HZ = 10.23e6;  //!< BEIDOU_B2a data code rate [chips/s]
-const int32_t BEIDOU_B2ad_CODE_LENGTH_CHIPS = 10230;  //!< BEIDOU_B2a data  code length [chips]
-const double BEIDOU_B2ad_PERIOD = 0.001;          //!< BEIDOU_B2a data code period [seconds]
-const int32_t BEIDOU_B2ad_PERIOD_MS = 1;
-
-const double BEIDOU_B2ap_CODE_RATE_HZ = 10.23e6;  //!< BEIDOU_B2a pilot code rate [chips/s]
-const int32_t BEIDOU_B2ap_CODE_LENGTH_CHIPS = 10230;  //!< BEIDOU_B2a pilot code length [chips]
-const double BEIDOU_B2ap_PERIOD = 0.001;          //!< BEIDOU_B2a pilot code period [seconds]
-
 const int32_t BEIDOU_B2a_HISTORY_DEEP = 5;
 
+const double BEIDOU_B2ad_CODE_RATE_HZ = 10.23e6;      //!< BEIDOU_B2a data code rate [chips/s]
+const int32_t BEIDOU_B2ad_CODE_LENGTH_CHIPS = 10230;  //!< BEIDOU_B2a data  code length [chips]
+const double BEIDOU_B2ad_PERIOD = 0.001;              //!< BEIDOU_B2a data code period [seconds]
+const int32_t BEIDOU_B2ad_PERIOD_MS = 1;
+
+const double BEIDOU_B2ap_CODE_RATE_HZ = 10.23e6;      //!< BEIDOU_B2a pilot code rate [chips/s]
+const int32_t BEIDOU_B2ap_CODE_LENGTH_CHIPS = 10230;  //!< BEIDOU_B2a pilot code length [chips]
+const double BEIDOU_B2ap_PERIOD = 0.001;              //!< BEIDOU_B2a pilot code period [seconds]
+
 //!<Beidou secondary codes. Data component has a fixed sequence as secondary code which are the same for every satellite
-const int32_t BEIDOU_B2ad_SECONDARY_CODE_LENGTH = 5;// Each bit is 1 ms (one primary code sequence)
+const int32_t BEIDOU_B2ad_SECONDARY_CODE_LENGTH = 5;  // Each bit is 1 ms (one primary code sequence)
 const std::string BEIDOU_B2ad_SECONDARY_CODE = "00010";
 
 //!<TODO Beidou pilot code is a Weil code which is currently not implemented
 //!<Beidou secondary codes. Pilot component has a truncated Weill sequence, each satellite has it's own code
-const int32_t BEIDOU_B2ap_SECONDARY_CODE_LENGTH = 100;//B2a code is 100 chips long; Each bit is 1 ms (one primary code sequence)
+const int32_t BEIDOU_B2ap_SECONDARY_CODE_LENGTH = 100;  //B2a code is 100 chips long; Each bit is 1 ms (one primary code sequence)
 const std::string BEIDOU_B2ap_SECONDARY_CODE = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
 
 
 //!<Initialization registers for the primary codes for B2a data signal
-const int32_t BEIDOU_B2ad_INIT_REG[63][13]=
-{
-		{	1	,	0	,	0	,	0	,	0	,	0	,	0	,	1	,	0	,	0	,	1	,	0	,	1	}	,
-		{	1	,	0	,	0	,	0	,	0	,	0	,	0	,	1	,	1	,	0	,	1	,	0	,	0	}	,
-		{	1	,	0	,	0	,	0	,	0	,	1	,	0	,	1	,	0	,	1	,	1	,	0	,	1	}	,
-		{	1	,	0	,	0	,	0	,	1	,	0	,	1	,	0	,	0	,	1	,	1	,	1	,	1	}	,
-		{	1	,	0	,	0	,	0	,	1	,	0	,	1	,	0	,	1	,	0	,	1	,	0	,	1	}	,
-		{	1	,	0	,	0	,	0	,	1	,	1	,	0	,	1	,	0	,	1	,	1	,	1	,	0	}	,
-		{	1	,	0	,	0	,	0	,	1	,	1	,	1	,	1	,	0	,	1	,	1	,	1	,	0	}	,
-		{	1	,	0	,	0	,	0	,	1	,	1	,	1	,	1	,	1	,	1	,	0	,	1	,	1	}	,
-		{	1	,	0	,	0	,	1	,	1	,	0	,	0	,	1	,	0	,	1	,	0	,	0	,	1	}	,
-		{	1	,	0	,	0	,	1	,	1	,	1	,	1	,	0	,	1	,	1	,	0	,	1	,	0	}	,
-		{	1	,	0	,	1	,	0	,	0	,	0	,	0	,	1	,	1	,	0	,	1	,	0	,	1	}	,
-		{	1	,	0	,	1	,	0	,	0	,	0	,	1	,	0	,	0	,	0	,	1	,	0	,	0	}	,
-		{	1	,	0	,	1	,	0	,	0	,	0	,	1	,	0	,	1	,	0	,	1	,	0	,	1	}	,
-		{	1	,	0	,	1	,	0	,	0	,	0	,	1	,	0	,	1	,	1	,	0	,	1	,	1	}	,
-		{	1	,	0	,	1	,	0	,	0	,	0	,	1	,	0	,	1	,	1	,	1	,	0	,	0	}	,
-		{	1	,	0	,	1	,	0	,	0	,	1	,	0	,	1	,	0	,	0	,	0	,	1	,	1	}	,
-		{	1	,	0	,	1	,	0	,	0	,	1	,	1	,	1	,	1	,	0	,	1	,	1	,	1	}	,
-		{	1	,	0	,	1	,	0	,	1	,	0	,	0	,	0	,	0	,	0	,	0	,	0	,	1	}	,
-		{	1	,	0	,	1	,	0	,	1	,	0	,	0	,	1	,	1	,	1	,	1	,	1	,	0	}	,
-		{	1	,	0	,	1	,	0	,	1	,	1	,	0	,	1	,	0	,	1	,	0	,	1	,	1	}	,
-		{	1	,	0	,	1	,	0	,	1	,	1	,	0	,	1	,	1	,	0	,	0	,	0	,	1	}	,
-		{	1	,	0	,	1	,	1	,	0	,	0	,	1	,	0	,	1	,	0	,	0	,	1	,	1	}	,
-		{	1	,	0	,	1	,	1	,	0	,	0	,	1	,	1	,	0	,	0	,	0	,	1	,	0	}	,
-		{	1	,	0	,	1	,	1	,	0	,	1	,	0	,	0	,	1	,	1	,	0	,	0	,	0	}	,
-		{	1	,	0	,	1	,	1	,	0	,	1	,	0	,	1	,	1	,	0	,	1	,	1	,	0	}	,
-		{	1	,	0	,	1	,	1	,	0	,	1	,	1	,	1	,	1	,	0	,	0	,	1	,	0	}	,
-		{	1	,	0	,	1	,	1	,	0	,	1	,	1	,	1	,	1	,	1	,	1	,	1	,	1	}	,
-		{	1	,	0	,	1	,	1	,	1	,	0	,	0	,	0	,	1	,	0	,	0	,	1	,	0	}	,
-		{	1	,	0	,	1	,	1	,	1	,	0	,	0	,	1	,	1	,	1	,	1	,	0	,	0	}	,
-		{	1	,	0	,	1	,	1	,	1	,	1	,	0	,	1	,	0	,	0	,	0	,	0	,	1	}	,
-		{	1	,	0	,	1	,	1	,	1	,	1	,	1	,	0	,	0	,	1	,	0	,	0	,	0	}	,
-		{	1	,	0	,	1	,	1	,	1	,	1	,	1	,	0	,	1	,	0	,	1	,	0	,	0	}	,
-		{	1	,	0	,	1	,	1	,	1	,	1	,	1	,	1	,	0	,	1	,	0	,	1	,	1	}	,
-		{	1	,	0	,	1	,	1	,	1	,	1	,	1	,	1	,	1	,	0	,	0	,	1	,	1	}	,
-		{	1	,	1	,	0	,	0	,	0	,	0	,	1	,	0	,	1	,	0	,	0	,	0	,	1	}	,
-		{	1	,	1	,	0	,	0	,	0	,	1	,	0	,	0	,	1	,	0	,	1	,	0	,	0	}	,
-		{	1	,	1	,	0	,	0	,	0	,	1	,	0	,	1	,	1	,	0	,	1	,	1	,	1	}	,
-		{	1	,	1	,	0	,	0	,	1	,	0	,	0	,	0	,	1	,	0	,	0	,	0	,	1	}	,
-		{	1	,	1	,	0	,	0	,	1	,	0	,	0	,	0	,	1	,	1	,	0	,	0	,	1	}	,
-		{	1	,	1	,	0	,	0	,	1	,	1	,	0	,	1	,	0	,	1	,	0	,	1	,	1	}	,
-		{	1	,	1	,	0	,	0	,	1	,	1	,	0	,	1	,	1	,	0	,	0	,	0	,	1	}	,
-		{	1	,	1	,	0	,	0	,	1	,	1	,	1	,	0	,	1	,	0	,	0	,	1	,	0	}	,
-		{	1	,	1	,	0	,	1	,	0	,	0	,	1	,	0	,	1	,	0	,	1	,	0	,	1	}	,
-		{	1	,	1	,	0	,	1	,	0	,	0	,	1	,	1	,	1	,	0	,	1	,	0	,	0	}	,
-		{	1	,	1	,	0	,	1	,	0	,	1	,	1	,	0	,	0	,	1	,	0	,	1	,	1	}	,
-		{	1	,	1	,	0	,	1	,	1	,	0	,	1	,	0	,	1	,	0	,	1	,	1	,	1	}	,
-		{	1	,	1	,	1	,	0	,	0	,	0	,	0	,	1	,	1	,	0	,	1	,	0	,	0	}	,
-		{	1	,	1	,	1	,	0	,	0	,	1	,	0	,	0	,	0	,	0	,	0	,	1	,	1	}	,
-		{	1	,	1	,	1	,	0	,	0	,	1	,	0	,	0	,	0	,	1	,	0	,	1	,	1	}	,
-		{	1	,	1	,	1	,	0	,	0	,	1	,	0	,	1	,	0	,	0	,	0	,	1	,	1	}	,
-		{	1	,	1	,	1	,	0	,	0	,	1	,	0	,	1	,	0	,	1	,	0	,	0	,	0	}	,
-		{	1	,	1	,	1	,	0	,	1	,	0	,	0	,	1	,	1	,	1	,	0	,	1	,	1	}	,
-		{	1	,	1	,	1	,	0	,	1	,	1	,	0	,	0	,	1	,	0	,	1	,	1	,	1	}	,
-		{	1	,	1	,	1	,	1	,	0	,	0	,	1	,	0	,	0	,	1	,	0	,	0	,	0	}	,
-		{	1	,	1	,	1	,	1	,	0	,	1	,	0	,	0	,	1	,	0	,	1	,	0	,	0	}	,
-		{	1	,	1	,	1	,	1	,	0	,	1	,	0	,	0	,	1	,	1	,	0	,	0	,	1	}	,
-		{	1	,	1	,	1	,	1	,	0	,	1	,	1	,	0	,	1	,	1	,	0	,	1	,	0	}	,
-		{	1	,	1	,	1	,	1	,	0	,	1	,	1	,	1	,	1	,	1	,	0	,	0	,	0	}	,
-		{	1	,	1	,	1	,	1	,	0	,	1	,	1	,	1	,	1	,	1	,	1	,	1	,	1	}	,
-		{	1	,	1	,	1	,	1	,	1	,	1	,	0	,	1	,	1	,	0	,	1	,	0	,	1	}	,
-		{	0	,	0	,	1	,	0	,	0	,	0	,	0	,	0	,	0	,	0	,	0	,	1	,	0	}	,
-		{	1	,	1	,	0	,	1	,	1	,	1	,	1	,	1	,	1	,	0	,	1	,	0	,	1	}	,
-		{	0	,	0	,	0	,	1	,	1	,	1	,	1	,	0	,	1	,	0	,	0	,	1	,	0	}	,
+const int32_t BEIDOU_B2ad_INIT_REG[63][13] =
+    {
+        {1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1},
+        {1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0},
+        {1, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1},
+        {1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 1, 1, 1},
+        {1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1},
+        {1, 0, 0, 0, 1, 1, 0, 1, 0, 1, 1, 1, 0},
+        {1, 0, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 0},
+        {1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1},
+        {1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 0, 1},
+        {1, 0, 0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 0},
+        {1, 0, 1, 0, 0, 0, 0, 1, 1, 0, 1, 0, 1},
+        {1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0},
+        {1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1},
+        {1, 0, 1, 0, 0, 0, 1, 0, 1, 1, 0, 1, 1},
+        {1, 0, 1, 0, 0, 0, 1, 0, 1, 1, 1, 0, 0},
+        {1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 1, 1},
+        {1, 0, 1, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1},
+        {1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1},
+        {1, 0, 1, 0, 1, 0, 0, 1, 1, 1, 1, 1, 0},
+        {1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 1},
+        {1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 0, 0, 1},
+        {1, 0, 1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 1},
+        {1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0},
+        {1, 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0},
+        {1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0},
+        {1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1, 0},
+        {1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1},
+        {1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 1, 0},
+        {1, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0},
+        {1, 0, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 1},
+        {1, 0, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0},
+        {1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 0},
+        {1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1},
+        {1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1},
+        {1, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1},
+        {1, 1, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0},
+        {1, 1, 0, 0, 0, 1, 0, 1, 1, 0, 1, 1, 1},
+        {1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1},
+        {1, 1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1},
+        {1, 1, 0, 0, 1, 1, 0, 1, 0, 1, 0, 1, 1},
+        {1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 1},
+        {1, 1, 0, 0, 1, 1, 1, 0, 1, 0, 0, 1, 0},
+        {1, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1},
+        {1, 1, 0, 1, 0, 0, 1, 1, 1, 0, 1, 0, 0},
+        {1, 1, 0, 1, 0, 1, 1, 0, 0, 1, 0, 1, 1},
+        {1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1},
+        {1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0},
+        {1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1},
+        {1, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1},
+        {1, 1, 1, 0, 0, 1, 0, 1, 0, 0, 0, 1, 1},
+        {1, 1, 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0},
+        {1, 1, 1, 0, 1, 0, 0, 1, 1, 1, 0, 1, 1},
+        {1, 1, 1, 0, 1, 1, 0, 0, 1, 0, 1, 1, 1},
+        {1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0},
+        {1, 1, 1, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0},
+        {1, 1, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1},
+        {1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 0},
+        {1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0},
+        {1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1},
+        {1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 0, 1},
+        {0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0},
+        {1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1},
+        {0, 0, 0, 1, 1, 1, 1, 0, 1, 0, 0, 1, 0},
 
 
-		};
+};
 
 const int32_t BEIDOU_B2ap_INIT_REG[63][13] =
     {
-		{	1	,	0	,	0	,	0	,	0	,	0	,	0	,	1	,	0	,	0	,	1	,	0	,	1	}	,
-		{	1	,	0	,	0	,	0	,	0	,	0	,	0	,	1	,	1	,	0	,	1	,	0	,	0	}	,
-		{	1	,	0	,	0	,	0	,	0	,	1	,	0	,	1	,	0	,	1	,	1	,	0	,	1	}	,
-		{	1	,	0	,	0	,	0	,	1	,	0	,	1	,	0	,	0	,	1	,	1	,	1	,	1	}	,
-		{	1	,	0	,	0	,	0	,	1	,	0	,	1	,	0	,	1	,	0	,	1	,	0	,	1	}	,
-		{	1	,	0	,	0	,	0	,	1	,	1	,	0	,	1	,	0	,	1	,	1	,	1	,	0	}	,
-		{	1	,	0	,	0	,	0	,	1	,	1	,	1	,	1	,	0	,	1	,	1	,	1	,	0	}	,
-		{	1	,	0	,	0	,	0	,	1	,	1	,	1	,	1	,	1	,	1	,	0	,	1	,	1	}	,
-		{	1	,	0	,	0	,	1	,	1	,	0	,	0	,	1	,	0	,	1	,	0	,	0	,	1	}	,
-		{	1	,	0	,	0	,	1	,	1	,	1	,	1	,	0	,	1	,	1	,	0	,	1	,	0	}	,
-		{	1	,	0	,	1	,	0	,	0	,	0	,	0	,	1	,	1	,	0	,	1	,	0	,	1	}	,
-		{	1	,	0	,	1	,	0	,	0	,	0	,	1	,	0	,	0	,	0	,	1	,	0	,	0	}	,
-		{	1	,	0	,	1	,	0	,	0	,	0	,	1	,	0	,	1	,	0	,	1	,	0	,	1	}	,
-		{	1	,	0	,	1	,	0	,	0	,	0	,	1	,	0	,	1	,	1	,	0	,	1	,	1	}	,
-		{	1	,	0	,	1	,	0	,	0	,	0	,	1	,	0	,	1	,	1	,	1	,	0	,	0	}	,
-		{	1	,	0	,	1	,	0	,	0	,	1	,	0	,	1	,	0	,	0	,	0	,	1	,	1	}	,
-		{	1	,	0	,	1	,	0	,	0	,	1	,	1	,	1	,	1	,	0	,	1	,	1	,	1	}	,
-		{	1	,	0	,	1	,	0	,	1	,	0	,	0	,	0	,	0	,	0	,	0	,	0	,	1	}	,
-		{	1	,	0	,	1	,	0	,	1	,	0	,	0	,	1	,	1	,	1	,	1	,	1	,	0	}	,
-		{	1	,	0	,	1	,	0	,	1	,	1	,	0	,	1	,	0	,	1	,	0	,	1	,	1	}	,
-		{	1	,	0	,	1	,	0	,	1	,	1	,	0	,	1	,	1	,	0	,	0	,	0	,	1	}	,
-		{	1	,	0	,	1	,	1	,	0	,	0	,	1	,	0	,	1	,	0	,	0	,	1	,	1	}	,
-		{	1	,	0	,	1	,	1	,	0	,	0	,	1	,	1	,	0	,	0	,	0	,	1	,	0	}	,
-		{	1	,	0	,	1	,	1	,	0	,	1	,	0	,	0	,	1	,	1	,	0	,	0	,	0	}	,
-		{	1	,	0	,	1	,	1	,	0	,	1	,	0	,	1	,	1	,	0	,	1	,	1	,	0	}	,
-		{	1	,	0	,	1	,	1	,	0	,	1	,	1	,	1	,	1	,	0	,	0	,	1	,	0	}	,
-		{	1	,	0	,	1	,	1	,	0	,	1	,	1	,	1	,	1	,	1	,	1	,	1	,	1	}	,
-		{	1	,	0	,	1	,	1	,	1	,	0	,	0	,	0	,	1	,	0	,	0	,	1	,	0	}	,
-		{	1	,	0	,	1	,	1	,	1	,	0	,	0	,	1	,	1	,	1	,	1	,	0	,	0	}	,
-		{	1	,	0	,	1	,	1	,	1	,	1	,	0	,	1	,	0	,	0	,	0	,	0	,	1	}	,
-		{	1	,	0	,	1	,	1	,	1	,	1	,	1	,	0	,	0	,	1	,	0	,	0	,	0	}	,
-		{	1	,	0	,	1	,	1	,	1	,	1	,	1	,	0	,	1	,	0	,	1	,	0	,	0	}	,
-		{	1	,	0	,	1	,	1	,	1	,	1	,	1	,	1	,	0	,	1	,	0	,	1	,	1	}	,
-		{	1	,	0	,	1	,	1	,	1	,	1	,	1	,	1	,	1	,	0	,	0	,	1	,	1	}	,
-		{	1	,	1	,	0	,	0	,	0	,	0	,	1	,	0	,	1	,	0	,	0	,	0	,	1	}	,
-		{	1	,	1	,	0	,	0	,	0	,	1	,	0	,	0	,	1	,	0	,	1	,	0	,	0	}	,
-		{	1	,	1	,	0	,	0	,	0	,	1	,	0	,	1	,	1	,	0	,	1	,	1	,	1	}	,
-		{	1	,	1	,	0	,	0	,	1	,	0	,	0	,	0	,	1	,	0	,	0	,	0	,	1	}	,
-		{	1	,	1	,	0	,	0	,	1	,	0	,	0	,	0	,	1	,	1	,	0	,	0	,	1	}	,
-		{	1	,	1	,	0	,	0	,	1	,	1	,	0	,	1	,	0	,	1	,	0	,	1	,	1	}	,
-		{	1	,	1	,	0	,	0	,	1	,	1	,	0	,	1	,	1	,	0	,	0	,	0	,	1	}	,
-		{	1	,	1	,	0	,	0	,	1	,	1	,	1	,	0	,	1	,	0	,	0	,	1	,	0	}	,
-		{	1	,	1	,	0	,	1	,	0	,	0	,	1	,	0	,	1	,	0	,	1	,	0	,	1	}	,
-		{	1	,	1	,	0	,	1	,	0	,	0	,	1	,	1	,	1	,	0	,	1	,	0	,	0	}	,
-		{	1	,	1	,	0	,	1	,	0	,	1	,	1	,	0	,	0	,	1	,	0	,	1	,	1	}	,
-		{	1	,	1	,	0	,	1	,	1	,	0	,	1	,	0	,	1	,	0	,	1	,	1	,	1	}	,
-		{	1	,	1	,	1	,	0	,	0	,	0	,	0	,	1	,	1	,	0	,	1	,	0	,	0	}	,
-		{	1	,	1	,	1	,	0	,	0	,	1	,	0	,	0	,	0	,	0	,	0	,	1	,	1	}	,
-		{	1	,	1	,	1	,	0	,	0	,	1	,	0	,	0	,	0	,	1	,	0	,	1	,	1	}	,
-		{	1	,	1	,	1	,	0	,	0	,	1	,	0	,	1	,	0	,	0	,	0	,	1	,	1	}	,
-		{	1	,	1	,	1	,	0	,	0	,	1	,	0	,	1	,	0	,	1	,	0	,	0	,	0	}	,
-		{	1	,	1	,	1	,	0	,	1	,	0	,	0	,	1	,	1	,	1	,	0	,	1	,	1	}	,
-		{	1	,	1	,	1	,	0	,	1	,	1	,	0	,	0	,	1	,	0	,	1	,	1	,	1	}	,
-		{	1	,	1	,	1	,	1	,	0	,	0	,	1	,	0	,	0	,	1	,	0	,	0	,	0	}	,
-		{	1	,	1	,	1	,	1	,	0	,	1	,	0	,	0	,	1	,	0	,	1	,	0	,	0	}	,
-		{	1	,	1	,	1	,	1	,	0	,	1	,	0	,	0	,	1	,	1	,	0	,	0	,	1	}	,
-		{	1	,	1	,	1	,	1	,	0	,	1	,	1	,	0	,	1	,	1	,	0	,	1	,	0	}	,
-		{	1	,	1	,	1	,	1	,	0	,	1	,	1	,	1	,	1	,	1	,	0	,	0	,	0	}	,
-		{	1	,	1	,	1	,	1	,	0	,	1	,	1	,	1	,	1	,	1	,	1	,	1	,	1	}	,
-		{	1	,	1	,	1	,	1	,	1	,	1	,	0	,	1	,	1	,	0	,	1	,	0	,	1	}	,
-		{	1	,	0	,	1	,	0	,	0	,	1	,	0	,	0	,	0	,	0	,	1	,	1	,	0	}	,
-		{	0	,	0	,	1	,	0	,	1	,	1	,	1	,	1	,	1	,	1	,	0	,	0	,	0	}	,
-		{	0	,	0	,	0	,	1	,	1	,	0	,	1	,	0	,	1	,	0	,	1	,	0	,	1	}	,
-		};
+        {1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1},
+        {1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0},
+        {1, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1},
+        {1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 1, 1, 1},
+        {1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1},
+        {1, 0, 0, 0, 1, 1, 0, 1, 0, 1, 1, 1, 0},
+        {1, 0, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 0},
+        {1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1},
+        {1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 0, 1},
+        {1, 0, 0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 0},
+        {1, 0, 1, 0, 0, 0, 0, 1, 1, 0, 1, 0, 1},
+        {1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0},
+        {1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1},
+        {1, 0, 1, 0, 0, 0, 1, 0, 1, 1, 0, 1, 1},
+        {1, 0, 1, 0, 0, 0, 1, 0, 1, 1, 1, 0, 0},
+        {1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 1, 1},
+        {1, 0, 1, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1},
+        {1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1},
+        {1, 0, 1, 0, 1, 0, 0, 1, 1, 1, 1, 1, 0},
+        {1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 1},
+        {1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 0, 0, 1},
+        {1, 0, 1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 1},
+        {1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0},
+        {1, 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0},
+        {1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0},
+        {1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1, 0},
+        {1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1},
+        {1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 1, 0},
+        {1, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0},
+        {1, 0, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 1},
+        {1, 0, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0},
+        {1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 0},
+        {1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1},
+        {1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1},
+        {1, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1},
+        {1, 1, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0},
+        {1, 1, 0, 0, 0, 1, 0, 1, 1, 0, 1, 1, 1},
+        {1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1},
+        {1, 1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1},
+        {1, 1, 0, 0, 1, 1, 0, 1, 0, 1, 0, 1, 1},
+        {1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 1},
+        {1, 1, 0, 0, 1, 1, 1, 0, 1, 0, 0, 1, 0},
+        {1, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1},
+        {1, 1, 0, 1, 0, 0, 1, 1, 1, 0, 1, 0, 0},
+        {1, 1, 0, 1, 0, 1, 1, 0, 0, 1, 0, 1, 1},
+        {1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1},
+        {1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0},
+        {1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1},
+        {1, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1},
+        {1, 1, 1, 0, 0, 1, 0, 1, 0, 0, 0, 1, 1},
+        {1, 1, 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0},
+        {1, 1, 1, 0, 1, 0, 0, 1, 1, 1, 0, 1, 1},
+        {1, 1, 1, 0, 1, 1, 0, 0, 1, 0, 1, 1, 1},
+        {1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0},
+        {1, 1, 1, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0},
+        {1, 1, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1},
+        {1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 0},
+        {1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0},
+        {1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1},
+        {1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 0, 1},
+        {1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0},
+        {0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0},
+        {0, 0, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1},
+};
 
 // BEIDOU CNAV2 NAVIGATION MESSAGE STRUCTURE
 // NAVIGATION MESSAGE FIELDS POSITIONS

@@ -27,14 +27,11 @@
 %
 
 %% Configuration
-
-path = '/archive/';
-file = 'gps_l5_acq';
-
-sat = 12;
-
+path = '/home/dmiralles/Documents/gnss-sdr/';
+file = 'bds_acq';
+sat = 6;
 channel = 0;
-execution = 2;
+execution = 6;
 % Signal:
 %     1 GPS  L1
 %     2 GPS  L2M
@@ -94,7 +91,7 @@ switch(signal_type)
     case 9
         n_chips = 10230;
         system = 'C';
-        signal = 'B3';        
+        signal = 'B3';
     case 10
         n_chips = 10230;
         system = 'C';
@@ -102,8 +99,8 @@ switch(signal_type)
 end
 filename = [path file '_' system '_' signal '_ch_' num2str(channel) '_' num2str(execution) '_sat_' num2str(sat) '.mat'];
 load(filename);
-[n_fft n_dop_bins] = size(acq_grid);
-[d_max f_max] = find(acq_grid == max(max(acq_grid)));
+[n_fft, n_dop_bins] = size(acq_grid);
+[d_max, f_max] = find(acq_grid == max(max(acq_grid)));
 freq = (0 : n_dop_bins - 1) * double(doppler_step) - double(doppler_max);
 delay = (0 : n_fft - 1) / n_fft * n_chips;
 
@@ -120,23 +117,23 @@ else
     surf(freq, delay_interp, grid_interp, 'FaceColor', 'interp', 'LineStyle', 'none')
     ylim([min(delay_interp) max(delay_interp)])
 end
-xlabel('Doppler shift / Hz')
+xlabel('Doppler shift (Hz)')
 xlim([min(freq) max(freq)])
-ylabel('Code delay / chips')
-zlabel('Test statistics')
+ylabel('Code delay (chips)')
+zlabel('Test Statistics')
 
 %--- Acquisition grid (2D)
 figure(2)
 subplot(2,1,1)
 plot(freq, acq_grid(d_max, :))
 xlim([min(freq) max(freq)])
-xlabel('Doppler shift / Hz')
+xlabel('Doppler shift (Hz)')
 ylabel('Test statistics')
 title(['Fixed code delay to ' num2str((d_max - 1) / n_fft * n_chips) ' chips'])
 subplot(2,1,2)
 normalization = (d_samples_per_code^4) * input_power;
 plot(delay, acq_grid(:, f_max)./normalization)
 xlim([min(delay) max(delay)])
-xlabel('Code delay / chips')
+xlabel('Code delay (chips)')
 ylabel('Test statistics')
 title(['Doppler wipe-off = ' num2str((f_max - 1) * doppler_step - doppler_max) ' Hz'])

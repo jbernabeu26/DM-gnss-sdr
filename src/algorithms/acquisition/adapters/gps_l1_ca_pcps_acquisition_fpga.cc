@@ -36,10 +36,16 @@
 #include "GPS_L1_CA.h"
 #include "configuration_interface.h"
 #include "gnss_sdr_flags.h"
+#include "gnss_synchro.h"
 #include "gps_sdr_signal_processing.h"
 #include <glog/logging.h>
 #include <gnuradio/fft/fft.h>
-#include <new>
+#include <gnuradio/gr_complex.h>  // for gr_complex
+#include <volk/volk.h>            // for volk_32fc_conjugate_32fc
+#include <volk_gnsssdr/volk_gnsssdr.h>
+#include <cmath>    // for abs, pow, floor
+#include <complex>  // for complex
+#include <cstring>  // for memcpy
 
 
 #define NUM_PRNs 32
@@ -61,6 +67,9 @@ GpsL1CaPcpsAcquisitionFpga::GpsL1CaPcpsAcquisitionFpga(
 
     int64_t fs_in_deprecated = configuration_->property("GNSS-SDR.internal_fs_hz", 2048000);
     int64_t fs_in = configuration_->property("GNSS-SDR.internal_fs_sps", fs_in_deprecated);
+
+    acq_parameters.repeat_satellite = configuration_->property(role + ".repeat_satellite", false);
+    DLOG(INFO) << role << " satellite repeat = " << acq_parameters.repeat_satellite;
 
     float downsampling_factor = configuration_->property(role + ".downsampling_factor", 4.0);
     acq_parameters.downsampling_factor = downsampling_factor;
@@ -140,12 +149,11 @@ GpsL1CaPcpsAcquisitionFpga::GpsL1CaPcpsAcquisitionFpga(
     acq_parameters.total_block_exp = configuration_->property(role + ".total_block_exp", 14);
 
     acquisition_fpga_ = pcps_make_acquisition_fpga(acq_parameters);
-    DLOG(INFO) << "acquisition(" << acquisition_fpga_->unique_id() << ")";
 
     channel_ = 0;
     doppler_step_ = 0;
     gnss_synchro_ = nullptr;
-
+    channel_fsm_ = nullptr;
     // temporary buffers that we can delete
     delete[] code;
     delete fft_if;
@@ -163,13 +171,6 @@ void GpsL1CaPcpsAcquisitionFpga::stop_acquisition()
 {
     // this command causes the SW to reset the HW.
     acquisition_fpga_->reset_acquisition();
-}
-
-
-void GpsL1CaPcpsAcquisitionFpga::set_channel(unsigned int channel)
-{
-    channel_ = channel;
-    acquisition_fpga_->set_channel(channel_);
 }
 
 
@@ -258,5 +259,5 @@ gr::basic_block_sptr GpsL1CaPcpsAcquisitionFpga::get_left_block()
 
 gr::basic_block_sptr GpsL1CaPcpsAcquisitionFpga::get_right_block()
 {
-    return acquisition_fpga_;
+    return nullptr;
 }

@@ -78,3 +78,6 @@ for N=1:1:channels
     settings.msToProcess = length(GNSS_tracking(N).E) * coherent_integration_time_ms;
     plotVEMLTracking(N, trackResults, settings)
 end
+
+
+

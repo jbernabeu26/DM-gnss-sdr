@@ -36,13 +36,22 @@
 #include "pcps_acquisition.h"
 #include "GLONASS_L1_L2_CA.h"  // for GLONASS_TWO_PI
 #include "GPS_L1_CA.h"         // for GPS_TWO_PI
+#include "gnss_frequencies.h"
 #include "gnss_sdr_create_directory.h"
+#include "gnss_synchro.h"
 #include <boost/filesystem/path.hpp>
 #include <glog/logging.h>
 #include <gnuradio/io_signature.h>
 #include <matio.h>
+#include <pmt/pmt.h>        // for from_long
+#include <pmt/pmt_sugar.h>  // for mp
+#include <volk/volk.h>
 #include <volk_gnsssdr/volk_gnsssdr.h>
-#include <cstring>
+#include <algorithm>  // for fill_n, min
+#include <cmath>      // for floor, fmod, rint, ceil
+#include <cstring>    // for memcpy
+#include <iostream>
+#include <map>
 
 
 pcps_acquisition_sptr pcps_make_acquisition(const Acq_Conf& conf_)
@@ -420,7 +429,15 @@ void pcps_acquisition::send_positive_acquisition()
                << ", magnitude " << d_mag
                << ", input signal power " << d_input_power;
     d_positive_acq = 1;
-    this->message_port_pub(pmt::mp("events"), pmt::from_long(1));
+    if (d_channel_fsm)
+        {
+            //the channel FSM is set, so, notify it directly the positive acquisition to minimize delays
+            d_channel_fsm->Event_valid_acquisition();
+        }
+    else
+        {
+            this->message_port_pub(pmt::mp("events"), pmt::from_long(1));
+        }
 }
 
 

@@ -34,12 +34,13 @@
 #ifndef GNSS_SDR_BEIDOU_B2AD_PCPS_ACQUISITION_H_
 #define GNSS_SDR_BEIDOU_B2AD_PCPS_ACQUISITION_H_
 
-#include "acquisition_interface.h"
+#include "acq_conf.h"
+#include "channel_fsm.h"
+#include "complex_byte_to_float_x2.h"
 #include "gnss_synchro.h"
 #include "pcps_acquisition.h"
-#include "complex_byte_to_float_x2.h"
-#include <gnuradio/blocks/stream_to_vector.h>
 #include <gnuradio/blocks/float_to_complex.h>
+#include <gnuradio/blocks/stream_to_vector.h>
 #include <volk_gnsssdr/volk_gnsssdr.h>
 #include <string>
 
@@ -53,7 +54,7 @@ class ConfigurationInterface;
 class BeidouB2adPcpsAcquisition : public AcquisitionInterface
 {
 public:
-	BeidouB2adPcpsAcquisition(ConfigurationInterface* configuration,
+    BeidouB2adPcpsAcquisition(ConfigurationInterface* configuration,
         std::string role, unsigned int in_streams,
         unsigned int out_streams);
 
@@ -92,7 +93,20 @@ public:
     /*!
      * \brief Set acquisition channel unique ID
      */
-    void set_channel(unsigned int channel) override;
+    inline void set_channel(unsigned int channel) override
+    {
+        channel_ = channel;
+        acquisition_->set_channel(channel_);
+    }
+
+    /*!
+      * \brief Set channel fsm associated to this acquisition instance
+      */
+    inline void set_channel_fsm(std::shared_ptr<ChannelFsm> channel_fsm) override
+    {
+        channel_fsm_ = channel_fsm;
+        acquisition_->set_channel_fsm(channel_fsm);
+    }
 
     /*!
      * \brief Set statistics threshold of PCPS algorithm
@@ -158,12 +172,13 @@ private:
     bool bit_transition_flag_;
     bool use_CFAR_algorithm_flag_;
     unsigned int channel_;
+    std::shared_ptr<ChannelFsm> channel_fsm_;
     float threshold_;
     unsigned int doppler_max_;
     unsigned int doppler_step_;
     unsigned int max_dwells_;
     unsigned int sampled_ms_;
-    long fs_in_;
+    int64_t fs_in_;
     long if_;
     bool dump_;
     bool blocking_;

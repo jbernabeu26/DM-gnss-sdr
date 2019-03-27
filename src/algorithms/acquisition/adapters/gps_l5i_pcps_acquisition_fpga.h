@@ -1,5 +1,5 @@
 /*!
- * \file GPS_L5i_PCPS_Acquisition_fpga.h
+ * \file gps_l5i_pcps_acquisition_fpga.h
  * \brief Adapts a PCPS acquisition block to an AcquisitionInterface for
  *  GPS L5i signals for the FPGA
  * \authors <ul>
@@ -32,24 +32,22 @@
  * -------------------------------------------------------------------------
  */
 
-#ifndef GNSS_SDR_GPS_L5i_PCPS_ACQUISITION_FPGA_H_
-#define GNSS_SDR_GPS_L5i_PCPS_ACQUISITION_FPGA_H_
+#ifndef GNSS_SDR_GPS_L5I_PCPS_ACQUISITION_FPGA_H_
+#define GNSS_SDR_GPS_L5I_PCPS_ACQUISITION_FPGA_H_
 
-#include "acquisition_interface.h"
-#include "complex_byte_to_float_x2.h"
-#include "gnss_synchro.h"
+#include "channel_fsm.h"
 #include "pcps_acquisition_fpga.h"
-#include <gnuradio/blocks/float_to_complex.h>
-#include <gnuradio/blocks/stream_to_vector.h>
-#include <volk_gnsssdr/volk_gnsssdr.h>
+#include <gnuradio/runtime_types.h>  // for basic_block_sptr, top_block_sptr
+#include <volk/volk_complex.h>       // for lv_16sc_t
+#include <cstddef>                   // for size_t
 #include <string>
 
-
+class Gnss_Synchro;
 class ConfigurationInterface;
 
 /*!
- * \brief This class adapts a PCPS acquisition block to an AcquisitionInterface
- *  for GPS L5i signals
+ * \brief This class adapts a PCPS acquisition block off-loaded on an FPGA
+ * to an AcquisitionInterface for GPS L5i signals
  */
 class GpsL5iPcpsAcquisitionFpga : public AcquisitionInterface
 {
@@ -76,7 +74,7 @@ public:
 
     inline size_t item_size() override
     {
-        return sizeof(int);
+        return sizeof(lv_16sc_t);
     }
 
     void connect(gr::top_block_sptr top_block) override;
@@ -87,15 +85,27 @@ public:
     /*!
      * \brief Set acquisition/tracking common Gnss_Synchro object pointer
      * to efficiently exchange synchronization data between acquisition and
-     *  tracking blocks
+     * tracking blocks
      */
     void set_gnss_synchro(Gnss_Synchro* p_gnss_synchro) override;
 
     /*!
      * \brief Set acquisition channel unique ID
      */
-    void set_channel(unsigned int channel) override;
+    inline void set_channel(unsigned int channel) override
+    {
+        channel_ = channel;
+        acquisition_fpga_->set_channel(channel_);
+    }
 
+    /*!
+      * \brief Set channel fsm associated to this acquisition instance
+      */
+    inline void set_channel_fsm(std::shared_ptr<ChannelFsm> channel_fsm) override
+    {
+        channel_fsm_ = channel_fsm;
+        acquisition_fpga_->set_channel_fsm(channel_fsm);
+    }
     /*!
      * \brief Set statistics threshold of PCPS algorithm
      */
@@ -117,7 +127,7 @@ public:
     void init() override;
 
     /*!
-     * \brief Sets local code for GPS L2/M PCPS acquisition algorithm.
+     * \brief Sets local code for GPS L5 PCPS acquisition algorithm.
      */
     void set_local_code() override;
 
@@ -146,11 +156,9 @@ public:
 private:
     ConfigurationInterface* configuration_;
     pcps_acquisition_fpga_sptr acquisition_fpga_;
-    gr::blocks::stream_to_vector::sptr stream_to_vector_;
-    gr::blocks::float_to_complex::sptr float_to_complex_;
-    complex_byte_to_float_x2_sptr cbyte_to_float_x2_;
     std::string item_type_;
     uint32_t channel_;
+    std::shared_ptr<ChannelFsm> channel_fsm_;
     uint32_t doppler_max_;
     uint32_t doppler_step_;
     std::string dump_filename_;
@@ -164,4 +172,4 @@ private:
     float calculate_threshold(float pfa);
 };
 
-#endif /* GNSS_SDR_GPS_L5i_PCPS_ACQUISITION_FPGA_H_ */
+#endif /* GNSS_SDR_GPS_L5I_PCPS_ACQUISITION_FPGA_H_ */

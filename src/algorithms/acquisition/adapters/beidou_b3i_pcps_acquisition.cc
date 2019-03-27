@@ -30,27 +30,26 @@
  */
 
 #include "beidou_b3i_pcps_acquisition.h"
+#include "Beidou_B3I.h"
+#include "acq_conf.h"
+#include "beidou_b3i_signal_processing.h"
 #include "configuration_interface.h"
 #include "gnss_sdr_flags.h"
-#include "acq_conf.h"
 #include <boost/math/distributions/exponential.hpp>
 #include <glog/logging.h>
-
-#include "beidou_b3i_signal_processing.h"
-#include "Beidou_B3I.h"
 
 
 using google::LogMessage;
 
 BeidouB3iPcpsAcquisition::BeidouB3iPcpsAcquisition(
     ConfigurationInterface* configuration,
-	std::string role,
-	unsigned int in_streams,
-	unsigned int out_streams) : role_(role),
-			                    in_streams_(in_streams),
-								out_streams_(out_streams)
+    const std::string& role,
+    unsigned int in_streams,
+    unsigned int out_streams) : role_(role),
+                                in_streams_(in_streams),
+                                out_streams_(out_streams)
 {
-	Acq_Conf acq_parameters = Acq_Conf();
+    Acq_Conf acq_parameters = Acq_Conf();
     configuration_ = configuration;
     std::string default_item_type = "gr_complex";
     std::string default_dump_filename = "./data/acquisition.dat";
@@ -59,7 +58,7 @@ BeidouB3iPcpsAcquisition::BeidouB3iPcpsAcquisition(
 
     item_type_ = configuration_->property(role + ".item_type", default_item_type);
 
-    long fs_in_deprecated = configuration_->property("GNSS-SDR.internal_fs_hz", 2048000);
+    int64_t fs_in_deprecated = configuration_->property("GNSS-SDR.internal_fs_hz", 2048000);
     fs_in_ = configuration_->property("GNSS-SDR.internal_fs_sps", fs_in_deprecated);
     acq_parameters.fs_in = fs_in_;
     dump_ = configuration_->property(role + ".dump", false);
@@ -80,7 +79,7 @@ BeidouB3iPcpsAcquisition::BeidouB3iPcpsAcquisition(
     dump_filename_ = configuration_->property(role + ".dump_filename", default_dump_filename);
     acq_parameters.dump_filename = dump_filename_;
     //--- Find number of samples per spreading code -------------------------
-    code_length_ = static_cast<unsigned int>(std::round(static_cast<double>(fs_in_) / ( BEIDOU_B3I_CODE_RATE_HZ / BEIDOU_B3I_CODE_LENGTH_CHIPS)));
+    code_length_ = static_cast<unsigned int>(std::round(static_cast<double>(fs_in_) / (BEIDOU_B3I_CODE_RATE_HZ / BEIDOU_B3I_CODE_LENGTH_CHIPS)));
 
     vector_length_ = code_length_ * sampled_ms_;
 
@@ -91,7 +90,7 @@ BeidouB3iPcpsAcquisition::BeidouB3iPcpsAcquisition(
 
     code_ = new gr_complex[vector_length_];
 
-    if (item_type_.compare("cshort") == 0)
+    if (item_type_ == "cshort")
         {
             item_size_ = sizeof(lv_16sc_t);
         }
@@ -112,7 +111,7 @@ BeidouB3iPcpsAcquisition::BeidouB3iPcpsAcquisition(
     stream_to_vector_ = gr::blocks::stream_to_vector::make(item_size_, vector_length_);
     DLOG(INFO) << "stream_to_vector(" << stream_to_vector_->unique_id() << ")";
 
-    if (item_type_.compare("cbyte") == 0)
+    if (item_type_ == "cbyte")
         {
             cbyte_to_float_x2_ = make_complex_byte_to_float_x2();
             float_to_complex_ = gr::blocks::float_to_complex::make();
@@ -121,7 +120,8 @@ BeidouB3iPcpsAcquisition::BeidouB3iPcpsAcquisition(
     channel_ = 0;
     threshold_ = 0.0;
     doppler_step_ = 0;
-    gnss_synchro_ = 0;
+    gnss_synchro_ = nullptr;
+    channel_fsm_ = nullptr;
     if (in_streams_ > 1)
         {
             LOG(ERROR) << "This implementation only supports one input stream";
@@ -142,13 +142,6 @@ BeidouB3iPcpsAcquisition::~BeidouB3iPcpsAcquisition()
 void BeidouB3iPcpsAcquisition::stop_acquisition()
 {
 }
-
-void BeidouB3iPcpsAcquisition::set_channel(unsigned int channel)
-{
-    channel_ = channel;
-    acquisition_->set_channel(channel_);
-}
-
 
 void BeidouB3iPcpsAcquisition::set_threshold(float threshold)
 {
@@ -208,7 +201,7 @@ void BeidouB3iPcpsAcquisition::init()
 
 void BeidouB3iPcpsAcquisition::set_local_code()
 {
-    std::complex<float>* code = new std::complex<float>[code_length_];
+    auto* code = new std::complex<float>[code_length_];
 
     beidou_b3i_code_gen_complex_sampled(code, gnss_synchro_->PRN, fs_in_, 0);
 
@@ -252,9 +245,9 @@ float BeidouB3iPcpsAcquisition::calculate_threshold(float pfa)
     unsigned int ncells = vector_length_ * frequency_bins;
     double exponent = 1 / static_cast<double>(ncells);
     double val = pow(1.0 - pfa, exponent);
-    double lambda = static_cast<double>(vector_length_);
+    auto lambda = static_cast<double>(vector_length_);
     boost::math::exponential_distribution<double> mydist(lambda);
-    float threshold = static_cast<float>(quantile(mydist, val));
+    auto threshold = static_cast<float>(quantile(mydist, val));
 
     return threshold;
 }
@@ -262,15 +255,15 @@ float BeidouB3iPcpsAcquisition::calculate_threshold(float pfa)
 
 void BeidouB3iPcpsAcquisition::connect(gr::top_block_sptr top_block)
 {
-    if (item_type_.compare("gr_complex") == 0)
+    if (item_type_ == "gr_complex")
         {
-    		// nothing to connect
+            // nothing to connect
         }
-    else if (item_type_.compare("cshort") == 0)
+    else if (item_type_ == "cshort")
         {
-    	    // nothing to connect
+            // nothing to connect
         }
-    else if (item_type_.compare("cbyte") == 0)
+    else if (item_type_ == "cbyte")
         {
             top_block->connect(cbyte_to_float_x2_, 0, float_to_complex_, 0);
             top_block->connect(cbyte_to_float_x2_, 1, float_to_complex_, 1);
@@ -285,15 +278,15 @@ void BeidouB3iPcpsAcquisition::connect(gr::top_block_sptr top_block)
 
 void BeidouB3iPcpsAcquisition::disconnect(gr::top_block_sptr top_block)
 {
-    if (item_type_.compare("gr_complex") == 0)
+    if (item_type_ == "gr_complex")
         {
-    		// nothing to disconnect
+            // nothing to disconnect
         }
-    else if (item_type_.compare("cshort") == 0)
+    else if (item_type_ == "cshort")
         {
-    		// nothing to disconnect
+            // nothing to disconnect
         }
-    else if (item_type_.compare("cbyte") == 0)
+    else if (item_type_ == "cbyte")
         {
             // Since a byte-based acq implementation is not available,
             // we just convert cshorts to gr_complex
@@ -310,15 +303,15 @@ void BeidouB3iPcpsAcquisition::disconnect(gr::top_block_sptr top_block)
 
 gr::basic_block_sptr BeidouB3iPcpsAcquisition::get_left_block()
 {
-    if (item_type_.compare("gr_complex") == 0)
+    if (item_type_ == "gr_complex")
         {
             return acquisition_;
         }
-    else if (item_type_.compare("cshort") == 0)
+    else if (item_type_ == "cshort")
         {
             return acquisition_;
         }
-    else if (item_type_.compare("cbyte") == 0)
+    else if (item_type_ == "cbyte")
         {
             return cbyte_to_float_x2_;
         }
@@ -334,6 +327,7 @@ gr::basic_block_sptr BeidouB3iPcpsAcquisition::get_right_block()
 {
     return acquisition_;
 }
+
 
 void BeidouB3iPcpsAcquisition::set_resampler_latency(uint32_t latency_samples)
 {

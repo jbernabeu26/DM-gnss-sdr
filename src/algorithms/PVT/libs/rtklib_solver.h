@@ -55,14 +55,14 @@
 #define GNSS_SDR_RTKLIB_SOLVER_H_
 
 
-#include "beidou_dnav_almanac.h"
-#include "beidou_dnav_ephemeris.h"
-#include "beidou_dnav_iono.h"
-#include "beidou_dnav_utc_model.h"
 #include "beidou_cnav2_almanac.h"
 #include "beidou_cnav2_ephemeris.h"
 #include "beidou_cnav2_iono.h"
 #include "beidou_cnav2_utc_model.h"
+#include "beidou_dnav_almanac.h"
+#include "beidou_dnav_ephemeris.h"
+#include "beidou_dnav_iono.h"
+#include "beidou_dnav_utc_model.h"
 #include "galileo_almanac.h"
 #include "galileo_ephemeris.h"
 #include "galileo_iono.h"

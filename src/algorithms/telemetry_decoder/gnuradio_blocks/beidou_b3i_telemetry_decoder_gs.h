@@ -23,7 +23,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with GNSS-SDR. If not, see <https://www.gnu.org/licenses/>.
+ * along with GNSS-SDR. If not, see <http://www.gnu.org/licenses/>.
  *
  * -------------------------------------------------------------------------
  */
@@ -31,22 +31,24 @@
 #ifndef GNSS_SDR_BEIDOU_B3I_TELEMETRY_DECODER_GS_H
 #define GNSS_SDR_BEIDOU_B3I_TELEMETRY_DECODER_GS_H
 
-#include "gnss_satellite.h"
 #include "beidou_dnav_navigation_message.h"
+#include "gnss_satellite.h"
 #include <boost/circular_buffer.hpp>
-#include <gnuradio/block.h>
-#include <gnuradio/types.h>                  // for gr_vector_const_void_star
+#include <boost/shared_ptr.hpp>  // for boost::shared_ptr
+#include <gnuradio/block.h>      // for block
+#include <gnuradio/types.h>      // for gr_vector_const_void_star
+#include <cstdint>
 #include <fstream>
 #include <string>
-#include <boost/shared_ptr.hpp>  // for boost::shared_ptr
-#include <cstdint>
-
 
 class beidou_b3i_telemetry_decoder_gs;
 
-using beidou_b3i_telemetry_decoder_gs_sptr = boost::shared_ptr<beidou_b3i_telemetry_decoder_gs>;
+using beidou_b3i_telemetry_decoder_gs_sptr =
+    boost::shared_ptr<beidou_b3i_telemetry_decoder_gs>;
 
-beidou_b3i_telemetry_decoder_gs_sptr beidou_b3i_make_telemetry_decoder_gs(const Gnss_Satellite &satellite, bool dump);
+beidou_b3i_telemetry_decoder_gs_sptr
+beidou_b3i_make_telemetry_decoder_gs(const Gnss_Satellite &satellite,
+    bool dump);
 
 /*!
  * \brief This class implements a block that decodes the BeiDou DNAV data.
@@ -55,41 +57,47 @@ beidou_b3i_telemetry_decoder_gs_sptr beidou_b3i_make_telemetry_decoder_gs(const 
 class beidou_b3i_telemetry_decoder_gs : public gr::block
 {
 public:
-    ~beidou_b3i_telemetry_decoder_gs();                //!< Class destructor
+    ~beidou_b3i_telemetry_decoder_gs();                   //!< Class destructor
     void set_satellite(const Gnss_Satellite &satellite);  //!< Set satellite PRN
     void set_channel(int channel);                        //!< Set receiver's channel
-
+    inline void reset()
+    {
+        return;
+    }
     /*!
      * \brief This is where all signal processing takes place
      */
     int general_work(int noutput_items, gr_vector_int &ninput_items,
-        gr_vector_const_void_star &input_items, gr_vector_void_star &output_items);
+        gr_vector_const_void_star &input_items,
+        gr_vector_void_star &output_items);
 
 private:
     friend beidou_b3i_telemetry_decoder_gs_sptr
-	beidou_b3i_make_telemetry_decoder_gs(const Gnss_Satellite &satellite, bool dump);
+    beidou_b3i_make_telemetry_decoder_gs(const Gnss_Satellite &satellite,
+        bool dump);
     beidou_b3i_telemetry_decoder_gs(const Gnss_Satellite &satellite, bool dump);
 
     void decode_subframe(double *symbols);
-    void decode_word(int32_t word_counter, double* enc_word_symbols, int32_t* dec_word_symbols);
-    void decode_bch15_11_01(int32_t *bits, int32_t *decbits);
-
+    void decode_word(int32_t word_counter, const double *enc_word_symbols,
+        int32_t *dec_word_symbols);
+    void decode_bch15_11_01(const int32_t *bits, int32_t *decbits);
 
     // Preamble decoding
-    int32_t 	*d_preamble_samples;
-    int32_t 	*d_secondary_code_symbols;
-    uint32_t 	d_samples_per_symbol;
-    int32_t 	d_symbols_per_preamble;
-    int32_t     d_samples_per_preamble;
-    int32_t    d_preamble_period_samples;
-    double 		*d_subframe_symbols;
-    uint32_t    d_required_symbols;
+    int32_t *d_preamble_samples;
+    int32_t *d_secondary_code_symbols;
+    uint32_t d_samples_per_symbol;
+    int32_t d_symbols_per_preamble;
+    int32_t d_samples_per_preamble;
+    int32_t d_preamble_period_samples;
+    double *d_subframe_symbols;
+    uint32_t d_required_symbols;
 
     // Storage for incoming data
     boost::circular_buffer<float> d_symbol_history;
 
     // Variables for internal functionality
-    uint64_t d_sample_counter;    // Sample counter as an index (1,2,3,..etc) indicating number of samples processed
+    uint64_t d_sample_counter;    // Sample counter as an index (1,2,3,..etc)
+                                  // indicating number of samples processed
     uint64_t d_preamble_index;    // Index of sample number where preamble was found
     uint32_t d_stat;              // Status of decoder
     bool d_flag_frame_sync;       // Indicate when a frame sync is achieved

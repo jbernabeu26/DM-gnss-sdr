@@ -34,15 +34,15 @@
 
 
 #include "galileo_fnav_message.h"
-#include <boost/shared_ptr.hpp>  // for boost::shared_ptr
-#include <gnuradio/types.h>      // for gr_vector_const_void_star
 #include "galileo_navigation_message.h"
 #include "gnss_satellite.h"
 #include <boost/circular_buffer.hpp>
-#include <gnuradio/block.h>
+#include <boost/shared_ptr.hpp>  // for boost::shared_ptr
+#include <gnuradio/block.h>      // for block
+#include <gnuradio/types.h>      // for gr_vector_const_void_star
+#include <cstdint>
 #include <fstream>
 #include <string>
-#include <cstdint>
 
 class galileo_telemetry_decoder_gs;
 
@@ -59,6 +59,7 @@ public:
     ~galileo_telemetry_decoder_gs();
     void set_satellite(const Gnss_Satellite &satellite);  //!< Set satellite PRN
     void set_channel(int32_t channel);                    //!< Set receiver's channel
+    void reset();
     int32_t flag_even_word_arrived;
 
     /*!
@@ -95,6 +96,10 @@ private:
 
     uint64_t d_sample_counter;
     uint64_t d_preamble_index;
+    uint64_t d_last_valid_preamble;
+    uint32_t d_max_symbols_without_valid_frame;
+
+    bool d_sent_tlm_failed_msg;
     uint32_t d_stat;
     bool d_flag_frame_sync;
 

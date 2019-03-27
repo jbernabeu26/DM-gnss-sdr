@@ -55,8 +55,10 @@ Channel::Channel(ConfigurationInterface* configuration, uint32_t channel, std::s
     queue_ = std::move(queue);
     channel_fsm_ = std::make_shared<ChannelFsm>();
 
-    flag_enable_fpga = configuration->property("Channel.enable_FPGA", false);
+    flag_enable_fpga = configuration->property("GNSS-SDR.enable_FPGA", false);
+
     acq_->set_channel(channel_);
+    acq_->set_channel_fsm(channel_fsm_);
     trk_->set_channel(channel_);
     nav_->set_channel(channel_);
 
@@ -106,6 +108,7 @@ Channel::Channel(ConfigurationInterface* configuration, uint32_t channel, std::s
 
     channel_fsm_->set_acquisition(acq_);
     channel_fsm_->set_tracking(trk_);
+    channel_fsm_->set_telemetry(nav_);
     channel_fsm_->set_channel(channel_);
     channel_fsm_->set_queue(queue_);
 
@@ -123,16 +126,24 @@ Channel::~Channel() = default;
 
 void Channel::connect(gr::top_block_sptr top_block)
 {
-    acq_->connect(top_block);
+    if (!flag_enable_fpga)
+        {
+            acq_->connect(top_block);
+        }
     trk_->connect(top_block);
     nav_->connect(top_block);
 
     //Synchronous ports
     top_block->connect(trk_->get_right_block(), 0, nav_->get_left_block(), 0);
+    // Message ports
+    top_block->msg_connect(nav_->get_left_block(), pmt::mp("telemetry_to_trk"), trk_->get_right_block(), pmt::mp("telemetry_to_trk"));
     DLOG(INFO) << "tracking -> telemetry_decoder";
 
     // Message ports
-    top_block->msg_connect(acq_->get_right_block(), pmt::mp("events"), channel_msg_rx, pmt::mp("events"));
+    if (!flag_enable_fpga)
+        {
+            top_block->msg_connect(acq_->get_right_block(), pmt::mp("events"), channel_msg_rx, pmt::mp("events"));
+        }
     top_block->msg_connect(trk_->get_right_block(), pmt::mp("events"), channel_msg_rx, pmt::mp("events"));
 
     connected_ = true;
@@ -148,10 +159,19 @@ void Channel::disconnect(gr::top_block_sptr top_block)
         }
 
     top_block->disconnect(trk_->get_right_block(), 0, nav_->get_left_block(), 0);
-
-    acq_->disconnect(top_block);
+    if (!flag_enable_fpga)
+        {
+            acq_->disconnect(top_block);
+        }
     trk_->disconnect(top_block);
     nav_->disconnect(top_block);
+
+    top_block->msg_disconnect(nav_->get_left_block(), pmt::mp("telemetry_to_trk"), trk_->get_right_block(), pmt::mp("telemetry_to_trk"));
+    if (!flag_enable_fpga)
+        {
+            top_block->msg_disconnect(acq_->get_right_block(), pmt::mp("events"), channel_msg_rx, pmt::mp("events"));
+        }
+    top_block->msg_disconnect(trk_->get_right_block(), pmt::mp("events"), channel_msg_rx, pmt::mp("events"));
     connected_ = false;
 }
 
@@ -171,6 +191,10 @@ gr::basic_block_sptr Channel::get_left_block_trk()
 
 gr::basic_block_sptr Channel::get_left_block_acq()
 {
+    if (flag_enable_fpga)
+        {
+            LOG(ERROR) << "Enabled FPGA and called get_left_block() in channel interface";
+        }
     return acq_->get_left_block();
 }
 
@@ -192,6 +216,11 @@ void Channel::set_signal(const Gnss_Signal& gnss_signal)
     gnss_synchro_.PRN = gnss_signal_.get_satellite().get_PRN();
     gnss_synchro_.System = gnss_signal_.get_satellite().get_system_short().c_str()[0];
     acq_->set_local_code();
+    if (flag_enable_fpga)
+        {
+            //set again the gnss_synchro pointer to trigger the preloading of the current PRN code to the FPGA fabric
+            trk_->set_gnss_synchro(&gnss_synchro_);
+        }
     nav_->set_satellite(gnss_signal_.get_satellite());
 }
 
@@ -213,7 +242,15 @@ void Channel::start_acquisition()
 {
     std::lock_guard<std::mutex> lk(mx);
     bool result = false;
-    result = channel_fsm_->Event_start_acquisition();
+    if (!flag_enable_fpga)
+        {
+            result = channel_fsm_->Event_start_acquisition();
+        }
+    else
+        {
+            result = channel_fsm_->Event_start_acquisition_fpga();
+            channel_fsm_->start_acquisition();
+        }
     if (!result)
         {
             LOG(WARNING) << "Invalid channel event";

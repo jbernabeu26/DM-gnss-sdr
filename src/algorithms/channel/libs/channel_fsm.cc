@@ -1,7 +1,8 @@
 /*!
  * \file channel_fsm.cc
  * \brief Implementation of a State Machine for channel
- * \authors Antonio Ramos, 2017. antonio.ramos(at)cttc.es
+ * \authors Javier Arribas, 2019. javiarribas@gmail.com
+ *          Antonio Ramos, 2017. antonio.ramos(at)cttc.es
  *          Luis Esteve,   2011. luis(at)epsilon-formacion.com
  *
  * -------------------------------------------------------------------------
@@ -73,6 +74,18 @@ bool ChannelFsm::Event_stop_channel()
     return true;
 }
 
+
+bool ChannelFsm::Event_start_acquisition_fpga()
+{
+    std::lock_guard<std::mutex> lk(mx);
+    if ((d_state == 1) || (d_state == 2))
+        {
+            return false;
+        }
+    d_state = 1;
+    DLOG(INFO) << "CH = " << channel_ << ". Ev start acquisition FPGA";
+    return true;
+}
 
 bool ChannelFsm::Event_start_acquisition()
 {
@@ -157,7 +170,11 @@ void ChannelFsm::set_tracking(std::shared_ptr<TrackingInterface> tracking)
     trk_ = std::move(tracking);
 }
 
-
+void ChannelFsm::set_telemetry(std::shared_ptr<TelemetryDecoderInterface> telemetry)
+{
+    std::lock_guard<std::mutex> lk(mx);
+    nav_ = std::move(telemetry);
+}
 void ChannelFsm::set_queue(gr::msg_queue::sptr queue)
 {
     std::lock_guard<std::mutex> lk(mx);
@@ -186,6 +203,7 @@ void ChannelFsm::stop_tracking()
 void ChannelFsm::start_acquisition()
 {
     acq_->reset();
+    nav_->reset();
 }
 
 

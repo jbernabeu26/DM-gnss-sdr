@@ -104,7 +104,7 @@ if(NOT ${GTEST_DIR_LOCAL})
         set_target_properties(GTest::GTest PROPERTIES
             INTERFACE_LINK_LIBRARIES Threads::Threads
         )
-        endif()
+    endif()
     if(NOT TARGET GTest::Main)
         add_library(GTest::Main STATIC IMPORTED)
         add_dependencies(GTest::Main gtest-${GNSSSDR_GTEST_LOCAL_VERSION})
@@ -140,7 +140,7 @@ else()
             set_target_properties(GTest::GTest PROPERTIES
                 INTERFACE_LINK_LIBRARIES Threads::Threads
             )
-    endif()
+        endif()
         if(NOT TARGET GTest::Main)
             add_library(GTest::Main STATIC IMPORTED)
             add_dependencies(GTest::Main gtest_main)
@@ -184,6 +184,12 @@ find_package(Gnuplot)
 if(GNUPLOT_FOUND)
     add_definitions(-DGNUPLOT_EXECUTABLE="${GNUPLOT_EXECUTABLE}")
 endif()
+set_package_properties(Gnuplot PROPERTIES
+    URL "http://www.gnuplot.info"
+    DESCRIPTION "A portable command-line driven graphing utility"
+    PURPOSE "Used to generate plots in some tests."
+    TYPE OPTIONAL
+)
 
 if(ENABLE_UNIT_TESTING_MINIMAL)
     add_definitions(-DUNIT_TESTING_MINIMAL=1)
@@ -194,6 +200,15 @@ endif()
 # Optional generator
 ################################################################################
 option(ENABLE_GNSS_SIM_INSTALL "Enable the installation of gnss_sim on the fly" ON)
+add_feature_info(ENABLE_GNSS_SIM_INSTALL ENABLE_GNSS_SIM_INSTALL "Enables downloading and building of gnss-sim.")
+
+find_package(GPSTK)
+set_package_properties(GPSTK PROPERTIES
+    URL "http://www.gpstk.org"
+    DESCRIPTION "Library and suite of applications for satellite navigation"
+    PURPOSE "Used in some Extra Tests."
+    TYPE OPTIONAL
+)
 if(ENABLE_UNIT_TESTING_EXTRA OR ENABLE_SYSTEM_TESTING_EXTRA OR ENABLE_FPGA)
     if(ENABLE_FPGA)
       set(CROSS_INSTALL_DIR "-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}")
@@ -239,9 +254,8 @@ if(ENABLE_UNIT_TESTING_EXTRA OR ENABLE_SYSTEM_TESTING_EXTRA OR ENABLE_FPGA)
     ################################################################################
     # Local installation of GPSTk http://www.gpstk.org/
     ################################################################################
-    find_package(GPSTK)
     if(NOT GPSTK_FOUND OR ENABLE_OWN_GPSTK)
-      message(STATUS "GPSTk v${GNSSSDR_GPSTK_LOCAL_VERSION} will be automatically downloaded and built when doing 'make'.")
+      message(STATUS " GPSTk v${GNSSSDR_GPSTK_LOCAL_VERSION} will be automatically downloaded and built when doing 'make'.")
       if("${TOOLCHAIN_ARG}" STREQUAL "")
           set(TOOLCHAIN_ARG "-DCMAKE_CXX_FLAGS=\"-Wno-deprecated\"")
           set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated")
@@ -295,21 +309,41 @@ endif()
 
 if(ENABLE_UNIT_TESTING_EXTRA)
     add_definitions(-DEXTRA_TESTS)
+    message(STATUS "Downloading some data files for testing...")
     if(NOT EXISTS ${CMAKE_SOURCE_DIR}/thirdparty/signal_samples/gps_l2c_m_prn7_5msps.dat)
-      message(STATUS "Downloading some data files for testing...")
+      message(STATUS "Downloading file: gps_l2c_m_prn7_5msps.dat")
       file(DOWNLOAD https://sourceforge.net/projects/gnss-sdr/files/data/gps_l2c_m_prn7_5msps.dat ${CMAKE_CURRENT_SOURCE_DIR}/../../thirdparty/signal_samples/gps_l2c_m_prn7_5msps.dat
             SHOW_PROGRESS
-            EXPECTED_HASH MD5=a6fcbefe155137945d3c33c5ef7bd0f9)
+        EXPECTED_HASH MD5=a6fcbefe155137945d3c33c5ef7bd0f9
+      )
     endif()
     if(NOT EXISTS ${CMAKE_SOURCE_DIR}/thirdparty/signal_samples/Glonass_L1_CA_SIM_Fs_62Msps_4ms.dat)
-      message(STATUS "Downloading some data files for testing...")
+      message(STATUS "Downloading file: Glonass_L1_CA_SIM_Fs_62Msps_4ms.dat")
       file(DOWNLOAD https://sourceforge.net/projects/gnss-sdr/files/data/Glonass_L1_CA_SIM_Fs_62Msps_4ms.dat ${CMAKE_CURRENT_SOURCE_DIR}/../../thirdparty/signal_samples/Glonass_L1_CA_SIM_Fs_62Msps_4ms.dat
             SHOW_PROGRESS
-            EXPECTED_HASH MD5=ffb72fc63c116be58d5e5ccb1daaed3a)
+        EXPECTED_HASH MD5=ffb72fc63c116be58d5e5ccb1daaed3a
+      )
     endif()
+    if(NOT EXISTS ${CMAKE_SOURCE_DIR}/thirdparty/signal_samples/BdsB1IStr01_fs25e6_if0_4ms.dat)
+      message(STATUS "Downloading file: BdsB1IStr01_fs25e6_if0_4ms.dat")
+      file(DOWNLOAD https://sourceforge.net/projects/gnss-sdr/files/data/BdsB1IStr01_fs25e6_if0_4ms.dat ${CMAKE_CURRENT_SOURCE_DIR}/../../thirdparty/signal_samples/BdsB1IStr01_fs25e6_if0_4ms.dat
+        SHOW_PROGRESS
+        EXPECTED_HASH MD5=5a4336dad9d80f3313a16dec4fff9233
+      )
+    endif()
+    if(NOT EXISTS ${CMAKE_SOURCE_DIR}/thirdparty/signal_samples/BdsB3IStr01_fs50e6_if0_4ms.dat)
+      message(STATUS "Downloading file: BdsB3IStr01_fs50e6_if0_4ms.dat")
+      file(DOWNLOAD https://sourceforge.net/projects/gnss-sdr/files/data/BdsB3IStr01_fs50e6_if0_4ms.dat ${CMAKE_CURRENT_SOURCE_DIR}/../../thirdparty/signal_samples/BdsB3IStr01_fs50e6_if0_4ms.dat
+        SHOW_PROGRESS
+        EXPECTED_HASH MD5=066d0d8434a8bc81e161778b7c34cc07
+      )
+    endif()
+    message(STATUS "Done.")
     if(ENABLE_INSTALL_TESTS)
       install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/../../thirdparty/signal_samples/gps_l2c_m_prn7_5msps.dat DESTINATION share/gnss-sdr/signal_samples)
       install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/../../thirdparty/signal_samples/Glonass_L1_CA_SIM_Fs_62Msps_4ms.dat DESTINATION share/gnss-sdr/signal_samples)
+      install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/../../thirdparty/signal_samples/BdsB1IStr01_fs25e6_if0_4ms.dat DESTINATION share/gnss-sdr/signal_samples)
+      install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/../../thirdparty/signal_samples/BdsB1IStr01_fs25e6_if0_4ms.dat DESTINATION share/gnss-sdr/signal_samples)
     endif()
 endif()
 
@@ -332,43 +366,6 @@ else()
 endif()
 
 set(LIST_INCLUDE_DIRS
-    ${GTEST_INCLUDE_DIRECTORIES}
-    ${CMAKE_SOURCE_DIR}/src/core/system_parameters
-    ${CMAKE_SOURCE_DIR}/src/core/interfaces
-    ${CMAKE_SOURCE_DIR}/src/core/receiver
-    ${CMAKE_SOURCE_DIR}/src/core/libs
-    ${CMAKE_SOURCE_DIR}/src/core/libs/supl
-    ${CMAKE_SOURCE_DIR}/src/core/libs/supl/asn-rrlp
-    ${CMAKE_SOURCE_DIR}/src/core/libs/supl/asn-supl
-    ${CMAKE_SOURCE_DIR}/src/core/monitor
-    ${CMAKE_SOURCE_DIR}/src/algorithms/libs
-    ${CMAKE_SOURCE_DIR}/src/algorithms/libs/rtklib
-    ${CMAKE_SOURCE_DIR}/src/algorithms/data_type_adapter/adapters
-    ${CMAKE_SOURCE_DIR}/src/algorithms/data_type_adapter/gnuradio_blocks
-    ${CMAKE_SOURCE_DIR}/src/algorithms/resampler/adapters
-    ${CMAKE_SOURCE_DIR}/src/algorithms/resampler/gnuradio_blocks
-    ${CMAKE_SOURCE_DIR}/src/algorithms/channel/adapters
-    ${CMAKE_SOURCE_DIR}/src/algorithms/channel/libs
-    ${CMAKE_SOURCE_DIR}/src/algorithms/tracking/libs
-    ${CMAKE_SOURCE_DIR}/src/algorithms/tracking/adapters
-    ${CMAKE_SOURCE_DIR}/src/algorithms/tracking/gnuradio_blocks
-    ${CMAKE_SOURCE_DIR}/src/algorithms/telemetry_decoder/adapters
-    ${CMAKE_SOURCE_DIR}/src/algorithms/telemetry_decoder/gnuradio_blocks
-    ${CMAKE_SOURCE_DIR}/src/algorithms/telemetry_decoder/libs
-    ${CMAKE_SOURCE_DIR}/src/algorithms/observables/adapters
-    ${CMAKE_SOURCE_DIR}/src/algorithms/observables/gnuradio_blocks
-    ${CMAKE_SOURCE_DIR}/src/algorithms/signal_source/adapters
-    ${CMAKE_SOURCE_DIR}/src/algorithms/signal_source/gnuradio_blocks
-    ${CMAKE_SOURCE_DIR}/src/algorithms/signal_generator/adapters
-    ${CMAKE_SOURCE_DIR}/src/algorithms/signal_generator/gnuradio_blocks
-    ${CMAKE_SOURCE_DIR}/src/algorithms/input_filter/adapters
-    ${CMAKE_SOURCE_DIR}/src/algorithms/input_filter/gnuradio_blocks
-    ${CMAKE_SOURCE_DIR}/src/algorithms/acquisition/libs
-    ${CMAKE_SOURCE_DIR}/src/algorithms/acquisition/adapters
-    ${CMAKE_SOURCE_DIR}/src/algorithms/acquisition/gnuradio_blocks
-    ${CMAKE_SOURCE_DIR}/src/algorithms/PVT/libs
-    ${CMAKE_SOURCE_DIR}/src/tests/unit-tests/signal-processing-blocks/libs
-    ${CMAKE_SOURCE_DIR}/src/tests/system-tests/libs
     ${CMAKE_SOURCE_DIR}/src/tests/common-files
 )
 
@@ -414,8 +411,8 @@ if(ENABLE_UNIT_TESTING)
             pvt_libs
             algorithms_libs
             core_monitor
-                                signal_processing_testing_lib
-                                system_testing_lib
+            signal_processing_testing_lib
+            system_testing_lib
             core_receiver
             core_system_parameters
     )
@@ -482,7 +479,7 @@ if(ENABLE_FPGA)
             channel_libs
             data_type_adapters
             tracking_adapters
-        signal_processing_testing_lib
+            signal_processing_testing_lib
             algorithms_libs
             core_receiver
             core_system_parameters
@@ -587,7 +584,7 @@ endif()
 set(CMAKE_CTEST_COMMAND ctest -V)
 add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND})
 
-if(NOT ENABLE_PACKAGING)
+if(NOT ENABLE_PACKAGING AND NOT ENABLE_FPGA)
     add_executable(flowgraph_test
         ${CMAKE_CURRENT_SOURCE_DIR}/single_test_main.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/unit-tests/control-plane/gnss_flowgraph_test.cc
@@ -617,27 +614,27 @@ if(NOT ENABLE_PACKAGING)
     target_include_directories(flowgraph_test
         PUBLIC
             ${CMAKE_SOURCE_DIR}/src/algorithms/libs
-)
+    )
 
-add_test(flowgraph_test flowgraph_test)
+    add_test(flowgraph_test flowgraph_test)
 
     set_property(TEST flowgraph_test PROPERTY TIMEOUT 30)
 endif()
 
 
 #########################################################
-if(NOT ENABLE_PACKAGING)
+if(NOT ENABLE_PACKAGING AND NOT ENABLE_FPGA)
     add_executable(gnss_block_test
         ${CMAKE_CURRENT_SOURCE_DIR}/single_test_main.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/unit-tests/signal-processing-blocks/sources/file_signal_source_test.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/unit-tests/signal-processing-blocks/filter/fir_filter_test.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/unit-tests/signal-processing-blocks/filter/pulse_blanking_filter_test.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/unit-tests/signal-processing-blocks/filter/notch_filter_test.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/unit-tests/signal-processing-blocks/filter/notch_filter_lite_test.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/unit-tests/signal-processing-blocks/adapter/pass_through_test.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/unit-tests/signal-processing-blocks/adapter/adapter_test.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/unit-tests/control-plane/gnss_block_factory_test.cc
-)
+        ${CMAKE_CURRENT_SOURCE_DIR}/unit-tests/signal-processing-blocks/sources/file_signal_source_test.cc
+        ${CMAKE_CURRENT_SOURCE_DIR}/unit-tests/signal-processing-blocks/filter/fir_filter_test.cc
+        ${CMAKE_CURRENT_SOURCE_DIR}/unit-tests/signal-processing-blocks/filter/pulse_blanking_filter_test.cc
+        ${CMAKE_CURRENT_SOURCE_DIR}/unit-tests/signal-processing-blocks/filter/notch_filter_test.cc
+        ${CMAKE_CURRENT_SOURCE_DIR}/unit-tests/signal-processing-blocks/filter/notch_filter_lite_test.cc
+        ${CMAKE_CURRENT_SOURCE_DIR}/unit-tests/signal-processing-blocks/adapter/pass_through_test.cc
+        ${CMAKE_CURRENT_SOURCE_DIR}/unit-tests/signal-processing-blocks/adapter/adapter_test.cc
+        ${CMAKE_CURRENT_SOURCE_DIR}/unit-tests/control-plane/gnss_block_factory_test.cc
+    )
 
     target_link_libraries(gnss_block_test
         PUBLIC
@@ -662,7 +659,7 @@ if(NOT ENABLE_PACKAGING)
             core_receiver
             algorithms_libs
             core_system_parameters
-)
+    )
 
     target_include_directories(gnss_block_test PUBLIC ${CMAKE_SOURCE_DIR}/src/algorithms/libs)
 
@@ -670,18 +667,18 @@ if(NOT ENABLE_PACKAGING)
         target_compile_definitions(gnss_block_test PUBLIC -DENABLE_FPGA=1)
     endif()
 
-add_test(gnss_block_test gnss_block_test)
+    add_test(gnss_block_test gnss_block_test)
 
     set_property(TEST gnss_block_test PROPERTY TIMEOUT 60)
 endif()
 
 
 #########################################################
-if(NOT ENABLE_PACKAGING)
+if(NOT ENABLE_PACKAGING AND NOT ENABLE_FPGA)
     add_executable(gnuradio_block_test
         ${CMAKE_CURRENT_SOURCE_DIR}/single_test_main.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/unit-tests/signal-processing-blocks/sources/unpack_2bit_samples_test.cc
-)
+        ${CMAKE_CURRENT_SOURCE_DIR}/unit-tests/signal-processing-blocks/sources/unpack_2bit_samples_test.cc
+    )
 
     target_link_libraries(gnuradio_block_test
         PUBLIC
@@ -702,9 +699,9 @@ if(NOT ENABLE_PACKAGING)
             core_receiver
             algorithms_libs
             core_system_parameters
-)
+    )
 
-add_test(gnuradio_block_test gnuradio_block_test)
+    add_test(gnuradio_block_test gnuradio_block_test)
 
     set_property(TEST gnuradio_block_test PROPERTY TIMEOUT 30)
 endif()
@@ -733,9 +730,9 @@ set_property(TEST matio_test PROPERTY TIMEOUT 30)
 
 
 #########################################################
-if(NOT ENABLE_PACKAGING)
-add_executable(acq_test
-    ${CMAKE_CURRENT_SOURCE_DIR}/single_test_main.cc
+if(NOT ENABLE_PACKAGING AND NOT ENABLE_FPGA)
+    add_executable(acq_test
+        ${CMAKE_CURRENT_SOURCE_DIR}/single_test_main.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/unit-tests/signal-processing-blocks/acquisition/gps_l1_ca_pcps_acquisition_test.cc
     )
 
@@ -764,21 +761,21 @@ add_executable(acq_test
             core_system_parameters
     )
 
-add_test(acq_test acq_test)
+    add_test(acq_test acq_test)
 
     set_property(TEST acq_test PROPERTY TIMEOUT 30)
 endif()
 
 
 #########################################################
-if(NOT ENABLE_PACKAGING)
+if(NOT ENABLE_PACKAGING AND NOT ENABLE_FPGA)
     add_executable(trk_test
         ${CMAKE_CURRENT_SOURCE_DIR}/single_test_main.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/unit-tests/signal-processing-blocks/tracking/galileo_e1_dll_pll_veml_tracking_test.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/unit-tests/signal-processing-blocks/tracking/tracking_loop_filter_test.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/unit-tests/signal-processing-blocks/tracking/cpu_multicorrelator_real_codes_test.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/unit-tests/signal-processing-blocks/tracking/bayesian_estimation_test.cc
-)
+        ${CMAKE_CURRENT_SOURCE_DIR}/unit-tests/signal-processing-blocks/tracking/galileo_e1_dll_pll_veml_tracking_test.cc
+        ${CMAKE_CURRENT_SOURCE_DIR}/unit-tests/signal-processing-blocks/tracking/tracking_loop_filter_test.cc
+        ${CMAKE_CURRENT_SOURCE_DIR}/unit-tests/signal-processing-blocks/tracking/cpu_multicorrelator_real_codes_test.cc
+        ${CMAKE_CURRENT_SOURCE_DIR}/unit-tests/signal-processing-blocks/tracking/bayesian_estimation_test.cc
+    )
 
     target_link_libraries(trk_test
         PUBLIC
@@ -801,16 +798,16 @@ if(NOT ENABLE_PACKAGING)
             signal_generator_gr_blocks
             core_receiver
             core_system_parameters
-)
+    )
 
-add_test(trk_test trk_test)
+    add_test(trk_test trk_test)
 
     set_property(TEST trk_test PROPERTY TIMEOUT 30)
 endif()
 
 #########################################################
 
-if(NOT ENABLE_PACKAGING)
+if(NOT ENABLE_PACKAGING AND NOT ENABLE_FPGA)
     add_executable(control_thread_test
         ${CMAKE_CURRENT_SOURCE_DIR}/single_test_main.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/unit-tests/control-plane/control_message_factory_test.cc
@@ -844,6 +841,10 @@ endif()
 if(ENABLE_PACKAGING)
     add_dependencies(check matio_test)
 else()
+    if(ENABLE_FPGA)
+    add_dependencies(check matio_test)
+else()
     add_dependencies(check control_thread_test flowgraph_test gnss_block_test
         gnuradio_block_test acq_test trk_test matio_test)
+    endif()
 endif()
