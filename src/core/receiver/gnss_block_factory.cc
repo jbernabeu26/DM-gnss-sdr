@@ -39,6 +39,12 @@
 #include "acquisition_interface.h"  // for AcquisitionInterface
 #include "array_signal_conditioner.h"
 #include "beamformer_filter.h"
+#include "beidou_b1i_dll_pll_tracking.h"
+#include "beidou_b1i_pcps_acquisition.h"
+#include "beidou_b1i_telemetry_decoder.h"
+#include "beidou_b3i_dll_pll_tracking.h"
+#include "beidou_b3i_pcps_acquisition.h"
+#include "beidou_b3i_telemetry_decoder.h"
 #include "byte_to_short.h"
 #include "channel.h"
 #include "configuration_interface.h"
@@ -66,12 +72,6 @@
 #include "glonass_l2_ca_dll_pll_tracking.h"
 #include "glonass_l2_ca_pcps_acquisition.h"
 #include "glonass_l2_ca_telemetry_decoder.h"
-#include "beidou_b1i_pcps_acquisition.h"
-#include "beidou_b1i_dll_pll_tracking.h"
-#include "beidou_b1i_telemetry_decoder.h"
-#include "beidou_b3i_pcps_acquisition.h"
-#include "beidou_b3i_dll_pll_tracking.h"
-#include "beidou_b3i_telemetry_decoder.h"
 #include "gnss_block_interface.h"
 #include "gps_l1_ca_dll_pll_c_aid_tracking.h"
 #include "gps_l1_ca_dll_pll_tracking.h"
@@ -948,7 +948,7 @@ std::unique_ptr<std::vector<std::unique_ptr<GNSSBlockInterface>>> GNSSBlockFacto
                                   Channels_5X_count +
                                   Channels_L5_count +
                                   Channels_B1_count +
-								  Channels_B3_count;
+								                  Channels_B3_count;
 
     std::unique_ptr<std::vector<std::unique_ptr<GNSSBlockInterface>>> channels(new std::vector<std::unique_ptr<GNSSBlockInterface>>(total_channels));
     try
