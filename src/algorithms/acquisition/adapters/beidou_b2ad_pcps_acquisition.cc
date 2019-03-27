@@ -139,13 +139,6 @@ void BeidouB2adPcpsAcquisition::stop_acquisition()
 }
 
 
-void BeidouB2adPcpsAcquisition::set_channel(unsigned int channel)
-{
-    channel_ = channel;
-    acquisition_->set_channel(channel_);
-}
-
-
 void BeidouB2adPcpsAcquisition::set_threshold(float threshold)
 {
     float pfa = configuration_->property(role_ + boost::lexical_cast<std::string>(channel_) + ".pfa", 0.0);

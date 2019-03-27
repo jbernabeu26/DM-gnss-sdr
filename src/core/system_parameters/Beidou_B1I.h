@@ -34,7 +34,7 @@
 
 #include "MATH_CONSTANTS.h"
 #include <cstdint>
-#include <utility>  // std::pair
+#include <utility>
 #include <vector>
 
 // Physical constants
