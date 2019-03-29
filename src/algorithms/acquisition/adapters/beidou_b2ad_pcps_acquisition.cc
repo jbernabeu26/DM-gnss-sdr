@@ -53,17 +53,18 @@ BeidouB2adPcpsAcquisition::BeidouB2adPcpsAcquisition(
     LOG(INFO) << "role " << role;
 
     item_type_ = configuration_->property(role + ".item_type", default_item_type);
-
     int64_t fs_in_deprecated = configuration_->property("GNSS-SDR.internal_fs_hz", 25000000);
     fs_in_ = configuration_->property("GNSS-SDR.internal_fs_sps", fs_in_deprecated);
     acq_parameters.fs_in = fs_in_;
-    if_ = configuration_->property(role + ".if", 0);
     dump_ = configuration_->property(role + ".dump", false);
     acq_parameters.dump = dump_;
     blocking_ = configuration_->property(role + ".blocking", true);
     acq_parameters.blocking = blocking_;
     doppler_max_ = configuration->property(role + ".doppler_max", 5000);
-    if (FLAGS_doppler_max != 0) doppler_max_ = FLAGS_doppler_max;
+    if (FLAGS_doppler_max != 0)
+        {
+            doppler_max_ = FLAGS_doppler_max;
+        }
     acq_parameters.doppler_max = doppler_max_;
     bit_transition_flag_ = configuration_->property(role + ".bit_transition_flag", false);
     acq_parameters.bit_transition_flag = bit_transition_flag_;
@@ -195,18 +196,24 @@ signed int BeidouB2adPcpsAcquisition::mag()
 void BeidouB2adPcpsAcquisition::init()
 {
     acquisition_->init();
+    set_local_code();
 }
 
 
 void BeidouB2adPcpsAcquisition::set_local_code()
 {
-    {
-        beidou_b2ad_code_gen_complex_sampled(code_, gnss_synchro_->PRN, fs_in_);
-        //todo below is a test case for generating the primary code and the secondary code for Beidou, it still needs some work.
-        //beidou_b2ad_code_gen_complex_sampledSecondary(code_, gnss_synchro_->PRN, fs_in_);
+    auto* code = new std::complex<float>[code_length_];
+    beidou_b2ad_code_gen_complex_sampled(code_, gnss_synchro_->PRN, fs_in_);
+    //beidou_b2ad_code_gen_complex_sampledSecondary(code_, gnss_synchro_->PRN, fs_in_);
 
-        acquisition_->set_local_code(code_);
-    }
+    for (uint32_t i = 0; i < sampled_ms_; i++)
+        {
+            memcpy(&(code_[i * code_length_]), code,
+                sizeof(gr_complex) * code_length_);
+        }
+
+    acquisition_->set_local_code(code_);
+    delete[] code;
 }
 
 

@@ -34,27 +34,20 @@
  * -------------------------------------------------------------------------
  */
 
-#include "dll_pll_conf.h"
 #include "beidou_b2a_dll_pll_tracking.h"
-#include "configuration_interface.h"
-#include "gnss_sdr_flags.h"
-#include "display.h"
-#include <glog/logging.h>
 #include "Beidou_B2a.h"
+#include "configuration_interface.h"
+#include "display.h"
+#include "dll_pll_conf.h"
+#include "gnss_sdr_flags.h"
+#include <glog/logging.h>
 
-
-using google::LogMessage;
-
-void BeidouB2aDllPllTracking::stop_tracking()
-{
-    tracking_->stop_tracking();
-}
 
 BeidouB2aDllPllTracking::BeidouB2aDllPllTracking(
     ConfigurationInterface* configuration, std::string role,
     unsigned int in_streams, unsigned int out_streams) : role_(role), in_streams_(in_streams), out_streams_(out_streams)
 {
-	Dll_Pll_Conf trk_param = Dll_Pll_Conf();
+    Dll_Pll_Conf trk_param = Dll_Pll_Conf();
     DLOG(INFO) << "role " << role;
     //################# CONFIGURATION PARAMETERS ########################
     std::string default_item_type = "gr_complex";
@@ -65,10 +58,16 @@ BeidouB2aDllPllTracking::BeidouB2aDllPllTracking(
     bool dump = configuration->property(role + ".dump", false);
     trk_param.dump = dump;
     float pll_bw_hz = configuration->property(role + ".pll_bw_hz", 50.0);
-    if (FLAGS_pll_bw_hz != 0.0) pll_bw_hz = static_cast<float>(FLAGS_pll_bw_hz);
+    if (FLAGS_pll_bw_hz != 0.0)
+        {
+            pll_bw_hz = static_cast<float>(FLAGS_pll_bw_hz);
+        }
     trk_param.pll_bw_hz = pll_bw_hz;
     float dll_bw_hz = configuration->property(role + ".dll_bw_hz", 2.0);
-    if (FLAGS_dll_bw_hz != 0.0) dll_bw_hz = static_cast<float>(FLAGS_dll_bw_hz);
+    if (FLAGS_dll_bw_hz != 0.0)
+        {
+            dll_bw_hz = static_cast<float>(FLAGS_dll_bw_hz);
+        }
     trk_param.dll_bw_hz = dll_bw_hz;
     float pll_bw_narrow_hz = configuration->property(role + ".pll_bw_narrow_hz", 2.0);
     trk_param.pll_bw_narrow_hz = pll_bw_narrow_hz;
@@ -107,16 +106,28 @@ BeidouB2aDllPllTracking::BeidouB2aDllPllTracking(
     char sig_[3] = "5C";
     std::memcpy(trk_param.signal, sig_, 3);
     int cn0_samples = configuration->property(role + ".cn0_samples", 20);
-    if (FLAGS_cn0_samples != 20) cn0_samples = FLAGS_cn0_samples;
+    if (FLAGS_cn0_samples != 20)
+        {
+            cn0_samples = FLAGS_cn0_samples;
+        }
     trk_param.cn0_samples = cn0_samples;
     int cn0_min = configuration->property(role + ".cn0_min", 25);
-    if (FLAGS_cn0_min != 25) cn0_min = FLAGS_cn0_min;
+    if (FLAGS_cn0_min != 25)
+        {
+            cn0_min = FLAGS_cn0_min;
+        }
     trk_param.cn0_min = cn0_min;
     int max_lock_fail = configuration->property(role + ".max_lock_fail", 50);
-    if (FLAGS_max_lock_fail != 50) max_lock_fail = FLAGS_max_lock_fail;
+    if (FLAGS_max_lock_fail != 50)
+        {
+            max_lock_fail = FLAGS_max_lock_fail;
+        }
     trk_param.max_lock_fail = max_lock_fail;
     double carrier_lock_th = configuration->property(role + ".carrier_lock_th", 0.85);
-    if (FLAGS_carrier_lock_th != 0.85) carrier_lock_th = FLAGS_carrier_lock_th;
+    if (FLAGS_carrier_lock_th != 0.85)
+        {
+            carrier_lock_th = FLAGS_carrier_lock_th;
+        }
     trk_param.carrier_lock_th = carrier_lock_th;
 
     //################# MAKE TRACKING GNURadio object ###################
@@ -135,14 +146,18 @@ BeidouB2aDllPllTracking::BeidouB2aDllPllTracking(
 }
 
 
-BeidouB2aDllPllTracking::~BeidouB2aDllPllTracking()
-{
-}
+BeidouB2aDllPllTracking::~BeidouB2aDllPllTracking() = default;
 
 
 void BeidouB2aDllPllTracking::start_tracking()
 {
     tracking_->start_tracking();
+}
+
+
+void BeidouB2aDllPllTracking::stop_tracking()
+{
+    tracking_->stop_tracking();
 }
 
 

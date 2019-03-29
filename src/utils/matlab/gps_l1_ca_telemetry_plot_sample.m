@@ -27,8 +27,8 @@
 %
 
 close all;clear;
-samplingFreq       = 25000000;     %[Hz]
-channels=[0:9];
+samplingFreq       = 10000000;     %[Hz]
+channels=[0:6, 14:17];
 path='/home/dmiralles/Documents/gnss-sdr/';
 addpath('libs/');
 clear PRN_absolute_sample_start;
@@ -39,8 +39,8 @@ end
 
 %% Plotting values
 %--- Configurations
-chn_num_a = 6;
-chn_num_b = 2;
+chn_num_a = 1;
+chn_num_b = 8;
 %--- Plot results
 figure;
 plot(GNSS_telemetry(chn_num_a).tracking_sample_counter, ...
@@ -62,4 +62,12 @@ plot(GNSS_telemetry(chn_num_b).tracking_sample_counter, ...
      GNSS_telemetry(chn_num_b).tow, 'ro');
 xlabel('TRK Sampling Counter');
 ylabel('Decoded Nav TOW');
+legend(['CHN-',num2str(chn_num_a-1)], ['CHN-',num2str(chn_num_b-1)]);
+
+figure;
+plot(GNSS_telemetry(chn_num_a).tracking_sample_counter, 'b+');
+hold on;
+grid on;
+plot(GNSS_telemetry(chn_num_b).tracking_sample_counter, 'ro');
+ylabel('TRK Sampling Counter');
 legend(['CHN-',num2str(chn_num_a-1)], ['CHN-',num2str(chn_num_b-1)]);

@@ -37,8 +37,8 @@
 #ifndef GNSS_SDR_BEIDOU_B2A_DLL_PLL_TRACKING_H_
 #define GNSS_SDR_BEIDOU_B2A_DLL_PLL_TRACKING_H_
 
-#include "tracking_interface.h"
 #include "dll_pll_veml_tracking.h"
+#include "tracking_interface.h"
 #include <string>
 
 class ConfigurationInterface;
@@ -49,7 +49,7 @@ class ConfigurationInterface;
 class BeidouB2aDllPllTracking : public TrackingInterface
 {
 public:
-	BeidouB2aDllPllTracking(ConfigurationInterface* configuration,
+    BeidouB2aDllPllTracking(ConfigurationInterface* configuration,
         std::string role,
         unsigned int in_streams,
         unsigned int out_streams);

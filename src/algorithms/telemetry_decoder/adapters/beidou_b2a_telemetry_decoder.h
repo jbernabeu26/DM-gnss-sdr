@@ -34,10 +34,13 @@
 #ifndef GNSS_SDR_BEIDOU_B2A_TELEMETRY_DECODER_H_
 #define GNSS_SDR_BEIDOU_B2A_TELEMETRY_DECODER_H_
 
-#include "telemetry_decoder_interface.h"
-#include "gnss_satellite.h"
-#include <string>
 #include "beidou_b2a_telemetry_decoder_gs.h"
+#include "gnss_satellite.h"
+#include "telemetry_decoder_interface.h"
+#include <gnuradio/runtime_types.h>  // for basic_block_sptr, top_block_sptr
+#include <cstddef>                   // for size_t
+#include <string>
+
 
 class ConfigurationInterface;
 
@@ -72,6 +75,7 @@ public:
     inline void set_channel(int channel) override { telemetry_decoder_->set_channel(channel); }
     inline void reset() override
     {
+        telemetry_decoder_->reset();
         return;
     }
     inline size_t item_size() override

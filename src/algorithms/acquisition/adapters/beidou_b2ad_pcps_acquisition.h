@@ -34,7 +34,6 @@
 #ifndef GNSS_SDR_BEIDOU_B2AD_PCPS_ACQUISITION_H_
 #define GNSS_SDR_BEIDOU_B2AD_PCPS_ACQUISITION_H_
 
-#include "acq_conf.h"
 #include "channel_fsm.h"
 #include "complex_byte_to_float_x2.h"
 #include "gnss_synchro.h"
@@ -42,6 +41,7 @@
 #include <gnuradio/blocks/float_to_complex.h>
 #include <gnuradio/blocks/stream_to_vector.h>
 #include <volk_gnsssdr/volk_gnsssdr.h>
+#include <cstdint>
 #include <string>
 
 
@@ -167,27 +167,26 @@ private:
     complex_byte_to_float_x2_sptr cbyte_to_float_x2_;
     size_t item_size_;
     std::string item_type_;
-    unsigned int vector_length_;
-    unsigned int code_length_;
+    uint32_t vector_length_;
+    uint32_t code_length_;
     bool bit_transition_flag_;
     bool use_CFAR_algorithm_flag_;
-    unsigned int channel_;
+    uint32_t channel_;
     std::shared_ptr<ChannelFsm> channel_fsm_;
     float threshold_;
-    unsigned int doppler_max_;
-    unsigned int doppler_step_;
-    unsigned int max_dwells_;
-    unsigned int sampled_ms_;
+    uint32_t doppler_max_;
+    uint32_t doppler_step_;
+    uint32_t max_dwells_;
+    uint32_t sampled_ms_;
     int64_t fs_in_;
-    long if_;
     bool dump_;
     bool blocking_;
     std::string dump_filename_;
     std::complex<float>* code_;
     Gnss_Synchro* gnss_synchro_;
     std::string role_;
-    unsigned int in_streams_;
-    unsigned int out_streams_;
+    uint32_t in_streams_;
+    uint32_t out_streams_;
 
     float calculate_threshold(float pfa);
 };

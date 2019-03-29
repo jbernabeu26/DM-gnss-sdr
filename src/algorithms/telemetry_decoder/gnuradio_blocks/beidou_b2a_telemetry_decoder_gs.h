@@ -35,16 +35,18 @@
 
 #include "beidou_cnav2_navigation_message.h"
 #include "gnss_satellite.h"
-#include "gnss_synchro.h"
-#include "Beidou_B2a.h"
-#include <gnuradio/block.h>
+#include <boost/circular_buffer.hpp>
+#include <boost/shared_ptr.hpp>  // for boost::shared_ptr
+#include <gnuradio/block.h>      // for block
+#include <gnuradio/types.h>      // for gr_vector_const_void_star
+#include <cstdint>
 #include <fstream>
 #include <string>
 
 
 class beidou_b2a_telemetry_decoder_gs;
 
-typedef boost::shared_ptr<beidou_b2a_telemetry_decoder_gs> beidou_b2a_telemetry_decoder_gs_sptr;
+using beidou_b2a_telemetry_decoder_gs_sptr = boost::shared_ptr<beidou_b2a_telemetry_decoder_gs>;
 
 beidou_b2a_telemetry_decoder_gs_sptr beidou_b2a_make_telemetry_decoder_gs(const Gnss_Satellite &satellite, bool dump);
 
@@ -58,9 +60,13 @@ beidou_b2a_telemetry_decoder_gs_sptr beidou_b2a_make_telemetry_decoder_gs(const 
 class beidou_b2a_telemetry_decoder_gs : public gr::block
 {
 public:
-    ~beidou_b2a_telemetry_decoder_gs();                //!< Class destructor
+    ~beidou_b2a_telemetry_decoder_gs();                   //!< Class destructor
     void set_satellite(const Gnss_Satellite &satellite);  //!< Set satellite PRN
     void set_channel(int channel);                        //!< Set receiver's channel
+    inline void reset()
+    {
+        return;
+    }
 
     /*!
      * \brief This is where all signal processing takes place
@@ -70,34 +76,34 @@ public:
 
 private:
     friend beidou_b2a_telemetry_decoder_gs_sptr
-	beidou_b2a_make_telemetry_decoder_gs(const Gnss_Satellite &satellite, bool dump);
+    beidou_b2a_make_telemetry_decoder_gs(const Gnss_Satellite &satellite, bool dump);
     beidou_b2a_telemetry_decoder_gs(const Gnss_Satellite &satellite, bool dump);
 
     void decode_string(double *symbols, int32_t frame_length);
 
     //!< Preamble decoding
-    unsigned short int d_preambles_bits[BEIDOU_CNAV2_PREAMBLE_LENGTH_BITS];
-    int32_t 	*d_preamble_samples;
-    int32_t 	*d_secondary_code_samples;
-    uint32_t 	d_samples_per_symbol;
-    int32_t 	d_symbols_per_preamble;
-    int32_t     d_samples_per_preamble;
-    int32_t    d_preamble_period_samples;
-    double 		*d_frame_symbols;
-    uint32_t 	d_frame_length_symbols;
-    uint32_t    d_required_symbols;
+    uint16_t d_preambles_bits[BEIDOU_CNAV2_PREAMBLE_LENGTH_BITS];
+    int32_t *d_preamble_samples;
+    int32_t *d_secondary_code_samples;
+    uint32_t d_samples_per_symbol;
+    int32_t d_symbols_per_preamble;
+    int32_t d_samples_per_preamble;
+    int32_t d_preamble_period_samples;
+    double *d_frame_symbols;
+    uint32_t d_frame_length_symbols;
+    uint32_t d_required_symbols;
 
     //!< Storage for incoming data
-    std::deque<float> d_symbol_history;
+    boost::circular_buffer<float> d_symbol_history;
 
     //!< Variables for internal functionality
-    uint64_t d_sample_counter;  //!< Sample counter as an index (1,2,3,..etc) indicating number of samples processed
-    uint64_t d_preamble_index;  //!< Index of sample number where preamble was found
-    uint32_t d_stat;                 //!< Status of decoder
-    bool d_flag_frame_sync;              //!< Indicate when a frame sync is achieved
-    bool d_flag_preamble;                //!< Flag indicating when preamble was found
-    int32_t d_CRC_error_counter;             //!< Number of failed CRC operations
-    bool flag_TOW_set;                   //!< Indicates when time of week is set
+    uint64_t d_sample_counter;    //!< Sample counter as an index (1,2,3,..etc) indicating number of samples processed
+    uint64_t d_preamble_index;    //!< Index of sample number where preamble was found
+    uint32_t d_stat;              //!< Status of decoder
+    bool d_flag_frame_sync;       //!< Indicate when a frame sync is achieved
+    bool d_flag_preamble;         //!< Flag indicating when preamble was found
+    int32_t d_CRC_error_counter;  //!< Number of failed CRC operations
+    bool flag_TOW_set;            //!< Indicates when time of week is set
 
     //!< Navigation Message variable
     Beidou_Cnav2_Navigation_Message d_nav;

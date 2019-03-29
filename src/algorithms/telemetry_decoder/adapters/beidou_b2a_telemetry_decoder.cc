@@ -33,14 +33,7 @@
 
 #include "beidou_b2a_telemetry_decoder.h"
 #include "configuration_interface.h"
-#include "beidou_cnav2_ephemeris.h"
-#include "beidou_cnav2_almanac.h"
-#include "beidou_cnav2_utc_model.h"
-#include <gnuradio/io_signature.h>
 #include <glog/logging.h>
-
-
-using google::LogMessage;
 
 BeidouB2aTelemetryDecoder::BeidouB2aTelemetryDecoder(ConfigurationInterface* configuration,
     std::string role,
@@ -69,9 +62,7 @@ BeidouB2aTelemetryDecoder::BeidouB2aTelemetryDecoder(ConfigurationInterface* con
 }
 
 
-BeidouB2aTelemetryDecoder::~BeidouB2aTelemetryDecoder()
-{
-}
+BeidouB2aTelemetryDecoder::~BeidouB2aTelemetryDecoder() = default;
 
 
 void BeidouB2aTelemetryDecoder::set_satellite(const Gnss_Satellite& satellite)
