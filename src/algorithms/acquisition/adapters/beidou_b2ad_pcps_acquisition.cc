@@ -66,6 +66,8 @@ BeidouB2adPcpsAcquisition::BeidouB2adPcpsAcquisition(
             doppler_max_ = FLAGS_doppler_max;
         }
     acq_parameters.doppler_max = doppler_max_;
+    sampled_ms_ = configuration_->property(role + ".coherent_integration_time_ms", 1);
+    acq_parameters.sampled_ms = sampled_ms_;
     bit_transition_flag_ = configuration_->property(role + ".bit_transition_flag", false);
     acq_parameters.bit_transition_flag = bit_transition_flag_;
     use_CFAR_algorithm_flag_ = configuration_->property(role + ".use_CFAR_algorithm", true);  //will be false in future versions
@@ -75,9 +77,9 @@ BeidouB2adPcpsAcquisition::BeidouB2adPcpsAcquisition(
     dump_filename_ = configuration_->property(role + ".dump_filename", default_dump_filename);
     acq_parameters.dump_filename = dump_filename_;
     //--- Find number of samples per spreading code -------------------------
-    code_length_ = static_cast<unsigned int>(std::round(static_cast<double>(fs_in_) / (BEIDOU_B2ad_CODE_RATE_HZ / static_cast<double>(BEIDOU_B2ad_CODE_LENGTH_CHIPS))));
+    code_length_ = static_cast<uint32_t>(std::round(static_cast<double>(fs_in_) / (BEIDOU_B2ad_CODE_RATE_HZ / static_cast<double>(BEIDOU_B2ad_CODE_LENGTH_CHIPS))));
 
-    vector_length_ = code_length_;
+    vector_length_ = code_length_ * sampled_ms_;
 
     if (bit_transition_flag_)
         {
@@ -94,15 +96,18 @@ BeidouB2adPcpsAcquisition::BeidouB2adPcpsAcquisition(
         {
             item_size_ = sizeof(gr_complex);
         }
+
+    acq_parameters.ms_per_code = 1;
+    acq_parameters.it_size = item_size_;
+    acq_parameters.sampled_ms = sampled_ms_;
     acq_parameters.samples_per_code = code_length_;  // This *5 is to add the secondary code
     acq_parameters.samples_per_ms = code_length_;
-    acq_parameters.sampled_ms = 1;
-    acq_parameters.it_size = item_size_;
     acq_parameters.num_doppler_bins_step2 = configuration_->property(role + ".second_nbins", 4);
     acq_parameters.doppler_step2 = configuration_->property(role + ".second_doppler_step", 125.0);
     acq_parameters.make_2_steps = configuration_->property(role + ".make_two_steps", false);
+
     acquisition_ = pcps_make_acquisition(acq_parameters);
-    DLOG(INFO) << "BEIDOU acquisition(" << acquisition_->unique_id() << ")";
+    DLOG(INFO) << "BEIDOU B2a acquisition(" << acquisition_->unique_id() << ")";
 
     stream_to_vector_ = gr::blocks::stream_to_vector::make(item_size_, vector_length_);
     DLOG(INFO) << "stream_to_vector(" << stream_to_vector_->unique_id() << ")";
@@ -142,12 +147,8 @@ void BeidouB2adPcpsAcquisition::stop_acquisition()
 
 void BeidouB2adPcpsAcquisition::set_threshold(float threshold)
 {
-    float pfa = configuration_->property(role_ + boost::lexical_cast<std::string>(channel_) + ".pfa", 0.0);
+    float pfa = configuration_->property(role_ + ".pfa", 0.0);
 
-    if (pfa == 0.0)
-        {
-            pfa = configuration_->property(role_ + ".pfa", 0.0);
-        }
     if (pfa == 0.0)
         {
             threshold_ = threshold;
@@ -163,7 +164,7 @@ void BeidouB2adPcpsAcquisition::set_threshold(float threshold)
 }
 
 
-void BeidouB2adPcpsAcquisition::set_doppler_max(unsigned int doppler_max)
+void BeidouB2adPcpsAcquisition::set_doppler_max(uint32_t doppler_max)
 {
     doppler_max_ = doppler_max;
 
@@ -171,7 +172,7 @@ void BeidouB2adPcpsAcquisition::set_doppler_max(unsigned int doppler_max)
 }
 
 
-void BeidouB2adPcpsAcquisition::set_doppler_step(unsigned int doppler_step)
+void BeidouB2adPcpsAcquisition::set_doppler_step(uint32_t doppler_step)
 {
     doppler_step_ = doppler_step;
 
@@ -223,7 +224,7 @@ void BeidouB2adPcpsAcquisition::reset()
 }
 
 
-void BeidouB2adPcpsAcquisition::set_state(int state)
+void BeidouB2adPcpsAcquisition::set_state(int32_t state)
 {
     acquisition_->set_state(state);
 }
@@ -232,7 +233,7 @@ void BeidouB2adPcpsAcquisition::set_state(int state)
 float BeidouB2adPcpsAcquisition::calculate_threshold(float pfa)
 {
     //Calculate the threshold
-    unsigned int frequency_bins = 0;
+	uint32_t frequency_bins = 0;
     for (int doppler = static_cast<int>(-doppler_max_); doppler <= static_cast<int>(doppler_max_); doppler += doppler_step_)
         {
             frequency_bins++;
