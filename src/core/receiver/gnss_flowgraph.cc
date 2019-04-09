@@ -246,8 +246,8 @@ void GNSSFlowgraph::connect()
                                 {
                                     //Connect the multichannel signal source to multiple signal conditioners
                                     // GNURADIO max_streams=-1 means infinite ports!
-                                    LOG(INFO) << "sig_source_.at(i)->get_right_block()->output_signature()->max_streams()=" << sig_source_.at(i)->get_right_block()->output_signature()->max_streams();
-                                    LOG(INFO) << "sig_conditioner_.at(signal_conditioner_ID)->get_left_block()->input_signature()=" << sig_conditioner_.at(signal_conditioner_ID)->get_left_block()->input_signature()->max_streams();
+                                    DLOG(INFO) << "sig_source_.at(i)->get_right_block()->output_signature()->max_streams()=" << sig_source_.at(i)->get_right_block()->output_signature()->max_streams();
+                                    DLOG(INFO) << "sig_conditioner_.at(signal_conditioner_ID)->get_left_block()->input_signature()=" << sig_conditioner_.at(signal_conditioner_ID)->get_left_block()->input_signature()->max_streams();
 
                                     if (sig_source_.at(i)->get_right_block()->output_signature()->max_streams() > 1)
                                         {
@@ -363,6 +363,11 @@ void GNSSFlowgraph::connect()
 #endif
 
     // Signal conditioner (selected_signal_source) >> channels (i) (dependent of their associated SignalSource_ID)
+    std::vector<bool> signal_conditioner_connected;
+    for (size_t n = 0; n < sig_conditioner_.size(); n++)
+        {
+            signal_conditioner_connected.push_back(false);
+        }
     for (unsigned int i = 0; i < channels_count_; i++)
         {
 #ifndef ENABLE_FPGA
@@ -441,10 +446,26 @@ void GNSSFlowgraph::connect()
                                                 {
                                                     //create a FIR low pass filter
                                                     std::vector<float> taps;
+
+                                                    //                                                    float beta = 7.0;
+                                                    //                                                    float halfband = 0.5;
+                                                    //                                                    float fractional_bw = 0.4;
+                                                    //                                                    float rate = 1.0 / static_cast<float>(decimation);
+                                                    //
+                                                    //                                                    float trans_width = rate * (halfband - fractional_bw);
+                                                    //                                                    float mid_transition_band = rate * halfband - trans_width / 2.0;
+                                                    //
+                                                    //                                                    taps = gr::filter::firdes::low_pass(1.0,
+                                                    //                                                        1.0,
+                                                    //                                                        mid_transition_band,
+                                                    //                                                        trans_width,
+                                                    //                                                        gr::filter::firdes::win_type::WIN_KAISER,
+                                                    //                                                        beta);
+
                                                     taps = gr::filter::firdes::low_pass(1.0,
                                                         fs,
                                                         acq_fs / 2.1,
-                                                        acq_fs / 10,
+                                                        acq_fs / 2,
                                                         gr::filter::firdes::win_type::WIN_HAMMING);
 
                                                     gr::basic_block_sptr fir_filter_ccf_ = gr::filter::fir_filter_ccf::make(decimation, taps);
@@ -503,10 +524,12 @@ void GNSSFlowgraph::connect()
                             top_block_->disconnect_all();
                             return;
                         }
-
+                    signal_conditioner_connected.at(selected_signal_conditioner_ID) = true;  //notify that this signal conditioner is connected
                     DLOG(INFO) << "signal conditioner " << selected_signal_conditioner_ID << " connected to channel " << i;
                 }
 #endif
+
+
             // Signal Source > Signal conditioner >> Channels >> Observables
             try
                 {
@@ -522,6 +545,20 @@ void GNSSFlowgraph::connect()
                 }
         }
 
+    //check for unconnected signal conditioners and connect null_sinks in order to provide configuration flexibility to multiband files or signal sources
+    if (configuration_->property(sig_source_.at(0)->role() + ".enable_FPGA", false) == false)
+        {
+            for (size_t n = 0; n < sig_conditioner_.size(); n++)
+                {
+                    if (signal_conditioner_connected.at(n) == false)
+                        {
+                            null_sinks_.push_back(gr::blocks::null_sink::make(sizeof(gr_complex)));
+                            top_block_->connect(sig_conditioner_.at(n)->get_right_block(), 0,
+                                null_sinks_.back(), 0);
+                            LOG(INFO) << "Null sink connected to signal conditioner " << n << " due to lack of connection to any channel" << std::endl;
+                        }
+                }
+        }
     // Put channels fixed to a given satellite at the beginning of the vector, then the rest
     std::vector<unsigned int> vector_of_channels;
     for (unsigned int i = 0; i < channels_count_; i++)
