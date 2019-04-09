@@ -45,7 +45,6 @@ BeidouB2adPcpsAcquisition::BeidouB2adPcpsAcquisition(
     ConfigurationInterface* configuration, std::string role,
     unsigned int in_streams, unsigned int out_streams) : role_(role), in_streams_(in_streams), out_streams_(out_streams)
 {
-    Acq_Conf acq_parameters = Acq_Conf();
     configuration_ = configuration;
     std::string default_item_type = "gr_complex";
     std::string default_dump_filename = "./data/acquisition.dat";
@@ -55,27 +54,27 @@ BeidouB2adPcpsAcquisition::BeidouB2adPcpsAcquisition(
     item_type_ = configuration_->property(role + ".item_type", default_item_type);
     int64_t fs_in_deprecated = configuration_->property("GNSS-SDR.internal_fs_hz", 25000000);
     fs_in_ = configuration_->property("GNSS-SDR.internal_fs_sps", fs_in_deprecated);
-    acq_parameters.fs_in = fs_in_;
+    acq_parameters_.fs_in = fs_in_;
     dump_ = configuration_->property(role + ".dump", false);
-    acq_parameters.dump = dump_;
+    acq_parameters_.dump = dump_;
     blocking_ = configuration_->property(role + ".blocking", true);
-    acq_parameters.blocking = blocking_;
+    acq_parameters_.blocking = blocking_;
     doppler_max_ = configuration->property(role + ".doppler_max", 5000);
     if (FLAGS_doppler_max != 0)
         {
             doppler_max_ = FLAGS_doppler_max;
         }
-    acq_parameters.doppler_max = doppler_max_;
+    acq_parameters_.doppler_max = doppler_max_;
     sampled_ms_ = configuration_->property(role + ".coherent_integration_time_ms", 1);
-    acq_parameters.sampled_ms = sampled_ms_;
+    acq_parameters_.sampled_ms = sampled_ms_;
     bit_transition_flag_ = configuration_->property(role + ".bit_transition_flag", false);
-    acq_parameters.bit_transition_flag = bit_transition_flag_;
+    acq_parameters_.bit_transition_flag = bit_transition_flag_;
     use_CFAR_algorithm_flag_ = configuration_->property(role + ".use_CFAR_algorithm", true);  //will be false in future versions
-    acq_parameters.use_CFAR_algorithm_flag = use_CFAR_algorithm_flag_;
+    acq_parameters_.use_CFAR_algorithm_flag = use_CFAR_algorithm_flag_;
     max_dwells_ = configuration_->property(role + ".max_dwells", 1);
-    acq_parameters.max_dwells = max_dwells_;
+    acq_parameters_.max_dwells = max_dwells_;
     dump_filename_ = configuration_->property(role + ".dump_filename", default_dump_filename);
-    acq_parameters.dump_filename = dump_filename_;
+    acq_parameters_.dump_filename = dump_filename_;
     //--- Find number of samples per spreading code -------------------------
     code_length_ = static_cast<uint32_t>(std::round(static_cast<double>(fs_in_) / (BEIDOU_B2ad_CODE_RATE_HZ / static_cast<double>(BEIDOU_B2ad_CODE_LENGTH_CHIPS))));
 
@@ -97,16 +96,17 @@ BeidouB2adPcpsAcquisition::BeidouB2adPcpsAcquisition(
             item_size_ = sizeof(gr_complex);
         }
 
-    acq_parameters.ms_per_code = 1;
-    acq_parameters.it_size = item_size_;
-    acq_parameters.sampled_ms = sampled_ms_;
-    acq_parameters.samples_per_code = code_length_;  // This *5 is to add the secondary code
-    acq_parameters.samples_per_ms = code_length_;
-    acq_parameters.num_doppler_bins_step2 = configuration_->property(role + ".second_nbins", 4);
-    acq_parameters.doppler_step2 = configuration_->property(role + ".second_doppler_step", 125.0);
-    acq_parameters.make_2_steps = configuration_->property(role + ".make_two_steps", false);
+    acq_parameters_.ms_per_code = 1;
+    acq_parameters_.it_size = item_size_;
+    acq_parameters_.sampled_ms = sampled_ms_;
+    acq_parameters_.samples_per_code = code_length_;  // This *5 is to add the secondary code
+    acq_parameters_.samples_per_ms = code_length_;
+    acq_parameters_.num_doppler_bins_step2 = configuration_->property(role + ".second_nbins", 4);
+    acq_parameters_.doppler_step2 = configuration_->property(role + ".second_doppler_step", 125.0);
+    acq_parameters_.make_2_steps = configuration_->property(role + ".make_two_steps", false);
+    acq_parameters_.samples_per_chip = static_cast<uint32_t>(ceil((1.0 / BEIDOU_B2ad_CODE_RATE_HZ) * static_cast<float>(acq_parameters_.fs_in)));
 
-    acquisition_ = pcps_make_acquisition(acq_parameters);
+    acquisition_ = pcps_make_acquisition(acq_parameters_);
     DLOG(INFO) << "BEIDOU B2a acquisition(" << acquisition_->unique_id() << ")";
 
     stream_to_vector_ = gr::blocks::stream_to_vector::make(item_size_, vector_length_);
@@ -197,7 +197,6 @@ signed int BeidouB2adPcpsAcquisition::mag()
 void BeidouB2adPcpsAcquisition::init()
 {
     acquisition_->init();
-    set_local_code();
 }
 
 

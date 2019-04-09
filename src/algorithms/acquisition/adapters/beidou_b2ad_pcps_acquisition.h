@@ -162,6 +162,7 @@ public:
 private:
     ConfigurationInterface* configuration_;
     pcps_acquisition_sptr acquisition_;
+    Acq_Conf acq_parameters_;
     gr::blocks::stream_to_vector::sptr stream_to_vector_;
     gr::blocks::float_to_complex::sptr float_to_complex_;
     complex_byte_to_float_x2_sptr cbyte_to_float_x2_;
