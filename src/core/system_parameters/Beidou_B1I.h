@@ -37,16 +37,6 @@
 #include <utility>
 #include <vector>
 
-// Physical constants
-const double BEIDOU_C_M_S = 299792458.0;             //!< The speed of light, [m/s]
-const double BEIDOU_C_M_MS = 299792.4580;            //!< The speed of light, [m/ms]
-const double BEIDOU_PI = 3.1415926535898;            //!< Pi
-const double BEIDOU_TWO_PI = 6.283185307179586;      //!< 2Pi
-const double BEIDOU_OMEGA_EARTH_DOT = 7.2921150e-5;  //!< Earth rotation rate, [rad/s] as defined in CGCS2000
-const double BEIDOU_GM = 3.986004418e14;             //!< Universal gravitational constant times the mass of the Earth, [m^3/s^2] as defined in CGCS2000
-const double BEIDOU_F = -4.442807309e-10;            //!< Constant, [s/(m)^(1/2)] F=-2(GM)^.5/C^2
-
-
 // carrier and code frequencies
 const double BEIDOU_B1I_FREQ_HZ = 1.561098e9;        //!< b1I [Hz]
 const double BEIDOU_B1I_CODE_RATE_HZ = 2.046e6;      //!< beidou b1I code rate [chips/s]
