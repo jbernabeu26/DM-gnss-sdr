@@ -33,6 +33,7 @@
 #define GNSS_SDR_DLL_PLL_VEML_TRACKING_FPGA_H
 
 #include "dll_pll_conf_fpga.h"
+#include "exponential_smoother.h"
 #include "tracking_FLL_PLL_filter.h"  // for PLL/FLL filter
 #include "tracking_loop_filter.h"     // for DLL filter
 #include <boost/circular_buffer.hpp>
@@ -91,7 +92,7 @@ private:
     void log_data(bool integrating);
     int32_t save_matfile();
 
-    void run_state_2(Gnss_Synchro &current_synchro_data);
+    //void run_state_2(Gnss_Synchro &current_synchro_data);
 
     // tracking configuration vars
     Dll_Pll_Conf_Fpga trk_parameters;
@@ -146,7 +147,6 @@ private:
     gr_complex d_P_accu_old;
     gr_complex d_L_accu;
     gr_complex d_VL_accu;
-    gr_complex d_last_prompt;
 
     gr_complex *d_Prompt_Data;
 
@@ -173,7 +173,6 @@ private:
     double d_current_correlation_time_s;
     double d_carr_phase_error_hz;
     double d_carr_freq_error_hz;
-    double d_carr_error_hz;
     double d_carr_error_filt_hz;
     double d_code_error_chips;
     double d_code_error_filt_chips;
@@ -203,6 +202,7 @@ private:
     boost::circular_buffer<gr_complex> d_Prompt_circular_buffer;
     //std::deque<gr_complex> d_Prompt_buffer_deque;
     gr_complex *d_Prompt_buffer;
+    Exponential_Smoother d_cn0_smoother;
 
     // file dump
     std::ofstream d_dump_file;

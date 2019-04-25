@@ -734,7 +734,7 @@ Rtklib_Pvt::Rtklib_Pvt(ConfigurationInterface* configuration,
     pvt_output_parameters.kml_output_enabled = configuration->property(role + ".kml_output_enabled", default_output_enabled);
     pvt_output_parameters.xml_output_enabled = configuration->property(role + ".xml_output_enabled", default_output_enabled);
     pvt_output_parameters.nmea_output_file_enabled = configuration->property(role + ".nmea_output_file_enabled", default_output_enabled);
-    pvt_output_parameters.rtcm_output_file_enabled = configuration->property(role + ".rtcm_output_file_enabled", default_output_enabled);
+    pvt_output_parameters.rtcm_output_file_enabled = configuration->property(role + ".rtcm_output_file_enabled", false);
 
     std::string default_output_path = configuration->property(role + ".output_path", std::string("."));
     pvt_output_parameters.output_path = default_output_path;
@@ -750,6 +750,11 @@ Rtklib_Pvt::Rtklib_Pvt(ConfigurationInterface* configuration,
     pvt_output_parameters.monitor_enabled = configuration->property(role + ".enable_monitor", false);
     pvt_output_parameters.udp_addresses = configuration->property(role + ".monitor_client_addresses", std::string("127.0.0.1"));
     pvt_output_parameters.udp_port = configuration->property(role + ".monitor_udp_port", 1234);
+    pvt_output_parameters.protobuf_enabled = configuration->property(role + ".enable_protobuf", true);
+    if (configuration->property("Monitor.enable_protobuf", false) == true)
+        {
+            pvt_output_parameters.protobuf_enabled = true;
+        }
 
     // Show time in local zone
     pvt_output_parameters.show_local_time_zone = configuration->property(role + ".show_local_time_zone", false);
