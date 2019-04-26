@@ -203,7 +203,7 @@ void BeidouB2adPcpsAcquisition::init()
 void BeidouB2adPcpsAcquisition::set_local_code()
 {
     auto* code = new std::complex<float>[code_length_];
-    beidou_b2ad_code_gen_complex_sampled(code_, gnss_synchro_->PRN, fs_in_);
+    beidou_b2ad_code_gen_complex_sampled(code, gnss_synchro_->PRN, fs_in_);
     //beidou_b2ad_code_gen_complex_sampledSecondary(code_, gnss_synchro_->PRN, fs_in_);
 
     for (uint32_t i = 0; i < sampled_ms_; i++)
@@ -232,7 +232,7 @@ void BeidouB2adPcpsAcquisition::set_state(int32_t state)
 float BeidouB2adPcpsAcquisition::calculate_threshold(float pfa)
 {
     //Calculate the threshold
-	uint32_t frequency_bins = 0;
+    uint32_t frequency_bins = 0;
     for (int doppler = static_cast<int>(-doppler_max_); doppler <= static_cast<int>(doppler_max_); doppler += doppler_step_)
         {
             frequency_bins++;
