@@ -1403,7 +1403,6 @@ std::unique_ptr<GNSSBlockInterface> GNSSBlockFactory::GetBlock(
                     exit(1);
                 }
         }
-#if MODERN_GNURADIO
     else if (implementation == "Two_Bit_Cpx_File_Signal_Source")
         {
             try
@@ -1432,7 +1431,6 @@ std::unique_ptr<GNSSBlockInterface> GNSSBlockFactory::GetBlock(
                     exit(1);
                 }
         }
-#endif
     else if (implementation == "Spir_File_Signal_Source")
         {
             try
