@@ -402,7 +402,6 @@ std::string Gnss_Satellite::what_block(const std::string& system_, uint32_t PRN_
                     block_ = std::string("Unknown");
                 }
         }
-
     if (system_ == "Glonass")
         {
             // Info from http://www.sdcm.ru/smglo/grupglo?version=eng&site=extern
