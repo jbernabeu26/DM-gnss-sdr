@@ -64,6 +64,7 @@ target_link_libraries(signal_source_gr_blocks
         Gnuradio::runtime
         signal_source_libs
     PRIVATE
+        core_receiver
         Gflags::gflags
         Glog::glog
 )
@@ -76,12 +77,19 @@ if(ENABLE_RAW_UDP AND PCAP_FOUND)
 endif()
 
 if(OS_IS_MACOSX)
-    if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")  # not AppleClang
+    if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
         target_compile_definitions(signal_source_gr_blocks
             PUBLIC
                 -DBOOST_ASIO_HAS_STD_STRING_VIEW
         )
     endif()
+endif()
+
+if(Boost_VERSION VERSION_GREATER "106599")
+    target_compile_definitions(signal_source_gr_blocks
+        PUBLIC
+            -DBOOST_GREATER_1_65
+    )
 endif()
 
 if(ENABLE_CLANG_TIDY)

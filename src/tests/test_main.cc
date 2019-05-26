@@ -66,6 +66,7 @@ DECLARE_string(log_dir);
 #include "unit-tests/control-plane/gnss_block_factory_test.cc"
 #include "unit-tests/control-plane/gnss_flowgraph_test.cc"
 #include "unit-tests/control-plane/in_memory_configuration_test.cc"
+#include "unit-tests/control-plane/protobuf_test.cc"
 #include "unit-tests/control-plane/string_converter_test.cc"
 #include "unit-tests/signal-processing-blocks/acquisition/galileo_e1_pcps_8ms_ambiguous_acquisition_gsoc2013_test.cc"
 #include "unit-tests/signal-processing-blocks/acquisition/galileo_e1_pcps_ambiguous_acquisition_gsoc2013_test.cc"
@@ -92,7 +93,6 @@ DECLARE_string(log_dir);
 #include "unit-tests/signal-processing-blocks/sources/gnss_sdr_valve_test.cc"
 #include "unit-tests/signal-processing-blocks/sources/unpack_2bit_samples_test.cc"
 // #include "unit-tests/signal-processing-blocks/acquisition/glonass_l2_ca_pcps_acquisition_test.cc"
-// #include "unit-tests/signal-processing-blocks/acquisition/beidou_b1i_pcps_acquisition_test.cc"
 
 #if OPENCL_BLOCKS_TEST
 #include "unit-tests/signal-processing-blocks/acquisition/gps_l1_ca_pcps_opencl_acquisition_gsoc2013_test.cc"
@@ -120,6 +120,7 @@ DECLARE_string(log_dir);
 #include "unit-tests/signal-processing-blocks/pvt/rinex_printer_test.cc"
 #include "unit-tests/signal-processing-blocks/pvt/rtcm_printer_test.cc"
 #include "unit-tests/signal-processing-blocks/pvt/rtcm_test.cc"
+#include "unit-tests/signal-processing-blocks/pvt/serdes_monitor_pvt_test.cc"
 #include "unit-tests/signal-processing-blocks/telemetry_decoder/galileo_fnav_inav_decoder_test.cc"
 #include "unit-tests/system-parameters/glonass_gnav_ephemeris_test.cc"
 #include "unit-tests/system-parameters/glonass_gnav_nav_message_test.cc"
@@ -127,6 +128,8 @@ DECLARE_string(log_dir);
 
 #if EXTRA_TESTS
 #include "unit-tests/signal-processing-blocks/acquisition/acq_performance_test.cc"
+//#include "unit-tests/signal-processing-blocks/acquisition/beidou_b1i_pcps_acquisition_test.cc"
+//#include "unit-tests/signal-processing-blocks/acquisition/beidou_b3i_pcps_acquisition_test.cc"
 #include "unit-tests/signal-processing-blocks/acquisition/glonass_l1_ca_pcps_acquisition_test.cc"
 #include "unit-tests/signal-processing-blocks/acquisition/gps_l2_m_pcps_acquisition_test.cc"
 #include "unit-tests/signal-processing-blocks/pvt/rtklib_solver_test.cc"

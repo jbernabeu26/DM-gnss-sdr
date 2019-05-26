@@ -39,6 +39,7 @@
 #include "Galileo_E1.h"
 #include "Galileo_E5a.h"
 #include "channel.h"
+#include "channel_fsm.h"
 #include "channel_interface.h"
 #include "configuration_interface.h"
 #include "gnss_block_factory.h"
@@ -245,8 +246,8 @@ void GNSSFlowgraph::connect()
                                 {
                                     // Connect the multichannel signal source to multiple signal conditioners
                                     // GNURADIO max_streams=-1 means infinite ports!
-                                    LOG(INFO) << "sig_source_.at(i)->get_right_block()->output_signature()->max_streams()=" << sig_source_.at(i)->get_right_block()->output_signature()->max_streams();
-                                    LOG(INFO) << "sig_conditioner_.at(signal_conditioner_ID)->get_left_block()->input_signature()=" << sig_conditioner_.at(signal_conditioner_ID)->get_left_block()->input_signature()->max_streams();
+                                    DLOG(INFO) << "sig_source_.at(i)->get_right_block()->output_signature()->max_streams()=" << sig_source_.at(i)->get_right_block()->output_signature()->max_streams();
+                                    DLOG(INFO) << "sig_conditioner_.at(signal_conditioner_ID)->get_left_block()->input_signature()=" << sig_conditioner_.at(signal_conditioner_ID)->get_left_block()->input_signature()->max_streams();
 
                                     if (sig_source_.at(i)->get_right_block()->output_signature()->max_streams() > 1)
                                         {
@@ -362,6 +363,11 @@ void GNSSFlowgraph::connect()
 #endif
 
     // Signal conditioner (selected_signal_source) >> channels (i) (dependent of their associated SignalSource_ID)
+    std::vector<bool> signal_conditioner_connected;
+    for (size_t n = 0; n < sig_conditioner_.size(); n++)
+        {
+            signal_conditioner_connected.push_back(false);
+        }
     for (unsigned int i = 0; i < channels_count_; i++)
         {
 #ifndef ENABLE_FPGA
@@ -437,10 +443,26 @@ void GNSSFlowgraph::connect()
                                                 {
                                                     // create a FIR low pass filter
                                                     std::vector<float> taps;
+
+                                                    // float beta = 7.0;
+                                                    // float halfband = 0.5;
+                                                    // float fractional_bw = 0.4;
+                                                    // float rate = 1.0 / static_cast<float>(decimation);
+                                                    //
+                                                    // float trans_width = rate * (halfband - fractional_bw);
+                                                    // float mid_transition_band = rate * halfband - trans_width / 2.0;
+                                                    //
+                                                    // taps = gr::filter::firdes::low_pass(1.0,
+                                                    //    1.0,
+                                                    //    mid_transition_band,
+                                                    //    trans_width,
+                                                    //    gr::filter::firdes::win_type::WIN_KAISER,
+                                                    //    beta);
+
                                                     taps = gr::filter::firdes::low_pass(1.0,
                                                         fs,
                                                         acq_fs / 2.1,
-                                                        acq_fs / 10,
+                                                        acq_fs / 2,
                                                         gr::filter::firdes::win_type::WIN_HAMMING);
 
                                                     gr::basic_block_sptr fir_filter_ccf_ = gr::filter::fir_filter_ccf::make(decimation, taps);
@@ -499,10 +521,11 @@ void GNSSFlowgraph::connect()
                             top_block_->disconnect_all();
                             return;
                         }
-
+                    signal_conditioner_connected.at(selected_signal_conditioner_ID) = true;  //notify that this signal conditioner is connected
                     DLOG(INFO) << "signal conditioner " << selected_signal_conditioner_ID << " connected to channel " << i;
                 }
 #endif
+
             // Signal Source > Signal conditioner >> Channels >> Observables
             try
                 {
@@ -515,6 +538,21 @@ void GNSSFlowgraph::connect()
                     LOG(ERROR) << e.what();
                     top_block_->disconnect_all();
                     return;
+                }
+        }
+
+    //check for unconnected signal conditioners and connect null_sinks in order to provide configuration flexibility to multiband files or signal sources
+    if (configuration_->property(sig_source_.at(0)->role() + ".enable_FPGA", false) == false)
+        {
+            for (size_t n = 0; n < sig_conditioner_.size(); n++)
+                {
+                    if (signal_conditioner_connected.at(n) == false)
+                        {
+                            null_sinks_.push_back(gr::blocks::null_sink::make(sizeof(gr_complex)));
+                            top_block_->connect(sig_conditioner_.at(n)->get_right_block(), 0,
+                                null_sinks_.back(), 0);
+                            LOG(INFO) << "Null sink connected to signal conditioner " << n << " due to lack of connection to any channel" << std::endl;
+                        }
                 }
         }
 
@@ -639,6 +677,7 @@ void GNSSFlowgraph::connect()
                     top_block_->connect(observables_->get_right_block(), i, pvt_->get_left_block(), i);
                     top_block_->msg_connect(channels_.at(i)->get_right_block(), pmt::mp("telemetry"), pvt_->get_left_block(), pmt::mp("telemetry"));
                 }
+            top_block_->msg_connect(pvt_->get_left_block(), pmt::mp("pvt_to_observables"), observables_->get_right_block(), pmt::mp("pvt_to_observables"));
         }
     catch (const std::exception& e)
         {
@@ -910,6 +949,7 @@ void GNSSFlowgraph::disconnect()
                         }
                     top_block_->msg_disconnect(channels_.at(i)->get_right_block(), pmt::mp("telemetry"), pvt_->get_left_block(), pmt::mp("telemetry"));
                 }
+            top_block_->msg_disconnect(pvt_->get_left_block(), pmt::mp("pvt_to_observables"), observables_->get_right_block(), pmt::mp("pvt_to_observables"));
         }
     catch (const std::exception& e)
         {
@@ -1131,7 +1171,6 @@ void GNSSFlowgraph::apply_action(unsigned int who, unsigned int what)
                                 }
                             acq_channels_count_++;
                             DLOG(INFO) << "Channel " << ch_index << " Starting acquisition " << channels_[ch_index]->get_signal().get_satellite() << ", Signal " << channels_[ch_index]->get_signal().get_signal_str();
-
 #ifndef ENABLE_FPGA
                             channels_[ch_index]->start_acquisition();
 #else
@@ -1666,7 +1705,11 @@ void GNSSFlowgraph::init()
 	 * Instantiate the receiver monitor block, if required
 	 */
     enable_monitor_ = configuration_->property("Monitor.enable_monitor", false);
-
+    bool enable_protobuf = configuration_->property("Monitor.enable_protobuf", true);
+    if (configuration_->property("PVT.enable_protobuf", false) == true)
+        {
+            enable_protobuf = true;
+        }
     std::string address_string = configuration_->property("Monitor.client_addresses", std::string("127.0.0.1"));
     std::vector<std::string> udp_addr_vec = split_string(address_string, '_');
     std::sort(udp_addr_vec.begin(), udp_addr_vec.end());
@@ -1677,7 +1720,7 @@ void GNSSFlowgraph::init()
             GnssSynchroMonitor_ = gnss_synchro_make_monitor(channels_count_,
                 configuration_->property("Monitor.decimation_factor", 1),
                 configuration_->property("Monitor.udp_port", 1234),
-                udp_addr_vec);
+                udp_addr_vec, enable_protobuf);
         }
 }
 

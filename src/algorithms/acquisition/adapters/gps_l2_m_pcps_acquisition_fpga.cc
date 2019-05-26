@@ -47,7 +47,11 @@
 #include <cstring>  // for memcpy
 
 #define NUM_PRNs 32
-
+#define QUANT_BITS_LOCAL_CODE 16
+#define SELECT_LSBits 0x0000FFFF         // Select the 10 LSbits out of a 20-bit word
+#define SELECT_MSBbits 0xFFFF0000        // Select the 10 MSbits out of a 20-bit word
+#define SELECT_ALL_CODE_BITS 0xFFFFFFFF  // Select a 20 bit word
+#define SHL_CODE_BITS 65536              // shift left by 10 bits
 
 GpsL2MPcpsAcquisitionFpga::GpsL2MPcpsAcquisitionFpga(
     ConfigurationInterface* configuration,
@@ -69,6 +73,9 @@ GpsL2MPcpsAcquisitionFpga::GpsL2MPcpsAcquisitionFpga(
     int64_t fs_in_deprecated = configuration_->property("GNSS-SDR.internal_fs_hz", 2048000);
     fs_in_ = configuration_->property("GNSS-SDR.internal_fs_sps", fs_in_deprecated);
     acq_parameters.fs_in = fs_in_;
+
+    acq_parameters.repeat_satellite = configuration_->property(role + ".repeat_satellite", false);
+    DLOG(INFO) << role << " satellite repeat = " << acq_parameters.repeat_satellite;
 
     doppler_max_ = configuration->property(role + ".doppler_max", 5000);
     if (FLAGS_doppler_max != 0) doppler_max_ = FLAGS_doppler_max;
@@ -99,8 +106,11 @@ GpsL2MPcpsAcquisitionFpga::GpsL2MPcpsAcquisitionFpga(
     // allocate memory to compute all the PRNs and compute all the possible codes
     auto* code = new std::complex<float>[nsamples_total];  // buffer for the local code
     auto* fft_codes_padded = static_cast<gr_complex*>(volk_gnsssdr_malloc(nsamples_total * sizeof(gr_complex), volk_gnsssdr_get_alignment()));
-    d_all_fft_codes_ = new lv_16sc_t[nsamples_total * NUM_PRNs];  // memory containing all the possible fft codes for PRN 0 to 32
-    float max;                                                    // temporary maxima search
+    //d_all_fft_codes_ = new lv_16sc_t[nsamples_total * NUM_PRNs];  // memory containing all the possible fft codes for PRN 0 to 32
+    d_all_fft_codes_ = new uint32_t[(nsamples_total * NUM_PRNs)];  // memory containing all the possible fft codes for PRN 0 to 32
+    float max;                                                     // temporary maxima search
+    int32_t tmp, tmp2, local_code, fft_data;
+
     for (unsigned int PRN = 1; PRN <= NUM_PRNs; PRN++)
         {
             gps_l2c_m_code_gen_complex_sampled(code, PRN, fs_in_);
@@ -124,10 +134,18 @@ GpsL2MPcpsAcquisitionFpga::GpsL2MPcpsAcquisitionFpga(
                             max = std::abs(fft_codes_padded[i].imag());
                         }
                 }
-            for (unsigned int i = 0; i < nsamples_total; i++)  // map the FFT to the dynamic range of the fixed point values an copy to buffer containing all FFTs
+            // map the FFT to the dynamic range of the fixed point values an copy to buffer containing all FFTs
+            // and package codes in a format that is ready to be written to the FPGA
+            for (uint32_t i = 0; i < nsamples_total; i++)
                 {
-                    d_all_fft_codes_[i + nsamples_total * (PRN - 1)] = lv_16sc_t(static_cast<int>(floor(fft_codes_padded[i].real() * (pow(2, 7) - 1) / max)),
-                        static_cast<int>(floor(fft_codes_padded[i].imag() * (pow(2, 7) - 1) / max)));
+                    tmp = static_cast<int32_t>(floor(fft_codes_padded[i].real() * (pow(2, QUANT_BITS_LOCAL_CODE - 1) - 1) / max));
+                    tmp2 = static_cast<int32_t>(floor(fft_codes_padded[i].imag() * (pow(2, QUANT_BITS_LOCAL_CODE - 1) - 1) / max));
+                    local_code = (tmp & SELECT_LSBits) | ((tmp2 * SHL_CODE_BITS) & SELECT_MSBbits);  // put together the real part and the imaginary part
+                    fft_data = local_code & SELECT_ALL_CODE_BITS;
+                    d_all_fft_codes_[i + (nsamples_total * (PRN - 1))] = fft_data;
+
+                    // d_all_fft_codes_[i + nsamples_total * (PRN - 1)] = lv_16sc_t(static_cast<int32_t>(floor(fft_codes_padded[i].real() * (pow(2, QUANT_BITS_LOCAL_CODE - 1) - 1) / max)),
+                    // static_cast<int32_t>(floor(fft_codes_padded[i].imag() * (pow(2, QUANT_BITS_LOCAL_CODE - 1) - 1) / max)));
                 }
         }
 
@@ -139,13 +157,11 @@ GpsL2MPcpsAcquisitionFpga::GpsL2MPcpsAcquisitionFpga(
     delete[] fft_codes_padded;
 
     acquisition_fpga_ = pcps_make_acquisition_fpga(acq_parameters);
-    DLOG(INFO) << "acquisition(" << acquisition_fpga_->unique_id() << ")";
 
     channel_ = 0;
     doppler_step_ = 0;
     gnss_synchro_ = nullptr;
-
-    DLOG(INFO) << "acquisition(" << acquisition_fpga_->unique_id() << ")";
+    
 
     threshold_ = 0.0;
 }
@@ -159,13 +175,6 @@ GpsL2MPcpsAcquisitionFpga::~GpsL2MPcpsAcquisitionFpga()
 
 void GpsL2MPcpsAcquisitionFpga::stop_acquisition()
 {
-}
-
-
-void GpsL2MPcpsAcquisitionFpga::set_channel(unsigned int channel)
-{
-    channel_ = channel;
-    acquisition_fpga_->set_channel(channel_);
 }
 
 
@@ -260,5 +269,5 @@ gr::basic_block_sptr GpsL2MPcpsAcquisitionFpga::get_left_block()
 
 gr::basic_block_sptr GpsL2MPcpsAcquisitionFpga::get_right_block()
 {
-    return acquisition_fpga_;
+    return nullptr;
 }

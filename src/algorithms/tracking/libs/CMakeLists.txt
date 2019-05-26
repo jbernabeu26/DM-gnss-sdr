@@ -43,6 +43,7 @@ set(TRACKING_LIB_SOURCES
     tracking_loop_filter.cc
     dll_pll_conf.cc
     bayesian_estimation.cc
+    exponential_smoother.cc
 )
 
 set(TRACKING_LIB_HEADERS
@@ -59,6 +60,7 @@ set(TRACKING_LIB_HEADERS
     tracking_loop_filter.h
     dll_pll_conf.h
     bayesian_estimation.h
+    exponential_smoother.h
 )
 
 if(ENABLE_FPGA)
@@ -91,8 +93,15 @@ target_include_directories(tracking_libs
         ${OPT_TRACKING_INCLUDES}
 )
 
+if(Boost_VERSION VERSION_GREATER "106599")
+    target_compile_definitions(tracking_libs
+        PUBLIC
+            -DBOOST_GREATER_1_65
+    )
+endif()
+
 if(OS_IS_MACOSX)
-    if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")  # not AppleClang
+    if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
         target_compile_definitions(tracking_libs
             PUBLIC
                 -DBOOST_ASIO_HAS_STD_STRING_VIEW

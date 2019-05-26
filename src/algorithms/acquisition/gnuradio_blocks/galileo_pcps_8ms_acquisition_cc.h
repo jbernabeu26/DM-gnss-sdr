@@ -32,12 +32,14 @@
 #ifndef GNSS_SDR_PCPS_8MS_ACQUISITION_CC_H_
 #define GNSS_SDR_PCPS_8MS_ACQUISITION_CC_H_
 
+#include "channel_fsm.h"
 #include "gnss_synchro.h"
 #include <gnuradio/block.h>
 #include <gnuradio/fft/fft.h>
 #include <gnuradio/gr_complex.h>
 #include <fstream>
 #include <string>
+#include <utility>
 
 class galileo_pcps_8ms_acquisition_cc;
 
@@ -117,6 +119,7 @@ private:
     int32_t d_state;
     bool d_dump;
     uint32_t d_channel;
+    std::weak_ptr<ChannelFsm> d_channel_fsm;
     std::string d_dump_filename;
 
 public:
@@ -178,6 +181,14 @@ public:
     inline void set_channel(uint32_t channel)
     {
         d_channel = channel;
+    }
+
+    /*!
+     * \brief Set channel fsm associated to this acquisition instance
+     */
+    inline void set_channel_fsm(std::weak_ptr<ChannelFsm> channel_fsm)
+    {
+        d_channel_fsm = std::move(channel_fsm);
     }
 
     /*!
