@@ -100,7 +100,7 @@ const std::string BEIDOU_B2ap_SECONDARY_CODE = "00000000000000000000000000000000
 
 
 //!<Initialization registers for the primary codes for B2a data signal
-const int32_t BEIDOU_B2ad_INIT_REG[63][13] =
+const int8_t BEIDOU_B2ad_INIT_REG[63][13] =
     {
         {1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1},
         {1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0},
@@ -169,7 +169,7 @@ const int32_t BEIDOU_B2ad_INIT_REG[63][13] =
 
 };
 
-const int32_t BEIDOU_B2ap_INIT_REG[63][13] =
+const int8_t BEIDOU_B2ap_INIT_REG[63][13] =
     {
         {1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1},
         {1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0},
