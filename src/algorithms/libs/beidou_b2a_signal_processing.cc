@@ -67,7 +67,6 @@ std::deque<bool> b2ad_g2_shift(std::deque<bool> g2)
     return out;
 }
 
-
 std::deque<bool> b2ap_g2_shift(std::deque<bool> g2)
 {
 	//Polynomial: G2 = 1 + x + x^5 + x^7 gsco+ x^8 +x^12 +x^13;
@@ -142,6 +141,49 @@ std::deque<bool> make_b2ap_g2(std::deque<bool> g2)
     return g2_seq;
 }
 
+
+bool make_leg(int32_t k)
+{
+	bool squaremodp = false;
+	int32_t z = 1;
+
+	if (k == 0)
+	{
+		squaremodp = true;
+	}
+	else
+	{
+		while(z <= (BEIDOU_B2ap_SECONDARY_WEIL_CODE_LENGTH-1)/2)
+		{
+			squaremodp = false;
+			if (((z*z)%BEIDOU_B2ap_SECONDARY_WEIL_CODE_LENGTH) == k)
+			{
+				// k is a square(mod p)
+				squaremodp = true;
+				break;
+			}
+			z = z+1;
+		}
+	}
+
+	return squaremodp;
+}
+
+
+std::deque<bool> make_b2ap_secondary_weil_seq(int32_t w, int32_t p)
+{
+	int32_t n, k = 0;
+	int32_t N = BEIDOU_B2ap_SECONDARY_WEIL_CODE_LENGTH;
+	std::deque<bool> trunc_weil_seq(BEIDOU_B2ap_SECONDARY_CODE_LENGTH, 0);
+
+	// Generate only the truncated sequence
+	for (n=0; n < BEIDOU_B2ap_SECONDARY_CODE_LENGTH-1; n++)
+	{
+		k = (n+p-1) % N;
+		trunc_weil_seq[n] = make_leg(k) xor make_leg((k+w) % N);
+	}
+}
+
 // Generate the B2a data PRN codes
 void make_b2ad(int32_t* _dest, int prn)
 {
@@ -163,7 +205,7 @@ void make_b2ad(int32_t* _dest, int prn)
 }
 
 // Generate a version of the B2a Data code with the secondary code included
-void make_b2adSecondary(int32_t* _dest, int prn)
+void make_b2ad_secondary(int32_t* _dest, int prn)
 {
 	// This is specific to the Beidou B2a data code
 	bool Secondary1 = 0;
@@ -210,15 +252,41 @@ void make_b2ap(int32_t* _dest, int prn)
 	        }
 }
 
+// Generate a version of the B2a Pilot code with the secondary code included
+void make_b2ap_secondary(int32_t* _dest, int prn)
+{
+	int32_t phase_diff = BEIDOU_B2ap_SECONDARY_PHASE_DIFFERENCE[prn];
+	int32_t truncation_point = BEIDOU_B2ap_SECONDARY_TRUNCATION_POINT[prn];
+
+	// Generate primary code
+	std::deque<bool> g2 = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+	for (int i = 0;i < 13; i++)
+	{
+		g2[i] = BEIDOU_B2ap_INIT_REG[prn][i];
+	}
+	std::deque<bool> g1 = make_b2ap_g1();
+	g2 = make_b2ap_g2(g2);
+
+	// Generate secondary code
+    std::deque<bool> b2ap_sec_code =  make_b2ap_secondary_weil_seq(phase_diff, truncation_point);
+
+	for(int m = 0;m <BEIDOU_B2ap_SECONDARY_CODE_LENGTH;m++)
+	{
+		for (int n = 0; n < BEIDOU_B2ap_CODE_LENGTH_CHIPS; n++)
+		{
+			_dest[n+m*BEIDOU_B2ad_CODE_LENGTH_CHIPS] = (g1[n] xor g2[n]) xor b2ap_sec_code[m];
+		}
+	}
+}
 
 // Generate a complex version of the B2a data code with the Secondary code
-void beidou_b2ad_code_gen_complexSecondary(std::complex<float>* _dest, unsigned int _prn)
+void beidou_b2ad_code_gen_complex_secondary(std::complex<float>* _dest, unsigned int _prn)
 {
     int32_t* _code = new int32_t[BEIDOU_B2ad_CODE_LENGTH_CHIPS*BEIDOU_B2ad_SECONDARY_CODE_LENGTH];
 
     if (_prn > 0 and _prn < 63)
         {
-            make_b2adSecondary(_code, _prn );
+            make_b2ad_secondary(_code, _prn );
         }
 
     for (signed int i = 0; i < BEIDOU_B2ad_CODE_LENGTH_CHIPS*BEIDOU_B2ad_SECONDARY_CODE_LENGTH; i++)
@@ -312,12 +380,12 @@ void beidou_b2ad_code_gen_complex_sampled(std::complex<float>* _dest, unsigned i
 /*
  *  Generates complex BEIDOU B2a data code for the desired SV ID and sampled to specific sampling frequency with the secondary code implemented
  */
-void beidou_b2ad_code_gen_complex_sampledSecondary(std::complex<float>* _dest, unsigned int _prn, signed int _fs)
+void beidou_b2ad_code_gen_complex_sampled_secondary(std::complex<float>* _dest, unsigned int _prn, signed int _fs)
 {
     int32_t* _code = new int32_t[BEIDOU_B2ad_CODE_LENGTH_CHIPS*BEIDOU_B2ad_SECONDARY_CODE_LENGTH];
     if (_prn > 0 and _prn <= 63)
         {
-            make_b2adSecondary(_code, _prn);
+            make_b2ad_secondary(_code, _prn);
         }
 
     signed int _samplesPerCode, _codeValueIndex;
@@ -351,6 +419,24 @@ void beidou_b2ad_code_gen_complex_sampledSecondary(std::complex<float>* _dest, u
                 }
 
         }
+    delete[] _code;
+}
+
+// Generate a complex version of the B2a pilot code with the secondary code
+void beidou_b2ap_code_gen_complex_secondary(std::complex<float>* _dest, unsigned int _prn)
+{
+    int32_t* _code = new int32_t[BEIDOU_B2ap_CODE_LENGTH_CHIPS*BEIDOU_B2ap_SECONDARY_CODE_LENGTH];
+
+    if (_prn > 0 and _prn < 63)
+        {
+            make_b2ap_secondary(_code, _prn );
+        }
+
+    for (signed int i = 0; i < BEIDOU_B2ap_CODE_LENGTH_CHIPS*BEIDOU_B2ap_SECONDARY_CODE_LENGTH; i++)
+        {
+            _dest[i] = std::complex<float>(1.0 - 2.0 * _code[i], 0.0);
+        }
+
     delete[] _code;
 }
 
@@ -430,6 +516,51 @@ void beidou_b2ap_code_gen_complex_sampled(std::complex<float>* _dest, unsigned i
                 {
                     _dest[i] = std::complex<float>(1.0 - 2.0 * _code[_codeValueIndex], 0);  //repeat the chip -> upsample
                 }
+        }
+    delete[] _code;
+}
+
+/*
+ *  Generates complex BEIDOU B2a data code for the desired SV ID and sampled to specific sampling frequency with the secondary code implemented
+ */
+void beidou_b2ap_code_gen_complex_sampled_secondary(std::complex<float>* _dest, unsigned int _prn, signed int _fs)
+{
+    int32_t* _code = new int32_t[BEIDOU_B2ap_CODE_LENGTH_CHIPS*BEIDOU_B2ap_SECONDARY_CODE_LENGTH];
+    if (_prn > 0 and _prn <= 63)
+        {
+            make_b2ap_secondary(_code, _prn);
+        }
+
+    signed int _samplesPerCode, _codeValueIndex;
+    float _ts;
+    float _tc;
+    const signed int _codeLength = BEIDOU_B2ap_CODE_LENGTH_CHIPS*BEIDOU_B2ap_SECONDARY_CODE_LENGTH;
+
+    //--- Find number of samples per spreading code ----------------------------
+    _samplesPerCode = static_cast<int>(static_cast<double>(_fs) / (static_cast<double>(BEIDOU_B2ap_CODE_RATE_HZ) / static_cast<double>(_codeLength)));
+
+    //--- Find time constants --------------------------------------------------
+    _ts = 1.0 / static_cast<float>(_fs);                   // Sampling period in sec
+    _tc = 1.0 / static_cast<float>(BEIDOU_B2ap_CODE_RATE_HZ);  // code chip period in sec
+
+    for (signed int i = 0; i < _samplesPerCode; i++)
+        {
+            //=== Digitizing =======================================================
+
+            //--- Make index array to read B2a code values -------------------------
+            _codeValueIndex = ceil((_ts * (static_cast<float>(i) + 1)) / _tc) - 1;
+
+            //--- Make the digitized version of the B2ad code -----------------------
+            if (i == _samplesPerCode - 1)
+                {
+                    //--- Correct the last index (due to number rounding issues) -----------
+                    _dest[i] = std::complex<float>(1.0 - 2.0 * _code[_codeLength - 1], 0);
+                }
+            else
+                {
+                    _dest[i] = std::complex<float>(1.0 - 2.0 * _code[_codeValueIndex], 0);  //repeat the chip -> upsample
+                }
+
         }
     delete[] _code;
 }

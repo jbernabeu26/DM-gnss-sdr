@@ -42,12 +42,15 @@ void beidou_b2ad_code_gen_complex(std::complex<float>* _dest, unsigned int _prn)
 /*!
  * \brief Generates complex BeiDou B2a data primary code with secondary code for the desired SV ID
  */
-void beidou_b2ad_code_gen_complexSecondary(std::complex<float>* _dest, unsigned int _prn);
+void beidou_b2ad_code_gen_complex_secondary(std::complex<float>* _dest, unsigned int _prn);
 /*!
  * \brief Generates complex BeiDou B2a data primary code for the desired SV ID
  */
 void beidou_b2ad_code_gen_float(float* _dest, unsigned int _prn);
-
+/*!
+ * \brief Generates complex BeiDou B2a data primary code with secondary code for the desired SV ID
+ */
+void beidou_b2ap_code_gen_complex_secondary(std::complex<float>* _dest, unsigned int _prn);
 
 /*!
  * \brief Generates complex BeiDou B2a pilot primary code for the desired SV ID
@@ -66,12 +69,17 @@ void beidou_b2ad_code_gen_complex_sampled(std::complex<float>* _dest, unsigned i
 /*!
  * \Generates complex BeiDou B2a data primary code  with secondary code for the desired SV ID, and sampled to specific sampling frequency
  */
-void beidou_b2ad_code_gen_complex_sampledSecondary(std::complex<float>* _dest, unsigned int _prn, signed int _fs);
+void beidou_b2ad_code_gen_complex_sampled_secondary(std::complex<float>* _dest, unsigned int _prn, signed int _fs);
 
 /*!
  * \ Generates complex BeiDou B2 pilot primary code for the desired SV ID, and sampled to specific sampling frequency
  */
 void beidou_b2ap_code_gen_complex_sampled(std::complex<float>* _dest, unsigned int _prn, signed int _fs);
+
+/*!
+ * \Generates complex BeiDou B2a data primary code  with secondary code for the desired SV ID, and sampled to specific sampling frequency
+ */
+void beidou_b2ap_code_gen_complex_sampled_secondary(std::complex<float>* _dest, unsigned int _prn, signed int _fs);
 
 
 #endif /* GNSS_SDR_BEIDOU_B2A_SIGNAL_PROCESSING_H_ */

@@ -96,6 +96,7 @@ const std::string BEIDOU_B2ad_SECONDARY_CODE = "00010";
 //!<TODO Beidou pilot code is a Weil code which is currently not implemented
 //!<Beidou secondary codes. Pilot component has a truncated Weill sequence, each satellite has it's own code
 const int32_t BEIDOU_B2ap_SECONDARY_CODE_LENGTH = 100;  //B2a code is 100 chips long; Each bit is 1 ms (one primary code sequence)
+const int32_t BEIDOU_B2ap_SECONDARY_WEIL_CODE_LENGTH = 1021;  //B2a Pilot Weil code is 1021 chips long; Each bit is 1 ms (one primary code sequence)
 const std::string BEIDOU_B2ap_SECONDARY_CODE = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
 
 
@@ -235,6 +236,28 @@ const int8_t BEIDOU_B2ap_INIT_REG[63][13] =
         {0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0},
         {0, 0, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1},
 };
+
+const int32_t BEIDOU_B2ap_SECONDARY_TRUNCATION_POINT[63] =
+    {
+    	138, 570, 351,   77, 885, 247, 413, 180,   3,  26,
+		 17, 172,  30, 1008, 646, 158, 170,  99,  53, 179,
+		925, 114,  10,  584,  60,   3, 684, 263, 545,  22,
+    	546, 190, 303,  234,  38, 822,  57, 668, 697,  93,
+		 18,  66, 318,  133,  98,  70, 132,  26, 354,  58,
+		 41, 182, 944,  205,  23,   1, 792, 641,  83,   7,
+		111,  96,  92
+    };
+
+const int32_t BEIDOU_B2ap_SECONDARY_PHASE_DIFFERENCE[63] =
+    {
+    	123,  55,  40, 139,  31, 175, 350, 450, 478,   8,
+		 73,  97, 213, 407, 476,   4,  15,  47, 163, 280,
+		322, 353, 375, 510, 332,   7,  13,  16,  18,  25,
+		 50,  81, 118, 127, 132, 134, 164, 177, 208, 249,
+		276, 349, 439, 477, 498,  88, 155, 330,   3,  21,
+		 84, 111, 128, 153, 197, 199, 214, 256, 265, 291,
+		324, 326, 340
+    };
 
 // BEIDOU CNAV2 NAVIGATION MESSAGE STRUCTURE
 // NAVIGATION MESSAGE FIELDS POSITIONS
