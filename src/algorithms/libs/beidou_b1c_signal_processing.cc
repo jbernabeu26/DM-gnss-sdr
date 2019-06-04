@@ -67,7 +67,7 @@ std::vector < int32_t > generate_legendre_sequence()
 	return legendre;
 }
 //! Generation of the Legendre sequence for Secondary code of Pilot Components
-std::vector < int > generate_legendre_sequence_secondary()
+std::vector < int32_t > generate_legendre_sequence_secondary()
 {
 	std::vector<int32_t>legendre(BEIDOU_B1C_WEIL_N_SECONDARY);
 	for(int i=0;i<BEIDOU_B1C_WEIL_N_SECONDARY;i++)
