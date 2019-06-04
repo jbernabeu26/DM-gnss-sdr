@@ -51,7 +51,7 @@ const int32_t WEIL_N_SECONDARY = 3607;
 
 //!====================================PRIMARY CODE PARAMETERS OF B1C DATA COMPONENTS=============================================
 //!Phase difference(w) table data for Data Component
-const int32_t BEIDOU_B1cd_Phase_Diff[63] = {
+const int32_t BEIDOU_B1cd_PHASE_DIFF[63] = {
 			2678, 4802,  958,  859, 3843, 
                       	2232,  124, 4352, 1816, 1126,
                       	1860, 4800, 2267,  424, 4192,
