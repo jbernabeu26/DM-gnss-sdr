@@ -60,10 +60,10 @@ void beidou_b1cp_code_gen_complex(std::complex<float>* _dest, unsigned int _prn)
 void beidou_b1cp_code_gen_complex_sampled(std::complex<float>* _dest, unsigned int _prn, signed int _fs);
 
 //! Generates a version of the B1c Pilot Secondary code
-void make_b1cpSecondary(int32_t* _dest, int prn);
+void make_b1cp_secondary(int32_t* _dest, int prn);
 
 //! Generates a complex version of the B1c Pilot Secondary code
-void beidou_b1cp_code_gen_complexSecondary(std::complex<float>* _dest, unsigned int _prn);
+void beidou_b1cp_code_gen_complex_secondary(std::complex<float>* _dest, unsigned int _prn);
 
 //! Generates complex BEIDOU B1c Pilot Secondary code for the desired SV ID and sampled to specific sampling frequency
 void beidou_b1cp_code_gen_complex_sampledSecondary(std::complex<float>* _dest, unsigned int _prn, signed int _fs);
