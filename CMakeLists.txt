@@ -411,13 +411,13 @@ set(GNSSSDR_PROTOBUF_MIN_VERSION "3.0.0")
 ################################################################################
 set(GNSSSDR_GFLAGS_LOCAL_VERSION "2.2.2")
 set(GNSSSDR_GLOG_LOCAL_VERSION "0.4.0")
-set(GNSSSDR_ARMADILLO_LOCAL_VERSION "9.300.x")
+set(GNSSSDR_ARMADILLO_LOCAL_VERSION "9.500.x")
 set(GNSSSDR_GTEST_LOCAL_VERSION "1.8.1")
 set(GNSSSDR_GNSS_SIM_LOCAL_VERSION "master")
 set(GNSSSDR_GPSTK_LOCAL_VERSION "2.10.6")
-set(GNSSSDR_MATIO_LOCAL_VERSION "1.5.14")
+set(GNSSSDR_MATIO_LOCAL_VERSION "1.5.15")
 set(GNSSSDR_PUGIXML_LOCAL_VERSION "1.9")
-set(GNSSSDR_PROTOCOLBUFFERS_LOCAL_VERSION "3.7.1")
+set(GNSSSDR_PROTOCOLBUFFERS_LOCAL_VERSION "3.8.0")
 
 if(CMAKE_VERSION VERSION_LESS "3.0.2") # Fix for CentOS 7
     set(GNSSSDR_GFLAGS_LOCAL_VERSION "2.2.1")
@@ -690,6 +690,17 @@ if(CMAKE_VERSION VERSION_LESS 3.5)
     endif()
 endif()
 
+# Fix for Boost Asio < 1.70 when using Clang in macOS
+if(${Boost_VERSION} VERSION_LESS 107000)
+    # Check if we have std::string_view
+    include(CheckCXXSourceCompiles)
+    check_cxx_source_compiles("
+        #include <string_view>
+        int main()
+        { std::string_view sv; }"
+        has_string_view
+    )
+endif()
 
 
 ################################################################################
