@@ -102,7 +102,7 @@ void make_b1cd(int32_t* _dest, int prn)
 	//copying the elements of legendre in legendre1 for computing weil 
 	legendre1 = legendre;
 	
-	int32_t rotL1=BEIDOU_B1cd_Phase_Diff[prn-1];
+	int32_t rotL1=BEIDOU_B1cd_PHASE_DIFF[prn-1];
 	std::rotate(legendre1.begin(),legendre1.begin()+rotL1,legendre1.end());
 	
 	int32_t weil[WEIL_N];
