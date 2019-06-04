@@ -51,7 +51,7 @@ const int32_t WEIL_N_SECONDARY = 3607;
 
 //!====================================PRIMARY CODE PARAMETERS OF B1C DATA COMPONENTS=============================================
 //!Phase difference(w) table data for Data Component
-const int32_t BEIDOU_B1cd_PHASE_DIFF[63] = {
+const int32_t BEIDOU_B1Cd_PHASE_DIFF[63] = {
 			2678, 4802,  958,  859, 3843, 
                       	2232,  124, 4352, 1816, 1126,
                       	1860, 4800, 2267,  424, 4192,
@@ -67,7 +67,7 @@ const int32_t BEIDOU_B1cd_PHASE_DIFF[63] = {
                         4203,  455, 4318};
 
 //Truncation Point(p) table data for Data Component
-const int32_t BEIDOU_B1cd_Trunc_Point[63] = {
+const int32_t BEIDOU_B1Cd_TRUNC_POINT[63] = {
 			  699,  694, 7318, 2127,  715,
 	                 6682, 7850, 5495, 1162, 7682, 
                 	 6792, 9973, 6596, 2092,   19,
@@ -85,7 +85,7 @@ const int32_t BEIDOU_B1cd_Trunc_Point[63] = {
 
 //!================================PRIMARY CODE PARAMETERS OF B1C PILOT COMPONENTS=============================================      
 //Phase difference(w) table data for Pilot Component          	
-const int32_t BEIDOU_B1cp_Phase_Diff[63]= {
+const int32_t BEIDOU_B1Cp_PHASE_DIFF[63]= {
 			796,  156, 4198, 3941, 1374, 
                 	1338, 1833, 2521, 3175,  168,
                  	2715, 4408, 3160, 2796,  459,
@@ -101,7 +101,7 @@ const int32_t BEIDOU_B1cp_Phase_Diff[63]= {
                  	4098, 1923, 1176};
  
 //Truncation Point(p) table data for Pilot Component        
-const int32_t BEIDOU_B1cp_Trunc_Point[63] ={
+const int32_t BEIDOU_B1Cp_TRUNC_POINT[63] ={
 			7575, 2369, 5688,  539, 2270,
                  	7306, 6457, 6254, 5644, 7119, 
                  	1402, 5557, 5764, 1073, 7001,
@@ -120,7 +120,7 @@ const int32_t BEIDOU_B1cp_Trunc_Point[63] ={
 //!===================================SECONDARY CODE PARAMETERS OF B1C PILOT COMPONENTS=============================================
 
 //Phase difference(w) table data for Pilot Component          	
-const int32_t BEIDOU_B1cp_Secondary_Phase_Diff[63] ={
+const int32_t BEIDOU_B1Cp_SECONDARY_PHASE_DIFF[63] ={
 			 269, 1448, 1028, 1324,  822,
 			   5,  155,  458,  310,  959,
 			1238, 1180, 1288,  334,  885,
@@ -136,7 +136,7 @@ const int32_t BEIDOU_B1cp_Secondary_Phase_Diff[63] ={
 			 929, 1002, 1149};
 
 //Truncation Point(p) table data for Pilot Component        
-const int32_t BEIDOU_B1cp_Secondary_Trunc_Point[63] ={
+const int32_t BEIDOU_B1Cp_SECONDARY_TRUNC_POINT[63] ={
 			1889, 1268, 1593, 1186, 1239,
 			1930,  176, 1696,   26, 1344,
 			1271, 1182, 1381, 1604, 1333,
