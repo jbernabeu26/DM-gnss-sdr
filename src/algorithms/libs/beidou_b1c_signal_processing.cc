@@ -372,7 +372,7 @@ void beidou_b1cp_code_gen_complex_secondary(std::complex<float>* _dest, unsigned
 
     if (_prn > 0 and _prn < 63)
         {
-            make_b1cpSecondary(_code, _prn );
+            make_b1cp_secondary(_code, _prn );
         }
 
     for (signed int i = 0; i <BEIDOU_B1cp_CODE_LENGTH_CHIPS*BEIDOU_B1cp_SECONDARY_CODE_LENGTH_CHIPS; i++)
@@ -389,7 +389,7 @@ void beidou_b1cp_code_gen_complex_sampled_secondary(std::complex<float>* _dest, 
     int32_t* _code = new int32_t[BEIDOU_B1cp_CODE_LENGTH_CHIPS*BEIDOU_B1cp_SECONDARY_CODE_LENGTH_CHIPS];
     if (_prn > 0 and _prn <= 63)
         {
-            make_b1cpSecondary(_code, _prn);
+            make_b1cp_secondary(_code, _prn);
         }
 
     signed int _samplesPerCode, _codeValueIndex;
