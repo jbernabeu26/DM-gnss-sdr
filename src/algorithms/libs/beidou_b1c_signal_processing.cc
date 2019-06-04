@@ -330,7 +330,7 @@ void beidou_b1cp_code_gen_complex_sampled(std::complex<float>* _dest, unsigned i
 //=========================================SECONDARY CODE GENERATION OF PILOT COMPONENT=========================================
 
 //! Generate a version of the B1c Pilot Secondary code
-void make_b1cpSecondary(int32_t* _dest, int prn)
+void make_b1cp_secondary(int32_t* _dest, int prn)
 {
 	std::vector<int32_t>legendre(WEIL_N_SECONDARY);
 	legendre.clear() ;
@@ -366,7 +366,7 @@ void make_b1cpSecondary(int32_t* _dest, int prn)
 }
 
 //! Generate a complex version of the B1c Pilot Secondary code
-void beidou_b1cp_code_gen_complexSecondary(std::complex<float>* _dest, unsigned int _prn)
+void beidou_b1cp_code_gen_complex_secondary(std::complex<float>* _dest, unsigned int _prn)
 {
     int32_t* _code = new int32_t[BEIDOU_B1cp_CODE_LENGTH_CHIPS*BEIDOU_B1cp_SECONDARY_CODE_LENGTH_CHIPS];
 
@@ -384,7 +384,7 @@ void beidou_b1cp_code_gen_complexSecondary(std::complex<float>* _dest, unsigned 
 }
 
 //! Generates complex BEIDOU B1c Pilot Secondary code for the desired SV ID and sampled to specific sampling frequency
-void beidou_b1cp_code_gen_complex_sampledSecondary(std::complex<float>* _dest, unsigned int _prn, signed int _fs)
+void beidou_b1cp_code_gen_complex_sampled_secondary(std::complex<float>* _dest, unsigned int _prn, signed int _fs)
 {
     int32_t* _code = new int32_t[BEIDOU_B1cp_CODE_LENGTH_CHIPS*BEIDOU_B1cp_SECONDARY_CODE_LENGTH_CHIPS];
     if (_prn > 0 and _prn <= 63)
