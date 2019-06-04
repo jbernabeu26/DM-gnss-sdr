@@ -66,6 +66,6 @@ void make_b1cp_secondary(int32_t* _dest, int prn);
 void beidou_b1cp_code_gen_complex_secondary(std::complex<float>* _dest, unsigned int _prn);
 
 //! Generates complex BEIDOU B1c Pilot Secondary code for the desired SV ID and sampled to specific sampling frequency
-void beidou_b1cp_code_gen_complex_sampledSecondary(std::complex<float>* _dest, unsigned int _prn, signed int _fs);
+void beidou_b1cp_code_gen_complex_sampled_secondary(std::complex<float>* _dest, unsigned int _prn, signed int _fs);
 
 #endif /* GNSS_SDR_BEIDOU_B1C_SIGNAL_PROCESSING_H_ */
