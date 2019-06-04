@@ -1,7 +1,9 @@
 /*!
- * \file beidou_b2a_signal._processingcc
+ * \file beidou_b2a_signal_processing.cc
  * \brief This class implements signal generators for the BEIDOU B2a signals
- * \author Sara Hrbek, 2018. sara.hrbek(at)gmail.com. Code added as part of GSoC 2018 program
+ * \author Sara Hrbek, 2018. sara.hrbek(at)gmail.com.
+ * \author Damian Miralles, 2019. dmiralles2009@gmail.com
+ * \note Initial code added as part of GSoC 2018 program
  *
  * Detailed description of the file here if needed.
  *
@@ -196,8 +198,6 @@ void make_b2ad(int32_t* _dest, int prn)
     std::deque<bool> g1 = make_b2ad_g1();
     g2 = make_b2ad_g2(g2);
 
-    std::deque<bool> out_code(BEIDOU_B2ad_CODE_LENGTH_CHIPS, 0);
-
     for (int n = 0; n < BEIDOU_B2ad_CODE_LENGTH_CHIPS; n++)
         {
             _dest[n] = g1[n] xor g2[n];
@@ -218,8 +218,6 @@ void make_b2ad_secondary(int32_t* _dest, int prn)
 		}
     std::deque<bool> g1 = make_b2ad_g1();
     g2 = make_b2ad_g2(g2);
-
-    std::deque<bool> out_code(BEIDOU_B2ad_CODE_LENGTH_CHIPS*BEIDOU_B2ad_SECONDARY_CODE_LENGTH, 0);
 
 	for(int m = 0;m <BEIDOU_B2ad_SECONDARY_CODE_LENGTH;m++){
 		for (int n = 0; n < BEIDOU_B2ad_CODE_LENGTH_CHIPS; n++)
@@ -245,7 +243,6 @@ void make_b2ap(int32_t* _dest, int prn)
 	    std::deque<bool> g1 = make_b2ap_g1();
 	    g2 = make_b2ap_g2(g2);
 
-	    std::deque<bool> out_code(BEIDOU_B2ap_CODE_LENGTH_CHIPS, 0);
 	    for (int n = 0; n < BEIDOU_B2ap_CODE_LENGTH_CHIPS; n++)
 	        {
 	            _dest[n] = g1[n] xor g2[n];
@@ -440,7 +437,7 @@ void beidou_b2ap_code_gen_complex_secondary(std::complex<float>* _dest, unsigned
     delete[] _code;
 }
 
-// Generates a complex version of the B2a pilot code
+// Generates a complex version of the B2a pilot primary code
 void beidou_b2ap_code_gen_complex(std::complex<float>* _dest, unsigned int _prn)
 {
     int32_t* _code = new int32_t[BEIDOU_B2ap_CODE_LENGTH_CHIPS];
@@ -458,7 +455,9 @@ void beidou_b2ap_code_gen_complex(std::complex<float>* _dest, unsigned int _prn)
     delete[] _code;
 }
 
-// Generates a float version of the B2a pilot code
+/*
+ * Generates a float version of the B2a pilot primary code
+ */
 void beidou_b2ap_code_gen_float(float* _dest, unsigned int _prn)
 {
     int32_t* _code = new int32_t[BEIDOU_B2ap_CODE_LENGTH_CHIPS];
@@ -475,6 +474,27 @@ void beidou_b2ap_code_gen_float(float* _dest, unsigned int _prn)
 
     delete[] _code;
 }
+
+/*
+ * Generates a float version of the B2a pilot primary code
+ */
+void beidou_b2ap_code_gen_float_secondary(float* _dest, unsigned int _prn)
+{
+    int32_t* _code = new int32_t[BEIDOU_B2ap_SECONDARY_CODE_LENGTH];
+
+    if (_prn > 0 and _prn < 63)
+        {
+            make_b2ap_secondary(_code, _prn);
+        }
+
+    for (signed int i = 0; i < BEIDOU_B2ap_SECONDARY_CODE_LENGTH; i++)
+        {
+            _dest[i] = 1.0 - 2.0 * static_cast<float>(_code[i]);
+        }
+
+    delete[] _code;
+}
+
 /*
  *  Generates complex BEIDOU B2a pilot code for the desired SV ID and sampled to specific sampling frequency
  */

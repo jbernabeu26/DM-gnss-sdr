@@ -89,18 +89,15 @@ const double BEIDOU_B2ap_CODE_RATE_HZ = 10.23e6;      //!< BEIDOU_B2a pilot code
 const int32_t BEIDOU_B2ap_CODE_LENGTH_CHIPS = 10230;  //!< BEIDOU_B2a pilot code length [chips]
 const double BEIDOU_B2ap_PERIOD = 0.001;              //!< BEIDOU_B2a pilot code period [seconds]
 
-//!<Beidou secondary codes. Data component has a fixed sequence as secondary code which are the same for every satellite
-const int32_t BEIDOU_B2ad_SECONDARY_CODE_LENGTH = 5;  // Each bit is 1 ms (one primary code sequence)
+//!<Beidou B2a Data Secondary Codes. Data component has a fixed sequence as secondary code which are the same for every satellite
+const int32_t BEIDOU_B2ad_SECONDARY_CODE_LENGTH = 5;     //!< Each bit is 1 ms (one primary code sequence)
 const std::string BEIDOU_B2ad_SECONDARY_CODE = "00010";
 
-//!<TODO Beidou pilot code is a Weil code which is currently not implemented
-//!<Beidou secondary codes. Pilot component has a truncated Weill sequence, each satellite has it's own code
-const int32_t BEIDOU_B2ap_SECONDARY_CODE_LENGTH = 100;  //B2a code is 100 chips long; Each bit is 1 ms (one primary code sequence)
-const int32_t BEIDOU_B2ap_SECONDARY_WEIL_CODE_LENGTH = 1021;  //B2a Pilot Weil code is 1021 chips long; Each bit is 1 ms (one primary code sequence)
-const std::string BEIDOU_B2ap_SECONDARY_CODE = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+//!<Beidou B2a Data Secondary Codes. Pilot component has a truncated Weill sequence, each satellite has it's own code
+const int32_t BEIDOU_B2ap_SECONDARY_CODE_LENGTH = 100;        //!< B2a pilot code is 100 chips long; Each bit is 1 ms (one primary code sequence)
+const int32_t BEIDOU_B2ap_SECONDARY_WEIL_CODE_LENGTH = 1021;  //!< B2a pilot Weil code is 1021 chips long; Each bit is 1 ms (one primary code sequence)
 
-
-//!<Initialization registers for the primary codes for B2a data signal
+//!< Initialization registers for the primary codes for B2a data signal
 const int8_t BEIDOU_B2ad_INIT_REG[63][13] =
     {
         {1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1},
