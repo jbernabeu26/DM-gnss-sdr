@@ -1,6 +1,6 @@
 /*!
  * \file Beidou_B1C.h
- * \brief Defines system parameters for Beidou B1c signal
+ * \brief Defines system parameters for Beidou B1C signal
  * \author Andrew Kamble, 2019. andrewkamble88@gmail.com 
  * \note Code added as part of GSoC 2019 program
  * Detailed description of the file here if needed.
