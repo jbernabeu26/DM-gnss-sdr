@@ -66,7 +66,7 @@ BeidouB1CdPcpsAcquisition::BeidouB1CdPcpsAcquisition(
             doppler_max_ = FLAGS_doppler_max;
         }
     acq_parameters_.doppler_max = doppler_max_;
-    sampled_ms_ = configuration_->property(role + ".coherent_integration_time_ms", 1);
+    sampled_ms_ = configuration_->property(role + ".coherent_integration_time_ms", 10);
     acq_parameters_.sampled_ms = sampled_ms_;
     bit_transition_flag_ = configuration_->property(role + ".bit_transition_flag", false);
     acq_parameters_.bit_transition_flag = bit_transition_flag_;
