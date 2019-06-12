@@ -323,7 +323,7 @@ dll_pll_veml_tracking::dll_pll_veml_tracking(const Dll_Pll_Conf &conf_) : gr::bl
                     if (trk_parameters.track_pilot)
                         {
                             d_secondary_code_length = static_cast<uint32_t>(BEIDOU_B2ap_SECONDARY_CODE_LENGTH);
-                            d_secondary_code_string = const_cast<std::string *>(&BEIDOU_B2ap_SECONDARY_CODE);
+                            //d_secondary_code_string = const_cast<std::string *>(&BEIDOU_B2ap_SECONDARY_CODE);
                             signal_pretty_name = signal_pretty_name + "Pilot";
                             interchange_iq = true;
                         }
@@ -735,21 +735,16 @@ void dll_pll_veml_tracking::start_tracking()
         }
     else if (systemName == "Beidou" and signal_type == "5C")
         {
-    		// Secondary pilot code is specific for each satellite
-    		auto *aux_code = static_cast<float *>(volk_gnsssdr_malloc(BEIDOU_B2ap_SECONDARY_CODE_LENGTH * sizeof(float), volk_gnsssdr_get_alignment()));
 
-            if (trk_parameters.track_pilot)
+    		if (trk_parameters.track_pilot)
                 {
+    			    // Secondary pilot code is specific for each satellite
+    			    std::string aux_secondary_code_string (BEIDOU_B2ap_SECONDARY_CODE_LENGTH, '0');
+    			    beidou_b2ap_secondary_gen_string(aux_secondary_code_string, d_acquisition_gnss_synchro->PRN);
+    			    d_secondary_code_string = const_cast<std::string *>(&aux_secondary_code_string);
+
                     beidou_b2ap_code_gen_float(d_tracking_code, d_acquisition_gnss_synchro->PRN);
-                    beidou_b2ap_code_gen_float_secondary(aux_code, d_acquisition_gnss_synchro->PRN);
-                    for (int32_t i = 0; i < BEIDOU_B2ap_SECONDARY_CODE_LENGTH; i++)
-                    {
-                    	if(aux_code[i] == 1)
-                    		d_secondary_code_string[i] = '1';
-                    	else
-                    		d_secondary_code_string[i] = '0';
-                    }
-                    beidou_b2ad_code_gen_float(d_data_code, d_acquisition_gnss_synchro->PRN);
+            		beidou_b2ad_code_gen_float(d_data_code, d_acquisition_gnss_synchro->PRN);
                     d_Prompt_Data[0] = gr_complex(0.0, 0.0);
                     correlator_data_cpu.set_local_code_and_taps(d_code_length_chips, d_data_code, d_prompt_data_shift);
                 }
@@ -757,7 +752,7 @@ void dll_pll_veml_tracking::start_tracking()
                 {
                     beidou_b2ad_code_gen_float(d_tracking_code, d_acquisition_gnss_synchro->PRN);
                 }
-            volk_gnsssdr_free(aux_code);
+
         }
     multicorrelator_cpu.set_local_code_and_taps(d_code_samples_per_chip * d_code_length_chips, d_tracking_code, d_local_code_shift_chips);
     std::fill_n(d_correlator_outs, d_n_correlator_taps, gr_complex(0.0, 0.0));

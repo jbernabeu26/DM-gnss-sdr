@@ -83,7 +83,7 @@ std::deque<bool> make_b2ad_g1()
     std::deque<bool> g1 = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
     std::deque<bool> g1_seq(BEIDOU_B2ad_CODE_LENGTH_CHIPS, 0);
 
-    for (int i = 0; i < BEIDOU_B2ad_CODE_LENGTH_CHIPS; i++)
+    for (uint32_t i = 0; i < BEIDOU_B2ad_CODE_LENGTH_CHIPS; i++)
         {
             g1_seq[i] = g1[12];
             g1 = b2ad_g1_shift(g1);
@@ -101,7 +101,7 @@ std::deque<bool> make_b2ad_g2(std::deque<bool> g2)
 {
     std::deque<bool> g2_seq(BEIDOU_B2ad_CODE_LENGTH_CHIPS, 0);
 
-    for (int i = 0; i < BEIDOU_B2ad_CODE_LENGTH_CHIPS; i++)
+    for (uint32_t i = 0; i < BEIDOU_B2ad_CODE_LENGTH_CHIPS; i++)
         {
             g2_seq[i] = g2[12];
             g2 = b2ad_g2_shift(g2);
@@ -115,7 +115,7 @@ std::deque<bool> make_b2ap_g1()
     std::deque<bool> g1 = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
     std::deque<bool> g1_seq(BEIDOU_B2ap_CODE_LENGTH_CHIPS, 0);
 
-    for (int i = 0; i < BEIDOU_B2ap_CODE_LENGTH_CHIPS; i++)
+    for (uint32_t i = 0; i < BEIDOU_B2ap_CODE_LENGTH_CHIPS; i++)
         {
             g1_seq[i] = g1[12];
             g1 = b2ap_g1_shift(g1);
@@ -135,7 +135,7 @@ std::deque<bool> make_b2ap_g2(std::deque<bool> g2)
 {
     std::deque<bool> g2_seq(BEIDOU_B2ap_CODE_LENGTH_CHIPS, 0);
 
-    for (int i = 0; i < BEIDOU_B2ap_CODE_LENGTH_CHIPS; i++)
+    for (uint32_t i = 0; i < BEIDOU_B2ap_CODE_LENGTH_CHIPS; i++)
         {
             g2_seq[i] = g2[12];
             g2 = b2ap_g2_shift(g2);
@@ -179,15 +179,17 @@ std::deque<bool> make_b2ap_secondary_weil_seq(int32_t w, int32_t p)
 	std::deque<bool> trunc_weil_seq(BEIDOU_B2ap_SECONDARY_CODE_LENGTH, 0);
 
 	// Generate only the truncated sequence
-	for (n=0; n < BEIDOU_B2ap_SECONDARY_CODE_LENGTH-1; n++)
+	for (n=0; n < BEIDOU_B2ap_SECONDARY_CODE_LENGTH; n++)
 	{
 		k = (n+p-1) % N;
 		trunc_weil_seq[n] = make_leg(k) xor make_leg((k+w) % N);
 	}
+
+	return trunc_weil_seq;
 }
 
 // Generate the B2a data PRN codes
-void make_b2ad(int32_t* _dest, int prn)
+void make_b2ad(int32_t* _dest, int32_t prn)
 {
 	std::deque<bool> g2 = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 	for (int i = 0;i < 13; i++)
@@ -198,14 +200,14 @@ void make_b2ad(int32_t* _dest, int prn)
     std::deque<bool> g1 = make_b2ad_g1();
     g2 = make_b2ad_g2(g2);
 
-    for (int n = 0; n < BEIDOU_B2ad_CODE_LENGTH_CHIPS; n++)
+    for (uint32_t n = 0; n < BEIDOU_B2ad_CODE_LENGTH_CHIPS; n++)
         {
             _dest[n] = g1[n] xor g2[n];
         }
 }
 
 // Generate a version of the B2a Data code with the secondary code included
-void make_b2ad_secondary(int32_t* _dest, int prn)
+void make_b2ad_secondary(int32_t* _dest, int32_t prn)
 {
 	// This is specific to the Beidou B2a data code
 	bool Secondary1 = 0;
@@ -219,8 +221,8 @@ void make_b2ad_secondary(int32_t* _dest, int prn)
     std::deque<bool> g1 = make_b2ad_g1();
     g2 = make_b2ad_g2(g2);
 
-	for(int m = 0;m <BEIDOU_B2ad_SECONDARY_CODE_LENGTH;m++){
-		for (int n = 0; n < BEIDOU_B2ad_CODE_LENGTH_CHIPS; n++)
+	for(uint32_t m = 0;m <BEIDOU_B2ad_SECONDARY_CODE_LENGTH;m++){
+		for (uint32_t n = 0; n < BEIDOU_B2ad_CODE_LENGTH_CHIPS; n++)
 			{
 			if (m==3){
 				_dest[n+m*BEIDOU_B2ad_CODE_LENGTH_CHIPS] = (g1[n] xor g2[n]) xor Secondary2;
@@ -232,7 +234,7 @@ void make_b2ad_secondary(int32_t* _dest, int prn)
 }
 
 // Generate the B2a pilot code
-void make_b2ap(int32_t* _dest, int prn)
+void make_b2ap(int32_t* _dest, int32_t prn)
 {
 
 	std::deque<bool> g2 = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
@@ -243,21 +245,21 @@ void make_b2ap(int32_t* _dest, int prn)
 	    std::deque<bool> g1 = make_b2ap_g1();
 	    g2 = make_b2ap_g2(g2);
 
-	    for (int n = 0; n < BEIDOU_B2ap_CODE_LENGTH_CHIPS; n++)
+	    for (uint32_t n = 0; n < BEIDOU_B2ap_CODE_LENGTH_CHIPS; n++)
 	        {
 	            _dest[n] = g1[n] xor g2[n];
 	        }
 }
 
 // Generate a version of the B2a Pilot code with the secondary code included
-void make_b2ap_secondary(int32_t* _dest, int prn)
+void make_b2ap_secondary(int32_t* _dest, int32_t prn)
 {
 	int32_t phase_diff = BEIDOU_B2ap_SECONDARY_PHASE_DIFFERENCE[prn];
 	int32_t truncation_point = BEIDOU_B2ap_SECONDARY_TRUNCATION_POINT[prn];
 
 	// Generate primary code
 	std::deque<bool> g2 = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
-	for (int i = 0;i < 13; i++)
+	for (uint32_t i = 0;i < 13; i++)
 	{
 		g2[i] = BEIDOU_B2ap_INIT_REG[prn][i];
 	}
@@ -267,17 +269,17 @@ void make_b2ap_secondary(int32_t* _dest, int prn)
 	// Generate secondary code
     std::deque<bool> b2ap_sec_code =  make_b2ap_secondary_weil_seq(phase_diff, truncation_point);
 
-	for(int m = 0;m <BEIDOU_B2ap_SECONDARY_CODE_LENGTH;m++)
+	for(uint32_t m = 0;m <BEIDOU_B2ap_SECONDARY_CODE_LENGTH;m++)
 	{
-		for (int n = 0; n < BEIDOU_B2ap_CODE_LENGTH_CHIPS; n++)
+		for (uint32_t n = 0; n < BEIDOU_B2ap_CODE_LENGTH_CHIPS; n++)
 		{
-			_dest[n+m*BEIDOU_B2ad_CODE_LENGTH_CHIPS] = (g1[n] xor g2[n]) xor b2ap_sec_code[m];
+			_dest[n+m*BEIDOU_B2ap_CODE_LENGTH_CHIPS] = (g1[n] xor g2[n]) xor b2ap_sec_code[m];
 		}
 	}
 }
 
 // Generate a complex version of the B2a data code with the Secondary code
-void beidou_b2ad_code_gen_complex_secondary(std::complex<float>* _dest, unsigned int _prn)
+void beidou_b2ad_code_gen_complex_secondary(std::complex<float>* _dest, uint32_t _prn)
 {
     int32_t* _code = new int32_t[BEIDOU_B2ad_CODE_LENGTH_CHIPS*BEIDOU_B2ad_SECONDARY_CODE_LENGTH];
 
@@ -286,7 +288,7 @@ void beidou_b2ad_code_gen_complex_secondary(std::complex<float>* _dest, unsigned
             make_b2ad_secondary(_code, _prn );
         }
 
-    for (signed int i = 0; i < BEIDOU_B2ad_CODE_LENGTH_CHIPS*BEIDOU_B2ad_SECONDARY_CODE_LENGTH; i++)
+    for (uint32_t i = 0; i < BEIDOU_B2ad_CODE_LENGTH_CHIPS*BEIDOU_B2ad_SECONDARY_CODE_LENGTH; i++)
         {
             _dest[i] = std::complex<float>(1.0 - 2.0 * _code[i], 0.0);
         }
@@ -295,7 +297,7 @@ void beidou_b2ad_code_gen_complex_secondary(std::complex<float>* _dest, unsigned
 }
 
 // Generate a complex version of the B2a data code
-void beidou_b2ad_code_gen_complex(std::complex<float>* _dest, unsigned int _prn)
+void beidou_b2ad_code_gen_complex(std::complex<float>* _dest, uint32_t _prn)
 {
     int32_t* _code = new int32_t[BEIDOU_B2ad_CODE_LENGTH_CHIPS];
 
@@ -304,7 +306,7 @@ void beidou_b2ad_code_gen_complex(std::complex<float>* _dest, unsigned int _prn)
             make_b2ad(_code, _prn );
         }
 
-    for (signed int i = 0; i < BEIDOU_B2ad_CODE_LENGTH_CHIPS; i++)
+    for (uint32_t i = 0; i < BEIDOU_B2ad_CODE_LENGTH_CHIPS; i++)
         {
             _dest[i] = std::complex<float>(1.0 - 2.0 * _code[i], 0.0);
         }
@@ -313,7 +315,7 @@ void beidou_b2ad_code_gen_complex(std::complex<float>* _dest, unsigned int _prn)
 }
 
 // Generate a float version of the B2a data code
-void beidou_b2ad_code_gen_float(float* _dest, unsigned int _prn)
+void beidou_b2ad_code_gen_float(float* _dest, uint32_t _prn)
 {
     int32_t* _code = new int32_t[BEIDOU_B2ad_CODE_LENGTH_CHIPS];
 
@@ -322,7 +324,7 @@ void beidou_b2ad_code_gen_float(float* _dest, unsigned int _prn)
             make_b2ad(_code, _prn );
         }
 
-    for (signed int i = 0; i < BEIDOU_B2ad_CODE_LENGTH_CHIPS; i++)
+    for (uint32_t i = 0; i < BEIDOU_B2ad_CODE_LENGTH_CHIPS; i++)
         {
             _dest[i] = 1.0 - 2.0 * static_cast<float>(_code[i]);
         }
@@ -333,7 +335,7 @@ void beidou_b2ad_code_gen_float(float* _dest, unsigned int _prn)
 /*
  *  Generates complex BEIDOU B2a data code for the desired SV ID and sampled to specific sampling frequency
  */
-void beidou_b2ad_code_gen_complex_sampled(std::complex<float>* _dest, unsigned int _prn, signed int _fs)
+void beidou_b2ad_code_gen_complex_sampled(std::complex<float>* _dest, uint32_t _prn, int32_t _fs)
 {
     int32_t* _code = new int32_t[BEIDOU_B2ad_CODE_LENGTH_CHIPS];
     if (_prn > 0 and _prn <= 63)
@@ -341,10 +343,10 @@ void beidou_b2ad_code_gen_complex_sampled(std::complex<float>* _dest, unsigned i
             make_b2ad(_code, _prn);
         }
 
-    signed int _samplesPerCode, _codeValueIndex;
+    int32_t _samplesPerCode, _codeValueIndex;
     float _ts;
     float _tc;
-    const signed int _codeLength = BEIDOU_B2ad_CODE_LENGTH_CHIPS;
+    const int32_t _codeLength = BEIDOU_B2ad_CODE_LENGTH_CHIPS;
 
     //--- Find number of samples per spreading code ----------------------------
     _samplesPerCode = static_cast<int>(static_cast<double>(_fs) / (static_cast<double>(BEIDOU_B2ad_CODE_RATE_HZ) / static_cast<double>(_codeLength)));
@@ -353,7 +355,7 @@ void beidou_b2ad_code_gen_complex_sampled(std::complex<float>* _dest, unsigned i
     _ts = 1.0 / static_cast<float>(_fs);                   // Sampling period in sec
     _tc = 1.0 / static_cast<float>(BEIDOU_B2ad_CODE_RATE_HZ);  // code chip period in sec
 
-    for (signed int i = 0; i < _samplesPerCode; i++)
+    for (uint32_t i = 0; i < _samplesPerCode; i++)
         {
             //=== Digitizing =======================================================
 
@@ -377,7 +379,7 @@ void beidou_b2ad_code_gen_complex_sampled(std::complex<float>* _dest, unsigned i
 /*
  *  Generates complex BEIDOU B2a data code for the desired SV ID and sampled to specific sampling frequency with the secondary code implemented
  */
-void beidou_b2ad_code_gen_complex_sampled_secondary(std::complex<float>* _dest, unsigned int _prn, signed int _fs)
+void beidou_b2ad_code_gen_complex_sampled_secondary(std::complex<float>* _dest, uint32_t _prn, int32_t _fs)
 {
     int32_t* _code = new int32_t[BEIDOU_B2ad_CODE_LENGTH_CHIPS*BEIDOU_B2ad_SECONDARY_CODE_LENGTH];
     if (_prn > 0 and _prn <= 63)
@@ -385,10 +387,10 @@ void beidou_b2ad_code_gen_complex_sampled_secondary(std::complex<float>* _dest, 
             make_b2ad_secondary(_code, _prn);
         }
 
-    signed int _samplesPerCode, _codeValueIndex;
+    int32_t _samplesPerCode, _codeValueIndex;
     float _ts;
     float _tc;
-    const signed int _codeLength = BEIDOU_B2ad_CODE_LENGTH_CHIPS*BEIDOU_B2ad_SECONDARY_CODE_LENGTH;
+    const int32_t _codeLength = BEIDOU_B2ad_CODE_LENGTH_CHIPS*BEIDOU_B2ad_SECONDARY_CODE_LENGTH;
 
     //--- Find number of samples per spreading code ----------------------------
     _samplesPerCode = static_cast<int>(static_cast<double>(_fs) / (static_cast<double>(BEIDOU_B2ad_CODE_RATE_HZ) / static_cast<double>(_codeLength)));
@@ -397,7 +399,7 @@ void beidou_b2ad_code_gen_complex_sampled_secondary(std::complex<float>* _dest, 
     _ts = 1.0 / static_cast<float>(_fs);                   // Sampling period in sec
     _tc = 1.0 / static_cast<float>(BEIDOU_B2ad_CODE_RATE_HZ);  // code chip period in sec
 
-    for (signed int i = 0; i < _samplesPerCode; i++)
+    for (uint32_t i = 0; i < _samplesPerCode; i++)
         {
             //=== Digitizing =======================================================
 
@@ -420,7 +422,7 @@ void beidou_b2ad_code_gen_complex_sampled_secondary(std::complex<float>* _dest, 
 }
 
 // Generate a complex version of the B2a pilot code with the secondary code
-void beidou_b2ap_code_gen_complex_secondary(std::complex<float>* _dest, unsigned int _prn)
+void beidou_b2ap_code_gen_complex_secondary(std::complex<float>* _dest, uint32_t _prn)
 {
     int32_t* _code = new int32_t[BEIDOU_B2ap_CODE_LENGTH_CHIPS*BEIDOU_B2ap_SECONDARY_CODE_LENGTH];
 
@@ -429,7 +431,7 @@ void beidou_b2ap_code_gen_complex_secondary(std::complex<float>* _dest, unsigned
             make_b2ap_secondary(_code, _prn );
         }
 
-    for (signed int i = 0; i < BEIDOU_B2ap_CODE_LENGTH_CHIPS*BEIDOU_B2ap_SECONDARY_CODE_LENGTH; i++)
+    for (uint32_t i = 0; i < BEIDOU_B2ap_CODE_LENGTH_CHIPS*BEIDOU_B2ap_SECONDARY_CODE_LENGTH; i++)
         {
             _dest[i] = std::complex<float>(1.0 - 2.0 * _code[i], 0.0);
         }
@@ -438,7 +440,7 @@ void beidou_b2ap_code_gen_complex_secondary(std::complex<float>* _dest, unsigned
 }
 
 // Generates a complex version of the B2a pilot primary code
-void beidou_b2ap_code_gen_complex(std::complex<float>* _dest, unsigned int _prn)
+void beidou_b2ap_code_gen_complex(std::complex<float>* _dest, uint32_t _prn)
 {
     int32_t* _code = new int32_t[BEIDOU_B2ap_CODE_LENGTH_CHIPS];
 
@@ -447,7 +449,7 @@ void beidou_b2ap_code_gen_complex(std::complex<float>* _dest, unsigned int _prn)
             make_b2ap(_code, _prn);
         }
 
-    for (signed int i = 0; i < BEIDOU_B2ap_CODE_LENGTH_CHIPS; i++)
+    for (int32_t i = 0; i < BEIDOU_B2ap_CODE_LENGTH_CHIPS; i++)
         {
             _dest[i] = std::complex<float>(1.0 - 2.0 * _code[i], 0.0);
         }
@@ -458,7 +460,7 @@ void beidou_b2ap_code_gen_complex(std::complex<float>* _dest, unsigned int _prn)
 /*
  * Generates a float version of the B2a pilot primary code
  */
-void beidou_b2ap_code_gen_float(float* _dest, unsigned int _prn)
+void beidou_b2ap_code_gen_float(float* _dest, uint32_t _prn)
 {
     int32_t* _code = new int32_t[BEIDOU_B2ap_CODE_LENGTH_CHIPS];
 
@@ -467,7 +469,7 @@ void beidou_b2ap_code_gen_float(float* _dest, unsigned int _prn)
             make_b2ap(_code, _prn);
         }
 
-    for (signed int i = 0; i < BEIDOU_B2ap_CODE_LENGTH_CHIPS; i++)
+    for (uint32_t i = 0; i < BEIDOU_B2ap_CODE_LENGTH_CHIPS; i++)
         {
             _dest[i] = 1.0 - 2.0 * static_cast<float>(_code[i]);
         }
@@ -478,16 +480,16 @@ void beidou_b2ap_code_gen_float(float* _dest, unsigned int _prn)
 /*
  * Generates a float version of the B2a pilot primary code
  */
-void beidou_b2ap_code_gen_float_secondary(float* _dest, unsigned int _prn)
+void beidou_b2ap_code_gen_float_secondary(float* _dest, uint32_t _prn)
 {
-    int32_t* _code = new int32_t[BEIDOU_B2ap_SECONDARY_CODE_LENGTH];
+    int32_t* _code = new int32_t[BEIDOU_B2ap_CODE_LENGTH_CHIPS*BEIDOU_B2ap_SECONDARY_CODE_LENGTH];
 
     if (_prn > 0 and _prn < 63)
         {
             make_b2ap_secondary(_code, _prn);
         }
 
-    for (signed int i = 0; i < BEIDOU_B2ap_SECONDARY_CODE_LENGTH; i++)
+    for (uint32_t i = 0; i < BEIDOU_B2ap_CODE_LENGTH_CHIPS*BEIDOU_B2ap_SECONDARY_CODE_LENGTH; i++)
         {
             _dest[i] = 1.0 - 2.0 * static_cast<float>(_code[i]);
         }
@@ -498,7 +500,7 @@ void beidou_b2ap_code_gen_float_secondary(float* _dest, unsigned int _prn)
 /*
  *  Generates complex BEIDOU B2a pilot code for the desired SV ID and sampled to specific sampling frequency
  */
-void beidou_b2ap_code_gen_complex_sampled(std::complex<float>* _dest, unsigned int _prn, signed int _fs)
+void beidou_b2ap_code_gen_complex_sampled(std::complex<float>* _dest, uint32_t _prn, int32_t _fs)
 {
     int32_t* _code = new int32_t[BEIDOU_B2ap_CODE_LENGTH_CHIPS];
     if (_prn > 0 and _prn < 63)
@@ -506,10 +508,10 @@ void beidou_b2ap_code_gen_complex_sampled(std::complex<float>* _dest, unsigned i
             make_b2ap(_code, _prn);
         }
 
-    signed int _samplesPerCode, _codeValueIndex;
+    int32_t _samplesPerCode, _codeValueIndex;
     float _ts;
     float _tc;
-    const signed int _codeLength = BEIDOU_B2ap_CODE_LENGTH_CHIPS;
+    const int32_t _codeLength = BEIDOU_B2ap_CODE_LENGTH_CHIPS;
 
     //--- Find number of samples per spreading code ----------------------------
     _samplesPerCode = static_cast<int>(static_cast<double>(_fs) / (static_cast<double>(BEIDOU_B2ap_CODE_RATE_HZ) / static_cast<double>(_codeLength)));
@@ -519,7 +521,7 @@ void beidou_b2ap_code_gen_complex_sampled(std::complex<float>* _dest, unsigned i
     _tc = 1.0 / static_cast<float>(BEIDOU_B2ap_CODE_RATE_HZ);  // C/A chip period in sec
 
     //float aux;
-    for (signed int i = 0; i < _samplesPerCode; i++)
+    for (uint32_t i = 0; i < _samplesPerCode; i++)
         {
             //=== Digitizing =======================================================
 
@@ -543,7 +545,7 @@ void beidou_b2ap_code_gen_complex_sampled(std::complex<float>* _dest, unsigned i
 /*
  *  Generates complex BEIDOU B2a data code for the desired SV ID and sampled to specific sampling frequency with the secondary code implemented
  */
-void beidou_b2ap_code_gen_complex_sampled_secondary(std::complex<float>* _dest, unsigned int _prn, signed int _fs)
+void beidou_b2ap_code_gen_complex_sampled_secondary(std::complex<float>* _dest, uint32_t _prn, int32_t _fs)
 {
     int32_t* _code = new int32_t[BEIDOU_B2ap_CODE_LENGTH_CHIPS*BEIDOU_B2ap_SECONDARY_CODE_LENGTH];
     if (_prn > 0 and _prn <= 63)
@@ -551,10 +553,10 @@ void beidou_b2ap_code_gen_complex_sampled_secondary(std::complex<float>* _dest, 
             make_b2ap_secondary(_code, _prn);
         }
 
-    signed int _samplesPerCode, _codeValueIndex;
+    int32_t _samplesPerCode, _codeValueIndex;
     float _ts;
     float _tc;
-    const signed int _codeLength = BEIDOU_B2ap_CODE_LENGTH_CHIPS*BEIDOU_B2ap_SECONDARY_CODE_LENGTH;
+    const int32_t _codeLength = BEIDOU_B2ap_CODE_LENGTH_CHIPS*BEIDOU_B2ap_SECONDARY_CODE_LENGTH;
 
     //--- Find number of samples per spreading code ----------------------------
     _samplesPerCode = static_cast<int>(static_cast<double>(_fs) / (static_cast<double>(BEIDOU_B2ap_CODE_RATE_HZ) / static_cast<double>(_codeLength)));
@@ -563,7 +565,7 @@ void beidou_b2ap_code_gen_complex_sampled_secondary(std::complex<float>* _dest, 
     _ts = 1.0 / static_cast<float>(_fs);                   // Sampling period in sec
     _tc = 1.0 / static_cast<float>(BEIDOU_B2ap_CODE_RATE_HZ);  // code chip period in sec
 
-    for (signed int i = 0; i < _samplesPerCode; i++)
+    for (uint32_t i = 0; i < _samplesPerCode; i++)
         {
             //=== Digitizing =======================================================
 
@@ -583,4 +585,22 @@ void beidou_b2ap_code_gen_complex_sampled_secondary(std::complex<float>* _dest, 
 
         }
     delete[] _code;
+}
+
+void beidou_b2ap_secondary_gen_string(std::string _dest, uint32_t _prn)
+{
+	int32_t phase_diff = BEIDOU_B2ap_SECONDARY_PHASE_DIFFERENCE[_prn];
+	int32_t truncation_point = BEIDOU_B2ap_SECONDARY_TRUNCATION_POINT[_prn];
+
+	// Generate secondary code
+	std::deque<bool> b2ap_sec_code =  make_b2ap_secondary_weil_seq(phase_diff, truncation_point);
+
+	for(int32_t i = 0; i < BEIDOU_B2ap_SECONDARY_CODE_LENGTH; i++)
+		{
+			if(b2ap_sec_code[i] == true)
+				_dest[i] = '1';
+			else
+				_dest[i] = '0';
+
+		}
 }
