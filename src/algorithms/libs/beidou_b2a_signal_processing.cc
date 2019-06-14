@@ -240,7 +240,7 @@ void make_b2ap(int32_t* _dest, int32_t prn)
 	std::deque<bool> g2 = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 	for (int i = 0;i < 13; i++)
 		{
-			g2[i] = BEIDOU_B2ap_INIT_REG[prn][i];
+			g2[i] = BEIDOU_B2ap_INIT_REG[prn-1][i];
 		}
 	    std::deque<bool> g1 = make_b2ap_g1();
 	    g2 = make_b2ap_g2(g2);
@@ -254,14 +254,14 @@ void make_b2ap(int32_t* _dest, int32_t prn)
 // Generate a version of the B2a Pilot code with the secondary code included
 void make_b2ap_secondary(int32_t* _dest, int32_t prn)
 {
-	int32_t phase_diff = BEIDOU_B2ap_SECONDARY_PHASE_DIFFERENCE[prn];
-	int32_t truncation_point = BEIDOU_B2ap_SECONDARY_TRUNCATION_POINT[prn];
+	int32_t phase_diff = BEIDOU_B2ap_SECONDARY_PHASE_DIFFERENCE[prn-1];
+	int32_t truncation_point = BEIDOU_B2ap_SECONDARY_TRUNCATION_POINT[prn-1];
 
 	// Generate primary code
 	std::deque<bool> g2 = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 	for (uint32_t i = 0;i < 13; i++)
 	{
-		g2[i] = BEIDOU_B2ap_INIT_REG[prn][i];
+		g2[i] = BEIDOU_B2ap_INIT_REG[prn-1][i];
 	}
 	std::deque<bool> g1 = make_b2ap_g1();
 	g2 = make_b2ap_g2(g2);
@@ -587,10 +587,10 @@ void beidou_b2ap_code_gen_complex_sampled_secondary(std::complex<float>* _dest, 
     delete[] _code;
 }
 
-void beidou_b2ap_secondary_gen_string(std::string _dest, uint32_t _prn)
+void beidou_b2ap_secondary_gen_string(std::string& _dest, uint32_t _prn)
 {
-	int32_t phase_diff = BEIDOU_B2ap_SECONDARY_PHASE_DIFFERENCE[_prn];
-	int32_t truncation_point = BEIDOU_B2ap_SECONDARY_TRUNCATION_POINT[_prn];
+	int32_t phase_diff = BEIDOU_B2ap_SECONDARY_PHASE_DIFFERENCE[_prn-1];
+	int32_t truncation_point = BEIDOU_B2ap_SECONDARY_TRUNCATION_POINT[_prn-1];
 
 	// Generate secondary code
 	std::deque<bool> b2ap_sec_code =  make_b2ap_secondary_weil_seq(phase_diff, truncation_point);

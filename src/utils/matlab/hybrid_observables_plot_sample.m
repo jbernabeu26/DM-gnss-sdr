@@ -28,7 +28,7 @@ clearvars;
 close all;
 addpath('./libs');
 samplingFreq       = 25000000;     %[Hz]
-channels=6;
+channels=4;
 path='/archive/';
 observables_log_path=[path 'bds_b2a_observables.dat'];
 GNSS_observables= read_hybrid_observables_dump(channels,observables_log_path);

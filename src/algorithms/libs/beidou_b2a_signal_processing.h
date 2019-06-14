@@ -40,7 +40,7 @@
 /*!
  * Generates a string version of the BeiDou B2a pilot secondary code
  */
-void beidou_b2ap_secondary_gen_string(std::string _dest, uint32_t _prn);
+void beidou_b2ap_secondary_gen_string(std::string& _dest, uint32_t _prn);
 
 /*!
  * \brief Generates complex BeiDou B2a data primary code for the desired SV ID

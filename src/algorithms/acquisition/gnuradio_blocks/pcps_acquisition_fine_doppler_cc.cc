@@ -34,7 +34,15 @@
 #include "GPS_L1_CA.h"
 #include "gnss_sdr_create_directory.h"
 #include "gps_sdr_signal_processing.h"
+#if HAS_STD_FILESYSTEM
+#if HAS_STD_FILESYSTEM_EXPERIMENTAL
+#include <experimental/filesystem>
+#else
+#include <filesystem>
+#endif
+#else
 #include <boost/filesystem/path.hpp>
+#endif
 #include <glog/logging.h>
 #include <gnuradio/io_signature.h>
 #include <matio.h>
@@ -42,6 +50,16 @@
 #include <volk_gnsssdr/volk_gnsssdr.h>
 #include <algorithm>  // std::rotate, std::fill_n
 #include <sstream>
+
+#if HAS_STD_FILESYSTEM
+#if HAS_STD_FILESYSTEM_EXPERIMENTAL
+namespace fs = std::experimental::filesystem;
+#else
+namespace fs = std::filesystem;
+#endif
+#else
+namespace fs = boost::filesystem;
+#endif
 
 
 pcps_acquisition_fine_doppler_cc_sptr pcps_make_acquisition_fine_doppler_cc(const Acq_Conf &conf_)
@@ -107,7 +125,7 @@ pcps_acquisition_fine_doppler_cc::pcps_acquisition_fine_doppler_cc(const Acq_Con
                 {
                     d_dump_filename = d_dump_filename.substr(0, d_dump_filename.find_last_of('.'));
                 }
-            d_dump_filename = dump_path + boost::filesystem::path::preferred_separator + d_dump_filename;
+            d_dump_filename = dump_path + fs::path::preferred_separator + d_dump_filename;
             // create directory
             if (!gnss_sdr_create_directory(dump_path))
                 {

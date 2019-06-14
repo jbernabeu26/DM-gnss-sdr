@@ -30,10 +30,23 @@
 
 
 #include "gnss_sdr_flags.h"
-#include <boost/filesystem/operations.hpp>  // for exists
 #include <cstdint>
 #include <iostream>
 #include <string>
+
+#if HAS_STD_FILESYSTEM
+#if HAS_STD_FILESYSTEM_EXPERIMENTAL
+#include <experimental/filesystem>
+namespace fs = std::experimental::filesystem;
+#else
+#include <filesystem>
+namespace fs = std::filesystem;
+#endif
+#else
+#include <boost/filesystem/operations.hpp>  // for exists
+namespace fs = boost::filesystem;
+#endif
+
 
 DEFINE_string(c, "-", "Path to the configuration file (if set, overrides --config_file).");
 
@@ -69,7 +82,7 @@ DEFINE_double(pll_bw_hz, 0.0, "If defined, bandwidth of the PLL low pass filter,
 
 static bool ValidateC(const char* flagname, const std::string& value)
 {
-    if (boost::filesystem::exists(value) or value == "-")
+    if (fs::exists(value) or value == "-")
         {  // value is ok
             return true;
         }
@@ -80,7 +93,7 @@ static bool ValidateC(const char* flagname, const std::string& value)
 
 static bool ValidateConfigFile(const char* flagname, const std::string& value)
 {
-    if (boost::filesystem::exists(value) or value == std::string(GNSSSDR_INSTALL_DIR "/share/gnss-sdr/conf/default.conf"))
+    if (fs::exists(value) or value == std::string(GNSSSDR_INSTALL_DIR "/share/gnss-sdr/conf/default.conf"))
         {  // value is ok
             return true;
         }
@@ -91,7 +104,7 @@ static bool ValidateConfigFile(const char* flagname, const std::string& value)
 
 static bool ValidateS(const char* flagname, const std::string& value)
 {
-    if (boost::filesystem::exists(value) or value == "-")
+    if (fs::exists(value) or value == "-")
         {  // value is ok
             return true;
         }
@@ -102,7 +115,7 @@ static bool ValidateS(const char* flagname, const std::string& value)
 
 static bool ValidateSignalSource(const char* flagname, const std::string& value)
 {
-    if (boost::filesystem::exists(value) or value == "-")
+    if (fs::exists(value) or value == "-")
         {  // value is ok
             return true;
         }

@@ -76,7 +76,6 @@
 #include "glonass_l2_ca_pcps_acquisition.h"
 #include "glonass_l2_ca_telemetry_decoder.h"
 #include "gnss_block_interface.h"
-#include "gps_l1_ca_dll_pll_c_aid_tracking.h"
 #include "gps_l1_ca_dll_pll_tracking.h"
 #include "gps_l1_ca_kf_tracking.h"
 #include "gps_l1_ca_pcps_acquisition.h"
@@ -1829,12 +1828,6 @@ std::unique_ptr<GNSSBlockInterface> GNSSBlockFactory::GetBlock(
                     out_streams));
             block = std::move(block_);
         }
-    else if (implementation == "GPS_L1_CA_DLL_PLL_C_Aid_Tracking")
-        {
-            std::unique_ptr<TrackingInterface> block_(new GpsL1CaDllPllCAidTracking(configuration.get(), role, in_streams,
-                out_streams));
-            block = std::move(block_);
-        }
 #if ENABLE_FPGA
     else if (implementation == "GPS_L1_CA_DLL_PLL_Tracking_Fpga")
         {
@@ -2262,12 +2255,6 @@ std::unique_ptr<TrackingInterface> GNSSBlockFactory::GetTrkBlock(
         {
             std::unique_ptr<TrackingInterface> block_(new GpsL1CaKfTracking(configuration.get(), role, in_streams,
                     out_streams));
-            block = std::move(block_);
-        }
-    else if (implementation == "GPS_L1_CA_DLL_PLL_C_Aid_Tracking")
-        {
-            std::unique_ptr<TrackingInterface> block_(new GpsL1CaDllPllCAidTracking(configuration.get(), role, in_streams,
-                out_streams));
             block = std::move(block_);
         }
 #if ENABLE_FPGA
