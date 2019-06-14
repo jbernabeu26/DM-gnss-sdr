@@ -399,71 +399,61 @@ int beidou_b2a_telemetry_decoder_gs::general_work(int noutput_items __attribute_
         {
             if (d_nav.flag_TOW_10 == true)
                 {
-                    d_TOW_at_Preamble_ms = static_cast<uint32_t>(d_nav.cnav2_ephemeris.SOW * 1000.0);
+                    d_TOW_at_Preamble_ms = static_cast<uint32_t>((d_nav.cnav2_ephemeris.SOW + 14) * 1000.0);
                     d_TOW_at_current_symbol_ms = d_TOW_at_Preamble_ms + static_cast<uint32_t>((d_required_symbols + 1) * BEIDOU_B2ad_PERIOD_MS);
                     d_nav.flag_TOW_10 = false;
                 }
             else if (d_nav.flag_TOW_11 == true)
                 {
-                    d_TOW_at_Preamble_ms = static_cast<uint32_t>(d_nav.cnav2_ephemeris.SOW * 1000.0);
+                    d_TOW_at_Preamble_ms = static_cast<uint32_t>((d_nav.cnav2_ephemeris.SOW + 14) * 1000.0);
                     d_TOW_at_current_symbol_ms = d_TOW_at_Preamble_ms + static_cast<uint32_t>((d_required_symbols + 1) * BEIDOU_B2ad_PERIOD_MS);
                     d_nav.flag_TOW_11 = false;
                 }
             else if (d_nav.flag_TOW_30 == true)
                 {
-                    d_TOW_at_Preamble_ms = static_cast<uint32_t>(d_nav.cnav2_ephemeris.SOW * 1000.0);
+                    d_TOW_at_Preamble_ms = static_cast<uint32_t>((d_nav.cnav2_ephemeris.SOW+14) * 1000.0);
                     d_TOW_at_current_symbol_ms = d_TOW_at_Preamble_ms + static_cast<uint32_t>((d_required_symbols + 1) * BEIDOU_B2ad_PERIOD_MS);
                     d_nav.flag_TOW_30 = false;
                 }
             else if (d_nav.flag_TOW_31 == true)
                 {
-                    d_TOW_at_Preamble_ms = static_cast<uint32_t>(d_nav.cnav2_ephemeris.SOW * 1000.0);
+                    d_TOW_at_Preamble_ms = static_cast<uint32_t>((d_nav.cnav2_ephemeris.SOW+14) * 1000.0);
                     d_TOW_at_current_symbol_ms = d_TOW_at_Preamble_ms + static_cast<uint32_t>((d_required_symbols + 1) * BEIDOU_B2ad_PERIOD_MS);
                     d_nav.flag_TOW_31 = false;
                 }
             else if (d_nav.flag_TOW_32 == true)
                 {
-                    d_TOW_at_Preamble_ms = static_cast<uint32_t>(d_nav.cnav2_ephemeris.SOW * 1000.0);
+                    d_TOW_at_Preamble_ms = static_cast<uint32_t>((d_nav.cnav2_ephemeris.SOW + 14) * 1000.0);
                     d_TOW_at_current_symbol_ms = d_TOW_at_Preamble_ms + static_cast<uint32_t>((d_required_symbols + 1) * BEIDOU_B2ad_PERIOD_MS);
                     d_nav.flag_TOW_32 = false;
                 }
             else if (d_nav.flag_TOW_33 == true)
                 {
-                    d_TOW_at_Preamble_ms = static_cast<uint32_t>(d_nav.cnav2_ephemeris.SOW * 1000.0);
+                    d_TOW_at_Preamble_ms = static_cast<uint32_t>((d_nav.cnav2_ephemeris.SOW + 14) * 1000.0);
                     d_TOW_at_current_symbol_ms = d_TOW_at_Preamble_ms + static_cast<uint32_t>((d_required_symbols + 1) * BEIDOU_B2ad_PERIOD_MS);
                     d_nav.flag_TOW_33 = false;
                 }
             else if (d_nav.flag_TOW_34 == true)
                 {
-                    d_TOW_at_Preamble_ms = static_cast<uint32_t>(d_nav.cnav2_ephemeris.SOW * 1000.0);
+                    d_TOW_at_Preamble_ms = static_cast<uint32_t>((d_nav.cnav2_ephemeris.SOW + 14) * 1000.0);
                     d_TOW_at_current_symbol_ms = d_TOW_at_Preamble_ms + static_cast<uint32_t>((d_required_symbols + 1) * BEIDOU_B2ad_PERIOD_MS);
                     d_nav.flag_TOW_34 = false;
                 }
             else if (d_nav.flag_TOW_40 == true)
                 {
-                    d_TOW_at_Preamble_ms = static_cast<uint32_t>(d_nav.cnav2_ephemeris.SOW * 1000.0);
+                    d_TOW_at_Preamble_ms = static_cast<uint32_t>((d_nav.cnav2_ephemeris.SOW + 14) * 1000.0);
                     d_TOW_at_current_symbol_ms = d_TOW_at_Preamble_ms + static_cast<uint32_t>((d_required_symbols + 1) * BEIDOU_B2ad_PERIOD_MS);
                     d_nav.flag_TOW_40 = false;
                 }
             else  //if there is not a new preamble, we define the TOW of the current symbol
                 {
                     d_TOW_at_current_symbol_ms += static_cast<uint32_t>(BEIDOU_B2ad_PERIOD_MS);
-                    ;
                 }
         }
     else  //if there is not a new preamble, we define the TOW of the current symbol
         {
             d_TOW_at_current_symbol_ms += static_cast<uint32_t>(BEIDOU_B2ad_PERIOD_MS);
-            ;
         }
-
-
-    //if (d_flag_frame_sync == true and d_nav.flag_TOW_set==true and d_nav.flag_CRC_test == true)
-
-    // if(d_nav.flag_GGTO_1 == true  and  d_nav.flag_GGTO_2 == true and  d_nav.flag_GGTO_3 == true and  d_nav.flag_GGTO_4 == true) //all GGTO parameters arrived
-    //     {
-    //         delta_t = d_nav.A_0G_10 + d_nav.A_1G_10 * (d_TOW_at_current_symbol - d_nav.t_0G_10 + 604800.0 * (fmod((d_nav.WN_0 - d_nav.WN_0G_10), 64)));
-    //     }
 
     if (d_flag_frame_sync == true and d_nav.flag_TOW_set == true)
         {
@@ -479,7 +469,6 @@ int beidou_b2a_telemetry_decoder_gs::general_work(int noutput_items __attribute_
 
     if (d_dump == true)
         {
-            // MULTIPLEXED FILE RECORDING - Record results to file
             try
                 {
                     double tmp_double;
