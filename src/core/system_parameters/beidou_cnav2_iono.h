@@ -42,7 +42,7 @@ class Beidou_Cnav2_Iono
 {
 public:
     // Ionospheric correction
-    bool d_flag_valid;  //!< Valid flag
+    bool valid;  //!< Valid flag
 
     // BeiDou Global Ionospheric delay correction Model (BDGIM) parameters
     double alpha1;  //!< Coefficient 1 of the BDGIM model [TECu]

@@ -32,7 +32,7 @@
 
 Beidou_Cnav2_Iono::Beidou_Cnav2_Iono()
 {
-    d_flag_valid = false;
+    valid = false;
     alpha1 = 0.0;
     alpha2 = 0.0;
     alpha3 = 0.0;

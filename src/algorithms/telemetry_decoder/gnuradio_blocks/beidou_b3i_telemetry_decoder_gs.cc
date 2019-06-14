@@ -35,6 +35,7 @@
 #include "beidou_dnav_ephemeris.h"
 #include "beidou_dnav_iono.h"
 #include "beidou_dnav_utc_model.h"
+#include "display.h"
 #include "gnss_synchro.h"
 #include <glog/logging.h>
 #include <gnuradio/io_signature.h>
@@ -292,8 +293,8 @@ void beidou_b3i_telemetry_decoder_gs::decode_subframe(double *frame_symbols)
             this->message_port_pub(pmt::mp("telemetry"), pmt::make_any(tmp_obj));
             LOG(INFO) << "BEIDOU DNAV Ephemeris have been received in channel"
                       << d_channel << " from satellite " << d_satellite;
-            std::cout << "New BEIDOU B3I DNAV message received in channel " << d_channel
-                      << ": ephemeris from satellite " << d_satellite << std::endl;
+            std::cout << TEXT_MAGENTA << "New BEIDOU B3I DNAV message received in channel " << d_channel
+                      << ": ephemeris from satellite " << d_satellite << TEXT_RESET << std::endl;
         }
     if (d_nav.have_new_utc_model() == true)
         {
@@ -303,9 +304,9 @@ void beidou_b3i_telemetry_decoder_gs::decode_subframe(double *frame_symbols)
             this->message_port_pub(pmt::mp("telemetry"), pmt::make_any(tmp_obj));
             LOG(INFO) << "BEIDOU DNAV UTC Model have been received in channel"
                       << d_channel << " from satellite " << d_satellite;
-            std::cout << "New BEIDOU B3I DNAV utc model message received in channel "
+            std::cout << TEXT_MAGENTA << "New BEIDOU B3I DNAV utc model message received in channel "
                       << d_channel << ": UTC model parameters from satellite "
-                      << d_satellite << std::endl;
+                      << d_satellite << TEXT_RESET << std::endl;
         }
     if (d_nav.have_new_iono() == true)
         {
@@ -315,9 +316,9 @@ void beidou_b3i_telemetry_decoder_gs::decode_subframe(double *frame_symbols)
             this->message_port_pub(pmt::mp("telemetry"), pmt::make_any(tmp_obj));
             LOG(INFO) << "BEIDOU DNAV Iono have been received in channel" << d_channel
                       << " from satellite " << d_satellite;
-            std::cout << "New BEIDOU B3I DNAV Iono message received in channel "
+            std::cout << TEXT_MAGENTA << "New BEIDOU B3I DNAV Iono message received in channel "
                       << d_channel << ": Iono model parameters from satellite "
-                      << d_satellite << std::endl;
+                      << d_satellite << TEXT_RESET << std::endl;
         }
     if (d_nav.have_new_almanac() == true)
         {
@@ -328,8 +329,8 @@ void beidou_b3i_telemetry_decoder_gs::decode_subframe(double *frame_symbols)
             //            pmt::make_any(tmp_obj));
             LOG(INFO) << "BEIDOU DNAV Almanac have been received in channel"
                       << d_channel << " from satellite " << d_satellite << std::endl;
-            std::cout << "New BEIDOU B3I DNAV almanac received in channel " << d_channel
-                      << " from satellite " << d_satellite << std::endl;
+            std::cout << TEXT_MAGENTA << "New BEIDOU B3I DNAV almanac received in channel " << d_channel
+                      << " from satellite " << d_satellite << TEXT_RESET << std::endl;
         }
 }
 

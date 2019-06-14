@@ -40,7 +40,7 @@ Beidou_Cnav2_Ephemeris::Beidou_Cnav2_Ephemeris()
 	// Other values
 	i_satellite_PRN = 0;
 	SOW = 0.0;
-	WN = 0.0;
+	i_BDS_week = 0;
 
 	// Satellite Health Satus
 	HS = 0.0;			//0:Satellite is healthy/provides services, 1:Satellite is unhealthy or in test/does not provide services, 2:reserved/reserved, 3:reserved/reserved

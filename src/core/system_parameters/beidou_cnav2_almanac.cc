@@ -38,7 +38,7 @@ Beidou_Cnav2_Almanac::Beidou_Cnav2_Almanac()
 
 	i_satellite_PRN = 0;					//!< PRN number of the corresponding almanac data [dimensionless]
 	SatType = 0.0;				//!< Satellite orbit type [dimensionless]
-	WN = 0.0;					//!< Almanac reference week number [week]
+	i_BDS_week = 0.0;					//!< Almanac reference week number [week]
 	t_oa = 0.0;					//!< Almanac reference time [s]
 	e = 0.0;					//!< Eccentricity [dimensionless]
 	delta_i = 0.0;				//!< Correction of inclination angle relative to reference value at reference time [pi]

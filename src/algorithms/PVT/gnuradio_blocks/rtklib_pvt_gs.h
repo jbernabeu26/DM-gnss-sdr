@@ -49,6 +49,8 @@
 #include <utility>                // for pair
 #include <vector>                 // for vector
 
+class Beidou_Cnav2_Almanac;
+class Beidou_Cnav2_Ephemeris;
 class Beidou_Dnav_Almanac;
 class Beidou_Dnav_Ephemeris;
 class Galileo_Almanac;
@@ -197,6 +199,16 @@ public:
      * \brief Get latest set of BeiDou DNAV almanac from PVT block
      */
     std::map<int, Beidou_Dnav_Almanac> get_beidou_dnav_almanac_map() const;
+
+    /*!
+     * \brief Get latest set of BeiDou DNAV ephemeris from PVT block
+     */
+    std::map<int, Beidou_Cnav2_Ephemeris> get_beidou_cnav2_ephemeris_map() const;
+
+    /*!
+     * \brief Get latest set of BeiDou DNAV almanac from PVT block
+     */
+    std::map<int, Beidou_Cnav2_Almanac> get_beidou_cnav2_almanac_map() const;
 
     /*!
      * \brief Clear all ephemeris information and the almanacs for GPS and Galileo

@@ -51,7 +51,7 @@ public:
 	// Other values
 	unsigned int i_satellite_PRN;	//Pseudo-Random Noise, Satellite ID
 	double SOW;			//Seconds of week [s]
-	double WN;			//Week number [week]
+	int i_BDS_week;			//Week number [week]
 	double Rev;			//Unspecified in ICD. Probably Reserved
 
 	// Satellite Health Satus
@@ -134,7 +134,7 @@ public:
     	// Others values
     	archive& make_nvp("i_satellite_PRN", i_satellite_PRN);
     	archive& make_nvp("SOW", SOW);
-    	archive& make_nvp("WN", WN);
+    	archive& make_nvp("WN", i_BDS_week);
 
     	// Satellite Heath Status
     	archive& make_nvp("HS", HS);	//0:Satellite is healthy/provides services, 1:Satellite is unhealthy or in test/does not provide services, 2:reserved/reserved, 3:reserved/reserved

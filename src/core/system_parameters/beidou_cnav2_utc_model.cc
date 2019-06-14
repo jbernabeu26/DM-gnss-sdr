@@ -93,12 +93,12 @@ double Beidou_Cnav2_Utc_Model::beidt_to_utc(Beidou_Cnav2_Ephemeris const&eph, do
 
 
 	// DN is not in the past
-	if ((WN_LSF - eph.WN)*7 + (DN*24*3600 - eph.t_oe) > 0)
+	if ((WN_LSF - eph.i_BDS_week)*7 + (DN*24*3600 - eph.t_oe) > 0)
 	{
 		if (std::abs(dt_LSF) > 6*3600)
 		{
 			// 1) user's present time does not fall within the time span which starts six hours prior to the leap second time and ends six hours after the leap second time
-			dt_UTC = dt_LS + A_0UTC + A_1UTC * (eph.t_oe - t_ot + 604800 * (eph.WN - WN_ot)) + A_2UTC * (time_bds - t_ot + 604800 * (eph.WN - WN_ot)) * (time_bds - t_ot + 604800 * (eph.WN - WN_ot));
+			dt_UTC = dt_LS + A_0UTC + A_1UTC * (eph.t_oe - t_ot + 604800 * (eph.i_BDS_week - WN_ot)) + A_2UTC * (time_bds - t_ot + 604800 * (eph.i_BDS_week - WN_ot)) * (time_bds - t_ot + 604800 * (eph.i_BDS_week - WN_ot));
 			t_UTC = std::fmod((time_bds - dt_UTC),86400);
 		}
 		else
@@ -111,7 +111,7 @@ double Beidou_Cnav2_Utc_Model::beidt_to_utc(Beidou_Cnav2_Ephemeris const&eph, do
 	else
 	{
 		 // 3) DN is in the past
-		dt_UTC = dt_LSF + A_0UTC + A_1UTC * (eph.t_oe - t_ot + 604800 * (eph.WN - WN_ot)) + A_2UTC * (time_bds - t_ot + 604800 * (eph.WN - WN_ot)) * (time_bds - t_ot + 604800 * (eph.WN - WN_ot));
+		dt_UTC = dt_LSF + A_0UTC + A_1UTC * (eph.t_oe - t_ot + 604800 * (eph.i_BDS_week - WN_ot)) + A_2UTC * (time_bds - t_ot + 604800 * (eph.i_BDS_week - WN_ot)) * (time_bds - t_ot + 604800 * (eph.i_BDS_week - WN_ot));
 		t_UTC = std::fmod((time_bds - dt_UTC),86400);
 	}
 
@@ -128,7 +128,7 @@ double Beidou_Cnav2_Utc_Model::beidt_to_gpst(Beidou_Cnav2_Ephemeris const&eph, d
 	double t_GNSS;
 	
 	 //dT_systems = t_BD - t_GNSS = A_0BGTO + A_1BGTO*[t_BD - t_0BGTO + 604800*(WN - WN_BGTO)] + A_2BGTO*square(t_BD - t_0BGTO +604800*(WN - WN_BGTO));
-	 t_GNSS = beidou_time - (A_0BGTO + A_1BGTO*(beidou_time - t_0BGTO + 604800*(eph.WN - WN_0BGTO)) + A_2BGTO*(beidou_time - t_0BGTO +604800*(eph.WN - WN_0BGTO)))*(beidou_time - t_0BGTO +604800*(eph.WN - WN_0BGTO));
+	 t_GNSS = beidou_time - (A_0BGTO + A_1BGTO*(beidou_time - t_0BGTO + 604800*(eph.i_BDS_week - WN_0BGTO)) + A_2BGTO*(beidou_time - t_0BGTO +604800*(eph.i_BDS_week - WN_0BGTO)))*(beidou_time - t_0BGTO +604800*(eph.i_BDS_week - WN_0BGTO));
 	 
 	 return t_GNSS;
 }

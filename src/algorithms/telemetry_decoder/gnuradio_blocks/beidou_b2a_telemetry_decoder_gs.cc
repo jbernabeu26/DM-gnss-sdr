@@ -36,6 +36,7 @@
 #include "beidou_cnav2_almanac.h"
 #include "beidou_cnav2_ephemeris.h"
 #include "beidou_cnav2_utc_model.h"
+#include "display.h"
 #include "gnss_synchro.h"
 #include <glog/logging.h>
 #include <gnuradio/io_signature.h>
@@ -193,7 +194,7 @@ void beidou_b2a_telemetry_decoder_gs::decode_string(double *frame_symbols, int32
             std::shared_ptr<Beidou_Cnav2_Ephemeris> tmp_obj = std::make_shared<Beidou_Cnav2_Ephemeris>(d_nav.get_ephemeris());
             this->message_port_pub(pmt::mp("telemetry"), pmt::make_any(tmp_obj));
             LOG(INFO) << "BEIDOU CNAV2 Ephemeris have been received in channel" << d_channel << " from satellite " << d_satellite;
-            std::cout << "New BEIDOU B2a CNAV2 message received in channel " << d_channel << ": ephemeris from satellite " << d_satellite << std::endl;
+            std::cout << TEXT_MAGENTA <<  "New BDS B2a CNAV2 message received in channel " << d_channel << ": ephemeris from satellite " << d_satellite << TEXT_RESET << std::endl;
         }
     if (d_nav.have_new_utc_model() == true)
         {
@@ -201,7 +202,7 @@ void beidou_b2a_telemetry_decoder_gs::decode_string(double *frame_symbols, int32
             std::shared_ptr<Beidou_Cnav2_Utc_Model> tmp_obj = std::make_shared<Beidou_Cnav2_Utc_Model>(d_nav.get_utc_model());
             this->message_port_pub(pmt::mp("telemetry"), pmt::make_any(tmp_obj));
             LOG(INFO) << "BEIDOU CNAV2 UTC Model have been received in channel" << d_channel << " from satellite " << d_satellite;
-            std::cout << "New BEIDOU B2a CNAV2 utc model message received in channel " << d_channel << ": UTC model parameters from satellite " << d_satellite << std::endl;
+            std::cout << TEXT_MAGENTA << "New BDS B2a CNAV2 UTC model message received in channel " << d_channel << ": UTC model parameters from satellite " << d_satellite << TEXT_RESET << std::endl;
         }
     if (d_nav.have_new_iono() == true)
         {
@@ -209,7 +210,7 @@ void beidou_b2a_telemetry_decoder_gs::decode_string(double *frame_symbols, int32
             std::shared_ptr<Beidou_Cnav2_Iono> tmp_obj = std::make_shared<Beidou_Cnav2_Iono>(d_nav.get_iono());
             this->message_port_pub(pmt::mp("telemetry"), pmt::make_any(tmp_obj));
             LOG(INFO) << "BEIDOU CNAV2 Iono have been received in channel" << d_channel << " from satellite " << d_satellite;
-            std::cout << "New BEIDOU B2a CNAV2 Iono message received in channel " << d_channel << ": UTC model parameters from satellite " << d_satellite << std::endl;
+            std::cout << TEXT_MAGENTA << "New BDS B2a CNAV2 Iono message received in channel " << d_channel << ": UTC model parameters from satellite " << d_satellite << TEXT_RESET << std::endl;
         }
     if (d_nav.have_new_almanac() == true)
         {
@@ -217,7 +218,7 @@ void beidou_b2a_telemetry_decoder_gs::decode_string(double *frame_symbols, int32
             std::shared_ptr<Beidou_Cnav2_Almanac> tmp_obj = std::make_shared<Beidou_Cnav2_Almanac>(d_nav.get_almanac(slot_nbr));
             this->message_port_pub(pmt::mp("telemetry"), pmt::make_any(tmp_obj));
             LOG(INFO) << "BEIDOU CNAV2 Almanac have been received in channel" << d_channel << " in slot number " << slot_nbr;
-            std::cout << "New BEIDOU B2a CNAV2 almanac received in channel " << d_channel << " from satellite " << d_satellite << std::endl;
+            std::cout << TEXT_MAGENTA << "New BDS B2a CNAV2 almanac received in channel " << d_channel << " from satellite " << d_satellite << TEXT_RESET << std::endl;
         }
 }
 

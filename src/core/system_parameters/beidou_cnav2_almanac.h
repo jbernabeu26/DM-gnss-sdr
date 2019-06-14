@@ -48,7 +48,7 @@ public:
 
 	unsigned int i_satellite_PRN;				//!< PRN number of the corresponding almanac data [dimnsionless]
 	double SatType;				//!< Satellite orbit type [dimnsionless]
-	double WN;				//!< Alamanc reference week number [week]
+	int i_BDS_week;				//!< Alamanc reference week number [week]
 	double t_oa;				//!< Almanac reference time [s]
 	double e;					//!< Eccentricity [dimnsionless]
 	double delta_i;				//!< Correction of inclination angle relative to reference value at reference time [pi]
@@ -79,7 +79,7 @@ public:
 
         archive& make_nvp("i_satellite_PRN", i_satellite_PRN);
         archive& make_nvp("SatType", SatType);
-        archive& make_nvp("WN", WN);
+        archive& make_nvp("WN", i_BDS_week);
         archive& make_nvp("t_oa", t_oa);
         archive& make_nvp("e", e);
         archive& make_nvp("delta_i", delta_i);
