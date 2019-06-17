@@ -750,10 +750,7 @@ void dll_pll_veml_tracking::start_tracking()
     		if (trk_parameters.track_pilot)
                 {
     			    // Secondary pilot code is specific for each satellite
-    			    std::string aux_secondary_code_string (BEIDOU_B2ap_SECONDARY_CODE_LENGTH, '0');
-    			    beidou_b2ap_secondary_gen_string(aux_secondary_code_string, d_acquisition_gnss_synchro->PRN);
-    			    d_secondary_code_string = const_cast<std::string *>(&aux_secondary_code_string);
-
+    			    d_secondary_code_string = const_cast<std::string *>(&BEIDOU_B2ap_SECONDARY_CODE[d_acquisition_gnss_synchro->PRN - 1]);
                     beidou_b2ap_code_gen_float(d_tracking_code, d_acquisition_gnss_synchro->PRN);
             		beidou_b2ad_code_gen_float(d_data_code, d_acquisition_gnss_synchro->PRN);
                     d_Prompt_Data[0] = gr_complex(0.0, 0.0);
