@@ -673,7 +673,7 @@ if(NOT (GNURADIO_VERSION VERSION_LESS 3.8) AND LOG4CPP_READY_FOR_CXX17)
         if(POLICY CMP0057)
             cmake_policy(SET CMP0057 NEW)
         endif()
-        if(NOT ENABLE_UNIT_TESTING_EXTRA) # Workaround for GPSTk
+        if((NOT ENABLE_UNIT_TESTING_EXTRA) AND (NOT ENABLE_SYSTEM_TESTING_EXTRA) AND (NOT ENABLE_FPGA)) # Workaround for GPSTk
             find_package(FILESYSTEM COMPONENTS Final Experimental)
             set_package_properties(FILESYSTEM PROPERTIES
                 URL "https://en.cppreference.com/w/cpp/filesystem"
@@ -829,10 +829,18 @@ if(NOT VOLK_FOUND)
 endif()
 set_package_properties(VOLK PROPERTIES
     URL "http://libvolk.org"
-    DESCRIPTION "Vector-Optimized Library of Kernels (found: ${VOLK_VERSION})"
     PURPOSE "Provides an abstraction of optimized math routines targeting several SIMD processors."
     TYPE REQUIRED
 )
+if(VOLK_VERSION)
+    set_package_properties(VOLK PROPERTIES
+        DESCRIPTION "Vector-Optimized Library of Kernels (found: ${VOLK_VERSION})"
+    )
+else()
+    set_package_properties(VOLK PROPERTIES
+        DESCRIPTION "Vector-Optimized Library of Kernels"
+    )
+endif()
 
 
 
@@ -889,23 +897,30 @@ if(NOT VOLKGNSSSDR_FOUND)
         endif()
         message(FATAL_ERROR "six - python 2 and 3 compatibility library required to build VOLK_GNSSSDR")
     endif()
-
-    if(Python3_FOUND)
+    if(CMAKE_VERSION VERSION_GREATER 3.12)
         set_package_properties(Python3 PROPERTIES
             URL "https://www.python.org/"
-            DESCRIPTION "An interpreted, high-level, general-purpose programming language (found: ${Python3_VERSION})"
             PURPOSE "Required to build volk_gnsssdr."
             TYPE REQUIRED
         )
-    endif()
-
-    if(Python2_FOUND)
-        set_package_properties(Python2 PROPERTIES
-            URL "https://www.python.org/"
-            DESCRIPTION "An interpreted, high-level, general-purpose programming language (found: ${Python2_VERSION})"
-            PURPOSE "Required to build volk_gnsssdr."
-            TYPE REQUIRED
-        )
+        if(Python3_FOUND)
+            set_package_properties(Python3 PROPERTIES
+                DESCRIPTION "An interpreted, high-level, general-purpose programming language (found: ${Python3_VERSION})"
+            )
+        else()
+            set_package_properties(Python3 PROPERTIES
+                DESCRIPTION "An interpreted, high-level, general-purpose programming language"
+                PURPOSE "Another Python version will be used."
+            )
+        endif()
+        if(Python2_FOUND)
+            set_package_properties(Python2 PROPERTIES
+                URL "https://www.python.org/"
+                DESCRIPTION "An interpreted, high-level, general-purpose programming language (found: ${Python2_VERSION})"
+                PURPOSE "Required to build volk_gnsssdr."
+                TYPE REQUIRED
+            )
+        endif()
     endif()
 
     if(PYTHONINTERP_FOUND)
@@ -1046,11 +1061,13 @@ set(LOCAL_GFLAGS false)
 find_package(GFLAGS)
 set_package_properties(GFLAGS PROPERTIES
     URL "https://github.com/gflags/gflags"
-    DESCRIPTION "C++ library that implements commandline flags processing"
     PURPOSE "Used for commandline flags management."
     TYPE REQUIRED
 )
 if(NOT GFLAGS_FOUND)
+    set_package_properties(GFLAGS PROPERTIES
+        DESCRIPTION "C++ library that implements commandline flags processing"
+    )
     message(STATUS " gflags library has not been found.")
     message(STATUS " gflags v${GNSSSDR_GFLAGS_LOCAL_VERSION} will be downloaded and built automatically ")
     message(STATUS " when doing 'make'.")
@@ -1109,6 +1126,16 @@ if(NOT GFLAGS_FOUND)
     set_package_properties(GFLAGS PROPERTIES
         PURPOSE "Gflags v${GNSSSDR_GFLAGS_LOCAL_VERSION} will be downloaded and built when doing '${CMAKE_MAKE_PROGRAM_PRETTY_NAME}'."
     )
+else()
+    if(GFLAGS_VERSION)
+        set_package_properties(GFLAGS PROPERTIES
+            DESCRIPTION "C++ library that implements commandline flags processing (found: v${GFLAGS_VERSION})"
+        )
+    else()
+        set_package_properties(GFLAGS PROPERTIES
+            DESCRIPTION "C++ library that implements commandline flags processing"
+        )
+    endif()
 endif()
 
 
@@ -1124,11 +1151,13 @@ if(NOT ${ENABLE_OWN_GLOG})
 endif()
 set_package_properties(GLOG PROPERTIES
     URL "https://github.com/google/glog"
-    DESCRIPTION "C++ implementation of the Google logging module"
     PURPOSE "Used for runtime internal logging."
     TYPE REQUIRED
 )
 if(NOT GLOG_FOUND OR ${LOCAL_GFLAGS})
+    set_package_properties(GLOG PROPERTIES
+        DESCRIPTION "C++ implementation of the Google logging module"
+    )
     message(STATUS " glog library has not been found")
     if(NOT GFLAGS_FOUND)
         message(STATUS " or it is likely not linked to gflags.")
@@ -1285,6 +1314,16 @@ ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/glog/glog-${GNSSSDR_GLOG_LOCAL_VERSION}/c
     set_package_properties(GLOG PROPERTIES
         PURPOSE "Glog v${GNSSSDR_GLOG_LOCAL_VERSION} will be downloaded and built when doing 'make'."
     )
+else()
+    if(GLOG_VERSION)
+        set_package_properties(GLOG PROPERTIES
+            DESCRIPTION "C++ implementation of the Google logging module (found: v${GLOG_VERSION})"
+        )
+    else()
+        set_package_properties(GLOG PROPERTIES
+            DESCRIPTION "C++ implementation of the Google logging module"
+        )
+    endif()
 endif()
 
 if(NOT ENABLE_LOG)
