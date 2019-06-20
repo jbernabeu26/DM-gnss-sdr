@@ -48,6 +48,10 @@
 # Pcap::pcap
 #
 
+set(PKG_CONFIG_USE_CMAKE_PREFIX_PATH TRUE)
+include(FindPkgConfig)
+pkg_check_modules(PC_PCAP libpcap)
+
 if(EXISTS $ENV{PCAPDIR})
   find_path(PCAP_INCLUDE_DIR
     NAMES
@@ -57,6 +61,7 @@ if(EXISTS $ENV{PCAPDIR})
       $ENV{PCAPDIR}
       ${PCAP_ROOT}/include
       $ENV{PCAP_ROOT}/include
+      ${PC_PCAP_INCLUDEDIR}
     NO_DEFAULT_PATH
   )
   find_library(PCAP_LIBRARY
@@ -66,6 +71,7 @@ if(EXISTS $ENV{PCAPDIR})
       $ENV{PCAPDIR}
       ${PCAP_ROOT}/lib
       $ENV{PCAP_ROOT}/lib
+      ${PC_PCAP_LIBDIR}
     NO_DEFAULT_PATH
   )
 else()
@@ -76,6 +82,7 @@ else()
     HINTS
       ${PCAP_ROOT}/include
       $ENV{PCAP_ROOT}/include
+      ${PC_PCAP_INCLUDEDIR}
   )
   find_library(PCAP_LIBRARY
     NAMES
@@ -83,6 +90,7 @@ else()
     HINTS
       ${PCAP_ROOT}/lib
       $ENV{PCAP_ROOT}/lib
+      ${PC_PCAP_LIBDIR}
   )
 endif()
 
@@ -103,6 +111,9 @@ endif()
 
 #Functions
 include(CheckFunctionExists)
+
+set(OLD_CMAKE_REQUIRED_INCLUDES ${CMAKE_REQUIRED_INCLUDES})
+set(OLD_CMAKE_REQUIRED_LIBRARIES ${CMAKE_REQUIRED_LIBRARIES})
 set(CMAKE_REQUIRED_INCLUDES ${PCAP_INCLUDE_DIRS})
 set(CMAKE_REQUIRED_LIBRARIES ${PCAP_LIBRARIES})
 check_function_exists("pcap_breakloop" HAVE_PCAP_BREAKLOOP)
@@ -115,9 +126,15 @@ check_function_exists("pcap_lib_version" HAVE_PCAP_LIB_VERSION)
 check_function_exists("pcap_list_datalinks" HAVE_PCAP_LIST_DATALINKS)
 check_function_exists("pcap_open_dead" HAVE_PCAP_OPEN_DEAD)
 check_function_exists("pcap_set_datalink" HAVE_PCAP_SET_DATALINK)
+set(CMAKE_REQUIRED_INCLUDES ${OLD_CMAKE_REQUIRED_INCLUDES})
+set(CMAKE_REQUIRED_LIBRARIES ${OLD_CMAKE_REQUIRED_LIBRARIES})
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(PCAP DEFAULT_MSG PCAP_INCLUDE_DIRS PCAP_LIBRARIES)
+
+if(PCAP_FOUND AND PC_PCAP_VERSION)
+    set(PCAP_VERSION ${PC_PCAP_VERSION})
+endif()
 
 if(PCAP_FOUND AND NOT TARGET Pcap::pcap)
     add_library(Pcap::pcap SHARED IMPORTED)
