@@ -36,6 +36,7 @@
 
 #include "dll_pll_veml_tracking.h"
 #include "Beidou_B1I.h"
+#include "Beidou_B1C.h"
 #include "Beidou_B3I.h"
 #include "GPS_L1_CA.h"
 #include "GPS_L2C.h"
@@ -44,6 +45,7 @@
 #include "Galileo_E5a.h"
 #include "MATH_CONSTANTS.h"
 #include "beidou_b1i_signal_processing.h"
+#include "beidou_b1c_signal_processing.h"
 #include "beidou_b3i_signal_processing.h"
 #include "galileo_e1_signal_processing.h"
 #include "galileo_e5_signal_processing.h"
@@ -121,6 +123,7 @@ dll_pll_veml_tracking::dll_pll_veml_tracking(const Dll_Pll_Conf &conf_) : gr::bl
     map_signal_pretty_name["L5"] = "L5";
     map_signal_pretty_name["B1"] = "B1I";
     map_signal_pretty_name["B3"] = "B3I";
+    map_signal_pretty_name["C1"] = "B1C";
 
     signal_pretty_name = map_signal_pretty_name[signal_type];
 
@@ -319,6 +322,31 @@ dll_pll_veml_tracking::dll_pll_veml_tracking(const Dll_Pll_Conf &conf_) : gr::bl
                     interchange_iq = false;
                     d_secondary_code_length = static_cast<uint32_t>(BEIDOU_B3I_SECONDARY_CODE_LENGTH);
                     d_secondary_code_string = const_cast<std::string *>(&BEIDOU_B3I_SECONDARY_CODE_STR);
+                }
+            else if (signal_type == "C1")
+                {
+                    d_signal_carrier_freq = BEIDOU_B1C_FREQ_HZ;
+                    d_code_period = BEIDOU_B1Cd_PERIOD;
+                    d_code_chip_rate = BEIDOU_B1Cd_CODE_RATE_HZ;
+                    d_symbols_per_bit = BEIDOU_B1C_SAMPLES_PER_SYMBOL;
+                    d_correlation_length_ms = 1;
+                    d_code_samples_per_chip = 1;
+                    d_code_length_chips = static_cast<uint32_t>(BEIDOU_B1Cd_CODE_LENGTH_CHIPS);
+                    d_secondary = true; //Check!
+
+                    if (trk_parameters.track_pilot)
+                        {
+                            d_secondary_code_length = static_cast<uint32_t>(BEIDOU_B1Cp_SECONDARY_CODE_LENGTH_CHIPS);
+                            signal_pretty_name = signal_pretty_name + "Pilot";
+                            interchange_iq = true;
+                        }
+                    else
+                        {
+                            //As data component do not have secondary code, hence followed like signal_type == "5X"
+                            d_secondary = false;
+                            signal_pretty_name = signal_pretty_name + "Data";
+                            interchange_iq = false;
+                        }
                 }
             else
                 {
@@ -727,6 +755,24 @@ void dll_pll_veml_tracking::start_tracking()
                     d_symbol_history.resize(22);  // Change fixed buffer size
                     d_symbol_history.clear();
                 }
+        }
+    else if (systemName == "Beidou" and signal_type == "C1")
+        {
+
+    		if (trk_parameters.track_pilot)
+                {
+    			    // Secondary pilot code is specific for each satellite
+    			    d_secondary_code_string = const_cast<std::string *>(&BEIDOU_B1Cp_SECONDARY_CODE[d_acquisition_gnss_synchro->PRN - 1]);
+                    beidou_b1cp_code_gen_float(d_tracking_code, d_acquisition_gnss_synchro->PRN);
+            		beidou_b1cd_code_gen_float(d_data_code, d_acquisition_gnss_synchro->PRN);
+                    d_Prompt_Data[0] = gr_complex(0.0, 0.0);
+                    correlator_data_cpu.set_local_code_and_taps(d_code_length_chips, d_data_code, d_prompt_data_shift);
+                }
+            else
+                {
+                    beidou_b1cd_code_gen_float(d_tracking_code, d_acquisition_gnss_synchro->PRN);
+                }
+
         }
 
     multicorrelator_cpu.set_local_code_and_taps(d_code_samples_per_chip * d_code_length_chips, d_tracking_code, d_local_code_shift_chips);
