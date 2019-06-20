@@ -23,6 +23,7 @@
 ########################################################################
 # Find the library for the USRP Hardware Driver
 ########################################################################
+set(PKG_CONFIG_USE_CMAKE_PREFIX_PATH TRUE)
 include(FindPkgConfig)
 pkg_check_modules(PC_UHD uhd)
 
@@ -76,6 +77,21 @@ find_library(UHD_LIBRARIES
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(UHD DEFAULT_MSG UHD_LIBRARIES UHD_INCLUDE_DIRS)
+
+if(PC_UHD_VERSION)
+    set(UHD_VERSION ${PC_UHD_VERSION})
+endif()
+if(NOT PC_UHD_VERSION)
+    list(GET UHD_LIBRARIES 0 FIRST_DIR)
+    get_filename_component(UHD_LIBRARIES_DIR ${FIRST_DIR} DIRECTORY)
+    if(EXISTS ${UHD_LIBRARIES_DIR}/cmake/uhd/UHDConfigVersion.cmake)
+        include(${UHD_LIBRARIES_DIR}/cmake/uhd/UHDConfigVersion.cmake)
+    endif()
+    if(PACKAGE_VERSION)
+        set(UHD_VERSION ${PACKAGE_VERSION})
+    endif()
+    unset(PACKAGE_VERSION)
+endif()
 
 if(UHD_FOUND AND NOT TARGET Uhd::uhd)
     add_library(Uhd::uhd SHARED IMPORTED)

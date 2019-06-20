@@ -161,16 +161,29 @@ if(ENABLE_FPGA)
     add_definitions(-DFPGA_BLOCKS_TEST=1)
 endif()
 
+if(ARMADILLO_VERSION_STRING VERSION_GREATER 8.400)
+    # mvnrnd() requires 8.400
+    add_definitions(-DARMADILLO_HAVE_MVNRND=1)
+endif()
+
 find_package(Gnuplot)
 if(GNUPLOT_FOUND)
     add_definitions(-DGNUPLOT_EXECUTABLE="${GNUPLOT_EXECUTABLE}")
 endif()
 set_package_properties(Gnuplot PROPERTIES
     URL "http://www.gnuplot.info"
-    DESCRIPTION "A portable command-line driven graphing utility"
     PURPOSE "Used to generate plots in some tests."
     TYPE OPTIONAL
 )
+if(GNUPLOT_FOUND AND GNUPLOT_VERSION_STRING)
+    set_package_properties(Gnuplot PROPERTIES
+        DESCRIPTION "A portable command-line driven graphing utility (found: v${GNUPLOT_VERSION_STRING})"
+    )
+else()
+    set_package_properties(Gnuplot PROPERTIES
+        DESCRIPTION "A portable command-line driven graphing utility"
+    )
+endif()
 
 if(ENABLE_UNIT_TESTING_MINIMAL)
     add_definitions(-DUNIT_TESTING_MINIMAL=1)
@@ -186,10 +199,19 @@ add_feature_info(ENABLE_GNSS_SIM_INSTALL ENABLE_GNSS_SIM_INSTALL "Enables downlo
 find_package(GPSTK)
 set_package_properties(GPSTK PROPERTIES
     URL "http://www.gpstk.org"
-    DESCRIPTION "Library and suite of applications for satellite navigation"
     PURPOSE "Used in some Extra Tests."
     TYPE OPTIONAL
 )
+if(GPSTK_FOUND AND GPSTK_VERSION)
+    set_package_properties(GPSTK PROPERTIES
+        DESCRIPTION "Library and suite of applications for satellite navigation (found: v${GPSTK_VERSION})"
+    )
+else()
+    set_package_properties(GPSTK PROPERTIES
+        DESCRIPTION "Library and suite of applications for satellite navigation"
+    )
+endif()
+
 if(ENABLE_UNIT_TESTING_EXTRA OR ENABLE_SYSTEM_TESTING_EXTRA OR ENABLE_FPGA)
     if(ENABLE_FPGA)
         set(CROSS_INSTALL_DIR "-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}")
@@ -237,7 +259,7 @@ if(ENABLE_UNIT_TESTING_EXTRA OR ENABLE_SYSTEM_TESTING_EXTRA OR ENABLE_FPGA)
     if(NOT GPSTK_FOUND OR ENABLE_OWN_GPSTK)
         message(STATUS " GPSTk v${GNSSSDR_GPSTK_LOCAL_VERSION} will be automatically downloaded and built when doing 'make'.")
         if("${TOOLCHAIN_ARG}" STREQUAL "")
-            set(TOOLCHAIN_ARG "-DCMAKE_CXX_FLAGS=\"-Wno-deprecated\"")
+            set(TOOLCHAIN_ARG "-DCMAKE_CXX_FLAGS=-Wno-deprecated")
             set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated")
         endif()
         include(GNUInstallDirs)
@@ -354,11 +376,18 @@ include_directories(${LIST_INCLUDE_DIRS})
 ################################################################################
 if(ENABLE_UNIT_TESTING)
     add_executable(run_tests ${CMAKE_CURRENT_SOURCE_DIR}/test_main.cc)
+    if(${FILESYSTEM_FOUND})
+        target_compile_definitions(run_tests PRIVATE -DHAS_STD_FILESYSTEM=1)
+        if(${find_experimental})
+            target_compile_definitions(run_tests PRIVATE -DHAS_STD_FILESYSTEM_EXPERIMENTAL=1)
+        endif()
+        target_link_libraries(run_tests PRIVATE std::filesystem)
+    else()
+        target_link_libraries(run_tests PRIVATE Boost::filesystem Boost::system)
+    endif()
 
     target_link_libraries(run_tests
         PUBLIC
-            Boost::filesystem
-            Boost::system
             Boost::thread
             Armadillo::armadillo
             Gflags::gflags
@@ -441,11 +470,18 @@ if(ENABLE_FPGA)
         ${CMAKE_CURRENT_SOURCE_DIR}/single_test_main.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/unit-tests/signal-processing-blocks/tracking/gps_l1_ca_dll_pll_tracking_test_fpga.cc
     )
+    if(${FILESYSTEM_FOUND})
+        target_compile_definitions(gps_l1_ca_dll_pll_tracking_test_fpga PRIVATE -DHAS_STD_FILESYSTEM=1)
+        if(${find_experimental})
+            target_compile_definitions(gps_l1_ca_dll_pll_tracking_test_fpga PRIVATE -DHAS_STD_FILESYSTEM_EXPERIMENTAL=1)
+        endif()
+        target_link_libraries(gps_l1_ca_dll_pll_tracking_test_fpga PRIVATE std::filesystem)
+    else()
+        target_link_libraries(gps_l1_ca_dll_pll_tracking_test_fpga PRIVATE Boost::filesystem Boost::system)
+    endif()
     target_link_libraries(gps_l1_ca_dll_pll_tracking_test_fpga
         PUBLIC
             Armadillo::armadillo
-            Boost::filesystem
-            Boost::system
             Boost::thread
             Gflags::gflags
             Glog::glog
@@ -482,6 +518,15 @@ function(add_system_test executable)
         execute_process(COMMAND ${CMAKE_COMMAND} -E touch ${SYSTEM_TEST_SOURCES})
     endif()
     add_executable(${executable} ${SYSTEM_TEST_SOURCES})
+    if(${FILESYSTEM_FOUND})
+        target_compile_definitions(${executable} PRIVATE -DHAS_STD_FILESYSTEM=1)
+        if(${find_experimental})
+            target_compile_definitions(${executable} PRIVATE -DHAS_STD_FILESYSTEM_EXPERIMENTAL=1)
+        endif()
+        target_link_libraries(${executable} PRIVATE std::filesystem)
+    else()
+        target_link_libraries(${executable} PRIVATE Boost::filesystem Boost::system)
+    endif()
 
     target_include_directories(${executable} PUBLIC ${OPT_INCLUDES_} ${CMAKE_SOURCES_DIR}/src/algorithms/libs)
     target_link_libraries(${executable} PUBLIC ${OPT_LIBS_} algorithms_libs)
@@ -521,7 +566,7 @@ if(ENABLE_SYSTEM_TESTING)
     add_definitions(-DHOST_SYSTEM="${HOST_SYSTEM}")
 
     #### TTFF
-    set(OPT_LIBS_ Boost::filesystem Boost::system Boost::thread Boost::date_time
+    set(OPT_LIBS_ Boost::thread Boost::date_time
         Threads::Threads Gflags::gflags Glog::glog
         Gnuradio::runtime GTest::GTest GTest::Main
         Gnuradio::blocks Gnuradio::filter
@@ -532,7 +577,7 @@ if(ENABLE_SYSTEM_TESTING)
 
     if(ENABLE_SYSTEM_TESTING_EXTRA)
         #### POSITION_TEST
-        set(OPT_LIBS_ Boost::filesystem Boost::system Boost::thread
+        set(OPT_LIBS_ Boost::thread
             Threads::Threads Gflags::gflags Glog::glog
             GTest::GTest GTest::Main Gnuradio::runtime
             Gnuradio::blocks Gnuradio::filter
@@ -569,11 +614,17 @@ if(NOT ENABLE_PACKAGING AND NOT ENABLE_FPGA)
         ${CMAKE_CURRENT_SOURCE_DIR}/single_test_main.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/unit-tests/control-plane/gnss_flowgraph_test.cc
     )
-
+    if(${FILESYSTEM_FOUND})
+        target_compile_definitions(flowgraph_test PRIVATE -DHAS_STD_FILESYSTEM=1)
+        if(${find_experimental})
+            target_compile_definitions(flowgraph_test PRIVATE -DHAS_STD_FILESYSTEM_EXPERIMENTAL=1)
+        endif()
+        target_link_libraries(flowgraph_test PRIVATE std::filesystem)
+    else()
+        target_link_libraries(flowgraph_test PRIVATE Boost::filesystem Boost::system)
+    endif()
     target_link_libraries(flowgraph_test
         PUBLIC
-            Boost::filesystem
-            Boost::system
             Boost::thread
             Gflags::gflags
             Glog::glog
@@ -615,11 +666,17 @@ if(NOT ENABLE_PACKAGING AND NOT ENABLE_FPGA)
         ${CMAKE_CURRENT_SOURCE_DIR}/unit-tests/signal-processing-blocks/adapter/adapter_test.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/unit-tests/control-plane/gnss_block_factory_test.cc
     )
-
+    if(${FILESYSTEM_FOUND})
+        target_compile_definitions(gnss_block_test PRIVATE -DHAS_STD_FILESYSTEM=1)
+        if(${find_experimental})
+            target_compile_definitions(gnss_block_test PRIVATE -DHAS_STD_FILESYSTEM_EXPERIMENTAL=1)
+        endif()
+        target_link_libraries(gnss_block_test PRIVATE std::filesystem)
+    else()
+        target_link_libraries(gnss_block_test PRIVATE Boost::filesystem Boost::system)
+    endif()
     target_link_libraries(gnss_block_test
         PUBLIC
-            Boost::filesystem
-            Boost::system
             Boost::thread
             Gflags::gflags
             Glog::glog
@@ -659,11 +716,17 @@ if(NOT ENABLE_PACKAGING AND NOT ENABLE_FPGA)
         ${CMAKE_CURRENT_SOURCE_DIR}/single_test_main.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/unit-tests/signal-processing-blocks/sources/unpack_2bit_samples_test.cc
     )
-
+    if(${FILESYSTEM_FOUND})
+        target_compile_definitions(gnuradio_block_test PRIVATE -DHAS_STD_FILESYSTEM=1)
+        if(${find_experimental})
+            target_compile_definitions(gnuradio_block_test PRIVATE -DHAS_STD_FILESYSTEM_EXPERIMENTAL=1)
+        endif()
+        target_link_libraries(gnuradio_block_test PRIVATE std::filesystem)
+    else()
+        target_link_libraries(gnuradio_block_test PRIVATE Boost::filesystem Boost::system)
+    endif()
     target_link_libraries(gnuradio_block_test
         PUBLIC
-            Boost::filesystem
-            Boost::system
             Boost::thread
             Gflags::gflags
             Glog::glog
@@ -715,11 +778,14 @@ if(NOT ENABLE_PACKAGING AND NOT ENABLE_FPGA)
         ${CMAKE_CURRENT_SOURCE_DIR}/single_test_main.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/unit-tests/signal-processing-blocks/acquisition/gps_l1_ca_pcps_acquisition_test.cc
     )
-
+    if(${FILESYSTEM_FOUND})
+        target_compile_definitions(acq_test PRIVATE -DHAS_STD_FILESYSTEM=1)
+        target_link_libraries(acq_test PRIVATE std::filesystem)
+    else()
+        target_link_libraries(acq_test PRIVATE Boost::filesystem Boost::system)
+    endif()
     target_link_libraries(acq_test
         PUBLIC
-            Boost::filesystem
-            Boost::system
             Boost::thread
             Gflags::gflags
             Glog::glog
@@ -749,18 +815,33 @@ endif()
 
 #########################################################
 if(NOT ENABLE_PACKAGING AND NOT ENABLE_FPGA)
+    set(NONLINEAR_SOURCES "")
+    if(ARMADILLO_VERSION_STRING VERSION_GREATER 8.400)
+        set(NONLINEAR_SOURCES
+            ${CMAKE_CURRENT_SOURCE_DIR}/unit-tests/signal-processing-blocks/tracking/cubature_filter_test.cc
+            ${CMAKE_CURRENT_SOURCE_DIR}/unit-tests/signal-processing-blocks/tracking/unscented_filter_test.cc
+        )
+    endif()
     add_executable(trk_test
         ${CMAKE_CURRENT_SOURCE_DIR}/single_test_main.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/unit-tests/signal-processing-blocks/tracking/galileo_e1_dll_pll_veml_tracking_test.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/unit-tests/signal-processing-blocks/tracking/tracking_loop_filter_test.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/unit-tests/signal-processing-blocks/tracking/cpu_multicorrelator_real_codes_test.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/unit-tests/signal-processing-blocks/tracking/bayesian_estimation_test.cc
+        ${NONLINEAR_SOURCES}
     )
+    if(${FILESYSTEM_FOUND})
+        target_compile_definitions(trk_test PRIVATE -DHAS_STD_FILESYSTEM=1)
+        if(${find_experimental})
+            target_compile_definitions(trk_test PRIVATE -DHAS_STD_FILESYSTEM_EXPERIMENTAL=1)
+        endif()
+        target_link_libraries(trk_test PRIVATE std::filesystem)
+    else()
+        target_link_libraries(trk_test PRIVATE Boost::filesystem Boost::system)
+    endif()
 
     target_link_libraries(trk_test
         PUBLIC
-            Boost::filesystem
-            Boost::system
             Boost::thread
             Gflags::gflags
             Glog::glog
@@ -793,11 +874,18 @@ if(NOT ENABLE_PACKAGING AND NOT ENABLE_FPGA)
         ${CMAKE_CURRENT_SOURCE_DIR}/unit-tests/control-plane/control_message_factory_test.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/unit-tests/control-plane/control_thread_test.cc
     )
+    if(${FILESYSTEM_FOUND})
+        target_compile_definitions(control_thread_test PRIVATE -DHAS_STD_FILESYSTEM=1)
+        if(${find_experimental})
+            target_compile_definitions(control_thread_test PRIVATE -DHAS_STD_FILESYSTEM_EXPERIMENTAL=1)
+        endif()
+        target_link_libraries(control_thread_test PRIVATE std::filesystem)
+    else()
+        target_link_libraries(control_thread_test PRIVATE Boost::filesystem Boost::system)
+    endif()
 
     target_link_libraries(control_thread_test
         PUBLIC
-            Boost::filesystem
-            Boost::system
             Boost::thread
             Gflags::gflags
             Glog::glog

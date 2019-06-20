@@ -39,6 +39,7 @@
 #
 
 
+set(PKG_CONFIG_USE_CMAKE_PREFIX_PATH TRUE)
 include(FindPkgConfig)
 pkg_check_modules(GROSMOSDR_PKG gnuradio-osmosdr)
 
@@ -47,18 +48,17 @@ find_path(GROSMOSDR_INCLUDE_DIR
     osmosdr/source.h
     osmosdr/api.h
   PATHS
-    ${GROSMOSDR_PKG_INCLUDE_DIRS}
     /usr/include
     /usr/local/include
     /opt/local/include
     ${GROSMOSDR_ROOT}/include
     $ENV{GROSMOSDR_ROOT}/include
+    ${GROSMOSDR_PKG_INCLUDEDIR}
 )
 
 find_library(GROSMOSDR_LIBRARIES
   NAMES gnuradio-osmosdr
   PATHS
-    ${GROSMOSDR_PKG_LIBRARY_DIRS}
     /usr/lib
     /usr/local/lib
     /opt/local/lib
@@ -90,10 +90,15 @@ find_library(GROSMOSDR_LIBRARIES
     $ENV{GROSMOSDR_ROOT}/lib
     ${GROSMOSDR_ROOT}/lib64
     $ENV{GROSMOSDR_ROOT}/lib64
+    ${GROSMOSDR_PKG_LIBDIR}
 )
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(GROSMOSDR DEFAULT_MSG GROSMOSDR_LIBRARIES GROSMOSDR_INCLUDE_DIR)
+
+if(GROSMOSDR_PKG_VERSION)
+    set(GROSMOSDR_VERSION ${GROSMOSDR_PKG_VERSION})
+endif()
 
 if(GROSMOSDR_FOUND AND NOT TARGET Gnuradio::osmosdr)
     add_library(Gnuradio::osmosdr SHARED IMPORTED)

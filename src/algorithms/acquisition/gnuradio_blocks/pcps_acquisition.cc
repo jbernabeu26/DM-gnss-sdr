@@ -39,7 +39,15 @@
 #include "gnss_frequencies.h"
 #include "gnss_sdr_create_directory.h"
 #include "gnss_synchro.h"
+#if HAS_STD_FILESYSTEM
+#if HAS_STD_FILESYSTEM_EXPERIMENTAL
+#include <experimental/filesystem>
+#else
+#include <filesystem>
+#endif
+#else
 #include <boost/filesystem/path.hpp>
+#endif
 #include <glog/logging.h>
 #include <gnuradio/io_signature.h>
 #include <matio.h>
@@ -52,6 +60,16 @@
 #include <cstring>    // for memcpy
 #include <iostream>
 #include <map>
+
+#if HAS_STD_FILESYSTEM
+#if HAS_STD_FILESYSTEM_EXPERIMENTAL
+namespace fs = std::experimental::filesystem;
+#else
+namespace fs = std::filesystem;
+#endif
+#else
+namespace fs = boost::filesystem;
+#endif
 
 
 pcps_acquisition_sptr pcps_make_acquisition(const Acq_Conf& conf_)
@@ -184,7 +202,7 @@ pcps_acquisition::pcps_acquisition(const Acq_Conf& conf_) : gr::block("pcps_acqu
                 {
                     d_dump_filename = d_dump_filename.substr(0, d_dump_filename.find_last_of('.'));
                 }
-            d_dump_filename = dump_path + boost::filesystem::path::preferred_separator + d_dump_filename;
+            d_dump_filename = dump_path + fs::path::preferred_separator + d_dump_filename;
             // create directory
             if (!gnss_sdr_create_directory(dump_path))
                 {

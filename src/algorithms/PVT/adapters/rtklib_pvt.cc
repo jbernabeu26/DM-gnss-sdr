@@ -138,6 +138,11 @@ Rtklib_Pvt::Rtklib_Pvt(ConfigurationInterface* configuration,
             pvt_output_parameters.rtcm_msg_rate_ms[k] = rtcm_MT1097_rate_ms;
         }
 
+    pvt_output_parameters.kml_rate_ms = bc::lcm(configuration->property(role + ".kml_rate_ms", pvt_output_parameters.kml_rate_ms), pvt_output_parameters.output_rate_ms);
+    pvt_output_parameters.gpx_rate_ms = bc::lcm(configuration->property(role + ".gpx_rate_ms", pvt_output_parameters.gpx_rate_ms), pvt_output_parameters.output_rate_ms);
+    pvt_output_parameters.geojson_rate_ms = bc::lcm(configuration->property(role + ".geojson_rate_ms", pvt_output_parameters.geojson_rate_ms), pvt_output_parameters.output_rate_ms);
+    pvt_output_parameters.nmea_rate_ms = bc::lcm(configuration->property(role + ".nmea_rate_ms", pvt_output_parameters.nmea_rate_ms), pvt_output_parameters.output_rate_ms);
+
     // Infer the type of receiver
     /*
      *   TYPE  |  RECEIVER
@@ -277,7 +282,7 @@ Rtklib_Pvt::Rtklib_Pvt(ConfigurationInterface* configuration,
         {
             pvt_output_parameters.type_of_receiver = 21;  // GPS L1 C/A + Galileo E1B + GPS L2C
         }
-    if ((gps_1C_count != 0) && (gps_2S_count == 0) && (gps_L5_count != 0) && (gal_1B_count != 0) && (gal_E5a_count == 0) && (gal_E5b_count = 0) && (glo_1G_count == 0) && (glo_2G_count == 0) && (bds_B1_count == 0) && (bds_B3_count == 0))
+    if ((gps_1C_count != 0) && (gps_2S_count == 0) && (gps_L5_count != 0) && (gal_1B_count != 0) && (gal_E5a_count == 0) && (gal_E5b_count == 0) && (glo_1G_count == 0) && (glo_2G_count == 0) && (bds_B1_count == 0) && (bds_B3_count == 0))
         {
             pvt_output_parameters.type_of_receiver = 22;  // GPS L1 C/A + Galileo E1B + GPS L5
         }

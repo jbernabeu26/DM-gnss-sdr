@@ -97,7 +97,7 @@ galileo_telemetry_decoder_gs::galileo_telemetry_decoder_gs(
                 d_frame_length_symbols = GALILEO_INAV_PAGE_PART_SYMBOLS - GALILEO_INAV_PREAMBLE_LENGTH_BITS;
                 CodeLength = GALILEO_INAV_PAGE_PART_SYMBOLS - GALILEO_INAV_PREAMBLE_LENGTH_BITS;
                 DataLength = (CodeLength / nn) - mm;
-                d_max_symbols_without_valid_frame = GALILEO_INAV_PAGE_PART_SYMBOLS * 10;  //rise alarm 10 seconds without valid tlm
+                d_max_symbols_without_valid_frame = GALILEO_INAV_PAGE_SYMBOLS * 30;  //rise alarm 60 seconds without valid tlm
 
                 break;
             }
@@ -127,7 +127,7 @@ galileo_telemetry_decoder_gs::galileo_telemetry_decoder_gs(
                                 d_secondary_code_samples[i] = -1;
                             }
                     }
-                d_max_symbols_without_valid_frame = GALILEO_FNAV_CODES_PER_SYMBOL * GALILEO_FNAV_SYMBOLS_PER_PAGE * 10;  //rise alarm 10 seconds without valid tlm
+                d_max_symbols_without_valid_frame = GALILEO_FNAV_CODES_PER_PAGE * 10;  //rise alarm 100 seconds without valid tlm
                 break;
             }
         default:
@@ -452,8 +452,10 @@ void galileo_telemetry_decoder_gs::set_satellite(const Gnss_Satellite &satellite
 
 void galileo_telemetry_decoder_gs::reset()
 {
+    gr::thread::scoped_lock lock(d_setlock);
     d_last_valid_preamble = d_sample_counter;
     d_sent_tlm_failed_msg = false;
+    d_stat = 0;
     DLOG(INFO) << "Telemetry decoder reset for satellite " << d_satellite;
 }
 
@@ -501,11 +503,12 @@ int galileo_telemetry_decoder_gs::general_work(int noutput_items __attribute__((
     d_flag_preamble = false;
 
     // check if there is a problem with the telemetry of the current satellite
-    if (d_stat < 1 and d_sent_tlm_failed_msg == false)
+    if (d_sent_tlm_failed_msg == false)
         {
             if ((d_sample_counter - d_last_valid_preamble) > d_max_symbols_without_valid_frame)
                 {
                     int message = 1;  //bad telemetry
+                    DLOG(INFO) << "sent msg sat " << this->d_satellite;
                     this->message_port_pub(pmt::mp("telemetry_to_trk"), pmt::make_any(message));
                     d_sent_tlm_failed_msg = true;
                 }
@@ -532,13 +535,14 @@ int galileo_telemetry_decoder_gs::general_work(int noutput_items __attribute__((
                                         corr_value += d_preamble_samples[i];
                                     }
                             }
+                        if (abs(corr_value) >= d_samples_per_preamble)
+                            {
+                                d_preamble_index = d_sample_counter;  // record the preamble sample stamp
+                                DLOG(INFO) << "Preamble detection for Galileo satellite " << this->d_satellite;
+                                d_stat = 1;  // enter into frame pre-detection status
+                            }
                     }
-                if (abs(corr_value) >= d_samples_per_preamble)
-                    {
-                        d_preamble_index = d_sample_counter;  // record the preamble sample stamp
-                        DLOG(INFO) << "Preamble detection for Galileo satellite " << this->d_satellite;
-                        d_stat = 1;  // enter into frame pre-detection status
-                    }
+
                 break;
             }
         case 1:  // possible preamble lock
@@ -560,25 +564,32 @@ int galileo_telemetry_decoder_gs::general_work(int noutput_items __attribute__((
                                         corr_value += d_preamble_samples[i];
                                     }
                             }
-                    }
-                if (abs(corr_value) >= d_samples_per_preamble)
-                    {
-                        // check preamble separation
-                        preamble_diff = static_cast<int32_t>(d_sample_counter - d_preamble_index);
-                        if (abs(preamble_diff - d_preamble_period_symbols) == 0)
+                        if (abs(corr_value) >= d_samples_per_preamble)
                             {
-                                // try to decode frame
-                                DLOG(INFO) << "Starting page decoder for Galileo satellite " << this->d_satellite;
-                                d_preamble_index = d_sample_counter;  // record the preamble sample stamp
-                                d_CRC_error_counter = 0;
-                                if (corr_value < 0) flag_PLL_180_deg_phase_locked = true;
-                                d_stat = 2;
-                            }
-                        else
-                            {
-                                if (preamble_diff > d_preamble_period_symbols)
+                                // check preamble separation
+                                preamble_diff = static_cast<int32_t>(d_sample_counter - d_preamble_index);
+                                if (abs(preamble_diff - d_preamble_period_symbols) == 0)
                                     {
-                                        d_stat = 0;  // start again
+                                        // try to decode frame
+                                        DLOG(INFO) << "Starting page decoder for Galileo satellite " << this->d_satellite;
+                                        d_preamble_index = d_sample_counter;  // record the preamble sample stamp
+                                        d_CRC_error_counter = 0;
+                                        if (corr_value < 0)
+                                            {
+                                                flag_PLL_180_deg_phase_locked = true;
+                                            }
+                                        else
+                                            {
+                                                flag_PLL_180_deg_phase_locked = false;
+                                            }
+                                        d_stat = 2;
+                                    }
+                                else
+                                    {
+                                        if (preamble_diff > d_preamble_period_symbols)
+                                            {
+                                                d_stat = 0;  // start again
+                                            }
                                     }
                             }
                     }

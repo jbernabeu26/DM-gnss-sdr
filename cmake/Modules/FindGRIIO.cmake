@@ -20,7 +20,7 @@
 # Gnuradio::iio
 #
 
-
+set(PKG_CONFIG_USE_CMAKE_PREFIX_PATH TRUE)
 include(FindPkgConfig)
 pkg_check_modules(PC_IIO gnuradio-iio)
 
@@ -91,6 +91,10 @@ find_library(IIO_LIBRARIES
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(GRIIO DEFAULT_MSG IIO_LIBRARIES IIO_INCLUDE_DIRS)
+
+if(PC_IIO_VERSION)
+    set(GRIIO_VERSION ${PC_IIO_VERSION})
+endif()
 
 if(GRIIO_FOUND AND NOT TARGET Gnuradio::iio)
     add_library(Gnuradio::iio SHARED IMPORTED)
