@@ -46,7 +46,7 @@
 const double BEIDOU_B1C_FREQ_HZ = FREQ1;              //!< BEIDOU B1C carrier frequency [Hz]
 
 
-const double BEIDOU_B1Cd_CODE_RATE_HZ = 10.23e6;      //!< BEIDOU_B1C data code rate [chips/s]
+const double BEIDOU_B1Cd_CODE_RATE_HZ = 1.023e6;      //!< BEIDOU_B1C data code rate [chips/s]
 const int32_t BEIDOU_B1Cd_CODE_LENGTH_CHIPS = 10230;  //!< BEIDOU_B1C data  code length [chips]
 const double BEIDOU_B1Cd_PERIOD = 0.01;               //!< BEIDOU_B1C data code period [seconds]
 const int32_t BEIDOU_B2ad_PERIOD_MS = 10;
@@ -55,7 +55,7 @@ const int32_t BEIDOU_B2ad_PERIOD_MS = 10;
 const int32_t BEIDOU_B1C_SAMPLES_PER_SYMBOL = 1;
 
 
-const double BEIDOU_B1Cp_CODE_RATE_HZ = 10.23e6;      //!< BEIDOU_B1c pilot code rate [chips/s]
+const double BEIDOU_B1Cp_CODE_RATE_HZ = 1.023e6;      //!< BEIDOU_B1c pilot code rate [chips/s]
 const int32_t BEIDOU_B1Cp_CODE_LENGTH_CHIPS = 10230;  //!< BEIDOU_B1c pilot code length [chips]
 
 
