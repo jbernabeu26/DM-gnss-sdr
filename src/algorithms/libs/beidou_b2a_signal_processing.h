@@ -97,4 +97,9 @@ void beidou_b2ap_code_gen_complex_sampled(std::complex<float>* _dest, uint32_t _
  */
 void beidou_b2ap_code_gen_complex_sampled_secondary(std::complex<float>* _dest, uint32_t _prn, int32_t _fs);
 
+/*!
+ * \Generates complex BeiDou B2a data+pilot primary code  for the desired SV ID, and sampled to specific sampling frequency
+ */
+void beidou_b2a_code_gen_complex_sampled(std::complex<float>* _dest, uint32_t _prn, int32_t _fs);
+
 #endif /* GNSS_SDR_BEIDOU_B2A_SIGNAL_PROCESSING_H_ */

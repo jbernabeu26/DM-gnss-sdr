@@ -55,6 +55,12 @@ BeidouB2adPcpsAcquisition::BeidouB2adPcpsAcquisition(
     int64_t fs_in_deprecated = configuration_->property("GNSS-SDR.internal_fs_hz", 25000000);
     fs_in_ = configuration_->property("GNSS-SDR.internal_fs_sps", fs_in_deprecated);
     acq_parameters_.fs_in = fs_in_;
+    acq_pilot_ = configuration_->property(role + ".acquire_pilot", false);
+    acq_iq_ = configuration_->property(role + ".acquire_iq", false);
+    if (acq_iq_)
+        {
+            acq_pilot_ = false;
+        }
     dump_ = configuration_->property(role + ".dump", false);
     acq_parameters_.dump = dump_;
     blocking_ = configuration_->property(role + ".blocking", true);
@@ -203,8 +209,23 @@ void BeidouB2adPcpsAcquisition::init()
 void BeidouB2adPcpsAcquisition::set_local_code()
 {
     auto* code = new std::complex<float>[code_length_];
-    beidou_b2ad_code_gen_complex_sampled(code, gnss_synchro_->PRN, fs_in_);
-    //beidou_b2ad_code_gen_complex_sampledSecondary(code_, gnss_synchro_->PRN, fs_in_);
+    // Perform acquisition in Data + Pilot signal
+    if (acq_iq_)
+        {
+			beidou_b2a_code_gen_complex_sampled(code, gnss_synchro_->PRN, fs_in_);
+        }
+    // Perform acquisition in Pilot signal
+    else if (acq_pilot_)
+        {
+    		beidou_b2ap_code_gen_complex_sampled(code, gnss_synchro_->PRN, fs_in_);
+        }
+    // Perform acquisition in Data signal
+    else
+        {
+    		beidou_b2ad_code_gen_complex_sampled(code, gnss_synchro_->PRN, fs_in_);
+
+        }
+
 
     for (uint32_t i = 0; i < sampled_ms_; i++)
         {

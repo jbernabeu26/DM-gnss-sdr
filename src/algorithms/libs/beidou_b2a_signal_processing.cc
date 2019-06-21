@@ -143,7 +143,7 @@ std::deque<bool> make_b2ap_g2(std::deque<bool> g2)
     return g2_seq;
 }
 
-
+// Make legendre sequence for secondary pilot codes
 bool make_leg(int32_t k)
 {
 	bool squaremodp = false;
@@ -171,7 +171,7 @@ bool make_leg(int32_t k)
 	return squaremodp;
 }
 
-
+// Make B2a Pilot secondary code
 std::deque<bool> make_b2ap_secondary_weil_seq(int32_t w, int32_t p)
 {
 	int32_t n, k = 0;
@@ -532,11 +532,11 @@ void beidou_b2ap_code_gen_complex_sampled(std::complex<float>* _dest, uint32_t _
             if (i == _samplesPerCode - 1)
                 {
                     //--- Correct the last index (due to number rounding issues) -----------
-                    _dest[i] = std::complex<float>(1.0 - 2.0 * _code[_codeLength - 1], 0);
+                    _dest[i] = std::complex<float>(0, 1.0 - 2.0 * _code[_codeLength - 1]);
                 }
             else
                 {
-                    _dest[i] = std::complex<float>(1.0 - 2.0 * _code[_codeValueIndex], 0);  //repeat the chip -> upsample
+                    _dest[i] = std::complex<float>(0, 1.0 - 2.0 * _code[_codeValueIndex]);  //repeat the chip -> upsample
                 }
         }
     delete[] _code;
@@ -576,11 +576,11 @@ void beidou_b2ap_code_gen_complex_sampled_secondary(std::complex<float>* _dest, 
             if (i == _samplesPerCode - 1)
                 {
                     //--- Correct the last index (due to number rounding issues) -----------
-                    _dest[i] = std::complex<float>(1.0 - 2.0 * _code[_codeLength - 1], 0);
+                    _dest[i] = std::complex<float>(0, 1.0 - 2.0 * _code[_codeLength - 1]);
                 }
             else
                 {
-                    _dest[i] = std::complex<float>(1.0 - 2.0 * _code[_codeValueIndex], 0);  //repeat the chip -> upsample
+                    _dest[i] = std::complex<float>(0, 1.0 - 2.0 * _code[_codeValueIndex]);  //repeat the chip -> upsample
                 }
 
         }
@@ -603,4 +603,53 @@ void beidou_b2ap_secondary_gen_string(std::string& _dest, uint32_t _prn)
 				_dest[i] = '0';
 
 		}
+}
+
+/*
+ *  Generates complex BEIDOU B2a data+pilot code for the desired SV ID and sampled to specific sampling frequency
+ */
+void beidou_b2a_code_gen_complex_sampled(std::complex<float>* _dest, uint32_t _prn, int32_t _fs)
+{
+    int32_t* _code_pilot = new int32_t[BEIDOU_B2ap_CODE_LENGTH_CHIPS];
+    int32_t* _code_data = new int32_t[BEIDOU_B2ad_CODE_LENGTH_CHIPS];
+
+    if (_prn > 0 and _prn < 63)
+        {
+            make_b2ap(_code_pilot, _prn);
+            make_b2ad(_code_data, _prn);
+        }
+
+    int32_t _samplesPerCode, _codeValueIndex;
+    float _ts;
+    float _tc;
+    const int32_t _codeLength = BEIDOU_B2ap_CODE_LENGTH_CHIPS;
+
+    //--- Find number of samples per spreading code ----------------------------
+    _samplesPerCode = static_cast<int>(static_cast<double>(_fs) / (static_cast<double>(BEIDOU_B2ap_CODE_RATE_HZ) / static_cast<double>(_codeLength)));
+
+    //--- Find time constants --------------------------------------------------
+    _ts = 1.0 / static_cast<float>(_fs);                   // Sampling period in sec
+    _tc = 1.0 / static_cast<float>(BEIDOU_B2ap_CODE_RATE_HZ);  // C/A chip period in sec
+
+    //float aux;
+    for (uint32_t i = 0; i < _samplesPerCode; i++)
+        {
+            //=== Digitizing =======================================================
+
+            //--- Make index array to read B2a pilot code values -------------------------
+            _codeValueIndex = ceil((_ts * (static_cast<float>(i) + 1)) / _tc) - 1;
+
+            //--- Make the digitized version of the B2a code -----------------------
+            if (i == _samplesPerCode - 1)
+                {
+                    //--- Correct the last index (due to number rounding issues) -----------
+                    _dest[i] = std::complex<float>(1.0 - 2.0 * _code_data[_codeLength - 1], 1.0 - 2.0 * _code_pilot[_codeLength - 1]);
+                }
+            else
+                {
+                    _dest[i] = std::complex<float>(1.0 - 2.0 * _code_data[_codeValueIndex], 1.0 - 2.0 * _code_pilot[_codeValueIndex]);  //repeat the chip -> upsample
+                }
+        }
+    delete[] _code_pilot;
+    delete[] _code_data;
 }

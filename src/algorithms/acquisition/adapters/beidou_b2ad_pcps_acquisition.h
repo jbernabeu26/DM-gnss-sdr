@@ -188,6 +188,8 @@ private:
     std::string role_;
     uint32_t in_streams_;
     uint32_t out_streams_;
+    bool acq_pilot_;
+    bool acq_iq_;
 
     float calculate_threshold(float pfa);
 };
