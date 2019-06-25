@@ -28,9 +28,9 @@ clearvars;
 close all;
 addpath('./libs');
 samplingFreq       = 25000000;     %[Hz]
-channels=4;
+channels=8;
 path='/archive/';
-observables_log_path=[path 'gps_l5_gal_e5a_observables.dat'];
+observables_log_path=[path 'bds_b2a_observables.dat'];
 GNSS_observables= read_hybrid_observables_dump(channels,observables_log_path);
 
 %% Plo data
@@ -47,7 +47,7 @@ end
 
 %--- plot observables from that index
 figure;
-plot(GNSS_observables.RX_time(obs_idx,min_tow_idx+1:end),GNSS_observables.Pseudorange_m(:,min_tow_idx+1:end)');
+plot(GNSS_observables.RX_time(obs_idx,min_tow_idx+1:end),GNSS_observables.Pseudorange_m(:,min_tow_idx+1:end)', '*');
 grid on;
 xlabel('TOW [s]')
 ylabel('Pseudorange [m]');
