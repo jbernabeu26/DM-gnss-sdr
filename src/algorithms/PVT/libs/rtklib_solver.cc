@@ -882,9 +882,6 @@ bool Rtklib_Solver::get_PVT(const std::map<int, Gnss_Synchro> &gnss_observables_
 								beidou_cnav2_ephemeris_iter = beidou_cnav2_ephemeris_map.find(gnss_observables_iter->second.PRN);
 								if (beidou_cnav2_ephemeris_iter != beidou_cnav2_ephemeris_map.cend())
 									{
-										eph_data[valid_obs] = eph_to_rtklib(beidou_cnav2_ephemeris_iter->second);
-
-
 										//convert ephemeris from GNSS-SDR class to RTKLIB structure
 										eph_data[valid_obs] = eph_to_rtklib(beidou_cnav2_ephemeris_iter->second);
 										//convert observation from GNSS-SDR class to RTKLIB structure

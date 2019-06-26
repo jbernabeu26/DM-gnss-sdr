@@ -83,7 +83,7 @@ public:
     double d_AODE;  //!< Age of Data, Ephemeris
     int i_AODO;     //!< Age of Data Offset (AODO) term for the navigation message correction table (NMCT) contained in subframe 4 (reference paragraph 20.3.3.5.1.9) [s]
 
-    int i_sig_type;  //!< BDS: data source (0:unknown,1:B1I,2:B1Q,3:B2I,4:B2Q,5:B3I,6:B3Q) */
+    int i_sig_type;  //!< BDS: data source (0:unknown,1:B1I,2:B1Q,3:B2I,4:B2Q,5:B3I,6:B3Q,7:B2a,8:B2b,9:B1C,1:B1A) */
     int i_nav_type;  //!< BDS: nav type (0:unknown,1:IGSO/MEO,2:GEO) */
 
     bool b_fit_interval_flag;  //!< indicates the curve-fit interval used by the CS (Block II/IIA/IIR/IIR-M/IIF) and SS (Block IIIA) in determining the ephemeris parameters, as follows: 0 = 4 hours, 1 = greater than 4 hours.

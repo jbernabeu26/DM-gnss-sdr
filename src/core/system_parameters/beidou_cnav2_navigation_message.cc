@@ -224,11 +224,11 @@ int Beidou_Cnav2_Navigation_Message::string_decoder(std::string const &frame_str
         	cnav2_ephemeris.SatType = static_cast<double>(read_navigation_unsigned(string_bits, SatType_10));			//[dimensionless] binary, 01:GEO, 10:IGSO, 11:MEO, 00:Reserved
         	cnav2_ephemeris.dA = static_cast<double>(read_navigation_signed(string_bits, dA_10))*TWO_N9;				//[m] reference MEO: 27906100m, IGSO/GEO: 42162200m
         	cnav2_ephemeris.A_dot = static_cast<double>(read_navigation_signed(string_bits, A_dot_10))*TWO_N21;		//[m/s]
-        	cnav2_ephemeris.dn_0 = static_cast<double>(read_navigation_signed(string_bits, dn_0_10))*TWO_N44;			//[pi/s]
-        	cnav2_ephemeris.dn_0_dot = static_cast<double>(read_navigation_signed(string_bits, dn_0_dot_10))*TWO_N57;	//[pi/s^2]
-        	cnav2_ephemeris.M_0 = static_cast<double>(read_navigation_signed(string_bits, M_0_10))*TWO_N32;			//[pi]
+        	cnav2_ephemeris.dn_0 = static_cast<double>(read_navigation_signed(string_bits, dn_0_10))*BEIDOU_CNAV2_PI*TWO_N44;			//[pi/s]
+        	cnav2_ephemeris.dn_0_dot = static_cast<double>(read_navigation_signed(string_bits, dn_0_dot_10))*BEIDOU_CNAV2_PI*TWO_N57;	//[pi/s^2]
+        	cnav2_ephemeris.M_0 = static_cast<double>(read_navigation_signed(string_bits, M_0_10))*BEIDOU_CNAV2_PI*TWO_N32;			//[pi]
         	cnav2_ephemeris.e = static_cast<double>(read_navigation_unsigned(string_bits, e_10))*TWO_N34;				//[dimensionless]
-        	cnav2_ephemeris.omega = static_cast<double>(read_navigation_signed(string_bits, omega_10))*TWO_N32;		//[pi]
+        	cnav2_ephemeris.omega = static_cast<double>(read_navigation_signed(string_bits, omega_10))*BEIDOU_CNAV2_PI*TWO_N32;		//[pi]
         	// Ephemeris I End
 
         	// Set flags relative to time and message
@@ -253,10 +253,10 @@ int Beidou_Cnav2_Navigation_Message::string_decoder(std::string const &frame_str
 			cnav2_ephemeris.AIF_B1C = static_cast<double>(read_navigation_unsigned(string_bits, AIF_B1C_11));
 
 			// Ephemeris II Start
-			cnav2_ephemeris.Omega_0 = static_cast<double>(read_navigation_signed(string_bits, Omega_0_11))*TWO_N32;		//[pi]
-			cnav2_ephemeris.i_0 = static_cast<double>(read_navigation_signed(string_bits, i_0_11))*TWO_N32;				//[pi]
-			cnav2_ephemeris.Omega_dot = static_cast<double>(read_navigation_signed(string_bits, Omega_dot_11))*TWO_N44;	//[pi/s]
-			cnav2_ephemeris.i_0_dot = static_cast<double>(read_navigation_signed(string_bits, i_0_dot_11))*TWO_N44;		//[pi/s]
+			cnav2_ephemeris.Omega_0 = static_cast<double>(read_navigation_signed(string_bits, Omega_0_11))*BEIDOU_CNAV2_PI*TWO_N32;		//[pi]
+			cnav2_ephemeris.i_0 = static_cast<double>(read_navigation_signed(string_bits, i_0_11))*BEIDOU_CNAV2_PI*TWO_N32;				//[pi]
+			cnav2_ephemeris.Omega_dot = static_cast<double>(read_navigation_signed(string_bits, Omega_dot_11))*BEIDOU_CNAV2_PI*TWO_N44;	//[pi/s]
+			cnav2_ephemeris.i_0_dot = static_cast<double>(read_navigation_signed(string_bits, i_0_dot_11))*BEIDOU_CNAV2_PI*TWO_N44;		//[pi/s]
 			cnav2_ephemeris.C_IS = static_cast<double>(read_navigation_signed(string_bits, C_IS_11))*TWO_N30;				//[rad]
 			cnav2_ephemeris.C_IC = static_cast<double>(read_navigation_signed(string_bits, C_IC_11))*TWO_N30;				//[rad]
 			cnav2_ephemeris.C_RS = static_cast<double>(read_navigation_signed(string_bits, C_RS_11))*TWO_N8;				//[m]
@@ -349,8 +349,8 @@ int Beidou_Cnav2_Navigation_Message::string_decoder(std::string const &frame_str
 			cnav2_almanac[i_alm_satellite_PRN-1].t_oa = static_cast<double>(read_navigation_unsigned(string_bits, t_oa_31))*TWO_P12;		//[s] effective range 0~602112
 			cnav2_almanac[i_alm_satellite_PRN-1].SatType = static_cast<double>(read_navigation_unsigned(string_bits, SatType1_31));			//[dimensionless] binary, 01:GEO, 10:IGSO, 11:MEO, 00:Reserved
 			cnav2_almanac[i_alm_satellite_PRN-1].delta_A = static_cast<double>(read_navigation_signed(string_bits, delta_A1_31))*TWO_P9;	//[m] reference MEO: 27906100m, IGSO/GEO: 42162200m
-			cnav2_almanac[i_alm_satellite_PRN-1].Omega_0 = static_cast<double>(read_navigation_signed(string_bits, Omega_01_31))*TWO_N6;	//[pi]
-			cnav2_almanac[i_alm_satellite_PRN-1].Phi_0 = static_cast<double>(read_navigation_signed(string_bits, Phi_01_31))*TWO_N6;		//[pi] Phi = M0 + omega, e=0, delta_i=0, MEO/IGSO i=55, GEO i=0
+			cnav2_almanac[i_alm_satellite_PRN-1].Omega_0 = static_cast<double>(read_navigation_signed(string_bits, Omega_01_31))*BEIDOU_CNAV2_PI*TWO_N6;	//[pi]
+			cnav2_almanac[i_alm_satellite_PRN-1].Phi_0 = static_cast<double>(read_navigation_signed(string_bits, Phi_01_31))*BEIDOU_CNAV2_PI*TWO_N6;		//[pi] Phi = M0 + omega, e=0, delta_i=0, MEO/IGSO i=55, GEO i=0
 			cnav2_almanac[i_alm_satellite_PRN-1].Health = static_cast<double>(read_navigation_unsigned(string_bits, Health1_31));			//[dimensionless]
 			// Reduced Almanac Parameters End
 
@@ -361,8 +361,8 @@ int Beidou_Cnav2_Navigation_Message::string_decoder(std::string const &frame_str
 			cnav2_almanac[i_alm_satellite_PRN-1].t_oa = static_cast<double>(read_navigation_unsigned(string_bits, t_oa_31))*TWO_P12;		//[s] effective range 0~602112
 			cnav2_almanac[i_alm_satellite_PRN-1].SatType = static_cast<double>(read_navigation_unsigned(string_bits, SatType2_31));			//[dimensionless] binary, 01:GEO, 10:IGSO, 11:MEO, 00:Reserved
 			cnav2_almanac[i_alm_satellite_PRN-1].delta_A = static_cast<double>(read_navigation_signed(string_bits, delta_A2_31))*TWO_P9;	//[m] reference MEO: 27906100m, IGSO/GEO: 42162200m
-			cnav2_almanac[i_alm_satellite_PRN-1].Omega_0 = static_cast<double>(read_navigation_signed(string_bits, Omega_02_31))*TWO_N6;	//[pi]
-			cnav2_almanac[i_alm_satellite_PRN-1].Phi_0 = static_cast<double>(read_navigation_signed(string_bits, Phi_02_31))*TWO_N6;		//[pi] Phi = M0 + omega, e=0, delta_i=0, MEO/IGSO i=55, GEO i=0
+			cnav2_almanac[i_alm_satellite_PRN-1].Omega_0 = static_cast<double>(read_navigation_signed(string_bits, Omega_02_31))*BEIDOU_CNAV2_PI*TWO_N6;	//[pi]
+			cnav2_almanac[i_alm_satellite_PRN-1].Phi_0 = static_cast<double>(read_navigation_signed(string_bits, Phi_02_31))*BEIDOU_CNAV2_PI*TWO_N6;		//[pi] Phi = M0 + omega, e=0, delta_i=0, MEO/IGSO i=55, GEO i=0
 			cnav2_almanac[i_alm_satellite_PRN-1].Health = static_cast<double>(read_navigation_unsigned(string_bits, Health2_31));			//[dimensionless]
 			// Reduced Almanac Parameters End
 
@@ -373,8 +373,8 @@ int Beidou_Cnav2_Navigation_Message::string_decoder(std::string const &frame_str
 			cnav2_almanac[i_alm_satellite_PRN-1].t_oa = static_cast<double>(read_navigation_unsigned(string_bits, t_oa_31))*TWO_P12;		//[s] effective range 0~602112
 			cnav2_almanac[i_alm_satellite_PRN-1].SatType = static_cast<double>(read_navigation_unsigned(string_bits, SatType3_31));			//[dimensionless] binary, 01:GEO, 10:IGSO, 11:MEO, 00:Reserved
 			cnav2_almanac[i_alm_satellite_PRN-1].delta_A = static_cast<double>(read_navigation_signed(string_bits, delta_A3_31))*TWO_P9;	//[m] reference MEO: 27906100m, IGSO/GEO: 42162200m
-			cnav2_almanac[i_alm_satellite_PRN-1].Omega_0 = static_cast<double>(read_navigation_signed(string_bits, Omega_03_31))*TWO_N6;	//[pi]
-			cnav2_almanac[i_alm_satellite_PRN-1].Phi_0 = static_cast<double>(read_navigation_signed(string_bits, Phi_03_31))*TWO_N6;		//[pi] Phi = M0 + omega, e=0, delta_i=0, MEO/IGSO i=55, GEO i=0
+			cnav2_almanac[i_alm_satellite_PRN-1].Omega_0 = static_cast<double>(read_navigation_signed(string_bits, Omega_03_31))*BEIDOU_CNAV2_PI*TWO_N6;	//[pi]
+			cnav2_almanac[i_alm_satellite_PRN-1].Phi_0 = static_cast<double>(read_navigation_signed(string_bits, Phi_03_31))*BEIDOU_CNAV2_PI*TWO_N6;		//[pi] Phi = M0 + omega, e=0, delta_i=0, MEO/IGSO i=55, GEO i=0
 			cnav2_almanac[i_alm_satellite_PRN-1].Health = static_cast<double>(read_navigation_unsigned(string_bits, Health3_31));			//[dimensionless]
 
 			// Reduced Almanac Parameters End
@@ -464,8 +464,8 @@ int Beidou_Cnav2_Navigation_Message::string_decoder(std::string const &frame_str
 			cnav2_almanac[i_alm_satellite_PRN-1].i_satellite_PRN = i_alm_satellite_PRN;
 			cnav2_almanac[i_alm_satellite_PRN-1].SatType = static_cast<double>(read_navigation_unsigned(string_bits, SatType_33));			//[dimensionless] binary, 01:GEO, 10:IGSO, 11:MEO, 00:Reserved
 			cnav2_almanac[i_alm_satellite_PRN-1].delta_A = static_cast<double>(read_navigation_signed(string_bits, delta_A_33))*TWO_P9;	//[m] reference MEO: 27906100m, IGSO/GEO: 42162200m
-			cnav2_almanac[i_alm_satellite_PRN-1].Omega_0 = static_cast<double>(read_navigation_signed(string_bits, Omega_0_33))*TWO_N6;	//[pi]
-			cnav2_almanac[i_alm_satellite_PRN-1].Phi_0 = static_cast<double>(read_navigation_signed(string_bits, Phi_0_33))*TWO_N6;		//[pi] Phi = M0 + omega, e=0, delta_i=0, MEO/IGSO i=55, GEO i=0
+			cnav2_almanac[i_alm_satellite_PRN-1].Omega_0 = static_cast<double>(read_navigation_signed(string_bits, Omega_0_33))*BEIDOU_CNAV2_PI*TWO_N6;	//[pi]
+			cnav2_almanac[i_alm_satellite_PRN-1].Phi_0 = static_cast<double>(read_navigation_signed(string_bits, Phi_0_33))*BEIDOU_CNAV2_PI*TWO_N6;		//[pi] Phi = M0 + omega, e=0, delta_i=0, MEO/IGSO i=55, GEO i=0
 			cnav2_almanac[i_alm_satellite_PRN-1].Health = static_cast<double>(read_navigation_unsigned(string_bits, Health_33));			//[dimensionless]
         	// Reduced Almanac Parameters End
 
@@ -563,12 +563,12 @@ int Beidou_Cnav2_Navigation_Message::string_decoder(std::string const &frame_str
         	cnav2_almanac[i_alm_satellite_PRN-1].i_BDS_week = static_cast<int>(read_navigation_unsigned(string_bits, WN_a_40));					//[week] effective range 0~8191
         	cnav2_almanac[i_alm_satellite_PRN-1].t_oa = static_cast<double>(read_navigation_unsigned(string_bits, t_oa_40))*TWO_P12;			//[s] effective range 0~602112
         	cnav2_almanac[i_alm_satellite_PRN-1].e = static_cast<double>(read_navigation_unsigned(string_bits, e_40))*TWO_N16;					//[dimensionless]
-        	cnav2_almanac[i_alm_satellite_PRN-1].delta_i = static_cast<double>(read_navigation_signed(string_bits, delta_i_40))*TWO_N14;		//[pi]
+        	cnav2_almanac[i_alm_satellite_PRN-1].delta_i = static_cast<double>(read_navigation_signed(string_bits, delta_i_40))*BEIDOU_CNAV2_PI*TWO_N14;		//[pi]
         	cnav2_almanac[i_alm_satellite_PRN-1].sqrt_A = static_cast<double>(read_navigation_unsigned(string_bits, sqrt_A_40))*TWO_N4; 		//[m^0.5]
-        	cnav2_almanac[i_alm_satellite_PRN-1].Omega_0 = static_cast<double>(read_navigation_signed(string_bits, Omega_0_40))*TWO_N15;		//[pi]
-        	cnav2_almanac[i_alm_satellite_PRN-1].Omega_dot = static_cast<double>(read_navigation_signed(string_bits, Omega_dot_40))*TWO_N33;	//[pi/s]
-        	cnav2_almanac[i_alm_satellite_PRN-1].omega = static_cast<double>(read_navigation_signed(string_bits, omega_40))*TWO_N15;			//[pi]
-        	cnav2_almanac[i_alm_satellite_PRN-1].M_0 = static_cast<double>(read_navigation_signed(string_bits, M_0_40))*TWO_N15;				//[pi]
+        	cnav2_almanac[i_alm_satellite_PRN-1].Omega_0 = static_cast<double>(read_navigation_signed(string_bits, Omega_0_40))*BEIDOU_CNAV2_PI*TWO_N15;		//[pi]
+        	cnav2_almanac[i_alm_satellite_PRN-1].Omega_dot = static_cast<double>(read_navigation_signed(string_bits, Omega_dot_40))*BEIDOU_CNAV2_PI*TWO_N33;	//[pi/s]
+        	cnav2_almanac[i_alm_satellite_PRN-1].omega = static_cast<double>(read_navigation_signed(string_bits, omega_40))*BEIDOU_CNAV2_PI*TWO_N15;			//[pi]
+        	cnav2_almanac[i_alm_satellite_PRN-1].M_0 = static_cast<double>(read_navigation_signed(string_bits, M_0_40))*BEIDOU_CNAV2_PI*TWO_N15;				//[pi]
         	cnav2_almanac[i_alm_satellite_PRN-1].a_f0 = static_cast<double>(read_navigation_signed(string_bits, a_f0_40))*TWO_N20;				//[s]
         	cnav2_almanac[i_alm_satellite_PRN-1].a_f1 = static_cast<double>(read_navigation_signed(string_bits, a_f1_40))*TWO_N37;				//[s/s]
         	cnav2_almanac[i_alm_satellite_PRN-1].Health = static_cast<double>(read_navigation_unsigned(string_bits, Health_40));				//[dimensionless] 8th(MSB):Satellite, 7th:B1C, 6th:B2a, 5th~1st:reserve, 0:normal/health, 1:abnormal

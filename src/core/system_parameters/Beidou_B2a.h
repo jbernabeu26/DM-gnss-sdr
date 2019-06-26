@@ -53,6 +53,7 @@ const double BEIDOU_B2a_SYMBOL_RATE_SPS = 200;                //BEIDOU symbol ra
 const int32_t BEIDOU_NBR_SATS = 63;      // Total number of satellites
 const double BEIDOU_LEAP_SECONDS = -33;  // uniform scale and 33 seconds behind TAI. However, this should be in the broadcast message
 
+const double BEIDOU_CNAV2_PI = 3.1415926535898;            //!< BeiDou CNAV2 Pi
 const std::string BEIDOU_CNAV2_PREAMBLE = {"111000100100110111101000"};
 const double BEIDOU_CNAV2_PREAMBLE_DURATION_S = 0.120;    //[s]
 const int32_t BEIDOU_CNAV2_PREAMBLE_LENGTH_BITS = 24;     //[bits]

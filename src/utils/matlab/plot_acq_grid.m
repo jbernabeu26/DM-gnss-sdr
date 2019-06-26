@@ -27,11 +27,11 @@
 %
 
 %% Configuration
-path = '/home/dmiralles/Documents/gnss-sdr/';
-file = 'bds_acq';
-sat = 6;
+path = '/archive/';
+file = 'bds_b2a_acq';
+sat = 24;
 channel = 0;
-execution = 6;
+execution = 1;
 % Signal:
 %     1 GPS  L1
 %     2 GPS  L2M
@@ -44,14 +44,14 @@ execution = 6;
 %     9 BDS. B3
 %    10 BDS. B2a
 
-signal_type = 3;
+signal_type = 10;
 
 %%% True for light grid representation
 lite_view = true;
 
 %%% If lite_view, it sets the number of samples per chip in the graphical representation
 n_samples_per_chip = 3;
-d_samples_per_code = 25000;
+d_samples_per_code = 20000;
 
 %% Load data
 
@@ -107,7 +107,7 @@ delay = (0 : n_fft - 1) / n_fft * n_chips;
 
 %% Plot data
 %--- Acquisition grid (3D)
-figure(1)
+figure();
 if(lite_view == false)
     surf(freq, delay, acq_grid, 'FaceColor', 'interp', 'LineStyle', 'none')
     ylim([min(delay) max(delay)])
@@ -123,7 +123,7 @@ ylabel('Code delay (chips)')
 zlabel('Test Statistics')
 
 %--- Acquisition grid (2D)
-figure(2)
+figure();
 subplot(2,1,1)
 plot(freq, acq_grid(d_max, :))
 xlim([min(freq) max(freq)])

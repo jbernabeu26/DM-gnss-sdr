@@ -120,6 +120,7 @@ obsd_t insert_obs_to_rtklib(obsd_t& rtklib_obs, const Gnss_Synchro& gnss_synchro
     return rtklib_obs;
 }
 
+
 eph_t eph_to_rtklib(const Beidou_Cnav2_Ephemeris& eph)
 {
     eph_t rtklib_sat = {0, 0, 0, 0, 0, 0, 0, 0, {0, 0}, {0, 0}, {0, 0}, 0.0, 0.0, 0.0, 0.0, 0.0,
@@ -144,8 +145,8 @@ eph_t eph_to_rtklib(const Beidou_Cnav2_Ephemeris& eph)
     rtklib_sat.Adot = eph.A_dot;
     rtklib_sat.ndot = eph.dn_0_dot;
 
-    rtklib_sat.code = 1;                   /*B1I data*/
-    rtklib_sat.flag = 1;                   /*MEO/IGSO satellite*/
+    rtklib_sat.code = 7;		/* (0:unknown,1:B1I,2:B1Q,3:B2I,4:B2Q,5:B3I,6:B3Q,7:B2a,8:B2b,9:B1C,10:B1A) */
+    rtklib_sat.flag = 1;        /* (0:unknown,1:IGSO/MEO,2:GEO) */
     rtklib_sat.iode = static_cast<int32_t>(eph.IODE); /* AODE */
     rtklib_sat.iodc = static_cast<int32_t>(eph.IODC); /* AODC */
 
@@ -159,9 +160,9 @@ eph_t eph_to_rtklib(const Beidou_Cnav2_Ephemeris& eph)
     rtklib_sat.f0 = eph.a_0;
     rtklib_sat.f1 = eph.a_1;
     rtklib_sat.f2 = eph.a_2;
-    rtklib_sat.tgd[0] = 0.0;
+    rtklib_sat.tgd[0] = eph.T_GDB1Cp;
     rtklib_sat.tgd[1] = eph.T_GDB2ap;
-    rtklib_sat.tgd[2] = 0.0;
+    rtklib_sat.tgd[2] = eph.ISC_B2ad;
     rtklib_sat.tgd[3] = 0.0;
     rtklib_sat.toes = eph.t_oe;
     rtklib_sat.toe = bdt2gpst(bdt2time(rtklib_sat.week, eph.t_oe));
@@ -184,12 +185,13 @@ eph_t eph_to_rtklib(const Beidou_Cnav2_Ephemeris& eph)
             rtklib_sat.week--;
             tow += 604800.0;
         }
-    rtklib_sat.toe = gpst2time(rtklib_sat.week, rtklib_sat.toes);
+    rtklib_sat.toe = gpst2time(rtklib_sat.week, toe);
     rtklib_sat.toc = gpst2time(rtklib_sat.week, toc);
     rtklib_sat.ttr = gpst2time(rtklib_sat.week, tow);
 
     return rtklib_sat;
 }
+
 
 geph_t eph_to_rtklib(const Glonass_Gnav_Ephemeris& glonass_gnav_eph, const Glonass_Gnav_Utc_Model& gnav_clock_model)
 {
@@ -362,8 +364,8 @@ eph_t eph_to_rtklib(const Beidou_Dnav_Ephemeris& bei_eph)
     rtklib_sat.Adot = 0;  //only in CNAV;
     rtklib_sat.ndot = 0;  //only in CNAV;
 
-    rtklib_sat.code = bei_eph.i_sig_type;                   /*B1I data*/
-    rtklib_sat.flag = bei_eph.i_nav_type;                   /*MEO/IGSO satellite*/
+    rtklib_sat.code = bei_eph.i_sig_type;                   /* (0:unknown,1:B1I,2:B1Q,3:B2I,4:B2Q,5:B3I,6:B3Q,7:B2a,8:B2b,9:B1C,10:B1A) */
+    rtklib_sat.flag = bei_eph.i_nav_type;                   /* (0:unknown,1:IGSO/MEO,2:GEO) */
     rtklib_sat.iode = static_cast<int32_t>(bei_eph.d_AODE); /* AODE */
     rtklib_sat.iodc = static_cast<int32_t>(bei_eph.d_AODC); /* AODC */
 
