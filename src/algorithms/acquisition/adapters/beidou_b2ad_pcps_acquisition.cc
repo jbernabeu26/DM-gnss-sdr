@@ -39,11 +39,17 @@
 #include "gnss_sdr_flags.h"
 #include <boost/math/distributions/exponential.hpp>
 #include <glog/logging.h>
+#include <algorithm>
+#include <memory>
 
 
 BeidouB2adPcpsAcquisition::BeidouB2adPcpsAcquisition(
-    ConfigurationInterface* configuration, std::string role,
-    unsigned int in_streams, unsigned int out_streams) : role_(role), in_streams_(in_streams), out_streams_(out_streams)
+    ConfigurationInterface* configuration,
+    std::string role,
+    unsigned int in_streams,
+    unsigned int out_streams) : role_(role),
+                                in_streams_(in_streams),
+                                out_streams_(out_streams)
 {
     configuration_ = configuration;
     std::string default_item_type = "gr_complex";
@@ -91,7 +97,7 @@ BeidouB2adPcpsAcquisition::BeidouB2adPcpsAcquisition(
             vector_length_ *= 2;
         }
 
-    code_ = new gr_complex[vector_length_];
+    code_ = std::vector<std::complex<float>>(vector_length_);
 
     if (item_type_.compare("cshort") == 0)
         {
@@ -140,10 +146,7 @@ BeidouB2adPcpsAcquisition::BeidouB2adPcpsAcquisition(
 }
 
 
-BeidouB2adPcpsAcquisition::~BeidouB2adPcpsAcquisition()
-{
-    delete[] code_;
-}
+BeidouB2adPcpsAcquisition::~BeidouB2adPcpsAcquisition()=default;
 
 
 void BeidouB2adPcpsAcquisition::stop_acquisition()
@@ -208,33 +211,31 @@ void BeidouB2adPcpsAcquisition::init()
 
 void BeidouB2adPcpsAcquisition::set_local_code()
 {
-    auto* code = new std::complex<float>[code_length_];
+    std::unique_ptr<std::complex<float>> code{new std::complex<float>[code_length_]};
     // Perform acquisition in Data + Pilot signal
     if (acq_iq_)
         {
-			beidou_b2a_code_gen_complex_sampled(code, gnss_synchro_->PRN, fs_in_);
+            beidou_b2a_code_gen_complex_sampled(gsl::span<std::complex<float>>(code, code_length_), gnss_synchro_->PRN, fs_in_);
         }
     // Perform acquisition in Pilot signal
     else if (acq_pilot_)
         {
-    		beidou_b2ap_code_gen_complex_sampled(code, gnss_synchro_->PRN, fs_in_);
+            beidou_b2ap_code_gen_complex_sampled(gsl::span<std::complex<float>>(code, code_length_), gnss_synchro_->PRN, fs_in_);
         }
     // Perform acquisition in Data signal
     else
         {
-    		beidou_b2ad_code_gen_complex_sampled(code, gnss_synchro_->PRN, fs_in_);
-
+            beidou_b2ad_code_gen_complex_sampled(gsl::span<std::complex<float>>(code, code_length_), gnss_synchro_->PRN, fs_in_);
         }
 
 
-    for (uint32_t i = 0; i < sampled_ms_; i++)
+    gsl::span<gr_complex> code_span(code_.data(), vector_length_);
+    for (unsigned int i = 0; i < sampled_ms_; i++)
         {
-            memcpy(&(code_[i * code_length_]), code,
-                sizeof(gr_complex) * code_length_);
+            std::copy_n(code.get(), code_length_, code_span.subspan(i * code_length_, code_length_).data());
         }
 
-    acquisition_->set_local_code(code_);
-    delete[] code;
+    acquisition_->set_local_code(code_.data());
 }
 
 

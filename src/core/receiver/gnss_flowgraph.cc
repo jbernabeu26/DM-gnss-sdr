@@ -223,11 +223,11 @@ void GNSSFlowgraph::connect()
         {
             try
                 {
-                    //TODO: Remove this array implementation and create generic multistream connector
-                    //(if a signal source has more than 1 stream, then connect it to the multistream signal conditioner)
+                    // TODO: Remove this array implementation and create generic multistream connector
+                    // (if a signal source has more than 1 stream, then connect it to the multistream signal conditioner)
                     if (sig_source_.at(i)->implementation() == "Raw_Array_Signal_Source")
                         {
-                            //Multichannel Array
+                            // Multichannel Array
                             std::cout << "ARRAY MODE" << std::endl;
                             for (int j = 0; j < GNSS_SDR_ARRAY_SIGNAL_CONDITIONER_CHANNELS; j++)
                                 {
@@ -237,14 +237,14 @@ void GNSSFlowgraph::connect()
                         }
                     else
                         {
-                            //TODO: Create a class interface for SignalSources, derived from GNSSBlockInterface.
-                            //Include GetRFChannels in the interface to avoid read config parameters here
-                            //read the number of RF channels for each front-end
+                            // TODO: Create a class interface for SignalSources, derived from GNSSBlockInterface.
+                            // Include GetRFChannels in the interface to avoid read config parameters here
+                            // read the number of RF channels for each front-end
                             RF_Channels = configuration_->property(sig_source_.at(i)->role() + ".RF_channels", 1);
 
                             for (int j = 0; j < RF_Channels; j++)
                                 {
-                                    //Connect the multichannel signal source to multiple signal conditioners
+                                    // Connect the multichannel signal source to multiple signal conditioners
                                     // GNURADIO max_streams=-1 means infinite ports!
                                     DLOG(INFO) << "sig_source_.at(i)->get_right_block()->output_signature()->max_streams()=" << sig_source_.at(i)->get_right_block()->output_signature()->max_streams();
                                     DLOG(INFO) << "sig_conditioner_.at(signal_conditioner_ID)->get_left_block()->input_signature()=" << sig_conditioner_.at(signal_conditioner_ID)->get_left_block()->input_signature()->max_streams();
@@ -290,8 +290,8 @@ void GNSSFlowgraph::connect()
 #if ENABLE_FPGA
     if (configuration_->property(sig_source_.at(0)->role() + ".enable_FPGA", false) == false)
         {
-            //connect the signal source to sample counter
-            //connect the sample counter to Observables
+            // connect the signal source to sample counter
+            // connect the sample counter to Observables
             try
                 {
                     double fs = static_cast<double>(configuration_->property("GNSS-SDR.internal_fs_sps", 0));
@@ -316,7 +316,7 @@ void GNSSFlowgraph::connect()
         }
     else
         {
-            //create a hardware-defined gnss_synchro pulse for the observables block
+            // create a hardware-defined gnss_synchro pulse for the observables block
             try
                 {
                     double fs = static_cast<double>(configuration_->property("GNSS-SDR.internal_fs_sps", 0));
@@ -392,10 +392,10 @@ void GNSSFlowgraph::connect()
                             // Enable automatic resampler for the acquisition, if required
                             if (use_acq_resampler == true)
                                 {
-                                    //create acquisition resamplers if required
+                                    // create acquisition resamplers if required
                                     double resampler_ratio = 1.0;
                                     double acq_fs = fs;
-                                    //find the signal associated to this channel
+                                    // find the signal associated to this channel
                                     switch (mapStringValues_[channels_.at(i)->implementation()])
                                         {
                                         case evGPS_1C:
@@ -435,7 +435,7 @@ void GNSSFlowgraph::connect()
 
                                     if (acq_fs < fs)
                                         {
-                                            //check if the resampler is already created for the channel system/signal and for the specific RF Channel
+                                            // check if the resampler is already created for the channel system/signal and for the specific RF Channel
                                             std::string map_key = channels_.at(i)->implementation() + std::to_string(selected_signal_conditioner_ID);
                                             resampler_ratio = static_cast<double>(fs) / acq_fs;
                                             int decimation = floor(resampler_ratio);
@@ -447,7 +447,7 @@ void GNSSFlowgraph::connect()
 
                                             if (decimation > 1)
                                                 {
-                                                    //create a FIR low pass filter
+                                                    // create a FIR low pass filter
                                                     std::vector<float> taps;
 
                                                     // float beta = 7.0;
@@ -500,7 +500,7 @@ void GNSSFlowgraph::connect()
                                             else
                                                 {
                                                     LOG(INFO) << "Disabled acquisition resampler because the input sampling frequency is too low";
-                                                    //resampler not required!
+                                                    // resampler not required!
                                                     top_block_->connect(sig_conditioner_.at(selected_signal_conditioner_ID)->get_right_block(), 0,
                                                         channels_.at(i)->get_left_block_acq(), 0);
                                                 }
@@ -517,9 +517,9 @@ void GNSSFlowgraph::connect()
                                     top_block_->connect(sig_conditioner_.at(selected_signal_conditioner_ID)->get_right_block(), 0,
                                         channels_.at(i)->get_left_block_acq(), 0);
                                 }
-                                    top_block_->connect(sig_conditioner_.at(selected_signal_conditioner_ID)->get_right_block(), 0,
-                                        channels_.at(i)->get_left_block_trk(), 0);
-                                }
+                            top_block_->connect(sig_conditioner_.at(selected_signal_conditioner_ID)->get_right_block(), 0,
+                                channels_.at(i)->get_left_block_trk(), 0);
+                        }
                     catch (const std::exception& e)
                         {
                             LOG(WARNING) << "Can't connect signal conditioner " << selected_signal_conditioner_ID << " to channel " << i;
@@ -762,7 +762,7 @@ void GNSSFlowgraph::disconnect()
                             // (if a signal source has more than 1 stream, then connect it to the multistream signal conditioner)
                             if (sig_source_.at(i)->implementation() == "Raw_Array_Signal_Source")
                                 {
-                                    //Multichannel Array
+                                    // Multichannel Array
                                     for (int j = 0; j < GNSS_SDR_ARRAY_SIGNAL_CONDITIONER_CHANNELS; j++)
                                         {
                                             top_block_->disconnect(sig_source_.at(i)->get_right_block(), j, sig_conditioner_.at(i)->get_left_block(), j);
@@ -1145,13 +1145,13 @@ void GNSSFlowgraph::apply_action(unsigned int who, unsigned int what)
                             break;
 
                         case evBDS_B1:
-                        	available_BDS_B1_signals_.remove(gs);
-                        	available_BDS_B1_signals_.push_back(gs);
-                        	break;
+                            available_BDS_B1_signals_.remove(gs);
+                            available_BDS_B1_signals_.push_back(gs);
+                            break;
 
                         case evBDS_B3:
-                        	available_BDS_B3_signals_.remove(gs);
-                        	available_BDS_B3_signals_.push_back(gs);
+                            available_BDS_B3_signals_.remove(gs);
+                            available_BDS_B3_signals_.push_back(gs);
                             break;
 
                         case evBDS_5C:
@@ -1162,7 +1162,7 @@ void GNSSFlowgraph::apply_action(unsigned int who, unsigned int what)
                         default:
                             LOG(ERROR) << "This should not happen :-(";
                             break;
-                }
+                        }
                 }
             channels_state_[who] = 0;
             acq_channels_count_--;
@@ -1419,7 +1419,7 @@ void GNSSFlowgraph::apply_action(unsigned int who, unsigned int what)
                                     LOG(ERROR) << "This should not happen :-(";
                                     break;
                                 }
-                            channels_[n]->stop_channel();  //stop the acquisition or tracking operation
+                            channels_[n]->stop_channel();  // stop the acquisition or tracking operation
                             channels_state_[n] = 0;
                         }
                 }
@@ -1427,7 +1427,7 @@ void GNSSFlowgraph::apply_action(unsigned int who, unsigned int what)
             break;
         case 11:  // request coldstart mode
             LOG(INFO) << "TC request flowgraph coldstart";
-            //start again the satellite acquisitions
+            // start again the satellite acquisitions
             for (unsigned int i = 0; i < channels_count_; i++)
                 {
                     unsigned int ch_index = (who + i + 1) % channels_count_;
@@ -1496,7 +1496,7 @@ void GNSSFlowgraph::apply_action(unsigned int who, unsigned int what)
             break;
         case 13:  // request warmstart mode
             LOG(INFO) << "TC request flowgraph warmstart";
-            //start again the satellite acquisitions
+            // start again the satellite acquisitions
             for (unsigned int i = 0; i < channels_count_; i++)
                 {
                     unsigned int ch_index = (who + i + 1) % channels_count_;
@@ -1536,7 +1536,7 @@ void GNSSFlowgraph::apply_action(unsigned int who, unsigned int what)
 }
 
 
-void GNSSFlowgraph::priorize_satellites(std::vector<std::pair<int, Gnss_Satellite>> visible_satellites)
+void GNSSFlowgraph::priorize_satellites(const std::vector<std::pair<int, Gnss_Satellite>>& visible_satellites)
 {
     size_t old_size;
     Gnss_Signal gs;
@@ -1790,7 +1790,8 @@ void GNSSFlowgraph::set_signals_list()
 
     std::set<unsigned int> available_beidou_prn = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
         11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
-	      30, 31, 32, 33, 34, 35, 36, 37};
+        30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49,
+        50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63};
 
     std::string sv_list = configuration_->property("Galileo.prns", std::string(""));
 
@@ -1857,7 +1858,7 @@ void GNSSFlowgraph::set_signals_list()
         }
 
     sv_list = configuration_->property("Beidou.prns", std::string(""));
- 
+
     if (sv_list.length() > 0)
         {
             // Reset the available prns:
@@ -1879,9 +1880,9 @@ void GNSSFlowgraph::set_signals_list()
                  available_gnss_prn_iter != available_gps_prn.cend();
                  available_gnss_prn_iter++)
                 {
-                    available_GPS_1C_signals_.push_back(Gnss_Signal(
+                    available_GPS_1C_signals_.emplace_back(
                         Gnss_Satellite(std::string("GPS"), *available_gnss_prn_iter),
-                        std::string("1C")));
+                        std::string("1C"));
                 }
         }
 
@@ -1892,9 +1893,9 @@ void GNSSFlowgraph::set_signals_list()
                  available_gnss_prn_iter != available_gps_prn.cend();
                  available_gnss_prn_iter++)
                 {
-                    available_GPS_2S_signals_.push_back(Gnss_Signal(
+                    available_GPS_2S_signals_.emplace_back(
                         Gnss_Satellite(std::string("GPS"), *available_gnss_prn_iter),
-                        std::string("2S")));
+                        std::string("2S"));
                 }
         }
 
@@ -1905,9 +1906,9 @@ void GNSSFlowgraph::set_signals_list()
                  available_gnss_prn_iter != available_gps_prn.cend();
                  available_gnss_prn_iter++)
                 {
-                    available_GPS_L5_signals_.push_back(Gnss_Signal(
+                    available_GPS_L5_signals_.emplace_back(
                         Gnss_Satellite(std::string("GPS"), *available_gnss_prn_iter),
-                        std::string("L5")));
+                        std::string("L5"));
                 }
         }
 
@@ -1918,9 +1919,9 @@ void GNSSFlowgraph::set_signals_list()
                  available_gnss_prn_iter != available_sbas_prn.cend();
                  available_gnss_prn_iter++)
                 {
-                    available_SBAS_1C_signals_.push_back(Gnss_Signal(
+                    available_SBAS_1C_signals_.emplace_back(
                         Gnss_Satellite(std::string("SBAS"), *available_gnss_prn_iter),
-                        std::string("1C")));
+                        std::string("1C"));
                 }
         }
 
@@ -1931,9 +1932,9 @@ void GNSSFlowgraph::set_signals_list()
                  available_gnss_prn_iter != available_galileo_prn.cend();
                  available_gnss_prn_iter++)
                 {
-                    available_GAL_1B_signals_.push_back(Gnss_Signal(
+                    available_GAL_1B_signals_.emplace_back(
                         Gnss_Satellite(std::string("Galileo"), *available_gnss_prn_iter),
-                        std::string("1B")));
+                        std::string("1B"));
                 }
         }
 
@@ -1944,9 +1945,9 @@ void GNSSFlowgraph::set_signals_list()
                  available_gnss_prn_iter != available_galileo_prn.cend();
                  available_gnss_prn_iter++)
                 {
-                    available_GAL_5X_signals_.push_back(Gnss_Signal(
+                    available_GAL_5X_signals_.emplace_back(
                         Gnss_Satellite(std::string("Galileo"), *available_gnss_prn_iter),
-                        std::string("5X")));
+                        std::string("5X"));
                 }
         }
 
@@ -1957,9 +1958,9 @@ void GNSSFlowgraph::set_signals_list()
                  available_gnss_prn_iter != available_glonass_prn.cend();
                  available_gnss_prn_iter++)
                 {
-                    available_GLO_1G_signals_.push_back(Gnss_Signal(
+                    available_GLO_1G_signals_.emplace_back(
                         Gnss_Satellite(std::string("Glonass"), *available_gnss_prn_iter),
-                        std::string("1G")));
+                        std::string("1G"));
                 }
         }
 
@@ -1970,9 +1971,9 @@ void GNSSFlowgraph::set_signals_list()
                  available_gnss_prn_iter != available_glonass_prn.cend();
                  available_gnss_prn_iter++)
                 {
-                    available_GLO_2G_signals_.push_back(Gnss_Signal(
+                    available_GLO_2G_signals_.emplace_back(
                         Gnss_Satellite(std::string("Glonass"), *available_gnss_prn_iter),
-                        std::string("2G")));
+                        std::string("2G"));
                 }
         }
 
@@ -1985,9 +1986,9 @@ void GNSSFlowgraph::set_signals_list()
                  available_gnss_prn_iter != available_beidou_prn.cend();
                  available_gnss_prn_iter++)
                 {
-                    available_BDS_B1_signals_.push_back(Gnss_Signal(
+                    available_BDS_B1_signals_.emplace_back(
                         Gnss_Satellite(std::string("Beidou"), *available_gnss_prn_iter),
-                        std::string("B1")));
+                        std::string("B1"));
                 }
         }
 
@@ -2000,9 +2001,9 @@ void GNSSFlowgraph::set_signals_list()
                  available_gnss_prn_iter != available_beidou_prn.cend();
                  available_gnss_prn_iter++)
                 {
-                    available_BDS_B3_signals_.push_back(Gnss_Signal(
+                    available_BDS_B3_signals_.emplace_back(
                         Gnss_Satellite(std::string("Beidou"), *available_gnss_prn_iter),
-                        std::string("B3")));
+                        std::string("B3"));
 
                 }
         }
@@ -2013,9 +2014,9 @@ void GNSSFlowgraph::set_signals_list()
                  available_gnss_prn_iter != available_beidou_prn.cend();
                  available_gnss_prn_iter++)
                 {
-            	available_BDS_5C_signals_.push_back(Gnss_Signal(
+            	      available_BDS_5C_signals_.emplace_back(
                         Gnss_Satellite(std::string("Beidou"), *available_gnss_prn_iter),
-                        std::string("5C")));
+                        std::string("5C"));
                 }
         }
 }
@@ -2060,7 +2061,7 @@ Gnss_Signal GNSSFlowgraph::search_next_signal(const std::string& searched_signal
             if (!pop)
                 {
                     available_GPS_1C_signals_.push_back(result);
-        }
+                }
             if (tracked)
                 {
                     if ((configuration_->property("Channels_2S.count", 0) > 0) or (configuration_->property("Channels_L5.count", 0) > 0))
@@ -2277,19 +2278,22 @@ Gnss_Signal GNSSFlowgraph::search_next_signal(const std::string& searched_signal
                 }
             if (tracked)
                 {
-            		if (configuration_->property("Channels_B3.count", 0) > 0)
-						{
-							for (unsigned int ch = 0; ch < channels_count_; ch++)
-								{
-									if ((channels_[ch]->get_signal().get_satellite() == result.get_satellite()) and (channels_[ch]->get_signal().get_signal_str() != "2G")) untracked_satellite = false;
-								}
-							if (untracked_satellite)
-								{
-									Gnss_Signal gs = Gnss_Signal(result.get_satellite(), "B3");
-									available_BDS_B3_signals_.remove(gs);
-									available_BDS_B3_signals_.push_front(gs);
-								}
-						}
+                    if (configuration_->property("Channels_B3.count", 0) > 0)
+                        {
+                            for (unsigned int ch = 0; ch < channels_count_; ch++)
+                                {
+                                    if ((channels_[ch]->get_signal().get_satellite() == result.get_satellite()) and (channels_[ch]->get_signal().get_signal_str() != "2G"))
+                                        {
+                                            untracked_satellite = false;
+                                        }
+                                }
+                            if (untracked_satellite)
+                                {
+                                    Gnss_Signal gs = Gnss_Signal(result.get_satellite(), "B3");
+                                    available_BDS_B3_signals_.remove(gs);
+                                    available_BDS_B3_signals_.push_front(gs);
+                                }
+                        }
                 }
             break;
 
@@ -2302,19 +2306,22 @@ Gnss_Signal GNSSFlowgraph::search_next_signal(const std::string& searched_signal
                 }
             if (tracked)
                 {
-            		if (configuration_->property("Channels_B1.count", 0) > 0)
-						{
-							for (unsigned int ch = 0; ch < channels_count_; ch++)
-								{
-									if ((channels_[ch]->get_signal().get_satellite() == result.get_satellite()) and (channels_[ch]->get_signal().get_signal_str() != "2G")) untracked_satellite = false;
-								}
-							if (untracked_satellite)
-								{
-									Gnss_Signal gs = Gnss_Signal(result.get_satellite(), "B1");
-									available_BDS_B1_signals_.remove(gs);
-									available_BDS_B1_signals_.push_front(gs);
-								}
-						}
+                    if (configuration_->property("Channels_B1.count", 0) > 0)
+                        {
+                            for (unsigned int ch = 0; ch < channels_count_; ch++)
+                                {
+                                    if ((channels_[ch]->get_signal().get_satellite() == result.get_satellite()) and (channels_[ch]->get_signal().get_signal_str() != "2G"))
+                                        {
+                                            untracked_satellite = false;
+                                        }
+                                }
+                            if (untracked_satellite)
+                                {
+                                    Gnss_Signal gs = Gnss_Signal(result.get_satellite(), "B1");
+                                    available_BDS_B1_signals_.remove(gs);
+                                    available_BDS_B1_signals_.push_front(gs);
+                                }
+                        }
                 }
             break;
         case evBDS_5C:
@@ -2348,8 +2355,8 @@ Gnss_Signal GNSSFlowgraph::search_next_signal(const std::string& searched_signal
         default:
             LOG(ERROR) << "This should not happen :-(";
             result = available_GPS_1C_signals_.front();
-    if (pop)
-        {
+            if (pop)
+                {
                     available_GPS_1C_signals_.pop_front();
                 }
             break;

@@ -23,7 +23,7 @@ if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
     message(FATAL_ERROR "Prevented in-tree build, it is bad practice.\nTry 'cd build && cmake ..' instead.")
 endif()
 
-cmake_minimum_required(VERSION 2.8.12)
+cmake_minimum_required(VERSION 2.8.12...3.14.5)
 project(gnss-sdr CXX C)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/Modules)
 
@@ -34,73 +34,53 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/Modules)
 # Enable them at the command line by doing 'cmake -DENABLE_XXX=ON ..'
 ################################################################################
 include(FeatureSummary)
+
 # Support of optional RF front-ends
 option(ENABLE_UHD "Enable the use of UHD (driver for all USRP devices)" ON)
-add_feature_info(ENABLE_UHD ENABLE_UHD "Enables UHD_Signal_Source for using RF front-ends from the USRP family. Requires gr-uhd.")
 
 option(ENABLE_OSMOSDR "Enable the use of OsmoSDR and other front-ends (RTL-based dongles, HackRF, bladeRF, etc.) as signal source" OFF)
-add_feature_info(ENABLE_OSMOSDR ENABLE_OSMOSDR "Enables Osmosdr_Signal_Source and RtlTcp_Signal_Source for using RF front-ends compatible with the OsmoSDR driver. Requires gr-osmosdr.")
 
 option(ENABLE_FMCOMMS2 "Enable the use of FMCOMMS4-EBZ + ZedBoard hardware, requires gr-iio" OFF)
-add_feature_info(ENABLE_FMCOMMS2 ENABLE_FMCOMMS2 "Enables Fmcomms2_Signal_Source for FMCOMMS2/3/4 devices. Requires gr-iio.")
 
 option(ENABLE_PLUTOSDR "Enable the use of ADALM-PLUTO Evaluation Boards (Analog Devices Inc.), requires gr-iio" OFF)
-add_feature_info(ENABLE_PLUTOSDR ENABLE_PLUTOSDR "Enables Plutosdr_Signal_Source for using ADALM-PLUTO boards. Requires gr-iio.")
 
 option(ENABLE_AD9361 "Enable the use of AD9361 direct to FPGA hardware, requires libiio" OFF)
-add_feature_info(ENABLE_AD9361 ENABLE_AD9361 "Enables Ad9361_Fpga_Signal_Source for devices with the AD9361 chipset. Requires libiio.")
 
 option(ENABLE_RAW_UDP "Enable the use of high-optimized custom UDP packet sample source, requires libpcap" OFF)
-add_feature_info(ENABLE_RAW_UDP ENABLE_RAW_UDP "Enables Custom_UDP_Signal_Source for custom UDP packet sample source. Requires libpcap.")
 
 option(ENABLE_FLEXIBAND "Enable the use of the signal source adater for the Teleorbit Flexiband GNU Radio driver" OFF)
-add_feature_info(ENABLE_FLEXIBAND ENABLE_FLEXIBAND "Enables Flexiband_Signal_Source for using Teleorbit's Flexiband RF front-end. Requires gr-teleorbit.")
 
 option(ENABLE_GN3S "Enable the use of the GN3S dongle as signal source (experimental)" OFF)
-add_feature_info(ENABLE_GN3S ENABLE_GN3S "Enables Gn3s_Signal_Source for using the GN3S v2 dongle. Requires gr-gn3s.")
 
 option(ENABLE_ARRAY "Enable the use of CTTC's antenna array front-end as signal source (experimental)" OFF)
-add_feature_info(ENABLE_ARRAY ENABLE_ARRAY "Enables Raw_Array_Signal_Source and Array_Signal_Conditioner for using CTTC's antenna array. Requires gr-dbfcttc.")
 
 # Performance analysis tools
 option(ENABLE_GPERFTOOLS "Enable linking to Gperftools libraries (tcmalloc and profiler)" OFF)
-add_feature_info(ENABLE_GPERFTOOLS ENABLE_GPERFTOOLS "Enables performance analysis. Requires Gperftools.")
 
 option(ENABLE_GPROF "Enable the use of the GNU profiler tool 'gprof'" OFF)
-add_feature_info(ENABLE_GPROF ENABLE_GPROF "Enables performance analysis with 'gprof'.")
 
 # Code correctness
 option(ENABLE_CLANG_TIDY "Enable the use of clang-tidy when compiling" OFF)
-add_feature_info(ENABLE_CLANG_TIDY ENABLE_CLANG_TIDY "Runs clang-tidy along with the compiler. Requires Clang.")
 
 # Acceleration
 option(ENABLE_PROFILING "Enable execution of volk_gnsssdr_profile at the end of the building" OFF)
-add_feature_info(ENABLE_PROFILING ENABLE_PROFILING "Runs volk_gnsssdr_profile at the end of the building.")
 
 option(ENABLE_OPENCL "Enable building of processing blocks implemented with OpenCL (experimental)" OFF)
-add_feature_info(ENABLE_OPENCL ENABLE_OPENCL "Enables GPS_L1_CA_PCPS_OpenCl_Acquisition (experimental). Requires OpenCL.")
 
 option(ENABLE_CUDA "Enable building of processing blocks implemented with CUDA (experimental, requires CUDA SDK)" OFF)
-add_feature_info(ENABLE_CUDA ENABLE_CUDA "Enables GPS_L1_CA_DLL_PLL_Tracking_GPU (experimental). Requires CUDA.")
 
 option(ENABLE_FPGA "Enable building of processing blocks implemented with FPGA" OFF)
-add_feature_info(ENABLE_FPGA ENABLE_FPGA "Enables building of processing blocks for FPGA off-loading.")
 
 # Building and packaging options
 option(ENABLE_GENERIC_ARCH "Builds a portable binary" OFF)
-add_feature_info(ENABLE_GENERIC_ARCH ENABLE_GENERIC_ARCH "When disabled, flags such as '-march=native' are passed to the compiler.")
 
 option(ENABLE_PACKAGING "Enable software packaging" OFF)
-add_feature_info(ENABLE_PACKAGING ENABLE_PACKAGING "Enables software packaging.")
 
 option(ENABLE_OWN_GLOG "Download glog and link it to gflags" OFF)
-add_feature_info(ENABLE_OWN_GLOG ENABLE_OWN_GLOG "Forces the downloading and building of Google glog.")
 
 option(ENABLE_OWN_ARMADILLO "Download and build Armadillo locally" OFF)
-add_feature_info(ENABLE_OWN_ARMADILLO ENABLE_OWN_ARMADILLO "Forces the downloading and building of Armadillo.")
 
 option(ENABLE_LOG "Enable logging" ON)
-add_feature_info(ENABLE_LOG ENABLE_LOG "Enables runtime internal logging with Google glog.")
 
 if(ENABLE_PACKAGING)
     set(ENABLE_GENERIC_ARCH ON)
@@ -108,25 +88,26 @@ endif()
 
 # Testing
 option(ENABLE_UNIT_TESTING "Build unit tests" ON)
-add_feature_info(ENABLE_UNIT_TESTING ENABLE_UNIT_TESTING "Enables building of Unit Tests.")
 
 option(ENABLE_UNIT_TESTING_MINIMAL "Build a minimal set of unit tests" OFF)
-add_feature_info(ENABLE_UNIT_TESTING_MINIMAL ENABLE_UNIT_TESTING_MINIMAL "Enables building a minimal set of Unit Tests.")
 
 option(ENABLE_UNIT_TESTING_EXTRA "Download external files and build extra unit tests" OFF)
-add_feature_info(ENABLE_UNIT_TESTING_EXTRA ENABLE_UNIT_TESTING_EXTRA "Enables building of Extra Unit Tests and downloading of external data files.")
 
 option(ENABLE_SYSTEM_TESTING "Build system tests" OFF)
-add_feature_info(ENABLE_SYSTEM_TESTING ENABLE_SYSTEM_TESTING "Enables building of System Tests.")
 
 option(ENABLE_SYSTEM_TESTING_EXTRA "Download external tools and build extra system tests" OFF)
-add_feature_info(ENABLE_SYSTEM_TESTING_EXTRA ENABLE_SYSTEM_TESTING_EXTRA "Enables building of Extra System Tests and downloading of external tools.")
+
+option(ENABLE_GNSS_SIM_INSTALL "Enable the installation of gnss_sim on the fly" ON)
+
+if(NOT (ENABLE_UNIT_TESTING_EXTRA OR ENABLE_SYSTEM_TESTING_EXTRA OR ENABLE_FPGA))
+    set(ENABLE_GNSS_SIM_INSTALL OFF)
+endif()
 
 if(ENABLE_SYSTEM_TESTING_EXTRA)
     set(ENABLE_SYSTEM_TESTING ON)
 endif()
+
 option(ENABLE_OWN_GPSTK "Force to download, build and link GPSTk for system tests, even if it is already installed" OFF)
-add_feature_info(ENABLE_OWN_GPSTK ENABLE_OWN_GPSTK "Forces the downloading and building of GPSTk for system tests.")
 
 option(ENABLE_INSTALL_TESTS "Install QA code system-wide" OFF)
 if(ENABLE_FPGA)
@@ -143,7 +124,7 @@ if(NOT ${THIS_IS_A_RELEASE})
     find_package(Git)
     set_package_properties(Git PROPERTIES
         URL "https://git-scm.com"
-        DESCRIPTION "A free and open source distributed version control system (found: ${GIT_VERSION_STRING})"
+        DESCRIPTION "A free and open source distributed version control system (found: v${GIT_VERSION_STRING})"
         PURPOSE "Manage version control, get MINOR_VERSION name for version number."
         TYPE REQUIRED
     )
@@ -391,7 +372,6 @@ endif()
 if(NOT CMAKE_MAKE_PROGRAM_PRETTY_NAME)
     set(CMAKE_MAKE_PROGRAM_PRETTY_NAME "${CMAKE_MAKE_PROGRAM}")
 endif()
-add_feature_info(ENABLE_INSTALL_TESTS ENABLE_INSTALL_TESTS "Install test binaries when doing '${CMAKE_MAKE_PROGRAM_PRETTY_NAME} install'.")
 
 
 
@@ -421,7 +401,7 @@ set(GNSSSDR_ARMADILLO_LOCAL_VERSION "9.500.x")
 set(GNSSSDR_GTEST_LOCAL_VERSION "1.8.1")
 set(GNSSSDR_GNSS_SIM_LOCAL_VERSION "master")
 set(GNSSSDR_GPSTK_LOCAL_VERSION "2.10.6")
-set(GNSSSDR_MATIO_LOCAL_VERSION "1.5.15")
+set(GNSSSDR_MATIO_LOCAL_VERSION "1.5.16")
 set(GNSSSDR_PUGIXML_LOCAL_VERSION "1.9")
 set(GNSSSDR_PROTOCOLBUFFERS_LOCAL_VERSION "3.8.0")
 
@@ -647,9 +627,6 @@ set(FILESYSTEM_FOUND FALSE)
 if(NOT (GNURADIO_VERSION VERSION_LESS 3.8) AND LOG4CPP_READY_FOR_CXX17)
     # Check if we have std::filesystem
     if(NOT (CMAKE_VERSION VERSION_LESS 3.8))
-        if(POLICY CMP0057)
-            cmake_policy(SET CMP0057 NEW)
-        endif()
         if((NOT ENABLE_UNIT_TESTING_EXTRA) AND (NOT ENABLE_SYSTEM_TESTING_EXTRA) AND (NOT ENABLE_FPGA)) # Workaround for GPSTk
             find_package(FILESYSTEM COMPONENTS Final Experimental)
             set_package_properties(FILESYSTEM PROPERTIES
@@ -707,11 +684,11 @@ set_package_properties(Boost PROPERTIES
 
 if(CMAKE_VERSION VERSION_GREATER 3.14)
     set_package_properties(Boost PROPERTIES
-        DESCRIPTION "Portable C++ source libraries (found: ${Boost_VERSION_STRING})"
+        DESCRIPTION "Portable C++ source libraries (found: v${Boost_VERSION_STRING})"
     )
 else()
     set_package_properties(Boost PROPERTIES
-        DESCRIPTION "Portable C++ source libraries (found: ${Boost_MAJOR_VERSION}.${Boost_MINOR_VERSION}.${Boost_SUBMINOR_VERSION})"
+        DESCRIPTION "Portable C++ source libraries (found: v${Boost_MAJOR_VERSION}.${Boost_MINOR_VERSION}.${Boost_SUBMINOR_VERSION})"
     )
 endif()
 
@@ -838,7 +815,7 @@ if(NOT VOLKGNSSSDR_FOUND)
 
     #  Mako
     if(NOT MAKO_FOUND)
-        message(STATUS "Mako template library not found. See http://www.makotemplates.org/ ")
+        message(STATUS "Mako template library not found. See http://www.makotemplates.org/")
         message(STATUS " You can try to install it by typing:")
         if(${LINUX_DISTRIBUTION} MATCHES "Fedora" OR ${LINUX_DISTRIBUTION} MATCHES "Red Hat")
             message(STATUS " sudo yum install ${PYTHON_NAME}-mako")
@@ -852,7 +829,7 @@ if(NOT VOLKGNSSSDR_FOUND)
 
     # Six
     if(NOT SIX_FOUND)
-        message(STATUS "python-six not found. See https://pythonhosted.org/six/ ")
+        message(STATUS "python-six not found. See https://pythonhosted.org/six/")
         message(STATUS " You can try to install it by typing:")
         if(${LINUX_DISTRIBUTION} MATCHES "Fedora" OR ${LINUX_DISTRIBUTION} MATCHES "Red Hat")
             message(STATUS " sudo yum install ${PYTHON_NAME}-six")
@@ -871,7 +848,7 @@ if(NOT VOLKGNSSSDR_FOUND)
         )
         if(Python3_FOUND)
             set_package_properties(Python3 PROPERTIES
-                DESCRIPTION "An interpreted, high-level, general-purpose programming language (found: ${Python3_VERSION})"
+                DESCRIPTION "An interpreted, high-level, general-purpose programming language (found: v${Python3_VERSION})"
             )
         else()
             set_package_properties(Python3 PROPERTIES
@@ -882,7 +859,7 @@ if(NOT VOLKGNSSSDR_FOUND)
         if(Python2_FOUND)
             set_package_properties(Python2 PROPERTIES
                 URL "https://www.python.org/"
-                DESCRIPTION "An interpreted, high-level, general-purpose programming language (found: ${Python2_VERSION})"
+                DESCRIPTION "An interpreted, high-level, general-purpose programming language (found: v${Python2_VERSION})"
                 PURPOSE "Required to build volk_gnsssdr."
                 TYPE REQUIRED
             )
@@ -892,7 +869,7 @@ if(NOT VOLKGNSSSDR_FOUND)
     if(PYTHONINTERP_FOUND)
         set_package_properties(PythonInterp PROPERTIES
             URL "https://www.python.org/"
-            DESCRIPTION "An interpreted, high-level, general-purpose programming language (found: ${PYTHON_VERSION_STRING})"
+            DESCRIPTION "An interpreted, high-level, general-purpose programming language (found: v${PYTHON_VERSION_STRING})"
             PURPOSE "Required to build volk_gnsssdr."
             TYPE REQUIRED
         )
@@ -1030,7 +1007,7 @@ set_package_properties(GFLAGS PROPERTIES
 )
 if(NOT GFLAGS_FOUND)
     message(STATUS " gflags library has not been found.")
-    message(STATUS " gflags v${GNSSSDR_GFLAGS_LOCAL_VERSION} will be downloaded and built automatically ")
+    message(STATUS " gflags v${GNSSSDR_GFLAGS_LOCAL_VERSION} will be downloaded and built automatically")
     message(STATUS " when doing 'make'.")
 
     if(CMAKE_VERSION VERSION_LESS 3.2)
@@ -1109,7 +1086,7 @@ if(NOT GLOG_FOUND OR ${LOCAL_GFLAGS})
     if(NOT GFLAGS_FOUND)
         message(STATUS " or it is likely not linked to gflags.")
     endif()
-    message(STATUS " glog v${GNSSSDR_GLOG_LOCAL_VERSION} will be downloaded and built automatically ")
+    message(STATUS " glog v${GNSSSDR_GLOG_LOCAL_VERSION} will be downloaded and built automatically")
     message(STATUS " when doing 'make'.")
     if(NOT ${LOCAL_GFLAGS})
         add_library(gflags-${GNSSSDR_GFLAGS_LOCAL_VERSION} UNKNOWN IMPORTED)
@@ -1559,7 +1536,7 @@ if(NOT MATIO_FOUND OR MATIO_VERSION_STRING VERSION_LESS ${GNSSSDR_MATIO_MIN_VERS
     )
     if(ZLIB_FOUND AND ZLIB_VERSION_STRING)
         set_package_properties(ZLIB PROPERTIES
-            DESCRIPTION "A Massively Spiffy Yet Delicately Unobtrusive Compression Library (found: ${ZLIB_VERSION_STRING})"
+            DESCRIPTION "A Massively Spiffy Yet Delicately Unobtrusive Compression Library (found: v${ZLIB_VERSION_STRING})"
         )
     else()
         set_package_properties(ZLIB PROPERTIES
@@ -1610,7 +1587,7 @@ if(NOT MATIO_FOUND OR MATIO_VERSION_STRING VERSION_LESS ${GNSSSDR_MATIO_MIN_VERS
         )
         if(HDF5_FOUND AND HDF5_VERSION)
             set_package_properties(HDF5 PROPERTIES
-                DESCRIPTION "A versatile data model, a portable file format and a software library (found: ${HDF5_VERSION})"
+                DESCRIPTION "A versatile data model, a portable file format and a software library (found: v${HDF5_VERSION})"
             )
         else()
             set_package_properties(HDF5 PROPERTIES
@@ -2056,7 +2033,7 @@ if(DOXYGEN_FOUND)
 else()
     message(STATUS " Doxygen has not been found in your system.")
     message(STATUS " You can get nice code documentation by using it!")
-    message(STATUS " Get it from http://www.stack.nl/~dimitri/doxygen/index.html")
+    message(STATUS " Get it from http://www.doxygen.nl/download.html")
     if(OS_IS_LINUX)
         if(${LINUX_DISTRIBUTION} MATCHES "Fedora" OR ${LINUX_DISTRIBUTION} MATCHES "Red Hat")
             message(STATUS " or simply by doing 'sudo yum install doxygen-latex'.")
@@ -2089,7 +2066,7 @@ if(ENABLE_OPENCL)
     else()
         if(OPENCL_FOUND)
             message(STATUS "OpenCL has been found and will be used by some processing blocks")
-            message(STATUS " You can disable OpenCL use by doing 'cmake -DENABLE_OPENCL=OFF ..' ")
+            message(STATUS " You can disable OpenCL use by doing 'cmake -DENABLE_OPENCL=OFF ..'")
         endif()
     endif()
     if(ENABLE_GENERIC_ARCH)
@@ -2099,8 +2076,6 @@ if(ENABLE_OPENCL)
     if(NOT OPENCL_FOUND)
         message(STATUS "Processing blocks using OpenCL will not be built.")
     endif()
-else()
-    set(OPENCL_FOUND FALSE)
 endif()
 
 
@@ -2114,13 +2089,33 @@ if(DEFINED ENV{CUDA_GPU_ACCEL})
 endif()
 
 if(ENABLE_CUDA)
-    find_package(CUDA REQUIRED)
-    set_package_properties(CUDA PROPERTIES
-        URL "https://developer.nvidia.com/cuda-downloads"
-        DESCRIPTION "Library for parallel programming in Nvidia GPUs"
-        PURPOSE "Used in some processing block implementations."
-        TYPE REQUIRED
-    )
+    if(CMAKE_VERSION VERSION_GREATER 3.11)
+        include(CheckLanguage)
+        check_language(CUDA)
+        if(CMAKE_CUDA_COMPILER)
+            enable_language(CUDA)
+            set(CUDA_FOUND TRUE)
+            if(NOT DEFINED CMAKE_CUDA_STANDARD)
+                set(CMAKE_CUDA_STANDARD 11)
+                set(CMAKE_CUDA_STANDARD_REQUIRED ON)
+            endif()
+        else()
+            set(ENABLE_CUDA OFF)
+        endif()
+    else()
+        find_package(CUDA REQUIRED)
+        set_package_properties(CUDA PROPERTIES
+            URL "https://developer.nvidia.com/cuda-downloads"
+            DESCRIPTION "Library for parallel programming in Nvidia GPUs"
+            PURPOSE "Used in some processing block implementations."
+            TYPE REQUIRED
+        )
+        if(NOT CUDA_FOUND)
+            set(ENABLE_CUDA OFF)
+        endif()
+    endif()
+endif()
+if(ENABLE_CUDA)
     message(STATUS "NVIDIA CUDA GPU Acceleration will be enabled.")
     message(STATUS " You can disable it with 'cmake -DENABLE_CUDA=OFF ..'")
 else()
@@ -2138,9 +2133,11 @@ set_package_properties(PCAP PROPERTIES
     PURPOSE "Used for the custom UDP IP packet source."
     TYPE OPTIONAL
 )
-
+if(PCAP_FOUND)
+    set(ENABLE_RAW_UDP ON)
+endif()
 if(ENABLE_RAW_UDP)
-    message(STATUS "High-optimized custom UDP IP packet source is enabled.")
+    message(STATUS "Highly-optimized custom UDP IP packet source is enabled.")
     message(STATUS " You can disable it with 'cmake -DENABLE_RAW_UDP=OFF ..'")
     if(NOT PCAP_FOUND)
         message(FATAL_ERROR "PCAP required to compile custom UDP packet sample source (with ENABLE_RAW_UDP=ON)")
@@ -2190,6 +2187,7 @@ if(ENABLE_OSMOSDR)
         else()
             message(FATAL_ERROR "gr-osmosdr required to build gnss-sdr with the optional OSMOSDR driver")
         endif()
+        set(ENABLE_OSMOSDR OFF)
     endif()
 else()
     message(STATUS "The (optional) driver for OsmoSDR and related front-ends is not enabled.")
@@ -2242,7 +2240,6 @@ else()
 endif()
 find_package(TELEORBIT)
 set_package_properties(TELEORBIT PROPERTIES
-    DESCRIPTION "The Teleorbit's Flexiband GNU Radio block."
     PURPOSE "Used for communication with the Flexiband front-end."
     TYPE OPTIONAL
 )
@@ -2449,6 +2446,36 @@ add_subdirectory(src)
 ################################################################################
 # Print summary
 ################################################################################
+add_feature_info(ENABLE_UHD ENABLE_UHD "Enables UHD_Signal_Source for using RF front-ends from the USRP family. Requires gr-uhd.")
+add_feature_info(ENABLE_OSMOSDR ENABLE_OSMOSDR "Enables Osmosdr_Signal_Source and RtlTcp_Signal_Source for using RF front-ends compatible with the OsmoSDR driver. Requires gr-osmosdr.")
+add_feature_info(ENABLE_FMCOMMS2 ENABLE_FMCOMMS2 "Enables Fmcomms2_Signal_Source for FMCOMMS2/3/4 devices. Requires gr-iio.")
+add_feature_info(ENABLE_PLUTOSDR ENABLE_PLUTOSDR "Enables Plutosdr_Signal_Source for using ADALM-PLUTO boards. Requires gr-iio.")
+add_feature_info(ENABLE_AD9361 ENABLE_AD9361 "Enables Ad9361_Fpga_Signal_Source for devices with the AD9361 chipset. Requires libiio.")
+add_feature_info(ENABLE_RAW_UDP ENABLE_RAW_UDP "Enables Custom_UDP_Signal_Source for custom UDP packet sample source. Requires libpcap.")
+add_feature_info(ENABLE_FLEXIBAND ENABLE_FLEXIBAND "Enables Flexiband_Signal_Source for using Teleorbit's Flexiband RF front-end. Requires gr-teleorbit.")
+add_feature_info(ENABLE_GN3S ENABLE_GN3S "Enables Gn3s_Signal_Source for using the GN3S v2 dongle. Requires gr-gn3s.")
+add_feature_info(ENABLE_ARRAY ENABLE_ARRAY "Enables Raw_Array_Signal_Source and Array_Signal_Conditioner for using CTTC's antenna array. Requires gr-dbfcttc.")
+add_feature_info(ENABLE_GPERFTOOLS ENABLE_GPERFTOOLS "Enables performance analysis. Requires Gperftools.")
+add_feature_info(ENABLE_GPROF ENABLE_GPROF "Enables performance analysis with 'gprof'.")
+add_feature_info(ENABLE_CLANG_TIDY ENABLE_CLANG_TIDY "Runs clang-tidy along with the compiler. Requires Clang.")
+add_feature_info(ENABLE_PROFILING ENABLE_PROFILING "Runs volk_gnsssdr_profile at the end of the building.")
+add_feature_info(ENABLE_OPENCL ENABLE_OPENCL "Enables GPS_L1_CA_PCPS_OpenCl_Acquisition (experimental). Requires OpenCL.")
+add_feature_info(ENABLE_CUDA ENABLE_CUDA "Enables GPS_L1_CA_DLL_PLL_Tracking_GPU (experimental). Requires CUDA.")
+add_feature_info(ENABLE_FPGA ENABLE_FPGA "Enables building of processing blocks for FPGA off-loading.")
+add_feature_info(ENABLE_GENERIC_ARCH ENABLE_GENERIC_ARCH "When disabled, flags such as '-march=native' are passed to the compiler.")
+add_feature_info(ENABLE_PACKAGING ENABLE_PACKAGING "Enables software packaging.")
+add_feature_info(ENABLE_OWN_GLOG ENABLE_OWN_GLOG "Forces the downloading and building of Google glog.")
+add_feature_info(ENABLE_OWN_ARMADILLO ENABLE_OWN_ARMADILLO "Forces the downloading and building of Armadillo.")
+add_feature_info(ENABLE_LOG ENABLE_LOG "Enables runtime internal logging with Google glog.")
+add_feature_info(ENABLE_UNIT_TESTING ENABLE_UNIT_TESTING "Enables building of Unit Tests.")
+add_feature_info(ENABLE_UNIT_TESTING_MINIMAL ENABLE_UNIT_TESTING_MINIMAL "Enables building a minimal set of Unit Tests.")
+add_feature_info(ENABLE_UNIT_TESTING_EXTRA ENABLE_UNIT_TESTING_EXTRA "Enables building of Extra Unit Tests and downloading of external data files.")
+add_feature_info(ENABLE_SYSTEM_TESTING ENABLE_SYSTEM_TESTING "Enables building of System Tests.")
+add_feature_info(ENABLE_SYSTEM_TESTING_EXTRA ENABLE_SYSTEM_TESTING_EXTRA "Enables building of Extra System Tests and downloading of external tools.")
+add_feature_info(ENABLE_OWN_GPSTK ENABLE_OWN_GPSTK "Forces the downloading and building of GPSTk for system tests.")
+add_feature_info(ENABLE_GNSS_SIM_INSTALL ENABLE_GNSS_SIM_INSTALL "Enables downloading and building of gnss-sim.")
+add_feature_info(ENABLE_INSTALL_TESTS ENABLE_INSTALL_TESTS "Install test binaries when doing '${CMAKE_MAKE_PROGRAM_PRETTY_NAME} install'.")
+
 message(STATUS "")
 message(STATUS "***************************************")
 message(STATUS "*           SUMMARY REPORT            *")

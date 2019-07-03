@@ -183,7 +183,7 @@ private:
     bool dump_;
     bool blocking_;
     std::string dump_filename_;
-    std::complex<float>* code_;
+    std::vector<std::complex<float>> code_;
     Gnss_Synchro* gnss_synchro_;
     std::string role_;
     uint32_t in_streams_;
