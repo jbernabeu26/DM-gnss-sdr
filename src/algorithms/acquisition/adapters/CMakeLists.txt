@@ -37,6 +37,7 @@ set(ACQ_ADAPTER_SOURCES
     beidou_b1i_pcps_acquisition.cc
     beidou_b3i_pcps_acquisition.cc
     beidou_b1cd_pcps_acquisition.cc
+    beidou_b1c_pcps_acquisition.cc
 )
 
 set(ACQ_ADAPTER_HEADERS
@@ -59,6 +60,7 @@ set(ACQ_ADAPTER_HEADERS
     beidou_b1i_pcps_acquisition.h
     beidou_b3i_pcps_acquisition.h
     beidou_b1cd_pcps_acquisition.h
+    beidou_b1c_pcps_acquisition.h
 )
 
 if(ENABLE_FPGA)

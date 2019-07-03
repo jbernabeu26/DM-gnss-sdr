@@ -1,12 +1,15 @@
 /*!
- * \file gps_l1_ca_pcps_opencl_acquisition.h
- * \brief Adapts an OpenCL PCPS acquisition block to an
- *  AcquisitionInterface for GPS L1 C/A signals
- * \author Marc Molina, 2013. marc.molina.pena(at)gmail.com
+ * \file beidou_b1cd_pcps_acquisition.h
+ * \brief Adapts a PCPS acquisition block to an AcquisitionInterface for
+ *  BEIDOU B1C signals
+ * \authors <ul>
+ *          <li> Andrew Kamble, 2019. andrewkamble88@gmail.com
+ *          </ul>
+ * \note Code added as part of GSoC 2019 program
  *
  * -------------------------------------------------------------------------
  *
- * Copyright (C) 2010-2018  (see AUTHORS file for a list of contributors)
+ * Copyright (C) 2010-2019  (see AUTHORS file for a list of contributors)
  *
  * GNSS-SDR is a software defined Global Navigation
  *          Satellite Systems receiver
@@ -29,30 +32,35 @@
  * -------------------------------------------------------------------------
  */
 
-#ifndef GNSS_SDR_GPS_L1_CA_PCPS_OPENCL_ACQUISITION_H_
-#define GNSS_SDR_GPS_L1_CA_PCPS_OPENCL_ACQUISITION_H_
+#ifndef GNSS_SDR_BEIDOU_B1C_PCPS_ACQUISITION_H_
+#define GNSS_SDR_BEIDOU_B1C_PCPS_ACQUISITION_H_
 
 #include "channel_fsm.h"
+#include "complex_byte_to_float_x2.h"
 #include "gnss_synchro.h"
-#include "pcps_opencl_acquisition_cc.h"
+#include "pcps_acquisition.h"
+#include <gnuradio/blocks/float_to_complex.h>
 #include <gnuradio/blocks/stream_to_vector.h>
+#include <volk_gnsssdr/volk_gnsssdr.h>
+#include <cstdint>
 #include <string>
+
 
 class ConfigurationInterface;
 
 /*!
- * \brief This class adapts an OpenCL PCPS acquisition block to an
- *  AcquisitionInterface for GPS L1 C/A signals
+ * \brief This class adapts a PCPS acquisition block to an
+ *  AcquisitionInterface for BeiDou B1C Signals
  */
-class GpsL1CaPcpsOpenClAcquisition : public AcquisitionInterface
+class BeidouB1cPcpsAcquisition : public AcquisitionInterface
 {
 public:
-    GpsL1CaPcpsOpenClAcquisition(ConfigurationInterface* configuration,
+	BeidouB1cPcpsAcquisition(ConfigurationInterface* configuration,
         const std::string& role,
         unsigned int in_streams,
         unsigned int out_streams);
 
-    virtual ~GpsL1CaPcpsOpenClAcquisition();
+    virtual ~BeidouB1cPcpsAcquisition();
 
     inline std::string role() override
     {
@@ -60,14 +68,14 @@ public:
     }
 
     /*!
-     * \brief Returns "GPS_L1_CA_PCPS_OpenCl_Acquisition"
+     * \brief Returns "BEIDOU_B1C_PCPS_Acquisition"
      */
     inline std::string implementation() override
     {
-        return "GPS_L1_CA_PCPS_OpenCl_Acquisition";
+        return "BEIDOU_B1C_PCPS_Acquisition";
     }
 
-    inline size_t item_size() override
+    size_t item_size() override
     {
         return item_size_;
     }
@@ -90,7 +98,7 @@ public:
     inline void set_channel(unsigned int channel) override
     {
         channel_ = channel;
-        acquisition_cc_->set_channel(channel_);
+        acquisition_->set_channel(channel_);
     }
 
     /*!
@@ -99,7 +107,7 @@ public:
     inline void set_channel_fsm(std::weak_ptr<ChannelFsm> channel_fsm) override
     {
         channel_fsm_ = channel_fsm;
-        acquisition_cc_->set_channel_fsm(channel_fsm);
+        acquisition_->set_channel_fsm(channel_fsm);
     }
     /*!
      * \brief Set statistics threshold of PCPS algorithm
@@ -122,7 +130,7 @@ public:
     void init() override;
 
     /*!
-     * \brief Sets local code for GPS L1/CA PCPS acquisition algorithm.
+     * \brief Sets local code for Galileo E1 PCPS acquisition algorithm.
      */
     void set_local_code() override;
 
@@ -135,30 +143,38 @@ public:
      * \brief Restart acquisition algorithm
      */
     void reset() override;
-    void set_state(int state __attribute__((unused))) override{};
+
+    /*!
+     * \brief If state = 1, it forces the block to start acquiring from the first sample
+     */
+    void set_state(int state) override;
 
     /*!
      * \brief Stop running acquisition
      */
     void stop_acquisition() override;
 
-    void set_resampler_latency(uint32_t latency_samples __attribute__((unused))) override{};
+    /*!
+     * \brief Sets the resampler latency to account it in the acquisition code delay estimation
+     */
 
-    inline bool opencl_ready() const
-    {
-        bool ready = this->acquisition_cc_->opencl_ready();
-        return ready;
-    }
+    void set_resampler_latency(uint32_t latency_samples) override;
+
 
 private:
     ConfigurationInterface* configuration_;
-    pcps_opencl_acquisition_cc_sptr acquisition_cc_;
-    gr::blocks::stream_to_vector::sptr stream_to_vector_;
+    Acq_Conf acq_parameters_;
+    pcps_acquisition_sptr acquisition_;
+    gr::blocks::float_to_complex::sptr float_to_complex_;
+    complex_byte_to_float_x2_sptr cbyte_to_float_x2_;
     size_t item_size_;
     std::string item_type_;
     unsigned int vector_length_;
     unsigned int code_length_;
     bool bit_transition_flag_;
+    bool use_CFAR_algorithm_flag_;
+    bool acq_pilot_;
+    bool acq_iq_;
     unsigned int channel_;
     std::weak_ptr<ChannelFsm> channel_fsm_;
     float threshold_;
@@ -168,14 +184,14 @@ private:
     unsigned int max_dwells_;
     int64_t fs_in_;
     bool dump_;
+    bool blocking_;
     std::string dump_filename_;
     std::complex<float>* code_;
     Gnss_Synchro* gnss_synchro_;
     std::string role_;
     unsigned int in_streams_;
     unsigned int out_streams_;
-
     float calculate_threshold(float pfa);
 };
 
-#endif /* GNSS_SDR_GPS_L1_CA_PCPS_OPENCL_ACQUISITION_H_ */
+#endif /* GNSS_SDR_BEIDOU_B1C_PCPS_ACQUISITION_H_ */

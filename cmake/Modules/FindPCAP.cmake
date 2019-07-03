@@ -48,9 +48,13 @@
 # Pcap::pcap
 #
 
+if(NOT COMMAND feature_summary)
+    include(FeatureSummary)
+endif()
+
 set(PKG_CONFIG_USE_CMAKE_PREFIX_PATH TRUE)
 include(FindPkgConfig)
-pkg_check_modules(PC_PCAP libpcap)
+pkg_check_modules(PC_PCAP libpcap QUIET)
 
 if(EXISTS $ENV{PCAPDIR})
   find_path(PCAP_INCLUDE_DIR
@@ -134,6 +138,20 @@ find_package_handle_standard_args(PCAP DEFAULT_MSG PCAP_INCLUDE_DIRS PCAP_LIBRAR
 
 if(PCAP_FOUND AND PC_PCAP_VERSION)
     set(PCAP_VERSION ${PC_PCAP_VERSION})
+endif()
+
+set_package_properties(PCAP PROPERTIES
+    URL "https://www.tcpdump.org"
+)
+
+if(PCAP_FOUND AND PCAP_VERSION)
+    set_package_properties(PCAP PROPERTIES
+        DESCRIPTION "A portable C/C++ library for network traffic capture (found: v${PCAP_VERSION})"
+    )
+else()
+    set_package_properties(PCAP PROPERTIES
+        DESCRIPTION "A portable C/C++ library for network traffic capture"
+    )
 endif()
 
 if(PCAP_FOUND AND NOT TARGET Pcap::pcap)

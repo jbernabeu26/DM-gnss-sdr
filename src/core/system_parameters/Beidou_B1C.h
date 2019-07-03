@@ -43,21 +43,19 @@
 #include <vector>
 
 
-const double BEIDOU_B1C_FREQ_HZ = FREQ1;              //!< BEIDOU B1C carrier frequency [Hz]
+const double   BEIDOU_B1C_FREQ_HZ = FREQ1;              //!< BEIDOU B1C carrier frequency [Hz]
+const uint32_t BEIDOU_B1C_OPT_ACQ_FS_HZ = 2000000;  //!< Sampling frequncy that maximizes the acquisition SNR while using a non-multiple of chip rate
+const int32_t  BEIDOU_B1C_SAMPLES_PER_SYMBOL = 1;
 
-
-const double BEIDOU_B1Cd_CODE_RATE_HZ = 1.023e6;      //!< BEIDOU_B1C data code rate [chips/s]
+const double  BEIDOU_B1Cd_CODE_RATE_HZ = 1.023e6;      //!< BEIDOU_B1C data code rate [chips/s]
 const int32_t BEIDOU_B1Cd_CODE_LENGTH_CHIPS = 10230;  //!< BEIDOU_B1C data  code length [chips]
-const double BEIDOU_B1Cd_PERIOD = 0.01;               //!< BEIDOU_B1C data code period [seconds]
-const int32_t BEIDOU_B2ad_PERIOD_MS = 10;
+const double  BEIDOU_B1Cd_PERIOD = 0.01;               //!< BEIDOU_B1C data code period [seconds]
+const int32_t BEIDOU_B1Cd_CODE_PERIOD_MS = 10;
 
-
-const int32_t BEIDOU_B1C_SAMPLES_PER_SYMBOL = 1;
-
-
-const double BEIDOU_B1Cp_CODE_RATE_HZ = 1.023e6;      //!< BEIDOU_B1c pilot code rate [chips/s]
+const double  BEIDOU_B1Cp_CODE_RATE_HZ = 1.023e6;      //!< BEIDOU_B1c pilot code rate [chips/s]
 const int32_t BEIDOU_B1Cp_CODE_LENGTH_CHIPS = 10230;  //!< BEIDOU_B1c pilot code length [chips]
-
+const double  BEIDOU_B1Cp_PERIOD = 0.01;               //!< BEIDOU_B1C data code period [seconds]
+const int32_t BEIDOU_B1Cp_PERIOD_MS = 10;
 
 const int32_t BEIDOU_NBR_SATS = 63;		      //!<Total number of satellites
 
