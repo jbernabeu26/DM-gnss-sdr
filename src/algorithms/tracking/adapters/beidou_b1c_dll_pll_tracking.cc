@@ -147,7 +147,7 @@ BeidouB1cDllPllTracking::BeidouB1cDllPllTracking(
     trk_param.very_early_late_space_chips = 0.0;
     trk_param.very_early_late_space_narrow_chips = 0.0;
     trk_param.system = 'C';
-    char sig_[3] = "5C";
+    char sig_[3] = "C1";
     std::memcpy(trk_param.signal, sig_, 3);
     int cn0_samples = configuration->property(role + ".cn0_samples", 20);
     if (FLAGS_cn0_samples != 20)

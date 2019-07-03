@@ -2,7 +2,7 @@
  * \file beidou_b1c_dll_pll_tracking.h
  * \brief  Interface of an adapter of a DLL+PLL tracking loop block
  * for Beidou B1C to a TrackingInterface
- * \author Andrew Kamble, 2019. andrewkamble88@gmail.com 
+ * \author Andrew Kamble, 2019. andrewkamble88@gmail.com
  * \note Code added as part of GSoC 2019 program
  *
  * Code DLL + carrier PLL according to the algorithms described in:
