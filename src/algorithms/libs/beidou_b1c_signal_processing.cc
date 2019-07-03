@@ -277,7 +277,7 @@ void beidou_b1cp_code_gen_complex(std::complex<float>* _dest, unsigned int _prn)
 
     for (signed int i = 0; i < BEIDOU_B1Cp_CODE_LENGTH_CHIPS; i++)
         {
-            _dest[i] = std::complex<float>(1.0 - 2.0 * _code[i], 0.0);
+            _dest[i] = std::complex<float>(0.0, 1.0 - 2.0 * _code[i]);
         }
 
     delete[] _code;
@@ -317,11 +317,11 @@ void beidou_b1cp_code_gen_complex_sampled(std::complex<float>* _dest, unsigned i
             if (i == _samplesPerCode - 1)
                 {
                     //--- Correct the last index (due to number rounding issues) -----------
-                    _dest[i] = std::complex<float>(1.0 - 2.0 * _code[_codeLength - 1], 0);
+                    _dest[i] = std::complex<float>(0, 1.0 - 2.0 * _code[_codeLength - 1]);
                 }
             else
                 {
-                    _dest[i] = std::complex<float>(1.0 - 2.0 * _code[_codeValueIndex], 0);  //repeat the chip -> upsample
+                    _dest[i] = std::complex<float>(0, 1.0 - 2.0 * _code[_codeValueIndex]);  //repeat the chip -> upsample
                 }
         }
     delete[] _code;
@@ -377,7 +377,7 @@ void beidou_b1cp_code_gen_complex_secondary(std::complex<float>* _dest, unsigned
 
     for (signed int i = 0; i <BEIDOU_B1Cp_CODE_LENGTH_CHIPS*BEIDOU_B1Cp_SECONDARY_CODE_LENGTH_CHIPS; i++)
         {
-            _dest[i] = std::complex<float>(1.0 - 2.0 * _code[i], 0.0);
+            _dest[i] = std::complex<float>(0.0, 1.0 - 2.0 * _code[i]);
         }
 
     delete[] _code;
@@ -415,11 +415,11 @@ void beidou_b1cp_code_gen_complex_sampled_secondary(std::complex<float>* _dest, 
             if (i == _samplesPerCode - 1)
                 {
                     //--- Correct the last index (due to number rounding issues) -----------
-                    _dest[i] = std::complex<float>(1.0 - 2.0 * _code[_codeLength - 1], 0);
+                    _dest[i] = std::complex<float>(0, 1.0 - 2.0 * _code[_codeLength - 1]);
                 }
             else
                 {
-                    _dest[i] = std::complex<float>(1.0 - 2.0 * _code[_codeValueIndex], 0);  //repeat the chip -> upsample
+                    _dest[i] = std::complex<float>(0, 1.0 - 2.0 * _code[_codeValueIndex]);  //repeat the chip -> upsample
                 }
 
         }

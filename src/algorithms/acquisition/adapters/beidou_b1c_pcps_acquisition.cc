@@ -261,7 +261,6 @@ void BeidouB1cPcpsAcquisition::set_local_code()
     else
         {
     		beidou_b1cd_code_gen_complex_sampled(code, gnss_synchro_->PRN, fs_in_);
-
         }
 
 
