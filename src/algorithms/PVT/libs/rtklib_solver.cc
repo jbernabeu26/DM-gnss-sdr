@@ -53,8 +53,8 @@
 
 #include "rtklib_solver.h"
 #include "Beidou_B1I.h"
-#include "Beidou_B3I.h"
 #include "Beidou_B2a.h"
+#include "Beidou_B3I.h"
 #include "GLONASS_L1_L2_CA.h"
 #include "GPS_L1_CA.h"
 #include "Galileo_E1.h"
@@ -819,28 +819,27 @@ bool Rtklib_Solver::get_PVT(const std::map<int, Gnss_Synchro> &gnss_observables_
                                         DLOG(INFO) << "No ephemeris data for SV " << gnss_observables_iter->second.PRN;
                                     }
                             }
-						// BEIDOU B2a
-						if (sig_ == "5C")
-							{
-								beidou_cnav2_ephemeris_iter = beidou_cnav2_ephemeris_map.find(gnss_observables_iter->second.PRN);
-								if (beidou_cnav2_ephemeris_iter != beidou_cnav2_ephemeris_map.cend())
-									{
-										//convert ephemeris from GNSS-SDR class to RTKLIB structure
-										eph_data[valid_obs] = eph_to_rtklib(beidou_cnav2_ephemeris_iter->second);
-										//convert observation from GNSS-SDR class to RTKLIB structure
-										obsd_t newobs = {{0, 0}, '0', '0', {}, {}, {}, {}, {}, {}};
-										obs_data[valid_obs + glo_valid_obs] = insert_obs_to_rtklib(newobs,
-											gnss_observables_iter->second,
-											beidou_cnav2_ephemeris_iter->second.i_BDS_week + 1356,
-											2);
-										valid_obs++;
-
-									}
-								else  // the ephemeris are not available for this SV
-									{
-										DLOG(INFO) << "No ephemeris data for SV " << gnss_observables_iter->first;
-									}
-							}
+                        // BEIDOU B2a
+                        if (sig_ == "5C")
+                            {
+                                beidou_cnav2_ephemeris_iter = beidou_cnav2_ephemeris_map.find(gnss_observables_iter->second.PRN);
+                                if (beidou_cnav2_ephemeris_iter != beidou_cnav2_ephemeris_map.cend())
+                                    {
+                                        //convert ephemeris from GNSS-SDR class to RTKLIB structure
+                                        eph_data[valid_obs] = eph_to_rtklib(beidou_cnav2_ephemeris_iter->second);
+                                        //convert observation from GNSS-SDR class to RTKLIB structure
+                                        obsd_t newobs = {{0, 0}, '0', '0', {}, {}, {}, {}, {}, {}};
+                                        obs_data[valid_obs + glo_valid_obs] = insert_obs_to_rtklib(newobs,
+                                            gnss_observables_iter->second,
+                                            beidou_cnav2_ephemeris_iter->second.i_BDS_week + BEIDOU_B2a_BDT2GPST_WEEK_NUM_OFFSET,
+                                            2);
+                                        valid_obs++;
+                                    }
+                                else  // the ephemeris are not available for this SV
+                                    {
+                                        DLOG(INFO) << "No ephemeris data for SV " << gnss_observables_iter->first;
+                                    }
+                            }
                         break;
                     }
 

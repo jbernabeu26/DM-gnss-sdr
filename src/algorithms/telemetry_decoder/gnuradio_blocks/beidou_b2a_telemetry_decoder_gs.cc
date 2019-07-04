@@ -194,7 +194,7 @@ void beidou_b2a_telemetry_decoder_gs::decode_string(double *frame_symbols, int32
             std::shared_ptr<Beidou_Cnav2_Ephemeris> tmp_obj = std::make_shared<Beidou_Cnav2_Ephemeris>(d_nav.get_ephemeris());
             this->message_port_pub(pmt::mp("telemetry"), pmt::make_any(tmp_obj));
             LOG(INFO) << "BEIDOU CNAV2 Ephemeris have been received in channel" << d_channel << " from satellite " << d_satellite;
-            std::cout << TEXT_MAGENTA <<  "New BDS B2a CNAV2 message received in channel " << d_channel << ": ephemeris from satellite " << d_satellite << TEXT_RESET << std::endl;
+            std::cout << TEXT_MAGENTA << "New BDS B2a CNAV2 message received in channel " << d_channel << ": ephemeris from satellite " << d_satellite << TEXT_RESET << std::endl;
         }
     if (d_nav.have_new_utc_model() == true)
         {
@@ -399,49 +399,49 @@ int beidou_b2a_telemetry_decoder_gs::general_work(int noutput_items __attribute_
         {
             if (d_nav.flag_TOW_10 == true)
                 {
-                    d_TOW_at_Preamble_ms = static_cast<uint32_t>((d_nav.cnav2_ephemeris.SOW + 14) * 1000.0);
+                    d_TOW_at_Preamble_ms = static_cast<uint32_t>((d_nav.cnav2_ephemeris.SOW + BEIDOU_B2a_BDT2GPST_LEAP_SEC_OFFSET) * 1000.0);
                     d_TOW_at_current_symbol_ms = d_TOW_at_Preamble_ms + static_cast<uint32_t>((d_required_symbols + 1) * BEIDOU_B2ad_PERIOD_MS);
                     d_nav.flag_TOW_10 = false;
                 }
             else if (d_nav.flag_TOW_11 == true)
                 {
-                    d_TOW_at_Preamble_ms = static_cast<uint32_t>((d_nav.cnav2_ephemeris.SOW + 14) * 1000.0);
+                    d_TOW_at_Preamble_ms = static_cast<uint32_t>((d_nav.cnav2_ephemeris.SOW + BEIDOU_B2a_BDT2GPST_LEAP_SEC_OFFSET) * 1000.0);
                     d_TOW_at_current_symbol_ms = d_TOW_at_Preamble_ms + static_cast<uint32_t>((d_required_symbols + 1) * BEIDOU_B2ad_PERIOD_MS);
                     d_nav.flag_TOW_11 = false;
                 }
             else if (d_nav.flag_TOW_30 == true)
                 {
-                    d_TOW_at_Preamble_ms = static_cast<uint32_t>((d_nav.cnav2_ephemeris.SOW+14) * 1000.0);
+                    d_TOW_at_Preamble_ms = static_cast<uint32_t>((d_nav.cnav2_ephemeris.SOW + BEIDOU_B2a_BDT2GPST_LEAP_SEC_OFFSET) * 1000.0);
                     d_TOW_at_current_symbol_ms = d_TOW_at_Preamble_ms + static_cast<uint32_t>((d_required_symbols + 1) * BEIDOU_B2ad_PERIOD_MS);
                     d_nav.flag_TOW_30 = false;
                 }
             else if (d_nav.flag_TOW_31 == true)
                 {
-                    d_TOW_at_Preamble_ms = static_cast<uint32_t>((d_nav.cnav2_ephemeris.SOW+14) * 1000.0);
+                    d_TOW_at_Preamble_ms = static_cast<uint32_t>((d_nav.cnav2_ephemeris.SOW + BEIDOU_B2a_BDT2GPST_LEAP_SEC_OFFSET) * 1000.0);
                     d_TOW_at_current_symbol_ms = d_TOW_at_Preamble_ms + static_cast<uint32_t>((d_required_symbols + 1) * BEIDOU_B2ad_PERIOD_MS);
                     d_nav.flag_TOW_31 = false;
                 }
             else if (d_nav.flag_TOW_32 == true)
                 {
-                    d_TOW_at_Preamble_ms = static_cast<uint32_t>((d_nav.cnav2_ephemeris.SOW + 14) * 1000.0);
+                    d_TOW_at_Preamble_ms = static_cast<uint32_t>((d_nav.cnav2_ephemeris.SOW + BEIDOU_B2a_BDT2GPST_LEAP_SEC_OFFSET) * 1000.0);
                     d_TOW_at_current_symbol_ms = d_TOW_at_Preamble_ms + static_cast<uint32_t>((d_required_symbols + 1) * BEIDOU_B2ad_PERIOD_MS);
                     d_nav.flag_TOW_32 = false;
                 }
             else if (d_nav.flag_TOW_33 == true)
                 {
-                    d_TOW_at_Preamble_ms = static_cast<uint32_t>((d_nav.cnav2_ephemeris.SOW + 14) * 1000.0);
+                    d_TOW_at_Preamble_ms = static_cast<uint32_t>((d_nav.cnav2_ephemeris.SOW + BEIDOU_B2a_BDT2GPST_LEAP_SEC_OFFSET) * 1000.0);
                     d_TOW_at_current_symbol_ms = d_TOW_at_Preamble_ms + static_cast<uint32_t>((d_required_symbols + 1) * BEIDOU_B2ad_PERIOD_MS);
                     d_nav.flag_TOW_33 = false;
                 }
             else if (d_nav.flag_TOW_34 == true)
                 {
-                    d_TOW_at_Preamble_ms = static_cast<uint32_t>((d_nav.cnav2_ephemeris.SOW + 14) * 1000.0);
+                    d_TOW_at_Preamble_ms = static_cast<uint32_t>((d_nav.cnav2_ephemeris.SOW + BEIDOU_B2a_BDT2GPST_LEAP_SEC_OFFSET) * 1000.0);
                     d_TOW_at_current_symbol_ms = d_TOW_at_Preamble_ms + static_cast<uint32_t>((d_required_symbols + 1) * BEIDOU_B2ad_PERIOD_MS);
                     d_nav.flag_TOW_34 = false;
                 }
             else if (d_nav.flag_TOW_40 == true)
                 {
-                    d_TOW_at_Preamble_ms = static_cast<uint32_t>((d_nav.cnav2_ephemeris.SOW + 14) * 1000.0);
+                    d_TOW_at_Preamble_ms = static_cast<uint32_t>((d_nav.cnav2_ephemeris.SOW + BEIDOU_B2a_BDT2GPST_LEAP_SEC_OFFSET) * 1000.0);
                     d_TOW_at_current_symbol_ms = d_TOW_at_Preamble_ms + static_cast<uint32_t>((d_required_symbols + 1) * BEIDOU_B2ad_PERIOD_MS);
                     d_nav.flag_TOW_40 = false;
                 }
@@ -473,11 +473,11 @@ int beidou_b2a_telemetry_decoder_gs::general_work(int noutput_items __attribute_
                 {
                     double tmp_double;
                     unsigned long int tmp_ulong_int;
-                    tmp_double = d_TOW_at_current_symbol_ms;
+                    tmp_double = static_cast<double>(d_TOW_at_current_symbol_ms) / 1000.0;
                     d_dump_file.write(reinterpret_cast<char *>(&tmp_double), sizeof(double));
                     tmp_ulong_int = current_symbol.Tracking_sample_counter;
                     d_dump_file.write(reinterpret_cast<char *>(&tmp_ulong_int), sizeof(unsigned long int));
-                    tmp_double = 0;
+                    tmp_double = static_cast<double>(d_TOW_at_Preamble_ms) / 1000.0;
                     d_dump_file.write(reinterpret_cast<char *>(&tmp_double), sizeof(double));
                 }
             catch (const std::ifstream::failure &e)
