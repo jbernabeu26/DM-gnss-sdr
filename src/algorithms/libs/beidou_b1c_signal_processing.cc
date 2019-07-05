@@ -425,3 +425,51 @@ void beidou_b1cp_code_gen_complex_sampled_secondary(std::complex<float>* _dest, 
         }
     delete[] _code;
 }
+
+
+//! Generates complex BEIDOU B1C data+pilot code for the desired SV ID and sampled to specific sampling frequency
+void beidou_b1c_code_gen_complex_sampled(gsl::span<std::complex<float>> _dest, uint32_t _prn, int32_t _fs)
+{
+    uint32_t _code_length_data = BEIDOU_B1Cd_CODE_LENGTH_CHIPS;
+    uint32_t _code_length_pilot = BEIDOU_B1Cp_CODE_LENGTH_CHIPS;
+    int32_t _code_pilot[_code_length_pilot];
+    int32_t _code_data[_code_length_data];
+
+    if (_prn > 0 and _prn < 63)
+        {
+            make_b1cp(gsl::span<int32_t>(_code_pilot, _code_length_pilot), _prn);
+            make_b1cd(gsl::span<int32_t>(_code_data, _code_length_data), _prn);
+        }
+
+    int32_t _samplesPerCode, _codeValueIndex;
+    float _ts;
+    float _tc;
+    const int32_t _codeLength = BEIDOU_B1Cp_CODE_LENGTH_CHIPS;
+
+    //--- Find number of samples per spreading code ----------------------------
+    _samplesPerCode = static_cast<int>(static_cast<double>(_fs) / (static_cast<double>(BEIDOU_B1Cp_CODE_RATE_HZ) / static_cast<double>(_codeLength)));
+
+    //--- Find time constants --------------------------------------------------
+    _ts = 1.0 / static_cast<float>(_fs);                       // Sampling period in sec
+    _tc = 1.0 / static_cast<float>(BEIDOU_B1Cp_CODE_RATE_HZ);  // C/A chip period in sec
+
+    //float aux;
+    for (uint32_t ii = 0; ii < _samplesPerCode; ii++)
+        {
+            //=== Digitizing =======================================================
+
+            //--- Make index array to read B1C pilot code values -------------------------
+            _codeValueIndex = ceil((_ts * (static_cast<float>(ii) + 1)) / _tc) - 1;
+
+            //--- Make the digitized version of the B1C code -----------------------
+            if (ii == _samplesPerCode - 1)
+                {
+                    //--- Correct the last index (due to number rounding issues) -----------
+                    _dest[ii] = std::complex<float>(1.0 - 2.0 * _code_data[_codeLength - 1], 1.0 - 2.0 * _code_pilot[_codeLength - 1]);
+                }
+            else
+                {
+                    _dest[ii] = std::complex<float>(1.0 - 2.0 * _code_data[_codeValueIndex], 1.0 - 2.0 * _code_pilot[_codeValueIndex]);  //repeat the chip -> upsample
+                }
+        }
+}
