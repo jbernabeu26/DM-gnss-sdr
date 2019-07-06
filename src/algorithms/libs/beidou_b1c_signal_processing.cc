@@ -428,7 +428,7 @@ void beidou_b1cp_code_gen_complex_sampled_secondary(std::complex<float>* _dest, 
 
 
 //! Generates complex BEIDOU B1C data+pilot code for the desired SV ID and sampled to specific sampling frequency
-void beidou_b1c_code_gen_complex_sampled(gsl::span<std::complex<float>> _dest, uint32_t _prn, int32_t _fs)
+void beidou_b1c_code_gen_complex_sampled(std::complex<float>* _dest, uint32_t _prn, int32_t _fs)
 {
     uint32_t _code_length_data = BEIDOU_B1Cd_CODE_LENGTH_CHIPS;
     uint32_t _code_length_pilot = BEIDOU_B1Cp_CODE_LENGTH_CHIPS;
