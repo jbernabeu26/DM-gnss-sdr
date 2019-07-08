@@ -250,7 +250,7 @@ void BeidouB1cPcpsAcquisition::set_local_code()
     // Perform acquisition in Data + Pilot signal
     if (acq_iq_)
         {	
-	        beidou_b1c_code_gen_complex_sampled(code, gnss_synchro_->PRN, fs_in_);
+	        //beidou_b1c_code_gen_complex_sampled(code, gnss_synchro_->PRN, fs_in_);
         }
     // Perform acquisition in Pilot signal
     else if (acq_pilot_)
