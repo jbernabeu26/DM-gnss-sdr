@@ -47,17 +47,8 @@ Gnss_Satellite::Gnss_Satellite(const std::string& system_, uint32_t PRN_)
 }
 
 
-Gnss_Satellite::~Gnss_Satellite() = default;
-
-
 void Gnss_Satellite::reset()
 {
-    system_set = {"GPS", "Glonass", "SBAS", "Galileo", "Beidou"};
-    satelliteSystem["GPS"] = "G";
-    satelliteSystem["Glonass"] = "R";
-    satelliteSystem["SBAS"] = "S";
-    satelliteSystem["Galileo"] = "E";
-    satelliteSystem["Beidou"] = "C";
     PRN = 0;
     system = std::string("");
     block = std::string("");
@@ -89,29 +80,57 @@ bool operator==(const Gnss_Satellite& sat1, const Gnss_Satellite& sat2)
         {
             if (sat1.get_PRN() == sat2.get_PRN())
                 {
+                    if (sat1.get_rf_link() == sat2.get_rf_link())
+                        {
                     equal = true;
                 }
+        }
         }
     return equal;
 }
 
-/*
-Gnss_Satellite& Gnss_Satellite::operator=(const Gnss_Satellite &rhs) {
 
+// Copy constructor
+Gnss_Satellite::Gnss_Satellite(Gnss_Satellite&& other)
+{
+    *this = other;
+}
+
+
+// Copy assignment operator
+Gnss_Satellite& Gnss_Satellite::operator=(const Gnss_Satellite& rhs)
+{
     // Only do assignment if RHS is a different object from this.
-    if (this != &rhs) {
-            // Deallocate, allocate new space, copy values...
-            const std::string system_ = rhs.get_system();
-            const uint32_t PRN_ = rhs.get_PRN();
-            const std::string block_ = rhs.get_block();
-           // const int32_t rf_link_ = 0;
-            this->set_system(system_);
-            this->set_PRN(PRN_);
-            this->set_block(system_, PRN_);
-            //this.rf_link = rf_link_;
+    if (this != &rhs)
+        {
+            this->system = rhs.system;
+            this->PRN = rhs.PRN;
+            this->block = rhs.block;
+            this->rf_link = rhs.rf_link;
     }
     return *this;
-}*/
+}
+
+
+// Move constructor
+Gnss_Satellite::Gnss_Satellite(const Gnss_Satellite& other)
+{
+    *this = std::move(other);
+}
+
+
+// Move assignment operator
+Gnss_Satellite& Gnss_Satellite::operator=(Gnss_Satellite&& other)
+{
+    if (this != &other)
+        {
+            this->system = std::move(other.get_system());
+            this->PRN = other.get_PRN();
+            this->block = std::move(other.get_block());
+            this->rf_link = other.get_rf_link();
+        }
+    return *this;
+}
 
 
 void Gnss_Satellite::set_system(const std::string& system_)
@@ -260,6 +279,14 @@ int32_t Gnss_Satellite::get_rf_link() const
 }
 
 
+void Gnss_Satellite::set_rf_link(int32_t rf_link_)
+{
+    // Set satellite's rf link. Identifies the GLONASS Frequency Channel
+    rf_link = rf_link_;
+    return;
+}
+
+
 uint32_t Gnss_Satellite::get_PRN() const
 {
     // Get satellite's PRN
@@ -402,6 +429,7 @@ std::string Gnss_Satellite::what_block(const std::string& system_, uint32_t PRN_
                     block_ = std::string("Unknown");
                 }
         }
+
     if (system_ == "Glonass")
         {
             // Info from http://www.sdcm.ru/smglo/grupglo?version=eng&site=extern
@@ -715,9 +743,9 @@ std::string Gnss_Satellite::what_block(const std::string& system_, uint32_t PRN_
 				break;
         	case 37:
 				block_ = std::string("BEIDOU 3M18");  //!<Slot B-3; launched 2018/11/18
-                    break;
-                default:
-                    block_ = std::string("Unknown(Simulated)");
+				break;
+            default:
+                block_ = std::string("Unknown(Simulated)");
                 }
         }
     return block_;
