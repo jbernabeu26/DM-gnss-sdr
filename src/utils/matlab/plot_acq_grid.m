@@ -29,7 +29,7 @@
 %% Configuration
 path = '/archive/';
 file = 'bds_b2a_acq';
-sat = 24;
+sat = 25;
 channel = 0;
 execution = 1;
 % Signal:

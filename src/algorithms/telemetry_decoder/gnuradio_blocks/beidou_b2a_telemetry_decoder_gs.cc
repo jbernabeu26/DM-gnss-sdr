@@ -181,11 +181,11 @@ void beidou_b2a_telemetry_decoder_gs::decode_string(double *frame_symbols, int32
     // 3. Check operation executed correctly
     if (d_nav.flag_crc_test == true)
         {
-            LOG(INFO) << "BeiDou CNAV2 CRC correct in channel " << d_channel << " from satellite " << d_satellite;
+            DLOG(INFO) << "BeiDou CNAV2 CRC correct in channel " << d_channel << " from satellite " << d_satellite;
         }
     else
         {
-            LOG(INFO) << "BeiDou CNAV2 CRC error in channel " << d_channel << " from satellite " << d_satellite;
+            DLOG(INFO) << "BeiDou CNAV2 CRC error in channel " << d_channel << " from satellite " << d_satellite;
         }
     // 4. Push the new navigation data to the queues
     if (d_nav.have_new_ephemeris() == true)
@@ -193,32 +193,32 @@ void beidou_b2a_telemetry_decoder_gs::decode_string(double *frame_symbols, int32
             // get object for this SV (mandatory)
             std::shared_ptr<Beidou_Cnav2_Ephemeris> tmp_obj = std::make_shared<Beidou_Cnav2_Ephemeris>(d_nav.get_ephemeris());
             this->message_port_pub(pmt::mp("telemetry"), pmt::make_any(tmp_obj));
-            LOG(INFO) << "BEIDOU CNAV2 Ephemeris have been received in channel" << d_channel << " from satellite " << d_satellite;
-            std::cout << TEXT_MAGENTA << "New BDS B2a CNAV2 message received in channel " << d_channel << ": ephemeris from satellite " << d_satellite << TEXT_RESET << std::endl;
+            DLOG(INFO) << "BEIDOU CNAV2 Ephemeris have been received in channel" << d_channel << " from satellite " << d_satellite;
+            std::cout << TEXT_YELLOW << "New BDS B2a CNAV2 message received in channel " << d_channel << ": ephemeris from satellite " << d_satellite << TEXT_RESET << std::endl;
         }
     if (d_nav.have_new_utc_model() == true)
         {
             // get object for this SV (mandatory)
             std::shared_ptr<Beidou_Cnav2_Utc_Model> tmp_obj = std::make_shared<Beidou_Cnav2_Utc_Model>(d_nav.get_utc_model());
             this->message_port_pub(pmt::mp("telemetry"), pmt::make_any(tmp_obj));
-            LOG(INFO) << "BEIDOU CNAV2 UTC Model have been received in channel" << d_channel << " from satellite " << d_satellite;
-            std::cout << TEXT_MAGENTA << "New BDS B2a CNAV2 UTC model message received in channel " << d_channel << ": UTC model parameters from satellite " << d_satellite << TEXT_RESET << std::endl;
+            DLOG(INFO) << "BEIDOU CNAV2 UTC Model have been received in channel" << d_channel << " from satellite " << d_satellite;
+            std::cout << TEXT_YELLOW << "New BDS B2a CNAV2 UTC model message received in channel " << d_channel << ": UTC model parameters from satellite " << d_satellite << TEXT_RESET << std::endl;
         }
     if (d_nav.have_new_iono() == true)
         {
             // get object for this SV (mandatory)
             std::shared_ptr<Beidou_Cnav2_Iono> tmp_obj = std::make_shared<Beidou_Cnav2_Iono>(d_nav.get_iono());
             this->message_port_pub(pmt::mp("telemetry"), pmt::make_any(tmp_obj));
-            LOG(INFO) << "BEIDOU CNAV2 Iono have been received in channel" << d_channel << " from satellite " << d_satellite;
-            std::cout << TEXT_MAGENTA << "New BDS B2a CNAV2 Iono message received in channel " << d_channel << ": UTC model parameters from satellite " << d_satellite << TEXT_RESET << std::endl;
+            DLOG(INFO) << "BEIDOU CNAV2 Iono have been received in channel" << d_channel << " from satellite " << d_satellite;
+            std::cout << TEXT_YELLOW << "New BDS B2a CNAV2 Iono message received in channel " << d_channel << ": UTC model parameters from satellite " << d_satellite << TEXT_RESET << std::endl;
         }
     if (d_nav.have_new_almanac() == true)
         {
             unsigned int slot_nbr = d_nav.i_alm_satellite_PRN;
             std::shared_ptr<Beidou_Cnav2_Almanac> tmp_obj = std::make_shared<Beidou_Cnav2_Almanac>(d_nav.get_almanac(slot_nbr));
             this->message_port_pub(pmt::mp("telemetry"), pmt::make_any(tmp_obj));
-            LOG(INFO) << "BEIDOU CNAV2 Almanac have been received in channel" << d_channel << " in slot number " << slot_nbr;
-            std::cout << TEXT_MAGENTA << "New BDS B2a CNAV2 almanac received in channel " << d_channel << " from satellite " << d_satellite << TEXT_RESET << std::endl;
+            DLOG(INFO) << "BEIDOU CNAV2 Almanac have been received in channel" << d_channel << " in slot number " << slot_nbr;
+            std::cout << TEXT_YELLOW << "New BDS B2a CNAV2 almanac received in channel " << d_channel << " from satellite " << d_satellite << TEXT_RESET << std::endl;
         }
 }
 

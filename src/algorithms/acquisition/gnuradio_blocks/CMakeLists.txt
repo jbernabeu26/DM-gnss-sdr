@@ -26,6 +26,7 @@ set(ACQ_GR_BLOCKS_SOURCES
     pcps_quicksync_acquisition_cc.cc
     galileo_pcps_8ms_acquisition_cc.cc
     galileo_e5a_noncoherent_iq_acquisition_caf_cc.cc
+    pcps_noncoherent_iq_acquisition_caf_cc.cc
 )
 
 set(ACQ_GR_BLOCKS_HEADERS
@@ -37,6 +38,7 @@ set(ACQ_GR_BLOCKS_HEADERS
     pcps_quicksync_acquisition_cc.h
     galileo_pcps_8ms_acquisition_cc.h
     galileo_e5a_noncoherent_iq_acquisition_caf_cc.h
+    pcps_noncoherent_iq_acquisition_caf_cc.h
 )
 
 if(ENABLE_FPGA)

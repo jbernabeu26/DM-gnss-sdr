@@ -35,9 +35,9 @@ if ~exist('dll_pll_veml_read_tracking_dump.m', 'file')
 end
 
 %--- Configuration settings
-samplingFreq = 20000000;     %[Hz]
+samplingFreq = 50000000;     %[Hz]
 coherent_integration_time_ms = 1; %[ms]
-channels = 5;   % Number of channels
+channels = 3;   % Number of channels
 first_channel = 0;  % Number of the first channel
 path = '/archive/'; 
 
