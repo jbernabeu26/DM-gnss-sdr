@@ -437,8 +437,8 @@ void beidou_b1c_code_gen_complex_sampled(std::complex<float>* _dest, uint32_t _p
 
     if (_prn > 0 and _prn < 63)
         {
-            make_b1cp(gsl::span<int32_t>(_code_pilot, _code_length_pilot), _prn);
-            make_b1cd(gsl::span<int32_t>(_code_data, _code_length_data), _prn);
+            make_b1cp(_code_pilot, _prn);
+            make_b1cd(_code_data, _prn);
         }
 
     int32_t _samplesPerCode, _codeValueIndex;
