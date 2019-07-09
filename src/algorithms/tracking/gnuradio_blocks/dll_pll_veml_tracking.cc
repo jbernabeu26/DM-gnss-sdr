@@ -334,14 +334,12 @@ dll_pll_veml_tracking::dll_pll_veml_tracking(const Dll_Pll_Conf &conf_) : gr::bl
                         {
                             d_secondary_code_length = static_cast<uint32_t>(BEIDOU_B1Cp_SECONDARY_CODE_LENGTH_CHIPS);
                             signal_pretty_name = signal_pretty_name + "Pilot";
-                            interchange_iq = true;
                         }
                     else
                         {
                             //As data component do not have secondary code, hence followed like signal_type == "5X"
                             d_secondary = false;
                             signal_pretty_name = signal_pretty_name + "Data";
-                            interchange_iq = false;
                         }
                 }
             else
