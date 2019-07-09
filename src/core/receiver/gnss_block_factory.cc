@@ -42,7 +42,7 @@
 #include "beidou_b1i_dll_pll_tracking.h"
 #include "beidou_b1i_pcps_acquisition.h"
 #include "beidou_b1i_telemetry_decoder.h"
-#include "beidou_b2ad_pcps_acquisition.h"
+#include "beidou_b2a_pcps_acquisition.h"
 #include "beidou_b2a_pcps_noncoherent_iq_acquisition_caf.h"
 #include "beidou_b2a_dll_pll_tracking.h"
 #include "beidou_b2a_telemetry_decoder.h"
@@ -1826,9 +1826,9 @@ std::unique_ptr<GNSSBlockInterface> GNSSBlockFactory::GetBlock(
                 out_streams));
             block = std::move(block_);
         }
-    else if (implementation == "BEIDOU_B2ad_PCPS_Acquisition")
+    else if (implementation == "BEIDOU_B2a_PCPS_Acquisition")
         {
-            std::unique_ptr<AcquisitionInterface> block_(new BeidouB2adPcpsAcquisition(configuration.get(), role, in_streams,
+            std::unique_ptr<AcquisitionInterface> block_(new BeidouB2aPcpsAcquisition(configuration.get(), role, in_streams,
                 out_streams));
             block = std::move(block_);
         }
@@ -1971,7 +1971,7 @@ std::unique_ptr<GNSSBlockInterface> GNSSBlockFactory::GetBlock(
                 out_streams));
             block = std::move(block_);
         }
-    else if ((implementation == "BEIDOU_B2ad_DLL_PLL_Tracking") or (implementation == "BEIDOU_B2a_DLL_PLL_Tracking"))
+    else if (implementation == "BEIDOU_B2a_DLL_PLL_Tracking")
         {
             std::unique_ptr<GNSSBlockInterface> block_(new BeidouB2aDllPllTracking(configuration.get(), role, in_streams,
 				        out_streams));
@@ -2244,9 +2244,9 @@ std::unique_ptr<AcquisitionInterface> GNSSBlockFactory::GetAcqBlock(
                 out_streams));
             block = std::move(block_);
         }
-    else if (implementation == "BEIDOU_B2ad_PCPS_Acquisition")
+    else if (implementation == "BEIDOU_B2a_PCPS_Acquisition")
         {
-            std::unique_ptr<AcquisitionInterface> block_(new BeidouB2adPcpsAcquisition(configuration.get(), role, in_streams,
+            std::unique_ptr<AcquisitionInterface> block_(new BeidouB2aPcpsAcquisition(configuration.get(), role, in_streams,
                 out_streams));
             block = std::move(block_);
         }
@@ -2406,7 +2406,7 @@ std::unique_ptr<TrackingInterface> GNSSBlockFactory::GetTrkBlock(
                 out_streams));
             block = std::move(block_);
         }
-    else if ((implementation == "Beidou_B2ad_DLL_PLL_Tracking") or (implementation == "Beidou_B2a_DLL_PLL_Tracking"))
+    else if (implementation == "Beidou_B2a_DLL_PLL_Tracking")
         {
             std::unique_ptr<TrackingInterface> block_(new BeidouB2aDllPllTracking(configuration.get(), role, in_streams,
                 out_streams));

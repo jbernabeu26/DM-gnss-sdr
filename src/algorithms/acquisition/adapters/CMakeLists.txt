@@ -36,7 +36,7 @@ set(ACQ_ADAPTER_SOURCES
     glonass_l2_ca_pcps_acquisition.cc
     beidou_b1i_pcps_acquisition.cc
     beidou_b3i_pcps_acquisition.cc
-    beidou_b2ad_pcps_acquisition.cc
+    beidou_b2a_pcps_acquisition.cc
     beidou_b2a_pcps_noncoherent_iq_acquisition_caf.cc
 )
 
@@ -59,7 +59,7 @@ set(ACQ_ADAPTER_HEADERS
     glonass_l2_ca_pcps_acquisition.h
     beidou_b1i_pcps_acquisition.h
     beidou_b3i_pcps_acquisition.h
-    beidou_b2ad_pcps_acquisition.h
+    beidou_b2a_pcps_acquisition.h
     beidou_b2a_pcps_noncoherent_iq_acquisition_caf.h
 )
 

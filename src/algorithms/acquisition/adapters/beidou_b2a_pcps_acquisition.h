@@ -1,5 +1,5 @@
 /*!
- * \file beidou_b2ad pcps_acquisition.h
+ * \file beidou_b2a pcps_acquisition.h
  * \brief Adapts a PCPS acquisition block to an Acquisition Interface for
  *  BEIDOU B2a signals
  * \authors <ul>
@@ -31,15 +31,14 @@
  * -------------------------------------------------------------------------
  */
 
-#ifndef GNSS_SDR_BEIDOU_B2AD_PCPS_ACQUISITION_H_
-#define GNSS_SDR_BEIDOU_B2AD_PCPS_ACQUISITION_H_
+#ifndef GNSS_SDR_BEIDOU_B2A_PCPS_ACQUISITION_H_
+#define GNSS_SDR_BEIDOU_B2A_PCPS_ACQUISITION_H_
 
 #include "channel_fsm.h"
 #include "complex_byte_to_float_x2.h"
 #include "gnss_synchro.h"
 #include "pcps_acquisition.h"
 #include <gnuradio/blocks/float_to_complex.h>
-#include <gnuradio/blocks/stream_to_vector.h>
 #include <volk_gnsssdr/volk_gnsssdr.h>
 #include <cstdint>
 #include <string>
@@ -51,14 +50,14 @@ class ConfigurationInterface;
  * \brief This class adapts a PCPS acquisition block to an AcquisitionInterface
  *  for BEIDOU B2ad signals
  */
-class BeidouB2adPcpsAcquisition : public AcquisitionInterface
+class BeidouB2aPcpsAcquisition : public AcquisitionInterface
 {
 public:
-    BeidouB2adPcpsAcquisition(ConfigurationInterface* configuration,
+    BeidouB2aPcpsAcquisition(ConfigurationInterface* configuration,
         std::string role, unsigned int in_streams,
         unsigned int out_streams);
 
-    virtual ~BeidouB2adPcpsAcquisition();
+    virtual ~BeidouB2aPcpsAcquisition();
 
     inline std::string role() override
     {
@@ -66,11 +65,11 @@ public:
     }
 
     /*!
-     * \brief Returns "BEIDOU_B2ad_PCPS_Acquisition"
+     * \brief Returns "BEIDOU_B2a_PCPS_Acquisition"
      */
     inline std::string implementation() override
     {
-        return "BEIDOU_B2ad_PCPS_Acquisition";
+        return "BEIDOU_B2a_PCPS_Acquisition";
     }
 
     inline size_t item_size() override
@@ -163,7 +162,6 @@ private:
     ConfigurationInterface* configuration_;
     pcps_acquisition_sptr acquisition_;
     Acq_Conf acq_parameters_;
-    gr::blocks::stream_to_vector::sptr stream_to_vector_;
     gr::blocks::float_to_complex::sptr float_to_complex_;
     complex_byte_to_float_x2_sptr cbyte_to_float_x2_;
     size_t item_size_;
@@ -194,4 +192,4 @@ private:
     float calculate_threshold(float pfa);
 };
 
-#endif /* GNSS_SDR_BEIDOU_B2AD_PCPS_ACQUISITION_H_ */
+#endif /* GNSS_SDR_BEIDOU_B2A_PCPS_ACQUISITION_H_ */

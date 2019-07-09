@@ -1,5 +1,5 @@
 /*!
- * \file beidou_b2ad pcps_acquisition.cc
+ * \file beidou_b2a_pcps_acquisition.cc
  * \brief Adapts a PCPS acquisition block to an Acquisition Interface for
  *  BEIDOU B2a signals
  * \authors <ul>
@@ -31,7 +31,7 @@
  * -------------------------------------------------------------------------
  */
 
-#include "beidou_b2ad_pcps_acquisition.h"
+#include "beidou_b2a_pcps_acquisition.h"
 #include "Beidou_B2a.h"
 #include "acq_conf.h"
 #include "beidou_b2a_signal_processing.h"
@@ -43,7 +43,7 @@
 #include <memory>
 
 
-BeidouB2adPcpsAcquisition::BeidouB2adPcpsAcquisition(
+BeidouB2aPcpsAcquisition::BeidouB2aPcpsAcquisition(
     ConfigurationInterface* configuration,
     std::string role,
     unsigned int in_streams,
@@ -121,9 +121,6 @@ BeidouB2adPcpsAcquisition::BeidouB2adPcpsAcquisition(
     acquisition_ = pcps_make_acquisition(acq_parameters_);
     DLOG(INFO) << "BEIDOU B2a acquisition(" << acquisition_->unique_id() << ")";
 
-    stream_to_vector_ = gr::blocks::stream_to_vector::make(item_size_, vector_length_);
-    DLOG(INFO) << "stream_to_vector(" << stream_to_vector_->unique_id() << ")";
-
     if (item_type_.compare("cbyte") == 0)
         {
             cbyte_to_float_x2_ = make_complex_byte_to_float_x2();
@@ -146,15 +143,15 @@ BeidouB2adPcpsAcquisition::BeidouB2adPcpsAcquisition(
 }
 
 
-BeidouB2adPcpsAcquisition::~BeidouB2adPcpsAcquisition()=default;
+BeidouB2aPcpsAcquisition::~BeidouB2aPcpsAcquisition()=default;
 
 
-void BeidouB2adPcpsAcquisition::stop_acquisition()
+void BeidouB2aPcpsAcquisition::stop_acquisition()
 {
 }
 
 
-void BeidouB2adPcpsAcquisition::set_threshold(float threshold)
+void BeidouB2aPcpsAcquisition::set_threshold(float threshold)
 {
     float pfa = configuration_->property(role_ + ".pfa", 0.0);
 
@@ -173,7 +170,7 @@ void BeidouB2adPcpsAcquisition::set_threshold(float threshold)
 }
 
 
-void BeidouB2adPcpsAcquisition::set_doppler_max(uint32_t doppler_max)
+void BeidouB2aPcpsAcquisition::set_doppler_max(uint32_t doppler_max)
 {
     doppler_max_ = doppler_max;
 
@@ -181,7 +178,7 @@ void BeidouB2adPcpsAcquisition::set_doppler_max(uint32_t doppler_max)
 }
 
 
-void BeidouB2adPcpsAcquisition::set_doppler_step(uint32_t doppler_step)
+void BeidouB2aPcpsAcquisition::set_doppler_step(uint32_t doppler_step)
 {
     doppler_step_ = doppler_step;
 
@@ -189,7 +186,7 @@ void BeidouB2adPcpsAcquisition::set_doppler_step(uint32_t doppler_step)
 }
 
 
-void BeidouB2adPcpsAcquisition::set_gnss_synchro(Gnss_Synchro* gnss_synchro)
+void BeidouB2aPcpsAcquisition::set_gnss_synchro(Gnss_Synchro* gnss_synchro)
 {
     gnss_synchro_ = gnss_synchro;
 
@@ -197,19 +194,19 @@ void BeidouB2adPcpsAcquisition::set_gnss_synchro(Gnss_Synchro* gnss_synchro)
 }
 
 
-signed int BeidouB2adPcpsAcquisition::mag()
+signed int BeidouB2aPcpsAcquisition::mag()
 {
     return acquisition_->mag();
 }
 
 
-void BeidouB2adPcpsAcquisition::init()
+void BeidouB2aPcpsAcquisition::init()
 {
     acquisition_->init();
 }
 
 
-void BeidouB2adPcpsAcquisition::set_local_code()
+void BeidouB2aPcpsAcquisition::set_local_code()
 {
     std::unique_ptr<std::complex<float>> code{new std::complex<float>[code_length_]};
     // Perform acquisition in Data + Pilot signal
@@ -239,19 +236,19 @@ void BeidouB2adPcpsAcquisition::set_local_code()
 }
 
 
-void BeidouB2adPcpsAcquisition::reset()
+void BeidouB2aPcpsAcquisition::reset()
 {
     acquisition_->set_active(true);
 }
 
 
-void BeidouB2adPcpsAcquisition::set_state(int32_t state)
+void BeidouB2aPcpsAcquisition::set_state(int32_t state)
 {
     acquisition_->set_state(state);
 }
 
 
-float BeidouB2adPcpsAcquisition::calculate_threshold(float pfa)
+float BeidouB2aPcpsAcquisition::calculate_threshold(float pfa)
 {
     //Calculate the threshold
     uint32_t frequency_bins = 0;
@@ -271,7 +268,7 @@ float BeidouB2adPcpsAcquisition::calculate_threshold(float pfa)
 }
 
 
-void BeidouB2adPcpsAcquisition::connect(gr::top_block_sptr top_block)
+void BeidouB2aPcpsAcquisition::connect(gr::top_block_sptr top_block)
 {
     if (item_type_.compare("gr_complex") == 0)
         {
@@ -294,7 +291,7 @@ void BeidouB2adPcpsAcquisition::connect(gr::top_block_sptr top_block)
 }
 
 
-void BeidouB2adPcpsAcquisition::disconnect(gr::top_block_sptr top_block)
+void BeidouB2aPcpsAcquisition::disconnect(gr::top_block_sptr top_block)
 {
     if (item_type_.compare("gr_complex") == 0)
         {
@@ -319,7 +316,7 @@ void BeidouB2adPcpsAcquisition::disconnect(gr::top_block_sptr top_block)
 }
 
 
-gr::basic_block_sptr BeidouB2adPcpsAcquisition::get_left_block()
+gr::basic_block_sptr BeidouB2aPcpsAcquisition::get_left_block()
 {
     if (item_type_.compare("gr_complex") == 0)
         {
@@ -341,13 +338,13 @@ gr::basic_block_sptr BeidouB2adPcpsAcquisition::get_left_block()
 }
 
 
-gr::basic_block_sptr BeidouB2adPcpsAcquisition::get_right_block()
+gr::basic_block_sptr BeidouB2aPcpsAcquisition::get_right_block()
 {
     return acquisition_;
 }
 
 
-void BeidouB2adPcpsAcquisition::set_resampler_latency(uint32_t latency_samples)
+void BeidouB2aPcpsAcquisition::set_resampler_latency(uint32_t latency_samples)
 {
     acquisition_->set_resampler_latency(latency_samples);
 }
