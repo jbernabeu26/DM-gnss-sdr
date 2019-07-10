@@ -49,6 +49,9 @@ Acq_Conf::Acq_Conf()
     dump = false;
     blocking = false;
     make_2_steps = false;
+    zero_padding_flag = false;
+    acq_pilot_flag = false;
+    acq_iq_flag = false;
     dump_filename = "";
     dump_channel = 0U;
     it_size = sizeof(char);
