@@ -143,7 +143,7 @@ BeidouB2aPcpsAcquisition::BeidouB2aPcpsAcquisition(
 }
 
 
-BeidouB2aPcpsAcquisition::~BeidouB2aPcpsAcquisition()=default;
+BeidouB2aPcpsAcquisition::~BeidouB2aPcpsAcquisition() = default;
 
 
 void BeidouB2aPcpsAcquisition::stop_acquisition()
@@ -282,7 +282,7 @@ void BeidouB2aPcpsAcquisition::connect(gr::top_block_sptr top_block)
         {
             top_block->connect(cbyte_to_float_x2_, 0, float_to_complex_, 0);
             top_block->connect(cbyte_to_float_x2_, 1, float_to_complex_, 1);
-            top_block->connect(float_to_complex_, 0, stream_to_vector_, 0);
+            top_block->connect(float_to_complex_, 0, acquisition_, 0);
         }
     else
         {
@@ -307,7 +307,7 @@ void BeidouB2aPcpsAcquisition::disconnect(gr::top_block_sptr top_block)
             // we just convert cshorts to gr_complex
             top_block->disconnect(cbyte_to_float_x2_, 0, float_to_complex_, 0);
             top_block->disconnect(cbyte_to_float_x2_, 1, float_to_complex_, 1);
-            top_block->disconnect(float_to_complex_, 0, stream_to_vector_, 0);
+            top_block->disconnect(float_to_complex_, 0, acquisition_, 0);
         }
     else
         {
