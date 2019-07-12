@@ -27,8 +27,8 @@
 %
 
 close all;clear;
-samplingFreq       = 10000000;     %[Hz]
-channels=[0:6, 14:17];
+samplingFreq       = 25000000;     %[Hz]
+channels=[0:9];
 path='/home/dmiralles/Documents/gnss-sdr/';
 addpath('libs/');
 clear PRN_absolute_sample_start;
@@ -39,8 +39,8 @@ end
 
 %% Plotting values
 %--- Configurations
-chn_num_a = 1;
-chn_num_b = 8;
+chn_num_a = 6;
+chn_num_b = 2;
 %--- Plot results
 figure;
 plot(GNSS_telemetry(chn_num_a).tracking_sample_counter, ...

@@ -48,12 +48,17 @@ const int32_t BEIDOU_DNAV_PREAMBLE_LENGTH_BITS = 11;
 const int32_t BEIDOU_DNAV_PREAMBLE_LENGTH_SYMBOLS = 11;
 const double BEIDOU_DNAV_PREAMBLE_PERIOD_SYMBOLS = 300;
 const double BEIDOU_DNAV_SUBFRAME_SYMBOLS = 300;
-const double BEIDOU_DNAV_DATA_BITS = 300;
+const int32_t BEIDOU_DNAV_SUBFRAME_DATA_BITS = 300;  //!< Number of bits per subframe in the NAV message [bits]
 const double BEIDOU_DNAV_WORDS_SUBFRAME = 10;
 const double BEIDOU_DNAV_WORD_LENGTH_BITS = 30;
 const double BEIDOU_D1NAV_SYMBOL_RATE_SPS = 50;
 const double BEIDOU_D2NAV_SYMBOL_RATE_SPS = 500;
 const std::string BEIDOU_DNAV_PREAMBLE = "11100010010";
+
+// Number of leap seconds passed from the start of the GPS epoch up to the start of BeiDou epoch
+const int32_t BEIDOU_DNAV_BDT2GPST_LEAP_SEC_OFFSET = 14;
+// Number of weeks passed from the start of the GPS epoch up to the start of BeiDou epoch
+const int32_t BEIDOU_DNAV_BDT2GPST_WEEK_NUM_OFFSET = 1356;
 
 // BEIDOU D1 NAVIGATION MESSAGE STRUCTURE
 // GENERAL
