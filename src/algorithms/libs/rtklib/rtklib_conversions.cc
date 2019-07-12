@@ -30,8 +30,8 @@
 
 #include "rtklib_conversions.h"
 #include "MATH_CONSTANTS.h"          // for PI, PI_2
+#include "beidou_cnav2_ephemeris.h"  // for Beidou_Cnav2_Ephemeris
 #include "beidou_dnav_ephemeris.h"   // for Beidou_Dnav_Ephemeris
-#include "beidou_cnav2_ephemeris.h"   // for Beidou_Cnav2_Ephemeris
 #include "galileo_almanac.h"         // for Galileo_Almanac
 #include "galileo_ephemeris.h"       // for Galileo_Ephemeris
 #include "glonass_gnav_ephemeris.h"  // for Glonass_Gnav_Ephemeris
@@ -124,16 +124,16 @@ obsd_t insert_obs_to_rtklib(obsd_t& rtklib_obs, const Gnss_Synchro& gnss_synchro
 eph_t eph_to_rtklib(const Beidou_Cnav2_Ephemeris& eph)
 {
     eph_t rtklib_sat = {0, 0, 0, 0, 0, 0, 0, 0, {0, 0}, {0, 0}, {0, 0}, 0.0, 0.0, 0.0, 0.0, 0.0,
-        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, {}, {}, 0.0, 0.0 };
+        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, {}, {}, 0.0, 0.0};
     rtklib_sat.sat = int(eph.i_satellite_PRN) + NSATGPS + NSATGLO + NSATGAL + NSATQZS;
-    if (eph.SatType==3)
-    {
-    	rtklib_sat.A = 27906100 + eph.dA; // MEO Orbit Satellite
-    }
+    if (eph.SatType == 3)
+        {
+            rtklib_sat.A = 27906100 + eph.dA;  // MEO Orbit Satellite
+        }
     else
-    {
-    	rtklib_sat.A = 42162200 + eph.dA; // IGSO/GEO Orbit Satellite
-    }
+        {
+            rtklib_sat.A = 42162200 + eph.dA;  // IGSO/GEO Orbit Satellite
+        }
     rtklib_sat.M0 = eph.M_0;
     rtklib_sat.deln = eph.dn_0;
     rtklib_sat.OMG0 = eph.Omega_0;
@@ -145,8 +145,8 @@ eph_t eph_to_rtklib(const Beidou_Cnav2_Ephemeris& eph)
     rtklib_sat.Adot = eph.A_dot;
     rtklib_sat.ndot = eph.dn_0_dot;
 
-    rtklib_sat.code = 7;		/* (0:unknown,1:B1I,2:B1Q,3:B2I,4:B2Q,5:B3I,6:B3Q,7:B2a,8:B2b,9:B1C,10:B1A) */
-    rtklib_sat.flag = 1;        /* (0:unknown,1:IGSO/MEO,2:GEO) */
+    rtklib_sat.code = 7;                              /* (0:unknown,1:B1I,2:B1Q,3:B2I,4:B2Q,5:B3I,6:B3Q,7:B2a,8:B2b,9:B1C,10:B1A) */
+    rtklib_sat.flag = 1;                              /* (0:unknown,1:IGSO/MEO,2:GEO) */
     rtklib_sat.iode = static_cast<int32_t>(eph.IODE); /* AODE */
     rtklib_sat.iodc = static_cast<int32_t>(eph.IODC); /* AODC */
 

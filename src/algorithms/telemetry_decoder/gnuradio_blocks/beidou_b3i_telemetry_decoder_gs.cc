@@ -238,12 +238,12 @@ void beidou_b3i_telemetry_decoder_gs::decode_subframe(float *frame_symbols)
     if (d_nav.flag_crc_test == true)
         {
             DLOG(INFO) << "BeiDou DNAV CRC correct in channel " << d_channel
-                      << " from satellite " << d_satellite;
+                       << " from satellite " << d_satellite;
         }
     else
         {
             DLOG(INFO) << "BeiDou DNAV CRC error in channel " << d_channel
-                      << " from satellite " << d_satellite;
+                       << " from satellite " << d_satellite;
         }
     // 4. Push the new navigation data to the queues
     if (d_nav.have_new_ephemeris() == true)

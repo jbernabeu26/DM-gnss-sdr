@@ -37,7 +37,7 @@ set(ACQ_ADAPTER_SOURCES
     beidou_b1i_pcps_acquisition.cc
     beidou_b3i_pcps_acquisition.cc
     beidou_b2a_pcps_acquisition.cc
-    beidou_b2a_pcps_noncoherent_iq_acquisition_caf.cc
+    #beidou_b2a_pcps_noncoherent_iq_acquisition_caf.cc
 )
 
 set(ACQ_ADAPTER_HEADERS
@@ -60,7 +60,7 @@ set(ACQ_ADAPTER_HEADERS
     beidou_b1i_pcps_acquisition.h
     beidou_b3i_pcps_acquisition.h
     beidou_b2a_pcps_acquisition.h
-    beidou_b2a_pcps_noncoherent_iq_acquisition_caf.h
+    #beidou_b2a_pcps_noncoherent_iq_acquisition_caf.h
 )
 
 if(ENABLE_FPGA)

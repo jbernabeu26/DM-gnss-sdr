@@ -396,20 +396,20 @@ Rtklib_Pvt::Rtklib_Pvt(ConfigurationInterface* configuration,
         }
     // Beidou B2a receiver
     if ((gps_1C_count == 0) && (gps_2S_count == 0) && (gps_L5_count == 0) && (gal_1B_count == 0) && (gal_E5a_count == 0) && (gal_E5b_count == 0) && (glo_1G_count == 0) && (glo_2G_count == 0) && (bds_B2a_count != 0))
-    	{
-    		pvt_output_parameters.type_of_receiver = 700;
-    	}
+        {
+            pvt_output_parameters.type_of_receiver = 700;
+        }
     if ((gps_1C_count == 0) && (gps_2S_count == 0) && (gps_L5_count != 0) && (gal_1B_count == 0) && (gal_E5a_count == 0) && (gal_E5b_count == 0) && (glo_1G_count == 0) && (glo_2G_count == 0) && (bds_B1_count == 0) && (bds_B3_count == 0) && (bds_B2a_count != 0))
-    	{
-    		pvt_output_parameters.type_of_receiver = 701;
-    	}
+        {
+            pvt_output_parameters.type_of_receiver = 701;
+        }
     if ((gps_1C_count == 0) && (gps_2S_count == 0) && (gps_L5_count == 0) && (gal_1B_count == 0) && (gal_E5a_count != 0) && (gal_E5b_count == 0) && (glo_1G_count == 0) && (glo_2G_count == 0) && (bds_B1_count == 0) && (bds_B3_count == 0) && (bds_B2a_count != 0))
-    	{
-    		pvt_output_parameters.type_of_receiver = 702;
-    	}
+        {
+            pvt_output_parameters.type_of_receiver = 702;
+        }
     if ((gps_1C_count == 0) && (gps_2S_count == 0) && (gps_L5_count != 0) && (gal_1B_count == 0) && (gal_E5a_count != 0) && (gal_E5b_count == 0) && (glo_1G_count == 0) && (glo_2G_count == 0) && (bds_B1_count == 0) && (bds_B3_count == 0) && (bds_B2a_count != 0))
-    	{
-    		pvt_output_parameters.type_of_receiver = 703;
+        {
+            pvt_output_parameters.type_of_receiver = 703;
         }
 
     // RTKLIB PVT solver options
@@ -458,11 +458,11 @@ Rtklib_Pvt::Rtklib_Pvt(ConfigurationInterface* configuration,
         {
             num_bands = 2;
         }
-    if (((gps_1C_count > 0) || (gal_1B_count > 0) || (glo_1G_count > 0) || (bds_B1_count > 0)) && ((gal_E5a_count > 0) || (gal_E5b_count > 0) || (gps_L5_count > 0) || (bds_B2a_count>0)))
+    if (((gps_1C_count > 0) || (gal_1B_count > 0) || (glo_1G_count > 0) || (bds_B1_count > 0)) && ((gal_E5a_count > 0) || (gal_E5b_count > 0) || (gps_L5_count > 0) || (bds_B2a_count > 0)))
         {
             num_bands = 2;
         }
-    if (((gps_1C_count > 0) || (gal_1B_count > 0) || (glo_1G_count > 0) || (bds_B1_count > 0)) && ((gps_2S_count > 0) || (glo_2G_count > 0) || (bds_B3_count > 0)) && ((gal_E5a_count > 0) || (gal_E5b_count > 0) || (gps_L5_count > 0) || (bds_B2a_count>0)))
+    if (((gps_1C_count > 0) || (gal_1B_count > 0) || (glo_1G_count > 0) || (bds_B1_count > 0)) && ((gps_2S_count > 0) || (glo_2G_count > 0) || (bds_B3_count > 0)) && ((gal_E5a_count > 0) || (gal_E5b_count > 0) || (gps_L5_count > 0) || (bds_B2a_count > 0)))
         {
             num_bands = 3;
         }

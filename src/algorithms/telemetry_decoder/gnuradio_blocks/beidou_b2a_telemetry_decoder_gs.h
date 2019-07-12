@@ -63,10 +63,7 @@ public:
     ~beidou_b2a_telemetry_decoder_gs();                   //!< Class destructor
     void set_satellite(const Gnss_Satellite &satellite);  //!< Set satellite PRN
     void set_channel(int channel);                        //!< Set receiver's channel
-    inline void reset()
-    {
-        return;
-    }
+    void reset();
 
     /*!
      * \brief This is where all signal processing takes place
@@ -79,18 +76,14 @@ private:
     beidou_b2a_make_telemetry_decoder_gs(const Gnss_Satellite &satellite, bool dump);
     beidou_b2a_telemetry_decoder_gs(const Gnss_Satellite &satellite, bool dump);
 
-    void decode_string(double *symbols, int32_t frame_length);
+    void decode_frame(float *symbols);
 
     //!< Preamble decoding
-    uint16_t d_preambles_bits[BEIDOU_CNAV2_PREAMBLE_LENGTH_BITS];
     int32_t *d_preamble_samples;
-    int32_t *d_secondary_code_samples;
-    uint32_t d_samples_per_symbol;
     int32_t d_symbols_per_preamble;
     int32_t d_samples_per_preamble;
     int32_t d_preamble_period_samples;
-    double *d_frame_symbols;
-    uint32_t d_frame_length_symbols;
+    float *d_frame_symbols;
     uint32_t d_required_symbols;
 
     //!< Storage for incoming data
@@ -109,8 +102,12 @@ private:
     Beidou_Cnav2_Navigation_Message d_nav;
 
     //!< Values to populate gnss synchronization structure
+    uint32_t d_symbol_duration_ms;
     uint32_t d_TOW_at_Preamble_ms;
     uint32_t d_TOW_at_current_symbol_ms;
+    uint64_t d_last_valid_preamble;
+    bool d_flag_valid_word;
+    bool d_sent_tlm_failed_msg;
     bool Flag_valid_word;
 
     //!< Satellite Information and logging capacity

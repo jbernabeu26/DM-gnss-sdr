@@ -267,7 +267,7 @@ void beidou_b1i_telemetry_decoder_gs::decode_subframe(float *frame_symbols)
             std::shared_ptr<Beidou_Dnav_Iono> tmp_obj = std::make_shared<Beidou_Dnav_Iono>(d_nav.get_iono());
             this->message_port_pub(pmt::mp("telemetry"), pmt::make_any(tmp_obj));
             LOG(INFO) << "BEIDOU DNAV Iono have been received in channel" << d_channel << " from satellite " << d_satellite;
-            std::cout << "New BEIDOU B1I DNAV Iono message received in channel " << d_channel << ": Iono model parameters from satellite " << d_satellite << TEXT_RESET << std::endl;
+            std::cout << TEXT_YELLOW << "New BEIDOU B1I DNAV Iono message received in channel " << d_channel << ": Iono model parameters from satellite " << d_satellite << TEXT_RESET << std::endl;
         }
     if (d_nav.have_new_almanac() == true)
         {
@@ -290,7 +290,7 @@ void beidou_b1i_telemetry_decoder_gs::set_satellite(const Gnss_Satellite &satell
     // Update satellite information for DNAV decoder
     sat_prn = d_satellite.get_PRN();
     d_nav.i_satellite_PRN = sat_prn;
-    d_nav.i_signal_type = 1; //!< BDS: data source (0:unknown,1:B1I,2:B1Q,3:B2I,4:B2Q,5:B3I,6:B3Q)
+    d_nav.i_signal_type = 1;  //!< BDS: data source (0:unknown,1:B1I,2:B1Q,3:B2I,4:B2Q,5:B3I,6:B3Q)
 
     // Update tel dec parameters for D2 NAV Messages
     if (sat_prn > 0 and sat_prn < 6)
@@ -429,7 +429,7 @@ int beidou_b1i_telemetry_decoder_gs::general_work(int noutput_items __attribute_
                 {
                     // Record the preamble sample stamp
                     d_preamble_index = d_sample_counter;
-                    DLOG(INFO) << "Preamble detection for BEIDOU B1I SAT " << this->d_satellite;
+                    DLOG(INFO) << "Preamble detection for BeiDou B1I satellite " << this->d_satellite;
                     // Enter into frame pre-detection status
                     d_stat = 1;
                 }
@@ -445,8 +445,6 @@ int beidou_b1i_telemetry_decoder_gs::general_work(int noutput_items __attribute_
                             // try to decode frame
                             DLOG(INFO) << "Starting BeiDou DNAV frame decoding for BeiDou B1I SAT " << this->d_satellite;
                             d_preamble_index = d_sample_counter;  //record the preamble sample stamp
-
-
                             d_stat = 2;
 
                             // ******* SAMPLES TO SYMBOLS *******

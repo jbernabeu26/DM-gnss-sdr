@@ -29,15 +29,15 @@
 */
 
 #include "signal_generator_c.h"
+#include "Beidou_B2a.h"
 #include "GLONASS_L1_L2_CA.h"
 #include "GPS_L1_CA.h"
 #include "Galileo_E1.h"
 #include "Galileo_E5a.h"
-#include "Beidou_B2a.h"
+#include "beidou_b2a_signal_processing.h"
 #include "galileo_e1_signal_processing.h"
 #include "galileo_e5_signal_processing.h"
 #include "glonass_l1_signal_processing.h"
-#include "beidou_b2a_signal_processing.h"
 #include "gps_sdr_signal_processing.h"
 #include <gnuradio/io_signature.h>
 #include <volk_gnsssdr/volk_gnsssdr.h>
@@ -276,8 +276,8 @@ void signal_generator_c::generate_codes()
             else if (system_[sat] == "C")
                 {
                     // Generate one code-period of BEIDOU B2a signal
-            		beidou_b2ad_code_gen_complex_sampled(code, PRN_[sat], fs_in_);//BEIDOU does not have a chip shift.
-                        //static_cast<int>(BEIDOU_B2ad_CODE_LENGTH_CHIPS) - delay_chips_[sat]);
+                    beidou_b2ad_code_gen_complex_sampled(code, PRN_[sat], fs_in_);  //BEIDOU does not have a chip shift.
+                    //static_cast<int>(BEIDOU_B2ad_CODE_LENGTH_CHIPS) - delay_chips_[sat]);
 
                     // Obtain the desired CN0 assuming that Pn = 1.
                     if (noise_flag_)
@@ -466,30 +466,30 @@ int signal_generator_c::general_work(int noutput_items __attribute__((unused)),
                         }
                 }
             if (system_[sat] == "C")
-				{
-					unsigned int delay_samples = (delay_chips_[sat] % static_cast<int>(BEIDOU_B2ad_CODE_LENGTH_CHIPS)) * samples_per_code_[sat] / BEIDOU_B2ad_CODE_LENGTH_CHIPS;
+                {
+                    unsigned int delay_samples = (delay_chips_[sat] % static_cast<int>(BEIDOU_B2ad_CODE_LENGTH_CHIPS)) * samples_per_code_[sat] / BEIDOU_B2ad_CODE_LENGTH_CHIPS;
 
-					for (i = 0; i < num_of_codes_per_vector_[sat]; i++)
-						{
-							for (k = 0; k < delay_samples; k++)
-								{
-									out[out_idx] += sampled_code_data_[sat][out_idx] * current_data_bits_[sat] * complex_phase_[out_idx];
-									out_idx++;
-								}
+                    for (i = 0; i < num_of_codes_per_vector_[sat]; i++)
+                        {
+                            for (k = 0; k < delay_samples; k++)
+                                {
+                                    out[out_idx] += sampled_code_data_[sat][out_idx] * current_data_bits_[sat] * complex_phase_[out_idx];
+                                    out_idx++;
+                                }
 
-							if (ms_counter_[sat] == 0 && data_flag_)
-								{
-									// New random data bit
-									current_data_bits_[sat] = gr_complex((uniform_dist(e1) % 2) == 0 ? 1 : -1, 0);
-								}
+                            if (ms_counter_[sat] == 0 && data_flag_)
+                                {
+                                    // New random data bit
+                                    current_data_bits_[sat] = gr_complex((uniform_dist(e1) % 2) == 0 ? 1 : -1, 0);
+                                }
 
-							for (k = delay_samples; k < samples_per_code_[sat]; k++)
-								{
-									out[out_idx] += sampled_code_data_[sat][out_idx] * current_data_bits_[sat] * complex_phase_[out_idx];
-									out_idx++;
-								}
+                            for (k = delay_samples; k < samples_per_code_[sat]; k++)
+                                {
+                                    out[out_idx] += sampled_code_data_[sat][out_idx] * current_data_bits_[sat] * complex_phase_[out_idx];
+                                    out_idx++;
+                                }
 
-							ms_counter_[sat] = (ms_counter_[sat] + static_cast<int>(round(1e3 * BEIDOU_B2ad_PERIOD))) % data_bit_duration_ms_[sat];
+                            ms_counter_[sat] = (ms_counter_[sat] + static_cast<int>(round(1e3 * BEIDOU_B2a_CODE_PERIOD))) % data_bit_duration_ms_[sat];
                         }
                 }
         }

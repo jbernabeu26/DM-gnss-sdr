@@ -43,22 +43,18 @@
 #include <vector>
 
 
-const double BEIDOU_B2a_FREQ_HZ = FREQ5;                      //!< BEIDOU B2a carrier frequency [Hz]
-const double BEIDOU_B2a_CODE_RATE_HZ = 10.23e6;               //!< BEIDOU B2a code rate [chips/s]
-const double BEIDOU_B2a_CODE_LENGTH_CHIPS = 10230;            //!< BEIDOU B2a C/A code length [chips]
-const double BEIDOU_B2a_CODE_PERIOD = 0.001;                  //!< BEIDOU B2a C/A code period [seconds]
-const double BEIDOU_B2a_CHIP_PERIOD = 9.775171065493646e-08;  //!< BEIDOU B2a C/A chip period [seconds]
-const double BEIDOU_B2a_SYMBOL_RATE_SPS = 200;                //BEIDOU symbol rate
+const double BEIDOU_B2a_FREQ_HZ = FREQ5;            //!< BEIDOU B2a carrier frequency [Hz]
+const double BEIDOU_B2a_CODE_RATE_HZ = 10.23e6;     //!< BEIDOU B2a code rate [chips/s]
+const double BEIDOU_B2a_CODE_LENGTH_CHIPS = 10230;  //!< BEIDOU B2a C/A code length [chips]
+const double BEIDOU_B2a_CODE_PERIOD = 0.001;        //!< BEIDOU B2a C/A code period [seconds]
+const double BEIDOU_B2a_CODE_PERIOD_MS = 1;         //!< BEIDOU B2a C/A code period [seconds]
+const double BEIDOU_B2a_SYMBOL_RATE_SPS = 200;      //BEIDOU symbol rate
 
-const int32_t BEIDOU_NBR_SATS = 63;      // Total number of satellites
-const double BEIDOU_LEAP_SECONDS = -33;  // uniform scale and 33 seconds behind TAI. However, this should be in the broadcast message
-
-const double BEIDOU_CNAV2_PI = 3.1415926535898;  //!< BeiDou CNAV2 Pi
-const std::string BEIDOU_CNAV2_PREAMBLE = {"111000100100110111101000"};
+const double BEIDOU_CNAV2_PI = 3.1415926535898;           //!< BeiDou CNAV2 Pi
 const double BEIDOU_CNAV2_PREAMBLE_DURATION_S = 0.120;    //[s]
+const int32_t BEIDOU_CNAV2_NBR_SATS = 63;                 // Total number of satellites
 const int32_t BEIDOU_CNAV2_PREAMBLE_LENGTH_BITS = 24;     //[bits]
 const int32_t BEIDOU_CNAV2_PREAMBLE_LENGTH_SYMBOLS = 24;  //[symbols]
-
 const int32_t BEIDOU_CNAV2_PREAMBLE_PERIOD_SYMBOLS = 600;
 const int32_t BEIDOU_CNAV2_TELEMETRY_RATE_BITS_SECOND = 100;                                                                                  //bps
 const int32_t BEIDOU_CNAV2_TELEMETRY_SYMBOLS_PER_BIT = 2;                                                                                     //spb
@@ -69,10 +65,10 @@ const int32_t BEIDOU_CNAV2_DATA_BITS = 288;
 const int32_t BEIDOU_CNAV2_DATA_BYTES = 36;        //Number of bits per string in the CNAV2 message
 const int32_t BEIDOU_CNAV2_MESSAGE_SYMBOLS = 576;  //STRING DATA WITHOUT PREAMBLE
 const int32_t BEIDOU_CNAV2_CODES_PER_SYMBOLS = 5;
-
 const int32_t BEIDOU_CNAV2_CRC_BITS = 24;
 const int32_t BEIDOU_CNAV2_CRC_SEED = 0;
 const int32_t BEIDOU_CNAV2_CRC_POLY = 0x1864CFB;
+const std::string BEIDOU_CNAV2_PREAMBLE = {"111000100100110111101000"};
 
 // Number of leap seconds passed from the start of the GPS epoch up to the start of BeiDou epoch
 const int32_t BEIDOU_B2a_BDT2GPST_LEAP_SEC_OFFSET = 14;
@@ -88,12 +84,9 @@ const int32_t BEIDOU_B2a_HISTORY_DEEP = 5;
 
 const double BEIDOU_B2ad_CODE_RATE_HZ = 10.23e6;      //!< BEIDOU_B2a data code rate [chips/s]
 const int32_t BEIDOU_B2ad_CODE_LENGTH_CHIPS = 10230;  //!< BEIDOU_B2a data  code length [chips]
-const double BEIDOU_B2ad_PERIOD = 0.001;              //!< BEIDOU_B2a data code period [seconds]
-const int32_t BEIDOU_B2ad_PERIOD_MS = 1;
 
 const double BEIDOU_B2ap_CODE_RATE_HZ = 10.23e6;      //!< BEIDOU_B2a pilot code rate [chips/s]
 const int32_t BEIDOU_B2ap_CODE_LENGTH_CHIPS = 10230;  //!< BEIDOU_B2a pilot code length [chips]
-const double BEIDOU_B2ap_PERIOD = 0.001;              //!< BEIDOU_B2a pilot code period [seconds]
 
 //!<Beidou B2a Data Secondary Codes. Data component has a fixed sequence as secondary code which are the same for every satellite
 const int32_t BEIDOU_B2ad_SECONDARY_CODE_LENGTH = 5;  //!< Each bit is 1 ms (one primary code sequence)
@@ -103,7 +96,7 @@ const std::string BEIDOU_B2ad_SECONDARY_CODE = "00010";
 const int32_t BEIDOU_B2ap_SECONDARY_CODE_LENGTH = 100;        //!< B2a pilot code is 100 chips long; Each bit is 1 ms (one primary code sequence)
 const int32_t BEIDOU_B2ap_SECONDARY_WEIL_CODE_LENGTH = 1021;  //!< B2a pilot Weil code is 1021 chips long; Each bit is 1 ms (one primary code sequence)
 //!< B2ap Secondary Codes. This mimics the Galileo E5a implementation and generates the code off-line. See b2ap_sec_code_gen.m
-const std::string BEIDOU_B2ap_SECONDARY_CODE[BEIDOU_NBR_SATS] = {
+const std::string BEIDOU_B2ap_SECONDARY_CODE[BEIDOU_CNAV2_NBR_SATS] = {
     "0110100001100110001010001001111100001101110111110101111100100000010111101101110101011010010001110111",
     "1010010000110101011011000010000011000111011010101011000110100100010000100011001110101000111111010011",
     "0101100000110010111011010010010001110000001100100011110001010111000101100001000011010100100000111101",
@@ -171,7 +164,7 @@ const std::string BEIDOU_B2ap_SECONDARY_CODE[BEIDOU_NBR_SATS] = {
 
 
 //!< Initialization registers for the primary codes for B2a data signal
-const int8_t BEIDOU_B2ad_INIT_REG[BEIDOU_NBR_SATS][13] =
+const int8_t BEIDOU_B2ad_INIT_REG[BEIDOU_CNAV2_NBR_SATS][13] =
     {
         {1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1},
         {1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0},
@@ -240,7 +233,7 @@ const int8_t BEIDOU_B2ad_INIT_REG[BEIDOU_NBR_SATS][13] =
 
 };
 
-const int8_t BEIDOU_B2ap_INIT_REG[BEIDOU_NBR_SATS][13] =
+const int8_t BEIDOU_B2ap_INIT_REG[BEIDOU_CNAV2_NBR_SATS][13] =
     {
         {1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1},
         {1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0},
@@ -307,7 +300,7 @@ const int8_t BEIDOU_B2ap_INIT_REG[BEIDOU_NBR_SATS][13] =
         {0, 0, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1},
 };
 
-const int32_t BEIDOU_B2ap_SECONDARY_TRUNCATION_POINT[BEIDOU_NBR_SATS] =
+const int32_t BEIDOU_B2ap_SECONDARY_TRUNCATION_POINT[BEIDOU_CNAV2_NBR_SATS] =
     {
         138, 570, 351, 77, 885, 247, 413, 180, 3, 26,
         17, 172, 30, 1008, 646, 158, 170, 99, 53, 179,
@@ -317,7 +310,7 @@ const int32_t BEIDOU_B2ap_SECONDARY_TRUNCATION_POINT[BEIDOU_NBR_SATS] =
         41, 182, 944, 205, 23, 1, 792, 641, 83, 7,
         111, 96, 92};
 
-const int32_t BEIDOU_B2ap_SECONDARY_PHASE_DIFFERENCE[BEIDOU_NBR_SATS] =
+const int32_t BEIDOU_B2ap_SECONDARY_PHASE_DIFFERENCE[BEIDOU_CNAV2_NBR_SATS] =
     {
         123, 55, 40, 139, 31, 175, 350, 450, 478, 8,
         73, 97, 213, 407, 476, 4, 15, 47, 163, 280,

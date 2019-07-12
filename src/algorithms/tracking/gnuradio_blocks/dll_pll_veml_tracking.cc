@@ -310,7 +310,7 @@ dll_pll_veml_tracking::dll_pll_veml_tracking(const Dll_Pll_Conf &conf_) : gr::bl
                     d_symbols_per_bit = BEIDOU_B3I_TELEMETRY_SYMBOLS_PER_BIT;  //todo: enable after fixing beidou symbol synchronization
                     d_correlation_length_ms = 1;
                     d_code_samples_per_chip = 1;
-                    d_secondary = false;
+                    d_secondary = true;
                     trk_parameters.track_pilot = false;
                     d_secondary_code_length = static_cast<uint32_t>(BEIDOU_B3I_SECONDARY_CODE_LENGTH);
                     d_secondary_code_string = const_cast<std::string *>(&BEIDOU_B3I_SECONDARY_CODE_STR);
@@ -320,7 +320,7 @@ dll_pll_veml_tracking::dll_pll_veml_tracking(const Dll_Pll_Conf &conf_) : gr::bl
             else if (signal_type == "5C")
                 {
                     d_signal_carrier_freq = BEIDOU_B2a_FREQ_HZ;
-                    d_code_period = BEIDOU_B2ad_PERIOD;
+                    d_code_period = BEIDOU_B2a_CODE_PERIOD;
                     d_code_chip_rate = BEIDOU_B2ad_CODE_RATE_HZ;
                     d_symbols_per_bit = BEIDOU_B2a_SAMPLES_PER_SYMBOL;
                     d_correlation_length_ms = 1;
@@ -332,6 +332,9 @@ dll_pll_veml_tracking::dll_pll_veml_tracking(const Dll_Pll_Conf &conf_) : gr::bl
                         {
                             d_secondary_code_length = static_cast<uint32_t>(BEIDOU_B2ap_SECONDARY_CODE_LENGTH);
                             signal_pretty_name = signal_pretty_name + "Pilot";
+
+                            d_data_secondary_code_length = static_cast<uint32_t>(BEIDOU_B2ad_SECONDARY_CODE_LENGTH);
+                            d_data_secondary_code_string = const_cast<std::string *>(&BEIDOU_B2ad_SECONDARY_CODE);
                         }
                     else
                         {
@@ -691,7 +694,7 @@ void dll_pll_veml_tracking::start_tracking()
                     d_symbols_per_bit = BEIDOU_B1I_TELEMETRY_SYMBOLS_PER_BIT;  //todo: enable after fixing beidou symbol synchronization
                     d_correlation_length_ms = 1;
                     d_code_samples_per_chip = 1;
-                    d_secondary = false;
+                    d_secondary = true;
                     trk_parameters.track_pilot = false;
                     // synchronize and remove data secondary code
                     d_secondary_code_length = static_cast<uint32_t>(BEIDOU_B1I_SECONDARY_CODE_LENGTH);
@@ -710,7 +713,7 @@ void dll_pll_veml_tracking::start_tracking()
                     d_symbols_per_bit = BEIDOU_B3I_GEO_TELEMETRY_SYMBOLS_PER_BIT;  //todo: enable after fixing beidou symbol synchronization
                     d_correlation_length_ms = 1;
                     d_code_samples_per_chip = 1;
-                    d_secondary = true;
+                    d_secondary = false;
                     trk_parameters.track_pilot = false;
                     // set the preamble in the secondary code acquisition
                     d_secondary_code_length = static_cast<uint32_t>(BEIDOU_B3I_GEO_PREAMBLE_LENGTH_SYMBOLS);

@@ -43,7 +43,7 @@
 #include "beidou_b1i_pcps_acquisition.h"
 #include "beidou_b1i_telemetry_decoder.h"
 #include "beidou_b2a_pcps_acquisition.h"
-#include "beidou_b2a_pcps_noncoherent_iq_acquisition_caf.h"
+//#include "beidou_b2a_pcps_noncoherent_iq_acquisition_caf.h"
 #include "beidou_b2a_dll_pll_tracking.h"
 #include "beidou_b2a_telemetry_decoder.h"
 #include "beidou_b3i_dll_pll_tracking.h"
@@ -294,12 +294,12 @@ std::unique_ptr<GNSSBlockInterface> GNSSBlockFactory::GetObservables(const std::
         Galileo_channels +
             GPS_channels +
             Glonass_channels +
-			Beidou_channels +
+            Beidou_channels +
             extra_channels,
-            Galileo_channels +
+        Galileo_channels +
             GPS_channels +
             Glonass_channels +
-			Beidou_channels);
+            Beidou_channels);
 }
 
 
@@ -319,7 +319,7 @@ std::unique_ptr<GNSSBlockInterface> GNSSBlockFactory::GetPVT(const std::shared_p
     Beidou_channels += configuration->property("Channels_B3.count", 0);
     Beidou_channels += configuration->property("Channels_5C.count", 0);
     return GetBlock(configuration, "PVT", implementation,
-    		Galileo_channels + GPS_channels + Glonass_channels + Beidou_channels, 0);
+        Galileo_channels + GPS_channels + Glonass_channels + Beidou_channels, 0);
 }
 
 
@@ -1022,7 +1022,7 @@ std::unique_ptr<std::vector<std::unique_ptr<GNSSBlockInterface>>> GNSSBlockFacto
                                   Channels_5X_count +
                                   Channels_L5_count +
                                   Channels_B1_count +
-								                  Channels_B3_count +
+                                  Channels_B3_count +
                                   Channels_5C_count;
 
     std::unique_ptr<std::vector<std::unique_ptr<GNSSBlockInterface>>> channels(new std::vector<std::unique_ptr<GNSSBlockInterface>>(total_channels));
@@ -1322,7 +1322,6 @@ std::unique_ptr<std::vector<std::unique_ptr<GNSSBlockInterface>>> GNSSBlockFacto
                         queue);
                     channel_absolute_id++;
                 }
-
         }
     catch (const std::exception& e)
         {
@@ -1821,8 +1820,8 @@ std::unique_ptr<GNSSBlockInterface> GNSSBlockFactory::GetBlock(
             block = std::move(block_);
         }
     else if (implementation == "BEIDOU_B3I_PCPS_Acquisition")
-		{
-			std::unique_ptr<AcquisitionInterface> block_(new BeidouB3iPcpsAcquisition(configuration.get(), role, in_streams,
+        {
+            std::unique_ptr<AcquisitionInterface> block_(new BeidouB3iPcpsAcquisition(configuration.get(), role, in_streams,
                 out_streams));
             block = std::move(block_);
         }
@@ -1832,12 +1831,12 @@ std::unique_ptr<GNSSBlockInterface> GNSSBlockFactory::GetBlock(
                 out_streams));
             block = std::move(block_);
         }
-    else if (implementation == "BEIDOU_B2a_Noncoherent_IQ_Acquisition_CAF")
-        {
-            std::unique_ptr<GNSSBlockInterface> block_(new BeidouB2aPcpsNoncoherentIqAcquisitionCaf(configuration.get(), role, in_streams,
-                out_streams));
-            block = std::move(block_);
-        }
+    // else if (implementation == "BEIDOU_B2a_Noncoherent_IQ_Acquisition_CAF")
+    //     {
+    //         std::unique_ptr<GNSSBlockInterface> block_(new BeidouB2aPcpsNoncoherentIqAcquisitionCaf(configuration.get(), role, in_streams,
+    //             out_streams));
+    //         block = std::move(block_);
+    //     }
     // TRACKING BLOCKS -------------------------------------------------------------
     else if (implementation == "GPS_L1_CA_DLL_PLL_Tracking")
         {
@@ -1848,7 +1847,7 @@ std::unique_ptr<GNSSBlockInterface> GNSSBlockFactory::GetBlock(
     else if (implementation == "GPS_L1_CA_KF_Tracking")
         {
             std::unique_ptr<GNSSBlockInterface> block_(new GpsL1CaKfTracking(configuration.get(), role, in_streams,
-                    out_streams));
+                out_streams));
             block = std::move(block_);
         }
 #if ENABLE_FPGA
@@ -1966,17 +1965,17 @@ std::unique_ptr<GNSSBlockInterface> GNSSBlockFactory::GetBlock(
             block = std::move(block_);
         }
     else if (implementation == "BEIDOU_B3I_DLL_PLL_Tracking")
-		    {
-			      std::unique_ptr<GNSSBlockInterface> block_(new BeidouB3iDllPllTracking(configuration.get(), role, in_streams,
+        {
+            std::unique_ptr<GNSSBlockInterface> block_(new BeidouB3iDllPllTracking(configuration.get(), role, in_streams,
                 out_streams));
             block = std::move(block_);
         }
     else if (implementation == "BEIDOU_B2a_DLL_PLL_Tracking")
         {
             std::unique_ptr<GNSSBlockInterface> block_(new BeidouB2aDllPllTracking(configuration.get(), role, in_streams,
-				        out_streams));
-			      block = std::move(block_);
-		    }
+                out_streams));
+            block = std::move(block_);
+        }
     // TELEMETRY DECODERS ----------------------------------------------------------
     else if (implementation == "GPS_L1_CA_Telemetry_Decoder")
         {
@@ -2250,12 +2249,12 @@ std::unique_ptr<AcquisitionInterface> GNSSBlockFactory::GetAcqBlock(
                 out_streams));
             block = std::move(block_);
         }
-    else if (implementation == "BEIDOU_B2a_Pcps_Noncoherent_IQ_Acquisition_CAF")
-        {
-            std::unique_ptr<AcquisitionInterface> block_(new BeidouB2aPcpsNoncoherentIqAcquisitionCaf(configuration.get(), role, in_streams,
-                out_streams));
-            block = std::move(block_);
-        }
+    // else if (implementation == "BEIDOU_B2a_Pcps_Noncoherent_IQ_Acquisition_CAF")
+    //     {
+    //         std::unique_ptr<AcquisitionInterface> block_(new BeidouB2aPcpsNoncoherentIqAcquisitionCaf(configuration.get(), role, in_streams,
+    //             out_streams));
+    //         block = std::move(block_);
+    //     }
     else
         {
             // Log fatal. This causes execution to stop.
@@ -2283,7 +2282,7 @@ std::unique_ptr<TrackingInterface> GNSSBlockFactory::GetTrkBlock(
     else if (implementation == "GPS_L1_CA_KF_Tracking")
         {
             std::unique_ptr<TrackingInterface> block_(new GpsL1CaKfTracking(configuration.get(), role, in_streams,
-                    out_streams));
+                out_streams));
             block = std::move(block_);
         }
 #if ENABLE_FPGA
