@@ -34,9 +34,15 @@
 #define GNSS_SDR_BEIDOU_B1C_SIGNAL_PROCESSING_H_
 
 #include <complex>
+#if HAS_SPAN
+#include <span>
+namespace gsl = std;
+#else
+#include <gsl/gsl>
+#endif
 
 //! Generates BeiDou B1c Data Primary codes for the desired SV ID
-void make_b1cd(int32_t* _dest, int prn);
+void make_b1cd(gsl::span<int32_t> _dest, int32_t prn);
 
 //! Generates a float version of BeiDou B1c Data Primary code for the desired SV ID
 void beidou_b1cd_code_gen_float(float* _dest, unsigned int _prn);
