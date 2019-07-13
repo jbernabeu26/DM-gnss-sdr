@@ -34,6 +34,8 @@
 #define GNSS_SDR_BEIDOU_B1C_SIGNAL_PROCESSING_H_
 
 #include <complex>
+#include <cstdint>
+
 #if HAS_SPAN
 #include <span>
 namespace gsl = std;
