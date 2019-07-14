@@ -736,10 +736,10 @@ void beidou_b1c_code_gen_complex_sampled_boc_61_11(gsl::span<std::complex<float>
     int32_t _samplesPerCode, _codeValueIndex;
     float _ts;
     float _tc;
-    const int32_t _codeLength =12 * BEIDOU_B1Cd_CODE_LENGTH_CHIPS;
+    const int32_t _codeLength =12 * BEIDOU_B1Cp_CODE_LENGTH_CHIPS;
 
     //--- Find number of samples per spreading code ----------------------------
-    _samplesPerCode = static_cast<int>(static_cast<double>(_fs) / (static_cast<double>(BEIDOU_B1Cd_CODE_RATE_HZ) / static_cast<double>(_codeLength)));
+    _samplesPerCode = static_cast<int>(static_cast<double>(_fs) / (static_cast<double>(BEIDOU_B1Cp_CODE_RATE_HZ) / static_cast<double>(_codeLength)));
     
     auto* real_code = static_cast<float*>(volk_gnsssdr_malloc(_samplesPerCode * sizeof(float), volk_gnsssdr_get_alignment()));
     gsl::span<float> real_code_span(real_code, _samplesPerCode);
@@ -752,7 +752,7 @@ void beidou_b1c_code_gen_complex_sampled_boc_61_11(gsl::span<std::complex<float>
     
      //--- Find time constants --------------------------------------------------
     _ts = 1.0 / static_cast<float>(_fs);                       // Sampling period in sec
-    _tc = 1.0 / static_cast<float>(BEIDOU_B1Cd_CODE_RATE_HZ);  // code chip period in sec
+    _tc = 1.0 / static_cast<float>(BEIDOU_B1Cp_CODE_RATE_HZ);  // code chip period in sec
     
         
     for (uint32_t i = 0; i < _samplesPerCode; i++)
