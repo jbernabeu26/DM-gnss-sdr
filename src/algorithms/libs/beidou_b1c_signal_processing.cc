@@ -33,6 +33,7 @@
 
 #include "beidou_b1c_signal_processing.h"
 #include "Beidou_B1C.h"
+#include <volk_gnsssdr/volk_gnsssdr.h>
 #include <cinttypes>
 #include <complex>
 #include <fstream>
@@ -502,4 +503,279 @@ void beidou_b1c_code_gen_complex_sampled(gsl::span<std::complex<float>> _dest, u
                 }
         }
 }
+
+
+//================================================BDS_B1C_BOC_Generation===================================================
+
+
+void beidou_b1c_data_sinboc_11_gen_int(gsl::span<int> _dest, gsl::span<const int> _prn)
+{
+    const uint32_t _length_in = BEIDOU_B1Cd_CODE_LENGTH_CHIPS;
+    auto _period = static_cast<uint32_t>(_dest.size() / _length_in);
+    for (uint32_t i = 0; i < _length_in; i++)
+        {
+            for (uint32_t j = 0; j < (_period / 2); j++)
+                {
+                    _dest[i * _period + j] = _prn[i];
+                }
+            for (uint32_t j = (_period / 2); j < _period; j++)
+                {
+                    _dest[i * _period + j] = -_prn[i];
+                }
+        }
+}
+
+
+void beidou_b1c_pilot_sinboc_11_gen_int(gsl::span<int> _dest, gsl::span<const int> _prn)
+{
+    const uint32_t _length_in = BEIDOU_B1Cp_CODE_LENGTH_CHIPS;
+    auto _period = static_cast<uint32_t>(_dest.size() / _length_in);
+    for (uint32_t i = 0; i < _length_in; i++)
+        {
+            for (uint32_t j = 0; j < (_period / 2); j++)
+                {
+                    _dest[i * _period + j] = _prn[i];
+                }
+            for (uint32_t j = (_period / 2); j < _period; j++)
+                {
+                    _dest[i * _period + j] = -_prn[i];
+                }
+        }
+}
+
+
+void beidou_b1c_pilot_sinboc_61_gen_int(gsl::span<int> _dest, gsl::span<const int> _prn)
+{
+    const uint32_t _length_in = BEIDOU_B1Cp_CODE_LENGTH_CHIPS;
+    auto _period = static_cast<uint32_t>(_dest.size() / _length_in);
+
+    for (uint32_t i = 0; i < _length_in; i++)
+        {
+            for (uint32_t j = 0; j < _period; j += 2)
+                {
+                    _dest[i * _period + j] = _prn[i];
+                }
+            for (uint32_t j = 1; j < _period; j += 2)
+                {
+                    _dest[i * _period + j] = -_prn[i];
+                }
+        }
+}
+
+
+//! Generates float version of sine BOC(1,1) modulated Data Code 
+void beidou_b1cd_gen_float_11(gsl::span<float> _dest, gsl::span<int> _prn)
+{
+	const uint32_t _codeLength = 12 * BEIDOU_B1Cd_CODE_LENGTH_CHIPS;
+	
+	const float alpha = (1.0 / 2.0);
+	
+	int32_t sinboc_11[12 * 10230] = {0}; //  _codeLength not accepted by Clang
+	
+	gsl::span<int32_t> sinboc_11_(sinboc_11, _codeLength);
+	
+	beidou_b1c_data_sinboc_11_gen_int(sinboc_11_, _prn); //generate sinboc(1,1) 12 samples per chip
+	
+	for (uint32_t i = 0; i < _codeLength; i++)
+        {
+        	_dest[i] = alpha * static_cast<float>(sinboc_11[i]);
+                               
+	}
+}
+
+
+void beidou_b1cd_code_gen_float_sampled_boc_11(gsl::span<float> _dest, uint32_t _prn)
+{
+    // This function is based on the GNU software GPS for MATLAB in Kay Borre's book
+    auto _codeLength = static_cast<uint32_t>(BEIDOU_B1Cd_CODE_LENGTH_CHIPS);
+    auto* b1c_data_primary_code_chips = static_cast<int32_t*>(volk_gnsssdr_malloc(static_cast<uint32_t>(BEIDOU_B1Cd_CODE_LENGTH_CHIPS) * sizeof(int32_t), volk_gnsssdr_get_alignment()));
+    const int32_t _samplesPerChip =  12;
+
+    make_b1cd(gsl::span<int32_t>(b1c_data_primary_code_chips, static_cast<uint32_t>(BEIDOU_B1Cd_CODE_LENGTH_CHIPS)), _prn); //generate Beidou B1C code, 1 sample per chip
+
+    _codeLength = _samplesPerChip * BEIDOU_B1Cd_CODE_LENGTH_CHIPS;
+    std::unique_ptr<float> _signal_B1C_data{new float[_codeLength]};
+    gsl::span<float> _signal_B1C_data_span(_signal_B1C_data, _codeLength);
+
+    beidou_b1cd_gen_float_11(_signal_B1C_data_span, gsl::span<int>(b1c_data_primary_code_chips, static_cast<uint32_t>(BEIDOU_B1Cd_CODE_LENGTH_CHIPS)));  // generate cboc 12 samples per chip
+    
+    volk_gnsssdr_free(b1c_data_primary_code_chips);
+}
+
+
+void beidou_b1c_code_gen_complex_sampled_boc_11(gsl::span<std::complex<float>> _dest,uint32_t _prn, int32_t _fs)
+{
+    //uint32_t _code_length =12 * BEIDOU_B1Cd_CODE_LENGTH_CHIPS;
+    //int32_t _code[_code_length];
+    
+    int32_t _samplesPerCode, _codeValueIndex;
+    float _ts;
+    float _tc;
+    const int32_t _codeLength =12 * BEIDOU_B1Cd_CODE_LENGTH_CHIPS;
+
+    //--- Find number of samples per spreading code ----------------------------
+    _samplesPerCode = static_cast<int>(static_cast<double>(_fs) / (static_cast<double>(BEIDOU_B1Cd_CODE_RATE_HZ) / static_cast<double>(_codeLength)));
+    
+    auto* real_code = static_cast<float*>(volk_gnsssdr_malloc(_samplesPerCode * sizeof(float), volk_gnsssdr_get_alignment()));
+    gsl::span<float> real_code_span(real_code, _samplesPerCode);
+    beidou_b1cd_code_gen_float_sampled_boc_11(real_code_span, _prn);
+    
+     //--- Find time constants --------------------------------------------------
+    _ts = 1.0 / static_cast<float>(_fs);                       // Sampling period in sec
+    _tc = 1.0 / static_cast<float>(BEIDOU_B1Cd_CODE_RATE_HZ);  // code chip period in sec
+    
+        
+    for (uint32_t i = 0; i < _samplesPerCode; i++)
+        {
+            //=== Digitizing =======================================================
+
+            //--- Make index array to read B1C code values -------------------------
+            _codeValueIndex = ceil((_ts * (static_cast<float>(i) + 1)) / _tc) - 1;
+
+            //--- Make the digitized version of the B1Cd code -----------------------
+            if (i == _samplesPerCode - 1)
+                {
+                    //--- Correct the last index (due to number rounding issues) -----------
+                    _dest[i] = std::complex<float>(1.0 - 2.0 * real_code_span[_codeLength - 1], 0);
+                }
+            else
+                {
+                    _dest[i] = std::complex<float>(1.0 - 2.0 * real_code_span[_codeValueIndex], 0);  //repeat the chip -> upsample
+                }
+        }           
+    volk_gnsssdr_free(real_code);
+}
+
+
+//--------------------------------------------------BOC_FOR_PILOT_COMPONENT----------------------------------------------------
+
+//! Generate BOC for first Pilot component which is in Real part
+void beidou_b1cp_gen_float_61(gsl::span<float> _dest, gsl::span<int> _prn)
+{
+	const uint32_t _codeLength = 12 * BEIDOU_B1Cp_CODE_LENGTH_CHIPS;
+	
+	const float alpha = sqrt(1.0 / 11.0);
+	
+	int32_t sinboc_61[12 * 10230] = {0};    //  _codeLength not accepted by Clang
+	gsl::span<int32_t> sinboc_61_(sinboc_61, _codeLength);
+    	   	
+   	beidou_b1c_pilot_sinboc_61_gen_int(sinboc_61_, _prn);  //generate sinboc(6,1) 12 samples per chip
+    		
+	for (uint32_t i = 0; i < _codeLength; i++)
+        {
+        	_dest[i] = alpha * static_cast<float>(sinboc_11[i]);
+                               
+	}
+}
+
+
+void beidou_b1cp_code_gen_float_sampled_boc_61(gsl::span<float> _dest, uint32_t _prn)
+{
+    // This function is based on the GNU software GPS for MATLAB in Kay Borre's book
+    auto _codeLength = static_cast<uint32_t>(BEIDOU_B1Cp_CODE_LENGTH_CHIPS);
+    auto* b1c_pilot_primary_code_chips = static_cast<int32_t*>(volk_gnsssdr_malloc(static_cast<uint32_t>(BEIDOU_B1Cp_CODE_LENGTH_CHIPS) * sizeof(int32_t), volk_gnsssdr_get_alignment()));
+    const int32_t _samplesPerChip =  12;
+
+    make_b1cp(gsl::span<int32_t>(b1c_pilot_primary_code_chips, static_cast<uint32_t>(BEIDOU_B1Cp_CODE_LENGTH_CHIPS)), _prn); //generate Beidou B1C pilot code, 1 sample per chip
+
+    _codeLength = _samplesPerChip * BEIDOU_B1Cp_CODE_LENGTH_CHIPS;
+    std::unique_ptr<float> _signal_B1C_pilot{new float[_codeLength]};
+    gsl::span<float> _signal_B1C_pilot_span(_signal_B1C_pilot, _codeLength);
+
+    beidou_b1cp_gen_float_61(_signal_B1C_pilot_span, gsl::span<int>(b1c_pilot_primary_code_chips, static_cast<uint32_t>(BEIDOU_B1Cp_CODE_LENGTH_CHIPS)));  // generate cboc 12 samples per chip
+    
+    volk_gnsssdr_free(b1c_pilot_primary_code_chips);
+}
+
+
+//! Generate BOC for first Pilot component which is in Imaginary part
+void beidou_b1cp_gen_float_11(gsl::span<float> _dest, gsl::span<int> _prn)
+{
+	const uint32_t _codeLength = 12 * BEIDOU_B1Cp_CODE_LENGTH_CHIPS;
+	
+    	const float beta = sqrt(29.0 / 44.0);
+	
+	int32_t sinboc_11[12 * 10230] = {0};     //  _codeLength not accepted by Clang
+    	gsl::span<int32_t> sinboc_11_(sinboc_11, _codeLength);
+    	
+    	beidou_b1c_pilot_sinboc_11_gen_int(sinboc_11_, _prn);  //generate sinboc(1,1) 12 samples per chip
+    	
+	for (uint32_t i = 0; i < _codeLength; i++)
+        {
+        	_dest[i] = beta * static_cast<float>(sinboc_11[i]);
+                               
+	}
+}
+
+
+void beidou_b1cp_code_gen_float_sampled_boc_11(gsl::span<float> _dest, uint32_t _prn)
+{
+    // This function is based on the GNU software GPS for MATLAB in Kay Borre's book
+    auto _codeLength = static_cast<uint32_t>(BEIDOU_B1Cp_CODE_LENGTH_CHIPS);
+    auto* b1c_pilot_primary_code_chips = static_cast<int32_t*>(volk_gnsssdr_malloc(static_cast<uint32_t>(BEIDOU_B1Cp_CODE_LENGTH_CHIPS) * sizeof(int32_t), volk_gnsssdr_get_alignment()));
+    const int32_t _samplesPerChip =  12;
+
+    make_b1cp(gsl::span<int32_t>(b1c_pilot_primary_code_chips, static_cast<uint32_t>(BEIDOU_B1Cp_CODE_LENGTH_CHIPS)), _prn); //generate Beidou B1C pilot code, 1 sample per chip
+
+    _codeLength = _samplesPerChip * BEIDOU_B1Cp_CODE_LENGTH_CHIPS;
+    std::unique_ptr<float> _signal_B1C_pilot{new float[_codeLength]};
+    gsl::span<float> _signal_B1C_pilot_span(_signal_B1C_pilot, _codeLength);
+
+    beidou_b1cp_gen_float_11(_signal_B1C_pilot_span, gsl::span<int>(b1c_pilot_primary_code_chips, static_cast<uint32_t>(BEIDOU_B1Cp_CODE_LENGTH_CHIPS)));  // generate cboc 12 samples per chip
+    
+    volk_gnsssdr_free(b1c_pilot_primary_code_chips);
+}
+
+
+//! Generates complex version of both pilot components having sine BOC(6,1) which is in Real part and sine BOC(1,1) which is in Imaginary part
+void beidou_b1c_code_gen_complex_sampled_boc_61_11(gsl::span<std::complex<float>> _dest,uint32_t _prn, int32_t _fs)
+{
+    //uint32_t _code_length =12 * BEIDOU_B1Cd_CODE_LENGTH_CHIPS;
+    //int32_t _code[_code_length];
+    
+    int32_t _samplesPerCode, _codeValueIndex;
+    float _ts;
+    float _tc;
+    const int32_t _codeLength =12 * BEIDOU_B1Cd_CODE_LENGTH_CHIPS;
+
+    //--- Find number of samples per spreading code ----------------------------
+    _samplesPerCode = static_cast<int>(static_cast<double>(_fs) / (static_cast<double>(BEIDOU_B1Cd_CODE_RATE_HZ) / static_cast<double>(_codeLength)));
+    
+    auto* real_code = static_cast<float*>(volk_gnsssdr_malloc(_samplesPerCode * sizeof(float), volk_gnsssdr_get_alignment()));
+    gsl::span<float> real_code_span(real_code, _samplesPerCode);
+    beidou_b1cp_code_gen_float_sampled_boc_61(real_code_span, _prn);
+    
+    
+    auto* imaginary_code = static_cast<float*>(volk_gnsssdr_malloc(_samplesPerCode * sizeof(float), volk_gnsssdr_get_alignment()));
+    gsl::span<float> imaginary_code_span(imaginary_code, _samplesPerCode);
+    beidou_b1cp_code_gen_float_sampled_boc_11(imaginary_code_span, _prn);
+    
+     //--- Find time constants --------------------------------------------------
+    _ts = 1.0 / static_cast<float>(_fs);                       // Sampling period in sec
+    _tc = 1.0 / static_cast<float>(BEIDOU_B1Cd_CODE_RATE_HZ);  // code chip period in sec
+    
+        
+    for (uint32_t i = 0; i < _samplesPerCode; i++)
+        {
+            //=== Digitizing =======================================================
+
+            //--- Make index array to read B1C code values -------------------------
+            _codeValueIndex = ceil((_ts * (static_cast<float>(i) + 1)) / _tc) - 1;
+
+            //--- Make the digitized version of the B1Cd code -----------------------
+            if (i == _samplesPerCode - 1)
+                {
+                    //--- Correct the last index (due to number rounding issues) -----------
+                    _dest[i] = std::complex<float>(1.0 - 2.0 * real_code_span[_codeLength - 1], 1.0 - 2.0 * imaginary_code_span[_codeLength - 1]);
+                }
+            else
+                {
+                    _dest[i] = std::complex<float>(1.0 - 2.0 * real_code_span[_codeValueIndex], 1.0 - 2.0 * imaginary_code_span[_codeLength - 1]);  //repeat the chip -> upsample
+                }
+        }           
+    volk_gnsssdr_free(real_code);
+    volk_gnsssdr_free(imaginary_code);
+}
+
+
 
