@@ -40,6 +40,7 @@
 #include<iostream>
 #include<cmath>
 #include <vector>
+#include <deque>
 #include <algorithm>
 
 // Make legendre sequence for Primary Data and Primary Pilot codes
