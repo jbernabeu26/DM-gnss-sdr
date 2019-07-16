@@ -129,16 +129,16 @@ BeidouB2aDllPllTracking::BeidouB2aDllPllTracking(
     if (extend_correlation_symbols < 1)
         {
             extend_correlation_symbols = 1;
-            std::cout << TEXT_RED << "WARNING: BEIDOU B2A. extend_correlation_symbols must be bigger than 0. Coherent integration has been set to 1 symbol (1 ms)" << TEXT_RESET << std::endl;
+            std::cout << TEXT_RED << "WARNING: BeiDou B2a. extend_correlation_symbols must be bigger than 0. Coherent integration has been set to 1 symbol (1 ms)" << TEXT_RESET << std::endl;
         }
     else if (!track_pilot and extend_correlation_symbols > BEIDOU_B2ad_SECONDARY_CODE_LENGTH)
         {
             extend_correlation_symbols = BEIDOU_B2ad_SECONDARY_CODE_LENGTH;
-            std::cout << TEXT_RED << "WARNING: BEIDOU B2A. extend_correlation_symbols must be lower than 11 when tracking the data component. Coherent integration has been set to 10 symbols (10 ms)" << TEXT_RESET << std::endl;
+            std::cout << TEXT_RED << "WARNING: BeiDou B2a. extend_correlation_symbols must be lower than 5 when tracking the data component. Coherent integration has been set to 10 symbols (10 ms)" << TEXT_RESET << std::endl;
         }
     if ((extend_correlation_symbols > 1) and (pll_bw_narrow_hz > pll_bw_hz or dll_bw_narrow_hz > dll_bw_hz))
         {
-            std::cout << TEXT_RED << "WARNING: BEIDOU B2A. PLL or DLL narrow tracking bandwidth is higher than wide tracking one" << TEXT_RESET << std::endl;
+            std::cout << TEXT_RED << "WARNING: BeiDou B2a. PLL or DLL narrow tracking bandwidth is higher than wide tracking one" << TEXT_RESET << std::endl;
         }
     trk_param.extend_correlation_symbols = extend_correlation_symbols;
     trk_param.track_pilot = track_pilot;

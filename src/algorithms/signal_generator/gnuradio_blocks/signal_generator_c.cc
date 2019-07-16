@@ -131,8 +131,8 @@ void signal_generator_c::init()
                 {
                     samples_per_code_.push_back(round(static_cast<float>(fs_in_) / (BEIDOU_B2ad_CODE_RATE_HZ / BEIDOU_B2ad_CODE_LENGTH_CHIPS)));
 
-                    num_of_codes_per_vector_.push_back(galileo_signal ? 4 * static_cast<int>(GALILEO_E1_C_SECONDARY_CODE_LENGTH) : 1);
-                    data_bit_duration_ms_.push_back(1e3 / BEIDOU_B2a_CNAV_DATA_PAGE_BITS);
+                    num_of_codes_per_vector_.push_back(galileo_signal ? 4 * static_cast<int>(BEIDOU_B2ad_SECONDARY_CODE_LENGTH) : 1);
+                    data_bit_duration_ms_.push_back(1e3 / BEIDOU_CNAV2_FRAME_SYMBOLS);
                 }
             else if (system_[sat] == "E")
                 {
@@ -490,7 +490,7 @@ int signal_generator_c::general_work(int noutput_items __attribute__((unused)),
                                     out_idx++;
                                 }
 
-                            ms_counter_[sat] = (ms_counter_[sat] + static_cast<int>(round(1e3 * BEIDOU_B2a_CODE_PERIOD))) % data_bit_duration_ms_[sat];
+                            ms_counter_[sat] = (ms_counter_[sat] + static_cast<int>(round(1e3 * BEIDOU_B2ad_CODE_PERIOD))) % data_bit_duration_ms_[sat];
                         }
                 }
         }

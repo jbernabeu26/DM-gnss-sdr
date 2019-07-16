@@ -180,7 +180,7 @@ public:
      * \param frame_string [in] is the string message within the parsed frame
      * \returns Returns the ID of the decoded string
      */
-    int string_decoder(std::string const &frame_string);
+    int frame_decoder(std::string const &frame_string);
 
     /*!
      * Default constructor

@@ -77,17 +77,15 @@ beidou_b2a_telemetry_decoder_gs::beidou_b2a_telemetry_decoder_gs(
     d_satellite = Gnss_Satellite(satellite.get_system(), satellite.get_PRN());
     LOG(INFO) << "Initializing BeiDou B2a Telemetry Decoding for satellite " << this->d_satellite;
 
-    d_symbol_duration_ms = BEIDOU_CNAV2_TELEMETRY_SYMBOLS_PER_BIT * BEIDOU_B2a_CODE_PERIOD_MS;
+    d_symbol_duration_ms = BEIDOU_CNAV2_TELEMETRY_SYMBOLS_PER_BIT * BEIDOU_B2ad_CODE_PERIOD_MS;
     d_symbols_per_preamble = BEIDOU_CNAV2_PREAMBLE_LENGTH_SYMBOLS;
     d_samples_per_preamble = BEIDOU_CNAV2_PREAMBLE_LENGTH_SYMBOLS;
     d_preamble_samples = static_cast<int32_t *>(volk_gnsssdr_malloc(d_samples_per_preamble * sizeof(int32_t), volk_gnsssdr_get_alignment()));
     d_preamble_period_samples = BEIDOU_CNAV2_PREAMBLE_PERIOD_SYMBOLS;
 
     // Setting samples of preamble code
-    int32_t n = 0;
     for (int32_t i = 0; i < d_symbols_per_preamble; i++)
         {
-            int32_t m = 0;
             if (BEIDOU_CNAV2_PREAMBLE.at(i) == '1')
                 {
                     d_preamble_samples[i] = 1;
@@ -99,7 +97,7 @@ beidou_b2a_telemetry_decoder_gs::beidou_b2a_telemetry_decoder_gs(
         }
 
     d_frame_symbols = static_cast<float *>(volk_gnsssdr_malloc(BEIDOU_CNAV2_PREAMBLE_PERIOD_SYMBOLS * sizeof(float), volk_gnsssdr_get_alignment()));
-    d_required_symbols = BEIDOU_CNAV2_FRAME_SYMBOLS * d_samples_per_preamble;
+    d_required_symbols = BEIDOU_CNAV2_FRAME_SYMBOLS + d_samples_per_preamble;
     d_symbol_history.set_capacity(d_required_symbols);
 
     d_last_valid_preamble = 0;
@@ -150,7 +148,7 @@ void beidou_b2a_telemetry_decoder_gs::decode_frame(float *frame_symbols)
             data_bits.push_back((frame_symbols[ii] > 0) ? ('1') : ('0'));
         }
 
-    d_nav.string_decoder(data_bits);
+    d_nav.frame_decoder(data_bits);
 
     // 3. Check operation executed correctly
     if (d_nav.flag_crc_test == true)
@@ -169,32 +167,32 @@ void beidou_b2a_telemetry_decoder_gs::decode_frame(float *frame_symbols)
             // get object for this SV (mandatory)
             std::shared_ptr<Beidou_Cnav2_Ephemeris> tmp_obj = std::make_shared<Beidou_Cnav2_Ephemeris>(d_nav.get_ephemeris());
             this->message_port_pub(pmt::mp("telemetry"), pmt::make_any(tmp_obj));
-            DLOG(INFO) << "BEIDOU CNAV2 Ephemeris have been received in channel" << d_channel << " from satellite " << d_satellite;
-            std::cout << TEXT_YELLOW << "New BDS B2a CNAV2 message received in channel " << d_channel << ": ephemeris from satellite " << d_satellite << TEXT_RESET << std::endl;
+            DLOG(INFO) << "BeiDou CNAV2 Ephemeris have been received in channel" << d_channel << " from satellite " << d_satellite;
+            std::cout << TEXT_YELLOW << "New BeiDou B2a CNAV2 message received in channel " << d_channel << ": ephemeris from satellite " << d_satellite << TEXT_RESET << std::endl;
         }
     if (d_nav.have_new_utc_model() == true)
         {
             // get object for this SV (mandatory)
             std::shared_ptr<Beidou_Cnav2_Utc_Model> tmp_obj = std::make_shared<Beidou_Cnav2_Utc_Model>(d_nav.get_utc_model());
             this->message_port_pub(pmt::mp("telemetry"), pmt::make_any(tmp_obj));
-            DLOG(INFO) << "BEIDOU CNAV2 UTC Model have been received in channel" << d_channel << " from satellite " << d_satellite;
-            std::cout << TEXT_YELLOW << "New BDS B2a CNAV2 UTC model message received in channel " << d_channel << ": UTC model parameters from satellite " << d_satellite << TEXT_RESET << std::endl;
+            DLOG(INFO) << "BeiDou CNAV2 UTC Model have been received in channel" << d_channel << " from satellite " << d_satellite;
+            std::cout << TEXT_YELLOW << "New BeiDou B2a CNAV2 UTC model message received in channel " << d_channel << ": UTC model parameters from satellite " << d_satellite << TEXT_RESET << std::endl;
         }
     if (d_nav.have_new_iono() == true)
         {
             // get object for this SV (mandatory)
             std::shared_ptr<Beidou_Cnav2_Iono> tmp_obj = std::make_shared<Beidou_Cnav2_Iono>(d_nav.get_iono());
             this->message_port_pub(pmt::mp("telemetry"), pmt::make_any(tmp_obj));
-            DLOG(INFO) << "BEIDOU CNAV2 Iono have been received in channel" << d_channel << " from satellite " << d_satellite;
-            std::cout << TEXT_YELLOW << "New BDS B2a CNAV2 Iono message received in channel " << d_channel << ": UTC model parameters from satellite " << d_satellite << TEXT_RESET << std::endl;
+            DLOG(INFO) << "BeiDou CNAV2 Iono have been received in channel" << d_channel << " from satellite " << d_satellite;
+            std::cout << TEXT_YELLOW << "New BeiDou B2a CNAV2 Iono message received in channel " << d_channel << ": UTC model parameters from satellite " << d_satellite << TEXT_RESET << std::endl;
         }
     if (d_nav.have_new_almanac() == true)
         {
             unsigned int slot_nbr = d_nav.i_alm_satellite_PRN;
             std::shared_ptr<Beidou_Cnav2_Almanac> tmp_obj = std::make_shared<Beidou_Cnav2_Almanac>(d_nav.get_almanac(slot_nbr));
             this->message_port_pub(pmt::mp("telemetry"), pmt::make_any(tmp_obj));
-            DLOG(INFO) << "BEIDOU CNAV2 Almanac have been received in channel" << d_channel << " in slot number " << slot_nbr;
-            std::cout << TEXT_YELLOW << "New BDS B2a CNAV2 almanac received in channel " << d_channel << " from satellite " << d_satellite << TEXT_RESET << std::endl;
+            DLOG(INFO) << "BeiDou CNAV2 Almanac have been received in channel" << d_channel << " in slot number " << slot_nbr;
+            std::cout << TEXT_YELLOW << "New BeiDou B2a CNAV2 almanac received in channel " << d_channel << " from satellite " << d_satellite << TEXT_RESET << std::endl;
         }
 }
 
@@ -240,7 +238,7 @@ void beidou_b2a_telemetry_decoder_gs::reset()
     d_TOW_at_current_symbol_ms = 0;
     d_sent_tlm_failed_msg = false;
     d_flag_valid_word = false;
-    DLOG(INFO) << "Beidou B2a Telemetry decoder reset for satellite " << d_satellite;
+    DLOG(INFO) << "BeiDou B2a Telemetry decoder reset for satellite " << d_satellite;
     return;
 }
 
@@ -412,49 +410,49 @@ int beidou_b2a_telemetry_decoder_gs::general_work(int noutput_items __attribute_
         {
             if (d_nav.flag_TOW_10 == true)
                 {
-                    d_TOW_at_Preamble_ms = static_cast<uint32_t>((d_nav.cnav2_ephemeris.SOW + BEIDOU_B2a_BDT2GPST_LEAP_SEC_OFFSET) * 1000.0);
+                    d_TOW_at_Preamble_ms = static_cast<uint32_t>((d_nav.cnav2_ephemeris.SOW + BEIDOU_CNAV2_BDT2GPST_LEAP_SEC_OFFSET) * 1000.0);
                     flag_TOW_set = true;
                     d_nav.flag_TOW_10 = false;
                 }
             else if (d_nav.flag_TOW_11 == true)
                 {
-                    d_TOW_at_Preamble_ms = static_cast<uint32_t>((d_nav.cnav2_ephemeris.SOW + BEIDOU_B2a_BDT2GPST_LEAP_SEC_OFFSET) * 1000.0);
+                    d_TOW_at_Preamble_ms = static_cast<uint32_t>((d_nav.cnav2_ephemeris.SOW + BEIDOU_CNAV2_BDT2GPST_LEAP_SEC_OFFSET) * 1000.0);
                     flag_TOW_set = true;
                     d_nav.flag_TOW_11 = false;
                 }
             else if (d_nav.flag_TOW_30 == true)
                 {
-                    d_TOW_at_Preamble_ms = static_cast<uint32_t>((d_nav.cnav2_ephemeris.SOW + BEIDOU_B2a_BDT2GPST_LEAP_SEC_OFFSET) * 1000.0);
+                    d_TOW_at_Preamble_ms = static_cast<uint32_t>((d_nav.cnav2_ephemeris.SOW + BEIDOU_CNAV2_BDT2GPST_LEAP_SEC_OFFSET) * 1000.0);
                     flag_TOW_set = true;
                     d_nav.flag_TOW_30 = false;
                 }
             else if (d_nav.flag_TOW_31 == true)
                 {
-                    d_TOW_at_Preamble_ms = static_cast<uint32_t>((d_nav.cnav2_ephemeris.SOW + BEIDOU_B2a_BDT2GPST_LEAP_SEC_OFFSET) * 1000.0);
+                    d_TOW_at_Preamble_ms = static_cast<uint32_t>((d_nav.cnav2_ephemeris.SOW + BEIDOU_CNAV2_BDT2GPST_LEAP_SEC_OFFSET) * 1000.0);
                     flag_TOW_set = true;
                     d_nav.flag_TOW_31 = false;
                 }
             else if (d_nav.flag_TOW_32 == true)
                 {
-                    d_TOW_at_Preamble_ms = static_cast<uint32_t>((d_nav.cnav2_ephemeris.SOW + BEIDOU_B2a_BDT2GPST_LEAP_SEC_OFFSET) * 1000.0);
+                    d_TOW_at_Preamble_ms = static_cast<uint32_t>((d_nav.cnav2_ephemeris.SOW + BEIDOU_CNAV2_BDT2GPST_LEAP_SEC_OFFSET) * 1000.0);
                     flag_TOW_set = true;
                     d_nav.flag_TOW_32 = false;
                 }
             else if (d_nav.flag_TOW_33 == true)
                 {
-                    d_TOW_at_Preamble_ms = static_cast<uint32_t>((d_nav.cnav2_ephemeris.SOW + BEIDOU_B2a_BDT2GPST_LEAP_SEC_OFFSET) * 1000.0);
+                    d_TOW_at_Preamble_ms = static_cast<uint32_t>((d_nav.cnav2_ephemeris.SOW + BEIDOU_CNAV2_BDT2GPST_LEAP_SEC_OFFSET) * 1000.0);
                     flag_TOW_set = true;
                     d_nav.flag_TOW_33 = false;
                 }
             else if (d_nav.flag_TOW_34 == true)
                 {
-                    d_TOW_at_Preamble_ms = static_cast<uint32_t>((d_nav.cnav2_ephemeris.SOW + BEIDOU_B2a_BDT2GPST_LEAP_SEC_OFFSET) * 1000.0);
+                    d_TOW_at_Preamble_ms = static_cast<uint32_t>((d_nav.cnav2_ephemeris.SOW + BEIDOU_CNAV2_BDT2GPST_LEAP_SEC_OFFSET) * 1000.0);
                     flag_TOW_set = true;
                     d_nav.flag_TOW_34 = false;
                 }
             else if (d_nav.flag_TOW_40 == true)
                 {
-                    d_TOW_at_Preamble_ms = static_cast<uint32_t>((d_nav.cnav2_ephemeris.SOW + BEIDOU_B2a_BDT2GPST_LEAP_SEC_OFFSET) * 1000.0);
+                    d_TOW_at_Preamble_ms = static_cast<uint32_t>((d_nav.cnav2_ephemeris.SOW + BEIDOU_CNAV2_BDT2GPST_LEAP_SEC_OFFSET) * 1000.0);
                     flag_TOW_set = true;
                     d_nav.flag_TOW_40 = false;
                 }
@@ -464,7 +462,7 @@ int beidou_b2a_telemetry_decoder_gs::general_work(int noutput_items __attribute_
 
             if (last_d_TOW_at_current_symbol_ms != 0 and abs(static_cast<int64_t>(d_TOW_at_current_symbol_ms) - int64_t(last_d_TOW_at_current_symbol_ms)) > d_symbol_duration_ms)
                 {
-                    LOG(INFO) << "Warning: BEIDOU B2a TOW update in ch " << d_channel
+                    LOG(INFO) << "Warning: BeiDou B2a CNAV2 TOW update in ch " << d_channel
                               << " does not match the TLM TOW counter " << static_cast<int64_t>(d_TOW_at_current_symbol_ms) - int64_t(last_d_TOW_at_current_symbol_ms) << " ms \n";
 
                     d_TOW_at_current_symbol_ms = 0;
@@ -509,7 +507,7 @@ int beidou_b2a_telemetry_decoder_gs::general_work(int noutput_items __attribute_
                         }
                     catch (const std::ifstream::failure &e)
                         {
-                            LOG(WARNING) << "Exception writing Telemetry GPS L5 dump file " << e.what();
+                            LOG(WARNING) << "Exception writing Telemetry BeiDou B2a dump file " << e.what();
                         }
                 }
 

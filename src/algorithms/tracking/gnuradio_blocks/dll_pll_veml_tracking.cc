@@ -320,9 +320,9 @@ dll_pll_veml_tracking::dll_pll_veml_tracking(const Dll_Pll_Conf &conf_) : gr::bl
             else if (signal_type == "5C")
                 {
                     d_signal_carrier_freq = BEIDOU_B2a_FREQ_HZ;
-                    d_code_period = BEIDOU_B2a_CODE_PERIOD;
+                    d_code_period = BEIDOU_B2ad_CODE_PERIOD;
                     d_code_chip_rate = BEIDOU_B2ad_CODE_RATE_HZ;
-                    d_symbols_per_bit = BEIDOU_B2a_SAMPLES_PER_SYMBOL;
+                    d_symbols_per_bit = BEIDOU_CNAV2_TELEMETRY_SYMBOLS_PER_BIT;
                     d_correlation_length_ms = 1;
                     d_code_samples_per_chip = 1;
                     d_code_length_chips = static_cast<uint32_t>(BEIDOU_B2ad_CODE_LENGTH_CHIPS);
