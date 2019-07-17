@@ -779,4 +779,81 @@ void beidou_b1c_code_gen_complex_sampled_boc_61_11(gsl::span<std::complex<float>
 }
 
 
+/*
+* Generates complex version of data+pilot components as follows
+* Data component(in ICD Equation 4-11) in Sine BOC(1,1) and is in Real part  
+* First Pilot component(in ICD Equation 4-11) in Sine BOC(6,1) and is in Real part  
+* Second Pilot component(in ICD Equation 4-11) in Sine BOC(1,1) and is in Imaginary part 
+*/
+void beidou_b1c_code_gen_complex_sampled_boc(gsl::span<std::complex<float>> _dest,uint32_t _prn, int32_t _fs)
+{
+    //uint32_t _code_length =12 * BEIDOU_B1Cd_CODE_LENGTH_CHIPS;
+    //int32_t _code[_code_length];
+    
+    int32_t _samplesPerCode, _codeValueIndex;
+    float _ts;
+    float _tc;
+    const int32_t _codeLength =12 * BEIDOU_B1Cd_CODE_LENGTH_CHIPS;
 
+    //--- Find number of samples per spreading code ----------------------------
+    _samplesPerCode = static_cast<int>(static_cast<double>(_fs) / (static_cast<double>(BEIDOU_B1Cd_CODE_RATE_HZ) / static_cast<double>(_codeLength)));
+    
+    //Generating Data Component which is in Real Part
+    auto* real_code_data = static_cast<float*>(volk_gnsssdr_malloc(_samplesPerCode * sizeof(float), volk_gnsssdr_get_alignment()));
+    gsl::span<float> real_code_span_data(real_code_data, _samplesPerCode);
+    beidou_b1cd_code_gen_float_sampled_boc_11(real_code_span_data, _prn);
+
+
+    //Generating Pilot Component which is in Real Part
+    auto* real_code_pilot = static_cast<float*>(volk_gnsssdr_malloc(_samplesPerCode * sizeof(float), volk_gnsssdr_get_alignment()));
+    gsl::span<float> real_code_span_pilot(real_code_pilot, _samplesPerCode);
+    beidou_b1cp_code_gen_float_sampled_boc_61(real_code_span_pilot, _prn);
+        
+    
+    //Generating Pilot Component which is in Imaginary Part
+    auto* imaginary_code_pilot = static_cast<float*>(volk_gnsssdr_malloc(_samplesPerCode * sizeof(float), volk_gnsssdr_get_alignment()));
+    gsl::span<float> imaginary_code_span_pilot(imaginary_code_pilot, _samplesPerCode);
+    beidou_b1cp_code_gen_float_sampled_boc_11(imaginary_code_span_pilot, _prn);
+    
+    
+    //XORing the output of two Real parts to put in one Real Part 
+    auto* real_code = static_cast<float*>(volk_gnsssdr_malloc(_samplesPerCode * sizeof(float), volk_gnsssdr_get_alignment()));
+    gsl::span<float> real_code_span(real_code, _samplesPerCode);
+    
+    for (uint32_t m = 0; m < 12 * BEIDOU_B1Cd_CODE_LENGTH_CHIPS; m++)
+        {
+            for (uint32_t n = 0; n < 12 * BEIDOU_B1Cd_CODE_LENGTH_CHIPS; n++)
+                {
+                    real_code_span[n + m * 12 * BEIDOU_B1Cd_CODE_LENGTH_CHIPS] = real_code_span_data[n] xor real_code_span_pilot[m];
+                }
+        }
+    
+    
+     //--- Find time constants --------------------------------------------------
+    _ts = 1.0 / static_cast<float>(_fs);                       // Sampling period in sec
+    _tc = 1.0 / static_cast<float>(BEIDOU_B1Cd_CODE_RATE_HZ);  // code chip period in sec
+    
+        
+    for (uint32_t i = 0; i < _samplesPerCode; i++)
+        {
+            //=== Digitizing =======================================================
+
+            //--- Make index array to read B1C code values -------------------------
+            _codeValueIndex = ceil((_ts * (static_cast<float>(i) + 1)) / _tc) - 1;
+
+            //--- Make the digitized version of the B1Cd code -----------------------
+            if (i == _samplesPerCode - 1)
+                {
+                    //--- Correct the last index (due to number rounding issues) -----------
+                    _dest[i] = std::complex<float>(1.0 - 2.0 * real_code_span[_codeLength - 1], 1.0 - 2.0 * imaginary_code_span_pilot[_codeLength - 1]);
+                }
+            else
+                {
+                    _dest[i] = std::complex<float>(1.0 - 2.0 * real_code_span[_codeValueIndex], 1.0 - 2.0 * imaginary_code_span_pilot[_codeLength - 1]);  //repeat the chip -> upsample
+                }
+        }           
+    volk_gnsssdr_free(real_code_span_data);
+    volk_gnsssdr_free(real_code_span_pilot);
+    volk_gnsssdr_free(real_code_span);
+    volk_gnsssdr_free(imaginary_code_span_pilot);
+}
