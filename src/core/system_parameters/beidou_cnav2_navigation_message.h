@@ -35,12 +35,12 @@
 #define GNSS_SDR_BEIDOU_CNAV2_NAVIGATION_MESSAGE_H_
 
 
-#include "beidou_cnav2_ephemeris.h"
-#include "beidou_cnav2_almanac.h"
-#include "beidou_cnav2_utc_model.h"
-#include "beidou_cnav2_iono.h"
-#include <bitset>
 #include "Beidou_B2a.h"
+#include "beidou_cnav2_almanac.h"
+#include "beidou_cnav2_ephemeris.h"
+#include "beidou_cnav2_iono.h"
+#include "beidou_cnav2_utc_model.h"
+#include <bitset>
 
 
 /*!
@@ -56,41 +56,41 @@ private:
     bool read_navigation_bool(std::bitset<BEIDOU_CNAV2_DATA_BITS> const &bits, const std::vector<std::pair<int, int>> &parameter);
 
 public:
-    bool flag_crc_test;				//!< Flag indicating CRC test
-    unsigned int i_string_mes_type;	//!< Flag indicating MesType
+    bool flag_crc_test;             //!< Flag indicating CRC test
+    unsigned int i_frame_mes_type;  //!< Flag indicating MesType
     int32_t i_alm_satellite_PRN;
-    int i_channel_ID;				//!< PRN of the channel
-    unsigned int i_satellite_PRN;	//!< Satellite PRN
+    int i_channel_ID;              //!< PRN of the channel
+    unsigned int i_satellite_PRN;  //!< Satellite PRN
 
-    Beidou_Cnav2_Ephemeris cnav2_ephemeris;                   //!< Ephemeris information decoded
-    Beidou_Cnav2_Utc_Model cnav2_utc_model;                   //!< UTC model information
-    Beidou_Cnav2_Iono cnav2_iono;                             //!< UTC model information
+    Beidou_Cnav2_Ephemeris cnav2_ephemeris;                     //!< Ephemeris information decoded
+    Beidou_Cnav2_Utc_Model cnav2_utc_model;                     //!< UTC model information
+    Beidou_Cnav2_Iono cnav2_iono;                               //!< UTC model information
     Beidou_Cnav2_Almanac cnav2_almanac[BEIDOU_CNAV2_NBR_SATS];  //!< Almanac information for all 63 satellites
 
     // Ephemeris Flags and control variables
-    bool flag_all_ephemeris;    //!< Flag indicating that all strings containing ephemeris have been received
+    bool flag_all_ephemeris;          //!< Flag indicating that all strings containing ephemeris have been received
     bool flag_ephemeris_mes_type_10;  //!< Flag indicating that ephemeris 1/2 (Type 10) have been received
     bool flag_ephemeris_mes_type_11;  //!< Flag indicating that ephemeris 2/2 (Type 11) have been received
-    bool flag_ephemeris_mes_type_30; //!< Flag indicating that (Type 30) have been received
-    bool flag_ephemeris_mes_type_31; //!< Flag indicating that (Type 31) have been received
-    bool flag_ephemeris_mes_type_32; //!< Flag indicating that (Type 32) have been received
-    bool flag_ephemeris_mes_type_34; //!< Flag indicating that (Type 34) have been received
-    bool flag_ephemeris_mes_type_40; //!< Flag indicating that (Type 40) have been received
+    bool flag_ephemeris_mes_type_30;  //!< Flag indicating that (Type 30) have been received
+    bool flag_ephemeris_mes_type_31;  //!< Flag indicating that (Type 31) have been received
+    bool flag_ephemeris_mes_type_32;  //!< Flag indicating that (Type 32) have been received
+    bool flag_ephemeris_mes_type_34;  //!< Flag indicating that (Type 34) have been received
+    bool flag_ephemeris_mes_type_40;  //!< Flag indicating that (Type 40) have been received
 
     // Almanac Flags
-    bool flag_almanac_mes_type_31; //!< Flag indicating that almanac of Type 31 have been received
-    bool flag_almanac_mes_type_33; //!< Flag indicating that almanac of Type 33 have been received
-    bool flag_almanac_mes_type_40; //!< Flag indicating that almanac of Type 40 have been received
+    bool flag_almanac_mes_type_31;  //!< Flag indicating that almanac of Type 31 have been received
+    bool flag_almanac_mes_type_33;  //!< Flag indicating that almanac of Type 33 have been received
+    bool flag_almanac_mes_type_40;  //!< Flag indicating that almanac of Type 40 have been received
 
     // UTC and System Clocks Flags
-    bool flag_utc_model_valid;  //!< If set, it indicates that the UTC model parameters are filled
-    bool flag_utc_model_mes_type_32; //!< If set, it indicates that the UTC model parameters of Type 32 have been received
-    bool flag_utc_model_mes_type_33; //!< If set, it indicates that the UTC model parameters of Type 33 have been received
-    bool flag_utc_model_mes_type_34; //!< If set, it indicates that the UTC model parameters of Type 34 have been received
+    bool flag_utc_model_valid;        //!< If set, it indicates that the UTC model parameters are filled
+    bool flag_utc_model_mes_type_32;  //!< If set, it indicates that the UTC model parameters of Type 32 have been received
+    bool flag_utc_model_mes_type_33;  //!< If set, it indicates that the UTC model parameters of Type 33 have been received
+    bool flag_utc_model_mes_type_34;  //!< If set, it indicates that the UTC model parameters of Type 34 have been received
 
     // Iono Flgas
-    bool flag_iono_valid;  //!< If set, it indicates that the UTC model parameters are filled
-    bool flag_iono_mes_type_30; //!< If set, it indicates that the UTC model parameters of Type 32 have been received
+    bool flag_iono_valid;        //!< If set, it indicates that the UTC model parameters are filled
+    bool flag_iono_mes_type_30;  //!< If set, it indicates that the UTC model parameters of Type 32 have been received
 
 
     bool flag_TOW_set;  //!< Flag indicating when the TOW has been set
@@ -108,12 +108,12 @@ public:
     double d_dtr;          //!<  Relativistic clock correction term
     double d_satClkDrift;  //!<  Satellite clock drift
 
-    double d_previous_tb;                       //!< Previous iode for the Beidou_Cnav2_Ephemeris object. Used to determine when new data arrives
+    double d_previous_tb;                         //!< Previous iode for the Beidou_Cnav2_Ephemeris object. Used to determine when new data arrives
     double d_previous_Na[BEIDOU_CNAV2_NBR_SATS];  //!< Previous time for almanac of the Beidou_Cnav2_Almanac object
 
-    double temp;	//!< Temporary value
+    double temp;  //!< Temporary value
 
-    double crc_compute;		//!< Value of the computed CRC
+    double crc_compute;  //!< Value of the computed CRC
 
     /*!
      * \brief Compute CRC for BEIDOU CNAV2 strings

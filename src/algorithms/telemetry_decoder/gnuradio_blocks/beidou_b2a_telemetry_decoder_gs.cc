@@ -306,14 +306,14 @@ int beidou_b2a_telemetry_decoder_gs::general_work(int noutput_items __attribute_
                                 {
                                     for (uint32_t i = 0; i < BEIDOU_CNAV2_PREAMBLE_PERIOD_SYMBOLS; i++)
                                         {
-                                            d_frame_symbols[i] = d_symbol_history.at(i);
+                                            d_frame_symbols[i] = d_symbol_history.at(BEIDOU_CNAV2_PREAMBLE_LENGTH_SYMBOLS + i);
                                         }
                                 }
                             else  // 180 deg. inverted carrier phase PLL lock
                                 {
                                     for (uint32_t i = 0; i < BEIDOU_CNAV2_PREAMBLE_PERIOD_SYMBOLS; i++)
                                         {
-                                            d_frame_symbols[i] = -d_symbol_history.at(i);
+                                            d_frame_symbols[i] = -d_symbol_history.at(BEIDOU_CNAV2_PREAMBLE_LENGTH_SYMBOLS + i);
                                         }
                                 }
 
@@ -363,14 +363,14 @@ int beidou_b2a_telemetry_decoder_gs::general_work(int noutput_items __attribute_
                         {
                             for (uint32_t i = 0; i < BEIDOU_CNAV2_PREAMBLE_PERIOD_SYMBOLS; i++)
                                 {
-                                    d_frame_symbols[i] = d_symbol_history.at(i);
+                                    d_frame_symbols[i] = d_symbol_history.at(BEIDOU_CNAV2_PREAMBLE_LENGTH_SYMBOLS + i);
                                 }
                         }
                     else  //180 deg. inverted carrier phase PLL lock
                         {
                             for (uint32_t i = 0; i < BEIDOU_CNAV2_PREAMBLE_PERIOD_SYMBOLS; i++)
                                 {
-                                    d_frame_symbols[i] = -d_symbol_history.at(i);
+                                    d_frame_symbols[i] = -d_symbol_history.at(BEIDOU_CNAV2_PREAMBLE_LENGTH_SYMBOLS + i);
                                 }
                         }
 
