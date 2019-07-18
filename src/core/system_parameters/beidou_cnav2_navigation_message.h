@@ -41,6 +41,7 @@
 #include "beidou_cnav2_iono.h"
 #include "beidou_cnav2_utc_model.h"
 #include <bitset>
+#include <cstdint>
 
 
 /*!
@@ -50,17 +51,17 @@
  */
 class Beidou_Cnav2_Navigation_Message
 {
-private:
-    unsigned long int read_navigation_unsigned(std::bitset<BEIDOU_CNAV2_DATA_BITS> const &bits, const std::vector<std::pair<int, int>> &parameter);
-    signed long int read_navigation_signed(std::bitset<BEIDOU_CNAV2_DATA_BITS> const &bits, const std::vector<std::pair<int, int>> &parameter);
-    bool read_navigation_bool(std::bitset<BEIDOU_CNAV2_DATA_BITS> const &bits, const std::vector<std::pair<int, int>> &parameter);
-
 public:
-    bool flag_crc_test;             //!< Flag indicating CRC test
-    unsigned int i_frame_mes_type;  //!< Flag indicating MesType
+    /*!
+     * Default constructor
+     */
+    Beidou_Cnav2_Navigation_Message();
+
+    bool flag_crc_test;         //!< Flag indicating CRC test
+    uint32_t i_frame_mes_type;  //!< Flag indicating MesType
     int32_t i_alm_satellite_PRN;
-    int i_channel_ID;              //!< PRN of the channel
-    unsigned int i_satellite_PRN;  //!< Satellite PRN
+    int32_t i_channel_ID;      //!< PRN of the channel
+    uint32_t i_satellite_PRN;  //!< Satellite PRN
 
     Beidou_Cnav2_Ephemeris cnav2_ephemeris;                     //!< Ephemeris information decoded
     Beidou_Cnav2_Utc_Model cnav2_utc_model;                     //!< UTC model information
@@ -126,7 +127,7 @@ public:
      * \param satellite_slot_number [in] Satellite slot number identifier
      * \returns Frame number being decoded, 0 if operation was not successful.
      */
-    unsigned int get_frame_number(unsigned int satellite_slot_number);
+    uint32_t get_frame_number(uint32_t satellite_slot_number);
 
     /*!
      * \brief Reset BEIDOU CNAV2 Navigation Information
@@ -153,7 +154,7 @@ public:
      * \param satellite_slot_number Slot number identifier for the satellite
      * \returns Returns the Beidou_Cnav2_Almanac object for the input slot number
      */
-    Beidou_Cnav2_Almanac get_almanac(unsigned int satellite_slot_number);
+    Beidou_Cnav2_Almanac get_almanac(uint32_t satellite_slot_number);
 
     /*!
      * \brief Returns true if a new Beidou_Cnav2_Ephemeris object has arrived.
@@ -180,12 +181,12 @@ public:
      * \param frame_string [in] is the string message within the parsed frame
      * \returns Returns the ID of the decoded string
      */
-    int frame_decoder(std::string const &frame_string);
+    int32_t frame_decoder(std::string const &frame_string);
 
-    /*!
-     * Default constructor
-     */
-    Beidou_Cnav2_Navigation_Message();
+private:
+    uint64_t read_navigation_unsigned(std::bitset<BEIDOU_CNAV2_DATA_BITS> const &bits, const std::vector<std::pair<int32_t, int32_t>> &parameter);
+    int64_t read_navigation_signed(std::bitset<BEIDOU_CNAV2_DATA_BITS> const &bits, const std::vector<std::pair<int32_t, int32_t>> &parameter);
+    bool read_navigation_bool(std::bitset<BEIDOU_CNAV2_DATA_BITS> const &bits, const std::vector<std::pair<int32_t, int32_t>> &parameter);
 };
 
 #endif

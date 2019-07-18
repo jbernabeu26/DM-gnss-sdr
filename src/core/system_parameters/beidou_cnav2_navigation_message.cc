@@ -76,10 +76,10 @@ void Beidou_Cnav2_Navigation_Message::reset()
 
     // Data update information
     d_previous_tb = 0.0;
-    for (unsigned int i = 0; i < BEIDOU_CNAV2_NBR_SATS; i++)
+    for (uint32_t i = 0; i < BEIDOU_CNAV2_NBR_SATS; i++)
         d_previous_Na[i] = 0.0;
 
-    std::map<int, std::string> satelliteBlock;  //!< Map that stores to which block the PRN belongs http://www.navcen.uscg.gov/?Do=constellationStatus
+    std::map<int32_t, std::string> satelliteBlock;  //!< Map that stores to which block the PRN belongs http://www.navcen.uscg.gov/?Do=constellationStatus
 
     auto gnss_sat = Gnss_Satellite();
     std::string _system("BEIDOU");
@@ -92,7 +92,7 @@ Beidou_Cnav2_Navigation_Message::Beidou_Cnav2_Navigation_Message()
 }
 
 
-bool Beidou_Cnav2_Navigation_Message::read_navigation_bool(std::bitset<BEIDOU_CNAV2_DATA_BITS> const &bits, const std::vector<std::pair<int, int>> &parameter)
+bool Beidou_Cnav2_Navigation_Message::read_navigation_bool(std::bitset<BEIDOU_CNAV2_DATA_BITS> const &bits, const std::vector<std::pair<int32_t, int32_t>> &parameter)
 {
     bool value;
 
@@ -110,13 +110,13 @@ bool Beidou_Cnav2_Navigation_Message::read_navigation_bool(std::bitset<BEIDOU_CN
 }
 
 
-unsigned long int Beidou_Cnav2_Navigation_Message::read_navigation_unsigned(std::bitset<BEIDOU_CNAV2_DATA_BITS> const &bits, const std::vector<std::pair<int, int>> &parameter)
+uint64_t Beidou_Cnav2_Navigation_Message::read_navigation_unsigned(std::bitset<BEIDOU_CNAV2_DATA_BITS> const &bits, const std::vector<std::pair<int32_t, int32_t>> &parameter)
 {
-    unsigned long int value = 0;
-    int num_of_slices = parameter.size();
-    for (int i = 0; i < num_of_slices; i++)
+    uint64_t value = 0;
+    int32_t num_of_slices = parameter.size();
+    for (int32_t i = 0; i < num_of_slices; i++)
         {
-            for (int j = 0; j < parameter[i].second; j++)
+            for (int32_t j = 0; j < parameter[i].second; j++)
                 {
                     value <<= 1;  //shift left
                     if (bits[BEIDOU_CNAV2_DATA_BITS - parameter[i].first - j] == 1)
@@ -129,11 +129,11 @@ unsigned long int Beidou_Cnav2_Navigation_Message::read_navigation_unsigned(std:
 }
 
 
-signed long int Beidou_Cnav2_Navigation_Message::read_navigation_signed(std::bitset<BEIDOU_CNAV2_DATA_BITS> const &bits, const std::vector<std::pair<int, int>> &parameter)
+int64_t Beidou_Cnav2_Navigation_Message::read_navigation_signed(std::bitset<BEIDOU_CNAV2_DATA_BITS> const &bits, const std::vector<std::pair<int32_t, int32_t>> &parameter)
 {
-    signed long int value = 0;
-    signed long int sign = 0;
-    int num_of_slices = parameter.size();
+    int64_t value = 0;
+    int64_t sign = 0;
+    int32_t num_of_slices = parameter.size();
     // read the MSB and perform the sign extension
     if (bits[BEIDOU_CNAV2_DATA_BITS - parameter[0].first] == 1)
         {
@@ -143,9 +143,9 @@ signed long int Beidou_Cnav2_Navigation_Message::read_navigation_signed(std::bit
         {
             sign = 1;
         }
-    for (int i = 0; i < num_of_slices; i++)
+    for (int32_t i = 0; i < num_of_slices; i++)
         {
-            for (int j = 1; j < parameter[i].second; j++)
+            for (int32_t j = 1; j < parameter[i].second; j++)
                 {
                     value <<= 1;  //shift left
                     if (bits[BEIDOU_CNAV2_DATA_BITS - parameter[i].first - j] == 1)
@@ -184,7 +184,7 @@ bool Beidou_Cnav2_Navigation_Message::crc_test(std::bitset<BEIDOU_CNAV2_DATA_BIT
 }
 
 
-int Beidou_Cnav2_Navigation_Message::frame_decoder(std::string const &frame_string)
+int32_t Beidou_Cnav2_Navigation_Message::frame_decoder(std::string const &frame_string)
 {
     // Gets the message data
     std::bitset<BEIDOU_CNAV2_DATA_BITS> frame_bits(frame_string);
@@ -198,14 +198,14 @@ int Beidou_Cnav2_Navigation_Message::frame_decoder(std::string const &frame_stri
     if (flag_crc_test == false)
         return 0;
 
-    i_frame_mes_type = static_cast<unsigned int>(read_navigation_unsigned(frame_bits, MesType));
+    i_frame_mes_type = static_cast<uint32_t>(read_navigation_unsigned(frame_bits, MesType));
 
     // Decode all 8 string messages
     switch (i_frame_mes_type)
         {
         case 10:
             //--- It is Type 10 -----------------------------------------------
-            cnav2_ephemeris.i_satellite_PRN = static_cast<unsigned int>(read_navigation_unsigned(frame_bits, PRN));
+            cnav2_ephemeris.i_satellite_PRN = static_cast<uint32_t>(read_navigation_unsigned(frame_bits, PRN));
             //cnav2_ephemeris.MesType = static_cast<double>(read_navigation_unsigned(frame_bits, MesType));
             cnav2_ephemeris.SOW = static_cast<double>(read_navigation_unsigned(frame_bits, SOW)) * 3;       //[s] effective range 0~604797
             cnav2_ephemeris.i_BDS_week = static_cast<double>(read_navigation_unsigned(frame_bits, WN_10));  //[week] effective range 0~8191
@@ -239,7 +239,7 @@ int Beidou_Cnav2_Navigation_Message::frame_decoder(std::string const &frame_stri
 
         case 11:
             //--- It is Type 11 -----------------------------------------------
-            cnav2_ephemeris.i_satellite_PRN = static_cast<unsigned int>(read_navigation_unsigned(frame_bits, PRN));
+            cnav2_ephemeris.i_satellite_PRN = static_cast<uint32_t>(read_navigation_unsigned(frame_bits, PRN));
             //cnav2_ephemeris.MesType = static_cast<double>(read_navigation_unsigned(frame_bits, MesType));
             cnav2_ephemeris.SOW = static_cast<double>(read_navigation_unsigned(frame_bits, SOW)) * 3;  //[s] effective range 0~604797
             cnav2_ephemeris.HS = static_cast<double>(read_navigation_unsigned(frame_bits, HS_11));
@@ -273,7 +273,7 @@ int Beidou_Cnav2_Navigation_Message::frame_decoder(std::string const &frame_stri
 
         case 30:
             // --- It is Type 30 ----------------------------------------------
-            cnav2_ephemeris.i_satellite_PRN = static_cast<unsigned int>(read_navigation_unsigned(frame_bits, PRN));
+            cnav2_ephemeris.i_satellite_PRN = static_cast<uint32_t>(read_navigation_unsigned(frame_bits, PRN));
             //cnav2_ephemeris.MesType = static_cast<double>(read_navigation_unsigned(frame_bits, MesType));
             cnav2_ephemeris.SOW = static_cast<double>(read_navigation_unsigned(frame_bits, SOW)) * 3;  //[s] effective range 0~604797
             cnav2_ephemeris.HS = static_cast<double>(read_navigation_unsigned(frame_bits, HS_30));
@@ -320,7 +320,7 @@ int Beidou_Cnav2_Navigation_Message::frame_decoder(std::string const &frame_stri
 
         case 31:
             // --- It is Type 31 ----------------------------------------------
-            cnav2_ephemeris.i_satellite_PRN = static_cast<unsigned int>(read_navigation_unsigned(frame_bits, PRN));
+            cnav2_ephemeris.i_satellite_PRN = static_cast<uint32_t>(read_navigation_unsigned(frame_bits, PRN));
             //cnav2_ephemeris.MesType = static_cast<double>(read_navigation_unsigned(frame_bits, MesType));
             cnav2_ephemeris.SOW = static_cast<double>(read_navigation_unsigned(frame_bits, SOW)) * 3;  //[s] effective range 0~604797
             cnav2_ephemeris.HS = static_cast<double>(read_navigation_unsigned(frame_bits, HS_31));
@@ -342,9 +342,9 @@ int Beidou_Cnav2_Navigation_Message::frame_decoder(std::string const &frame_stri
             cnav2_ephemeris.IODC = static_cast<double>(read_navigation_unsigned(frame_bits, IODC_31));
 
             // Reduced Almanac Parameters Sat 1(38 bits)
-            i_alm_satellite_PRN = static_cast<unsigned int>(read_navigation_unsigned(frame_bits, PRN_a1_31));  //[dimensionless] effective range 1~63
+            i_alm_satellite_PRN = static_cast<uint32_t>(read_navigation_unsigned(frame_bits, PRN_a1_31));  //[dimensionless] effective range 1~63
             cnav2_almanac[i_alm_satellite_PRN - 1].i_satellite_PRN = i_alm_satellite_PRN;
-            cnav2_almanac[i_alm_satellite_PRN - 1].i_BDS_week = static_cast<int>(read_navigation_unsigned(frame_bits, WN_a_31));                               //[week] effective range 0~8191
+            cnav2_almanac[i_alm_satellite_PRN - 1].i_BDS_week = static_cast<int32_t>(read_navigation_unsigned(frame_bits, WN_a_31));                           //[week] effective range 0~8191
             cnav2_almanac[i_alm_satellite_PRN - 1].t_oa = static_cast<double>(read_navigation_unsigned(frame_bits, t_oa_31)) * TWO_P12;                        //[s] effective range 0~602112
             cnav2_almanac[i_alm_satellite_PRN - 1].SatType = static_cast<double>(read_navigation_unsigned(frame_bits, SatType1_31));                           //[dimensionless] binary, 01:GEO, 10:IGSO, 11:MEO, 00:Reserved
             cnav2_almanac[i_alm_satellite_PRN - 1].delta_A = static_cast<double>(read_navigation_signed(frame_bits, delta_A1_31)) * TWO_P9;                    //[m] reference MEO: 27906100m, IGSO/GEO: 42162200m
@@ -354,9 +354,9 @@ int Beidou_Cnav2_Navigation_Message::frame_decoder(std::string const &frame_stri
             // Reduced Almanac Parameters End
 
             // Reduced Almanac Parameters Sat 2(38 bits)
-            i_alm_satellite_PRN = static_cast<unsigned int>(read_navigation_unsigned(frame_bits, PRN_a2_31));  //[dimensionless] effective range 1~63
+            i_alm_satellite_PRN = static_cast<uint32_t>(read_navigation_unsigned(frame_bits, PRN_a2_31));  //[dimensionless] effective range 1~63
             cnav2_almanac[i_alm_satellite_PRN - 1].i_satellite_PRN = i_alm_satellite_PRN;
-            cnav2_almanac[i_alm_satellite_PRN - 1].i_BDS_week = static_cast<int>(read_navigation_unsigned(frame_bits, WN_a_31));                               //[week] effective range 0~8191
+            cnav2_almanac[i_alm_satellite_PRN - 1].i_BDS_week = static_cast<int32_t>(read_navigation_unsigned(frame_bits, WN_a_31));                           //[week] effective range 0~8191
             cnav2_almanac[i_alm_satellite_PRN - 1].t_oa = static_cast<double>(read_navigation_unsigned(frame_bits, t_oa_31)) * TWO_P12;                        //[s] effective range 0~602112
             cnav2_almanac[i_alm_satellite_PRN - 1].SatType = static_cast<double>(read_navigation_unsigned(frame_bits, SatType2_31));                           //[dimensionless] binary, 01:GEO, 10:IGSO, 11:MEO, 00:Reserved
             cnav2_almanac[i_alm_satellite_PRN - 1].delta_A = static_cast<double>(read_navigation_signed(frame_bits, delta_A2_31)) * TWO_P9;                    //[m] reference MEO: 27906100m, IGSO/GEO: 42162200m
@@ -366,9 +366,9 @@ int Beidou_Cnav2_Navigation_Message::frame_decoder(std::string const &frame_stri
             // Reduced Almanac Parameters End
 
             // Reduced Almanac Parameters Sat 3(38 bits)
-            i_alm_satellite_PRN = static_cast<unsigned int>(read_navigation_unsigned(frame_bits, PRN_a3_31));  //[dimensionless] effective range 1~63
+            i_alm_satellite_PRN = static_cast<uint32_t>(read_navigation_unsigned(frame_bits, PRN_a3_31));  //[dimensionless] effective range 1~63
             cnav2_almanac[i_alm_satellite_PRN - 1].i_satellite_PRN = i_alm_satellite_PRN;
-            cnav2_almanac[i_alm_satellite_PRN - 1].i_BDS_week = static_cast<int>(read_navigation_unsigned(frame_bits, WN_a_31));                               //[week] effective range 0~8191
+            cnav2_almanac[i_alm_satellite_PRN - 1].i_BDS_week = static_cast<int32_t>(read_navigation_unsigned(frame_bits, WN_a_31));                           //[week] effective range 0~8191
             cnav2_almanac[i_alm_satellite_PRN - 1].t_oa = static_cast<double>(read_navigation_unsigned(frame_bits, t_oa_31)) * TWO_P12;                        //[s] effective range 0~602112
             cnav2_almanac[i_alm_satellite_PRN - 1].SatType = static_cast<double>(read_navigation_unsigned(frame_bits, SatType3_31));                           //[dimensionless] binary, 01:GEO, 10:IGSO, 11:MEO, 00:Reserved
             cnav2_almanac[i_alm_satellite_PRN - 1].delta_A = static_cast<double>(read_navigation_signed(frame_bits, delta_A3_31)) * TWO_P9;                    //[m] reference MEO: 27906100m, IGSO/GEO: 42162200m
@@ -388,7 +388,7 @@ int Beidou_Cnav2_Navigation_Message::frame_decoder(std::string const &frame_stri
 
         case 32:
             // --- It is Type 32 ----------------------------------------------
-            cnav2_ephemeris.i_satellite_PRN = static_cast<unsigned int>(read_navigation_unsigned(frame_bits, PRN));
+            cnav2_ephemeris.i_satellite_PRN = static_cast<uint32_t>(read_navigation_unsigned(frame_bits, PRN));
             //cnav2_ephemeris.MesType = static_cast<double>(read_navigation_unsigned(frame_bits, MesType));
             cnav2_ephemeris.SOW = static_cast<double>(read_navigation_unsigned(frame_bits, SOW)) * 3;  //[s] effective range 0~604797
             cnav2_ephemeris.HS = static_cast<double>(read_navigation_unsigned(frame_bits, HS_32));
@@ -430,7 +430,7 @@ int Beidou_Cnav2_Navigation_Message::frame_decoder(std::string const &frame_stri
 
         case 33:
             // --- It is Type 33 ----------------------------------------------
-            cnav2_ephemeris.i_satellite_PRN = static_cast<unsigned int>(read_navigation_unsigned(frame_bits, PRN));
+            cnav2_ephemeris.i_satellite_PRN = static_cast<uint32_t>(read_navigation_unsigned(frame_bits, PRN));
             //cnav2_ephemeris.MesType = static_cast<double>(read_navigation_unsigned(frame_bits, MesType));
             cnav2_ephemeris.SOW = static_cast<double>(read_navigation_unsigned(frame_bits, SOW)) * 3;  //[s] effective range 0~604797
             cnav2_ephemeris.HS = static_cast<double>(read_navigation_unsigned(frame_bits, HS_33));
@@ -459,7 +459,7 @@ int Beidou_Cnav2_Navigation_Message::frame_decoder(std::string const &frame_stri
                                                                                                                         // BGTO Parameters End
 
             // Reduced Almanac Parameters (38 bits)
-            i_alm_satellite_PRN = static_cast<unsigned int>(read_navigation_unsigned(frame_bits, PRN_ALM_33));  //[dimensionless] effective range 1~63
+            i_alm_satellite_PRN = static_cast<uint32_t>(read_navigation_unsigned(frame_bits, PRN_ALM_33));  //[dimensionless] effective range 1~63
             cnav2_almanac[i_alm_satellite_PRN - 1].i_satellite_PRN = i_alm_satellite_PRN;
             cnav2_almanac[i_alm_satellite_PRN - 1].SatType = static_cast<double>(read_navigation_unsigned(frame_bits, SatType_33));                           //[dimensionless] binary, 01:GEO, 10:IGSO, 11:MEO, 00:Reserved
             cnav2_almanac[i_alm_satellite_PRN - 1].delta_A = static_cast<double>(read_navigation_signed(frame_bits, delta_A_33)) * TWO_P9;                    //[m] reference MEO: 27906100m, IGSO/GEO: 42162200m
@@ -469,7 +469,7 @@ int Beidou_Cnav2_Navigation_Message::frame_decoder(std::string const &frame_stri
                                                                                                                                                               // Reduced Almanac Parameters End
 
             cnav2_ephemeris.IODC = static_cast<double>(read_navigation_unsigned(frame_bits, IODC_33));
-            cnav2_almanac[i_alm_satellite_PRN - 1].i_BDS_week = static_cast<int>(read_navigation_unsigned(frame_bits, WN_ALM_33));       //[week] effective range 0~8191
+            cnav2_almanac[i_alm_satellite_PRN - 1].i_BDS_week = static_cast<int32_t>(read_navigation_unsigned(frame_bits, WN_ALM_33));   //[week] effective range 0~8191
             cnav2_almanac[i_alm_satellite_PRN - 1].t_oa = static_cast<double>(read_navigation_unsigned(frame_bits, t_oa_33)) * TWO_P12;  //[s] effective range 0~602112
             cnav2_ephemeris.Rev = static_cast<double>(read_navigation_unsigned(frame_bits, Rev_33));
 
@@ -483,7 +483,7 @@ int Beidou_Cnav2_Navigation_Message::frame_decoder(std::string const &frame_stri
         case 34:
             // --- It is Type 34 ----------------------------------------------
 
-            cnav2_ephemeris.i_satellite_PRN = static_cast<unsigned int>(read_navigation_unsigned(frame_bits, PRN));
+            cnav2_ephemeris.i_satellite_PRN = static_cast<uint32_t>(read_navigation_unsigned(frame_bits, PRN));
             //cnav2_ephemeris.MesType = static_cast<double>(read_navigation_unsigned(frame_bits, MesType));
             cnav2_ephemeris.SOW = static_cast<double>(read_navigation_unsigned(frame_bits, SOW)) * 3;  //[s] effective range 0~604797
             cnav2_ephemeris.HS = static_cast<double>(read_navigation_unsigned(frame_bits, HS_34));
@@ -535,7 +535,7 @@ int Beidou_Cnav2_Navigation_Message::frame_decoder(std::string const &frame_stri
         case 40:
             // --- It is Type 40 ----------------------------------------------
 
-            cnav2_ephemeris.i_satellite_PRN = static_cast<unsigned int>(read_navigation_unsigned(frame_bits, PRN));
+            cnav2_ephemeris.i_satellite_PRN = static_cast<uint32_t>(read_navigation_unsigned(frame_bits, PRN));
             //cnav2_ephemeris.MesType = static_cast<double>(read_navigation_unsigned(frame_bits, MesType));
             cnav2_ephemeris.SOW = static_cast<double>(read_navigation_unsigned(frame_bits, SOW)) * 3;  //[s] effective range 0~604797
             cnav2_ephemeris.HS = static_cast<double>(read_navigation_unsigned(frame_bits, HS_40));
@@ -556,10 +556,10 @@ int Beidou_Cnav2_Navigation_Message::frame_decoder(std::string const &frame_stri
             // SISAI_OC End
 
             // Midi Almanac Parameters (156 bits)
-            i_alm_satellite_PRN = static_cast<unsigned int>(read_navigation_unsigned(frame_bits, PRN_a_40));  //[dimensionless] effective range 1~63
+            i_alm_satellite_PRN = static_cast<uint32_t>(read_navigation_unsigned(frame_bits, PRN_a_40));  //[dimensionless] effective range 1~63
             cnav2_almanac[i_alm_satellite_PRN - 1].i_satellite_PRN = i_alm_satellite_PRN;
             cnav2_almanac[i_alm_satellite_PRN - 1].SatType = static_cast<double>(read_navigation_unsigned(frame_bits, SatType_40));                                //[dimensionless] binary, 01:GEO, 10:IGSO, 11:MEO, 00:Reserved
-            cnav2_almanac[i_alm_satellite_PRN - 1].i_BDS_week = static_cast<int>(read_navigation_unsigned(frame_bits, WN_a_40));                                   //[week] effective range 0~8191
+            cnav2_almanac[i_alm_satellite_PRN - 1].i_BDS_week = static_cast<int32_t>(read_navigation_unsigned(frame_bits, WN_a_40));                               //[week] effective range 0~8191
             cnav2_almanac[i_alm_satellite_PRN - 1].t_oa = static_cast<double>(read_navigation_unsigned(frame_bits, t_oa_40)) * TWO_P12;                            //[s] effective range 0~602112
             cnav2_almanac[i_alm_satellite_PRN - 1].e = static_cast<double>(read_navigation_unsigned(frame_bits, e_40)) * TWO_N16;                                  //[dimensionless]
             cnav2_almanac[i_alm_satellite_PRN - 1].delta_i = static_cast<double>(read_navigation_signed(frame_bits, delta_i_40)) * BEIDOU_CNAV2_PI * TWO_N14;      //[pi]
@@ -612,7 +612,7 @@ Beidou_Cnav2_Iono Beidou_Cnav2_Navigation_Message::get_iono()
 }
 
 
-Beidou_Cnav2_Almanac Beidou_Cnav2_Navigation_Message::get_almanac(unsigned int satellite_slot_number)
+Beidou_Cnav2_Almanac Beidou_Cnav2_Navigation_Message::get_almanac(uint32_t satellite_slot_number)
 {
     return cnav2_almanac[satellite_slot_number - 1];
 }
