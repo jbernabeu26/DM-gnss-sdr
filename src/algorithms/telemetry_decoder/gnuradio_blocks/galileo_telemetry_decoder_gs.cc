@@ -630,6 +630,7 @@ int galileo_telemetry_decoder_gs::general_work(int noutput_items __attribute__((
                             {
                                 d_CRC_error_counter = 0;
                                 d_flag_preamble = true;  // valid preamble indicator (initialized to false every work())
+                                gr::thread::scoped_lock lock(d_setlock);
                                 d_last_valid_preamble = d_sample_counter;
                                 if (!d_flag_frame_sync)
                                     {

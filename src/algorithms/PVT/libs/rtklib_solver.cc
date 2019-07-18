@@ -54,6 +54,7 @@
 #include "rtklib_solver.h"
 #include "Beidou_B1I.h"
 #include "Beidou_B3I.h"
+#include "Beidou_DNAV.h"
 #include "GLONASS_L1_L2_CA.h"
 #include "GPS_L1_CA.h"
 #include "Galileo_E1.h"
@@ -77,16 +78,7 @@ Rtklib_Solver::Rtklib_Solver(int nchannels, std::string dump_filename, bool flag
     count_valid_position = 0;
     this->set_averaging_flag(false);
     rtk_ = rtk;
-    for (double &i : dop_)
-        {
-            i = 0.0;
-        }
-    pvt_sol = {{0, 0}, {0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0}, '0', '0', '0', 0, 0, 0};
-    ssat_t ssat0 = {0, 0, {0.0}, {0.0}, {0.0}, {'0'}, {'0'}, {'0'}, {'0'}, {'0'}, {}, {}, {}, {}, 0.0, 0.0, 0.0, 0.0, {{{0, 0}}, {{0, 0}}}, {{}, {}}};
-    for (auto &i : pvt_ssat)
-        {
-            i = ssat0;
-        }
+
     // ############# ENABLE DATA FILE LOG #################
     if (d_flag_dump_enabled == true)
         {
@@ -104,35 +96,6 @@ Rtklib_Solver::Rtklib_Solver(int nchannels, std::string dump_filename, bool flag
                         }
                 }
         }
-    // PVT MONITOR
-    monitor_pvt.TOW_at_current_symbol_ms = 0U;
-    monitor_pvt.week = 0U;
-    monitor_pvt.RX_time = 0.0;
-    monitor_pvt.user_clk_offset = 0.0;
-    monitor_pvt.pos_x = 0.0;
-    monitor_pvt.pos_y = 0.0;
-    monitor_pvt.pos_z = 0.0;
-    monitor_pvt.vel_x = 0.0;
-    monitor_pvt.vel_y = 0.0;
-    monitor_pvt.vel_z = 0.0;
-    monitor_pvt.cov_xx = 0.0;
-    monitor_pvt.cov_yy = 0.0;
-    monitor_pvt.cov_zz = 0.0;
-    monitor_pvt.cov_xy = 0.0;
-    monitor_pvt.cov_yz = 0.0;
-    monitor_pvt.cov_zx = 0.0;
-    monitor_pvt.latitude = 0.0;
-    monitor_pvt.longitude = 0.0;
-    monitor_pvt.height = 0.0;
-    monitor_pvt.valid_sats = 0;
-    monitor_pvt.solution_status = 0;
-    monitor_pvt.solution_type = 0;
-    monitor_pvt.AR_ratio_factor = 0.0;
-    monitor_pvt.AR_ratio_threshold = 0.0;
-    monitor_pvt.gdop = 0.0;
-    monitor_pvt.pdop = 0.0;
-    monitor_pvt.hdop = 0.0;
-    monitor_pvt.vdop = 0.0;
 }
 
 bool Rtklib_Solver::save_matfile()
@@ -450,9 +413,9 @@ bool Rtklib_Solver::get_PVT(const std::map<int, Gnss_Synchro> &gnss_observables_
     int valid_obs = 0;      // valid observations counter
     int glo_valid_obs = 0;  // GLONASS L1/L2 valid observations counter
 
-    std::array<obsd_t, MAXOBS> obs_data;
-    std::array<eph_t, MAXOBS> eph_data;
-    std::array<geph_t, MAXOBS> geph_data;
+    std::array<obsd_t, MAXOBS> obs_data{};
+    std::array<eph_t, MAXOBS> eph_data{};
+    std::array<geph_t, MAXOBS> geph_data{};
 
     // Workaround for NAV/CNAV clash problem
     bool gps_dual_band = false;
@@ -768,7 +731,7 @@ bool Rtklib_Solver::get_PVT(const std::map<int, Gnss_Synchro> &gnss_observables_
                                         obsd_t newobs = {{0, 0}, '0', '0', {}, {}, {}, {}, {}, {}};
                                         obs_data[valid_obs + glo_valid_obs] = insert_obs_to_rtklib(newobs,
                                             gnss_observables_iter->second,
-                                            beidou_ephemeris_iter->second.i_BEIDOU_week + 1356,
+                                            beidou_ephemeris_iter->second.i_BEIDOU_week + BEIDOU_DNAV_BDT2GPST_WEEK_NUM_OFFSET,
                                             0);
                                         valid_obs++;
                                     }
@@ -790,7 +753,7 @@ bool Rtklib_Solver::get_PVT(const std::map<int, Gnss_Synchro> &gnss_observables_
                                                     {
                                                         obs_data[i + glo_valid_obs] = insert_obs_to_rtklib(obs_data[i + glo_valid_obs],
                                                             gnss_observables_iter->second,
-                                                            beidou_ephemeris_iter->second.i_BEIDOU_week + 1356,
+                                                            beidou_ephemeris_iter->second.i_BEIDOU_week + BEIDOU_DNAV_BDT2GPST_WEEK_NUM_OFFSET,
                                                             1);  // Band 3 (L2/G2/B3)
                                                         found_B1I_obs = true;
                                                         break;
@@ -808,7 +771,7 @@ bool Rtklib_Solver::get_PVT(const std::map<int, Gnss_Synchro> &gnss_observables_
                                                     {}, {0.0, 0.0, 0.0}, {}};
                                                 obs_data[valid_obs + glo_valid_obs] = insert_obs_to_rtklib(newobs,
                                                     gnss_observables_iter->second,
-                                                    beidou_ephemeris_iter->second.i_BEIDOU_week + 1356,
+                                                    beidou_ephemeris_iter->second.i_BEIDOU_week + BEIDOU_DNAV_BDT2GPST_WEEK_NUM_OFFSET,
                                                     1);  // Band 2 (L2/G2)
                                                 valid_obs++;
                                             }
@@ -836,25 +799,104 @@ bool Rtklib_Solver::get_PVT(const std::map<int, Gnss_Synchro> &gnss_observables_
         {
             int result = 0;
             int sat = 0;
-            nav_t nav_data;
+            nav_t nav_data{};
             nav_data.eph = eph_data.data();
             nav_data.geph = geph_data.data();
             nav_data.n = valid_obs;
             nav_data.ng = glo_valid_obs;
-
-            for (auto &i : nav_data.lam)
+            if (gps_iono.valid)
                 {
-                    i[0] = SPEED_OF_LIGHT / FREQ1;  // L1/E1
-                    i[1] = SPEED_OF_LIGHT / FREQ2;  // L2
-                    i[2] = SPEED_OF_LIGHT / FREQ5;  // L5/E5
+                    nav_data.ion_gps[0] = gps_iono.d_alpha0;
+                    nav_data.ion_gps[1] = gps_iono.d_alpha1;
+                    nav_data.ion_gps[2] = gps_iono.d_alpha2;
+                    nav_data.ion_gps[3] = gps_iono.d_alpha3;
+                    nav_data.ion_gps[4] = gps_iono.d_beta0;
+                    nav_data.ion_gps[5] = gps_iono.d_beta1;
+                    nav_data.ion_gps[6] = gps_iono.d_beta2;
+                    nav_data.ion_gps[7] = gps_iono.d_beta3;
+                }
+            if (!(gps_iono.valid) and gps_cnav_iono.valid)
+                {
+                    nav_data.ion_gps[0] = gps_cnav_iono.d_alpha0;
+                    nav_data.ion_gps[1] = gps_cnav_iono.d_alpha1;
+                    nav_data.ion_gps[2] = gps_cnav_iono.d_alpha2;
+                    nav_data.ion_gps[3] = gps_cnav_iono.d_alpha3;
+                    nav_data.ion_gps[4] = gps_cnav_iono.d_beta0;
+                    nav_data.ion_gps[5] = gps_cnav_iono.d_beta1;
+                    nav_data.ion_gps[6] = gps_cnav_iono.d_beta2;
+                    nav_data.ion_gps[7] = gps_cnav_iono.d_beta3;
+                }
+            if (galileo_iono.ai0_5 != 0.0)
+                {
+                    nav_data.ion_gal[0] = galileo_iono.ai0_5;
+                    nav_data.ion_gal[1] = galileo_iono.ai1_5;
+                    nav_data.ion_gal[2] = galileo_iono.ai2_5;
+                    nav_data.ion_gal[3] = 0.0;
+                }
+            if (beidou_dnav_iono.valid)
+                {
+                    nav_data.ion_cmp[0] = beidou_dnav_iono.d_alpha0;
+                    nav_data.ion_cmp[1] = beidou_dnav_iono.d_alpha1;
+                    nav_data.ion_cmp[2] = beidou_dnav_iono.d_alpha2;
+                    nav_data.ion_cmp[3] = beidou_dnav_iono.d_alpha3;
+                    nav_data.ion_cmp[4] = beidou_dnav_iono.d_beta0;
+                    nav_data.ion_cmp[5] = beidou_dnav_iono.d_beta0;
+                    nav_data.ion_cmp[6] = beidou_dnav_iono.d_beta0;
+                    nav_data.ion_cmp[7] = beidou_dnav_iono.d_beta3;
+                }
+            if (gps_utc_model.valid)
+                {
+                    nav_data.utc_gps[0] = gps_utc_model.d_A0;
+                    nav_data.utc_gps[1] = gps_utc_model.d_A1;
+                    nav_data.utc_gps[2] = gps_utc_model.d_t_OT;
+                    nav_data.utc_gps[3] = gps_utc_model.i_WN_T;
+                    nav_data.leaps = gps_utc_model.d_DeltaT_LS;
+                }
+            if (!(gps_utc_model.valid) and gps_cnav_utc_model.valid)
+                {
+                    nav_data.utc_gps[0] = gps_cnav_utc_model.d_A0;
+                    nav_data.utc_gps[1] = gps_cnav_utc_model.d_A1;
+                    nav_data.utc_gps[2] = gps_cnav_utc_model.d_t_OT;
+                    nav_data.utc_gps[3] = gps_cnav_utc_model.i_WN_T;
+                    nav_data.leaps = gps_cnav_utc_model.d_DeltaT_LS;
+                }
+            if (glonass_gnav_utc_model.valid)
+                {
+                    nav_data.utc_glo[0] = glonass_gnav_utc_model.d_tau_c;  // ??
+                    nav_data.utc_glo[1] = 0.0;                             // ??
+                    nav_data.utc_glo[2] = 0.0;                             // ??
+                    nav_data.utc_glo[3] = 0.0;                             // ??
+                }
+            if (galileo_utc_model.A0_6 != 0.0)
+                {
+                    nav_data.utc_gal[0] = galileo_utc_model.A0_6;
+                    nav_data.utc_gal[1] = galileo_utc_model.A1_6;
+                    nav_data.utc_gal[2] = galileo_utc_model.t0t_6;
+                    nav_data.utc_gal[3] = galileo_utc_model.WNot_6;
+                    nav_data.leaps = galileo_utc_model.Delta_tLS_6;
+                }
+            if (beidou_dnav_utc_model.valid)
+                {
+                    nav_data.utc_cmp[0] = beidou_dnav_utc_model.d_A0_UTC;
+                    nav_data.utc_cmp[1] = beidou_dnav_utc_model.d_A1_UTC;
+                    nav_data.utc_cmp[2] = 0.0;  // ??
+                    nav_data.utc_cmp[3] = 0.0;  // ??
+                    nav_data.leaps = beidou_dnav_utc_model.d_DeltaT_LS;
+                }
+
+            for (auto &lambda_ : nav_data.lam)
+                {
+                    lambda_[0] = SPEED_OF_LIGHT / FREQ1;  // L1/E1
+                    lambda_[1] = SPEED_OF_LIGHT / FREQ2;  // L2
+                    lambda_[2] = SPEED_OF_LIGHT / FREQ5;  // L5/E5
 
                     // Keep update on sat number
                     sat++;
                     if (sat > NSYSGPS + NSYSGLO + NSYSGAL + NSYSQZS and sat < NSYSGPS + NSYSGLO + NSYSGAL + NSYSQZS + NSYSBDS)
                         {
-                            i[0] = SPEED_OF_LIGHT / FREQ1_BDS;  // B1I
-                            i[1] = SPEED_OF_LIGHT / FREQ3_BDS;  // B3I
-                            i[2] = SPEED_OF_LIGHT / FREQ5;      // L5/E5
+                            lambda_[0] = SPEED_OF_LIGHT / FREQ1_BDS;  // B1I
+                            lambda_[1] = SPEED_OF_LIGHT / FREQ3_BDS;  // B3I
+                            lambda_[2] = SPEED_OF_LIGHT / FREQ5;      // L5/E5
                         }
                 }
 
