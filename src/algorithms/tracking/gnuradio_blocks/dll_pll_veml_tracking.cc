@@ -755,14 +755,14 @@ void dll_pll_veml_tracking::start_tracking()
             //Added as Galileo E1,new function added "beidou_b1c_code_gen_sinboc11_float" for simply generating pilot code
     					if (trk_parameters.track_pilot)
     	                {
-    						beidou_b1c_code_gen_sinboc11_float(gsl::span<float>(d_tracking_code, 2 * d_code_length_chips), d_acquisition_gnss_synchro->PRN);
-    						beidou_b1c_code_gen_sinboc11_float(gsl::span<float>(d_data_code, 2 * d_code_length_chips), d_acquisition_gnss_synchro->PRN);
+    						beidou_b1cp_code_gen_sinboc11_float(gsl::span<float>(d_tracking_code, 2 * d_code_length_chips), d_acquisition_gnss_synchro->PRN);
+    						beidou_b1cp_code_gen_sinboc11_float(gsl::span<float>(d_data_code, 2 * d_code_length_chips), d_acquisition_gnss_synchro->PRN);
     	                    d_Prompt_Data[0] = gr_complex(0.0, 0.0);
     	                    correlator_data_cpu.set_local_code_and_taps(d_code_samples_per_chip * d_code_length_chips, d_data_code, d_prompt_data_shift);
     	                }
     					else
     	                {
-    	            		beidou_b1c_code_gen_sinboc11_float(gsl::span<float>(d_tracking_code, 2 * d_code_length_chips),  d_acquisition_gnss_synchro->PRN);
+    	            		beidou_b1cd_code_gen_sinboc11_float(gsl::span<float>(d_tracking_code, 2 * d_code_length_chips),  d_acquisition_gnss_synchro->PRN);
     	                }      
 
         }
