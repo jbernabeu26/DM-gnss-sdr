@@ -873,8 +873,8 @@ void beidou_b1c_code_gen_complex_sampled_boc(gsl::span<std::complex<float>> _des
                     _dest[i] = std::complex<float>(1.0 - 2.0 * real_code_span[_codeValueIndex], 1.0 - 2.0 * imaginary_code_span_pilot[_codeLength - 1]);  //repeat the chip -> upsample
                 }
         }           
-    volk_gnsssdr_free(real_code_span_data);
-    volk_gnsssdr_free(real_code_span_pilot);
-    volk_gnsssdr_free(real_code_span);
-    volk_gnsssdr_free(imaginary_code_span_pilot);
+    volk_gnsssdr_free(real_code_data);
+    volk_gnsssdr_free(real_code_pilot);
+    volk_gnsssdr_free(imaginary_code_pilot);
+    volk_gnsssdr_free(real_code);
 }
