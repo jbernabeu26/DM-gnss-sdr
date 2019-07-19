@@ -678,7 +678,7 @@ void beidou_b1cp_gen_float_61(gsl::span<float> _dest, gsl::span<int> _prn)
     		
 	for (uint32_t i = 0; i < _codeLength; i++)
         {
-        	_dest[i] = alpha * static_cast<float>(sinboc_11[i]);
+        	_dest[i] = alpha * static_cast<float>(sinboc_61[i]);
                                
 	}
 }
