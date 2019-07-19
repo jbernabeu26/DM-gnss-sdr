@@ -323,7 +323,7 @@ dll_pll_veml_tracking::dll_pll_veml_tracking(const Dll_Pll_Conf &conf_) : gr::bl
                     d_code_period = BEIDOU_B1Cd_PERIOD;
                     d_code_chip_rate = BEIDOU_B1Cd_CODE_RATE_HZ;
                     d_symbols_per_bit = BEIDOU_B1C_SAMPLES_PER_SYMBOL;
-                    d_correlation_length_ms = 1;
+                    d_correlation_length_ms = 10;
                     d_code_samples_per_chip = 1;
                     d_code_length_chips = static_cast<uint32_t>(BEIDOU_B1Cd_CODE_LENGTH_CHIPS);
                     d_secondary = true; //Check!
