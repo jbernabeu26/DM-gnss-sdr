@@ -878,3 +878,17 @@ void beidou_b1c_code_gen_complex_sampled_boc(gsl::span<std::complex<float>> _des
     volk_gnsssdr_free(imaginary_code_pilot);
     volk_gnsssdr_free(real_code);
 }
+
+//! Generates pilot code required at the time of tracking(followed approach like Galileo E1)
+void beidou_b1c_code_gen_sinboc11_float(gsl::span<float> _dest, uint32_t _prn)
+{
+
+    const auto _codeLength = static_cast<uint32_t>(BEIDOU_B1Cd_CODE_LENGTH_CHIPS);
+    std::array<int32_t, BEIDOU_B1Cd_CODE_LENGTH_CHIPS> primary_code_b1c_chips{};                                               // _codeLength not accepted by Clang
+    make_b1cp(gsl::span<int32_t>(primary_code_b1c_chips.data(), BEIDOU_B1Cd_CODE_LENGTH_CHIPS), _prn);  //generate beidou B1C code, 1 sample per chip
+    for (uint32_t i = 0; i < _codeLength; i++)
+        {
+            _dest[2 * i] = static_cast<float>(primary_code_b1c_chips[i]);
+            _dest[2 * i + 1] = -_dest[2 * i];
+        }
+}
