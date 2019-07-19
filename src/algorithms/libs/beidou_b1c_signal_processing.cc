@@ -845,7 +845,8 @@ void beidou_b1c_code_gen_complex_sampled_boc(gsl::span<std::complex<float>> _des
         {
             for (uint32_t n = 0; n < 12 * BEIDOU_B1Cd_CODE_LENGTH_CHIPS; n++)
                 {
-                    real_code_span[n + m * 12 * BEIDOU_B1Cd_CODE_LENGTH_CHIPS] = real_code_span_data[n] xor real_code_span_pilot[m];
+                    // XORing gives error as two values generating are fractional
+		    //real_code_span[n + m * 12 * BEIDOU_B1Cd_CODE_LENGTH_CHIPS] = real_code_span_data[n] xor real_code_span_pilot[m];
                 }
         }
     
