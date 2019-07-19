@@ -246,30 +246,29 @@ void BeidouB1cPcpsAcquisition::init()
 void BeidouB1cPcpsAcquisition::set_local_code()
 {
     std::unique_ptr<std::complex<float>> code{new std::complex<float>[code_length_]};
-    gsl::span<std::complex<float>> code_span(code.get(), code_length_);
     // Perform acquisition in Data + Pilot signal
     if (acq_iq_)
         {	
-	        beidou_b1c_code_gen_complex_sampled_boc(code_span, gnss_synchro_->PRN, fs_in_);
+	        beidou_b1c_code_gen_complex_sampled_boc(gsl::span<std::complex<float>>(code, code_length_), gnss_synchro_->PRN, fs_in_);
         }
     // Perform acquisition in Pilot signal
     else if (acq_pilot_)
         {
-    		beidou_b1c_code_gen_complex_sampled_boc_61_11(code_span, gnss_synchro_->PRN, fs_in_);
+    		beidou_b1c_code_gen_complex_sampled_boc_61_11(gsl::span<std::complex<float>>(code, code_length_), gnss_synchro_->PRN, fs_in_);
         }
     // Perform acquisition in Data signal
     else
         {
-    		beidou_b1c_code_gen_complex_sampled_boc_11(code_span, gnss_synchro_->PRN, fs_in_);
+    		beidou_b1c_code_gen_complex_sampled_boc_11(gsl::span<std::complex<float>>(code, code_length_), gnss_synchro_->PRN, fs_in_);
         }
-
-    gsl::span<gr_complex> code__span(code_.data(), vector_length_);
-    for (unsigned int i = 0; i < sampled_ms_ / 10; i++)
+    gsl::span<gr_complex> code_span(code_.data(), vector_length_);
+    for (unsigned int i = 0; i < sampled_ms_; i++)
         {
-            std::copy_n(code.get(), code_length_, code__span.subspan(i * code_length_, code_length_).data());
+            std::copy_n(code.get(), code_length_, code_span.subspan(i * code_length_, code_length_).data());
         }
 
     acquisition_->set_local_code(code_.data());
+
 }
 
 
