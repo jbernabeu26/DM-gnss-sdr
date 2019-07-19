@@ -40,7 +40,6 @@
 #include "array_signal_conditioner.h"
 #include "beamformer_filter.h"
 #include "beidou_b1c_dll_pll_tracking.h"
-#include "beidou_b1cd_pcps_acquisition.h"
 #include "beidou_b1c_pcps_acquisition.h"
 #include "beidou_b1i_dll_pll_tracking.h"
 #include "beidou_b1i_pcps_acquisition.h"
@@ -1824,12 +1823,6 @@ std::unique_ptr<GNSSBlockInterface> GNSSBlockFactory::GetBlock(
                 out_streams));
             block = std::move(block_);
         }
-    else if (implementation == "BEIDOU_B1Cd_PCPS_Acquisition")
-        {
-            std::unique_ptr<AcquisitionInterface> block_(new BeidouB1CdPcpsAcquisition(configuration.get(), role, in_streams,
-                out_streams));
-            block = std::move(block_);
-        }
     else if (implementation == "BEIDOU_B1C_PCPS_Acquisition")
         {
             std::unique_ptr<AcquisitionInterface> block_(new BeidouB1cPcpsAcquisition(configuration.get(), role, in_streams,
@@ -2235,12 +2228,6 @@ std::unique_ptr<AcquisitionInterface> GNSSBlockFactory::GetAcqBlock(
     else if (implementation == "BEIDOU_B3I_PCPS_Acquisition")
         {
             std::unique_ptr<AcquisitionInterface> block_(new BeidouB3iPcpsAcquisition(configuration.get(), role, in_streams,
-                out_streams));
-            block = std::move(block_);
-        }
-    else if (implementation.compare("BEIDOU_B1Cd_PCPS_Acquisition") == 0)
-        {
-            std::unique_ptr<AcquisitionInterface> block_(new BeidouB1CdPcpsAcquisition(configuration.get(), role, in_streams,
                 out_streams));
             block = std::move(block_);
         }
