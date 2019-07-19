@@ -96,7 +96,7 @@ void make_b1cd(gsl::span<int32_t> _dest, int32_t prn)
 	// Generate Data Primary code
 	std::deque<bool> b1cd_primary_code =  make_b1cd_primary_weil_seq(phase_diff, truncation_point);
 
-	for (uint32_t n = 0; n < 10230; n++)
+	for (uint32_t n = 0; n < BEIDOU_B1Cd_CODE_LENGTH_CHIPS; n++)
 	{
 		_dest[n] = b1cd_primary_code[n];
 	}
@@ -567,11 +567,17 @@ void beidou_b1c_pilot_sinboc_61_gen_int(gsl::span<int> _dest, gsl::span<const in
 //! Generates float version of sine BOC(1,1) modulated Data Code 
 void beidou_b1cd_gen_float_11(gsl::span<float> _dest, gsl::span<int> _prn)
 {
+	//In BOC(n,m),n= subcarrier frequency (subchip frequency) and m= code chipping rate
+	//M = number of subchips per chip is calculated as, M=2*n/m
+	//Here, 12 is the result of the sub chips after the BOC is applied
 	const uint32_t _codeLength = 12 * BEIDOU_B1Cd_CODE_LENGTH_CHIPS;
 	
-	const float alpha = (1.0 / 2.0);
+	//Value of alpha is according to equation 4-11 in ICD which is data component and in Real part of the equation, 
+	//SB1C(t)=(1/2*DB1C_data(t))*(CB1C_data(t))*(sign(sin(2πfsc_B1C_at)))+(sqrt(1.0 / 11.0)*(CB1C_pilot(t))*(sign(sin(2πfsc_B1C_bt)))+j(sqrt(29.0 / 44.0)*(CB1C_pilot(t)*(sign(sin(2πfsc_B1C_t)))
+
+	const float alpha = (1.0 / 2.0);  
 	
-	int32_t sinboc_11[12 * 10230] = {0}; //  _codeLength not accepted by Clang
+	int32_t sinboc_11[12 * BEIDOU_B1Cd_CODE_LENGTH_CHIPS] = {0}; //  _codeLength not accepted by Clang
 	
 	gsl::span<int32_t> sinboc_11_(sinboc_11, _codeLength);
 	
@@ -612,6 +618,9 @@ void beidou_b1c_code_gen_complex_sampled_boc_11(gsl::span<std::complex<float>> _
     int32_t _samplesPerCode, _codeValueIndex;
     float _ts;
     float _tc;
+    //In BOC(n,m),n= subcarrier frequency (subchip frequency) and m= code chipping rate
+    //M = number of subchips per chip is calculated as, M=2*n/m
+    //Here, 12 is the result of the sub chips after the BOC is applied
     const int32_t _codeLength =12 * BEIDOU_B1Cd_CODE_LENGTH_CHIPS;
 
     //--- Find number of samples per spreading code ----------------------------
@@ -653,11 +662,16 @@ void beidou_b1c_code_gen_complex_sampled_boc_11(gsl::span<std::complex<float>> _
 //! Generate BOC for first Pilot component which is in Real part
 void beidou_b1cp_gen_float_61(gsl::span<float> _dest, gsl::span<int> _prn)
 {
+	//In BOC(n,m),n= subcarrier frequency (subchip frequency) and m= code chipping rate
+	//M = number of subchips per chip is calculated as, M=2*n/m
+	//Here, 12 is the result of the sub chips after the BOC is applied
 	const uint32_t _codeLength = 12 * BEIDOU_B1Cp_CODE_LENGTH_CHIPS;
 	
+	//Value of alpha is according to equation 4-11 in ICD which is pilot component and in Real part of the equation, 
+	//SB1C(t)=(1/2*DB1C_data(t))*(CB1C_data(t))*(sign(sin(2πfsc_B1C_at)))+(sqrt(1.0 / 11.0)*(CB1C_pilot(t))*(sign(sin(2πfsc_B1C_bt)))+j(sqrt(29.0 / 44.0)*(CB1C_pilot(t)*(sign(sin(2πfsc_B1C_t)))
 	const float alpha = sqrt(1.0 / 11.0);
 	
-	int32_t sinboc_61[12 * 10230] = {0};    //  _codeLength not accepted by Clang
+	int32_t sinboc_61[12 * BEIDOU_B1Cp_CODE_LENGTH_CHIPS] = {0};    //  _codeLength not accepted by Clang
 	gsl::span<int32_t> sinboc_61_(sinboc_61, _codeLength);
     	   	
    	beidou_b1c_pilot_sinboc_61_gen_int(sinboc_61_, _prn);  //generate sinboc(6,1) 12 samples per chip
@@ -692,11 +706,18 @@ void beidou_b1cp_code_gen_float_sampled_boc_61(gsl::span<float> _dest, uint32_t 
 //! Generate BOC for first Pilot component which is in Imaginary part
 void beidou_b1cp_gen_float_11(gsl::span<float> _dest, gsl::span<int> _prn)
 {
+	
+	//In BOC(n,m),n= subcarrier frequency (subchip frequency) and m= code chipping rate
+	//M = number of subchips per chip is calculated as, M=2*n/m
+	//Here, 12 is the result of the sub chips after the BOC is applied
 	const uint32_t _codeLength = 12 * BEIDOU_B1Cp_CODE_LENGTH_CHIPS;
 	
-    	const float beta = sqrt(29.0 / 44.0);
+    	//Value of alpha is according to equation 4-11 in ICD which is pilot component and in Imaginary part of equation, 
+	//SB1C(t)=(1/2*DB1C_data(t))*(CB1C_data(t))*(sign(sin(2πfsc_B1C_at)))+(sqrt(1.0 / 11.0)*(CB1C_pilot(t))*(sign(sin(2πfsc_B1C_bt)))+j(sqrt(29.0 / 44.0)*(CB1C_pilot(t)*(sign(sin(2πfsc_B1C_t)))
+
+	const float beta = sqrt(29.0 / 44.0);
 	
-	int32_t sinboc_11[12 * 10230] = {0};     //  _codeLength not accepted by Clang
+	int32_t sinboc_11[12 * BEIDOU_B1Cp_CODE_LENGTH_CHIPS] = {0};     //  _codeLength not accepted by Clang
     	gsl::span<int32_t> sinboc_11_(sinboc_11, _codeLength);
     	
     	beidou_b1c_pilot_sinboc_11_gen_int(sinboc_11_, _prn);  //generate sinboc(1,1) 12 samples per chip
