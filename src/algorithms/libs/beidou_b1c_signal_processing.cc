@@ -604,7 +604,7 @@ void beidou_b1cd_code_gen_float_sampled_boc_11(gsl::span<float> _dest, uint32_t 
     std::unique_ptr<float> _signal_B1C_data{new float[_codeLength]};
     gsl::span<float> _signal_B1C_data_span(_signal_B1C_data, _codeLength);
 
-    beidou_b1cd_gen_float_11(_signal_B1C_data_span, gsl::span<int>(b1c_data_primary_code_chips, static_cast<uint32_t>(BEIDOU_B1Cd_CODE_LENGTH_CHIPS)));  // generate cboc 12 samples per chip
+    beidou_b1cd_gen_float_11(_dest, gsl::span<int>(b1c_data_primary_code_chips, static_cast<uint32_t>(BEIDOU_B1Cd_CODE_LENGTH_CHIPS)));  // generate cboc 12 samples per chip
     
     volk_gnsssdr_free(b1c_data_primary_code_chips);
 }
@@ -697,13 +697,13 @@ void beidou_b1cp_code_gen_float_sampled_boc_61(gsl::span<float> _dest, uint32_t 
     std::unique_ptr<float> _signal_B1C_pilot{new float[_codeLength]};
     gsl::span<float> _signal_B1C_pilot_span(_signal_B1C_pilot, _codeLength);
 
-    beidou_b1cp_gen_float_61(_signal_B1C_pilot_span, gsl::span<int>(b1c_pilot_primary_code_chips, static_cast<uint32_t>(BEIDOU_B1Cp_CODE_LENGTH_CHIPS)));  // generate cboc 12 samples per chip
+    beidou_b1cp_gen_float_61(_dest, gsl::span<int>(b1c_pilot_primary_code_chips, static_cast<uint32_t>(BEIDOU_B1Cp_CODE_LENGTH_CHIPS)));  // generate cboc 12 samples per chip
     
     volk_gnsssdr_free(b1c_pilot_primary_code_chips);
 }
 
 
-//! Generate BOC for first Pilot component which is in Imaginary part
+//! Generate BOC for second Pilot component which is in Imaginary part
 void beidou_b1cp_gen_float_11(gsl::span<float> _dest, gsl::span<int> _prn)
 {
 	
@@ -743,7 +743,7 @@ void beidou_b1cp_code_gen_float_sampled_boc_11(gsl::span<float> _dest, uint32_t 
     std::unique_ptr<float> _signal_B1C_pilot{new float[_codeLength]};
     gsl::span<float> _signal_B1C_pilot_span(_signal_B1C_pilot, _codeLength);
 
-    beidou_b1cp_gen_float_11(_signal_B1C_pilot_span, gsl::span<int>(b1c_pilot_primary_code_chips, static_cast<uint32_t>(BEIDOU_B1Cp_CODE_LENGTH_CHIPS)));  // generate cboc 12 samples per chip
+    beidou_b1cp_gen_float_11(_dest, gsl::span<int>(b1c_pilot_primary_code_chips, static_cast<uint32_t>(BEIDOU_B1Cp_CODE_LENGTH_CHIPS)));  // generate cboc 12 samples per chip
     
     volk_gnsssdr_free(b1c_pilot_primary_code_chips);
 }
