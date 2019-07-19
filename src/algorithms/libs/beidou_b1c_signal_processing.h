@@ -111,7 +111,10 @@ void beidou_b1c_code_gen_complex_sampled_boc_61_11(gsl::span<std::complex<float>
 */
 void beidou_b1c_code_gen_complex_sampled_boc(gsl::span<std::complex<float>> _dest,uint32_t _prn, int32_t _fs);
 
+//! Generates Data code required at the time of tracking(followed approach like Galileo E1)
+void beidou_b1cd_code_gen_sinboc11_float(gsl::span<float> _dest, uint32_t _prn);
+
 //! Generates pilot code required at the time of tracking(followed approach like Galileo E1)
-void beidou_b1c_code_gen_sinboc11_float(gsl::span<float> _dest, uint32_t _prn);
+void beidou_b1cp_code_gen_sinboc11_float(gsl::span<float> _dest, uint32_t _prn);
 
 #endif /* GNSS_SDR_BEIDOU_B1C_SIGNAL_PROCESSING_H_ */
