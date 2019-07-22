@@ -1,5 +1,5 @@
 /*!
- * \file beidou_b1c_signal_processing.h
+ * \file beidou_b1c_signal_processing.h 
  * \brief This class implements signal generators for the BeiDou B1c signals
  * \author Andrew Kamble, 2019. andrewkamble88@gmail.com 
  * \note Code added as part of GSoC 2019 program
