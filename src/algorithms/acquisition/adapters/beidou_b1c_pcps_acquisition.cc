@@ -249,8 +249,7 @@ void BeidouB1cPcpsAcquisition::set_local_code()
     // Perform acquisition in Data + Pilot signal
     if (acq_iq_)
         {	
-	        //In function below XORing gives error as two values generating are fractional
-	        //beidou_b1c_code_gen_complex_sampled_boc(gsl::span<std::complex<float>>(code, code_length_), gnss_synchro_->PRN, fs_in_);
+	        beidou_b1c_code_gen_complex_sampled_boc(gsl::span<std::complex<float>>(code, code_length_), gnss_synchro_->PRN, fs_in_);
         }
     // Perform acquisition in Pilot signal
     else if (acq_pilot_)
