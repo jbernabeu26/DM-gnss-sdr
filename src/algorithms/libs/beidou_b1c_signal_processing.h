@@ -83,25 +83,19 @@ void beidou_b1cp_code_gen_complex_sampled_secondary(gsl::span<std::complex<float
 void beidou_b1c_code_gen_complex_sampled(gsl::span<std::complex<float>> _dest, uint32_t _prn, int32_t _fs);
 
 //! Generate BOC for Data component which is in Real part
-void beidou_b1cd_code_gen_float_sampled_boc_11(gsl::span<float> _dest, uint32_t _prn);
+void beidou_b1cd_gen_float_11(gsl::span<float> _dest, uint32_t _prn);
 
 //! Generate Complex version of BOC for Data component which is in Real part
-void beidou_b1c_code_gen_complex_sampled_boc_11(gsl::span<std::complex<float>> _dest,uint32_t _prn, int32_t _fs);
+void beidou_b1cd_code_gen_complex_sampled_boc_11(gsl::span<std::complex<float>> _dest,uint32_t _prn, int32_t _fs);
 
 //! Generate BOC for first Pilot component which is in Real part
-void beidou_b1cp_gen_float_61(gsl::span<float> _dest, gsl::span<int> _prn);
-
-///! Generate Complex version of BOC for first Pilot component which is in Real part
-void beidou_b1cp_code_gen_float_sampled_boc_61(gsl::span<float> _dest, uint32_t _prn);
+void beidou_b1cp_gen_float_61(gsl::span<float> _dest, uint32_t _prn);
  	 	
 //! Generate BOC for second Pilot component which is in Imaginary part
-void beidou_b1cp_gen_float_11(gsl::span<float> _dest, gsl::span<int> _prn);
-
-//! Generate Complex version of BOC for second Pilot component which is in Imaginary part
-void beidou_b1cp_code_gen_float_sampled_boc_11(gsl::span<float> _dest, uint32_t _prn);
+void beidou_b1cp_gen_float_11(gsl::span<float> _dest, uint32_t _prn);
 
 //! Generates complex version of both pilot components having sine BOC(6,1) which is in Real part and sine BOC(1,1) which is in Imaginary part
-void beidou_b1c_code_gen_complex_sampled_boc_61_11(gsl::span<std::complex<float>> _dest,uint32_t _prn, int32_t _fs);
+void beidou_b1cp_code_gen_complex_sampled_boc_61_11(gsl::span<std::complex<float>> _dest,uint32_t _prn, int32_t _fs);
 
 /*
 * Generates complex version of data+pilot components as follows
