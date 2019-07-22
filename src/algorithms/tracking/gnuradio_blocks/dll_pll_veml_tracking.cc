@@ -70,6 +70,7 @@
 #include <iostream>  // for cout, cerr
 #include <map>
 #include <numeric>
+#include <vector>
 
 #if HAS_STD_FILESYSTEM
 #if HAS_STD_FILESYSTEM_EXPERIMENTAL
@@ -323,7 +324,7 @@ dll_pll_veml_tracking::dll_pll_veml_tracking(const Dll_Pll_Conf &conf_) : gr::bl
                     d_code_period = BEIDOU_B1Cd_PERIOD;
                     d_code_chip_rate = BEIDOU_B1Cd_CODE_RATE_HZ;
                     d_symbols_per_bit = BEIDOU_B1C_SAMPLES_PER_SYMBOL;
-                    d_correlation_length_ms = 1;
+                    d_correlation_length_ms = 10;
                     d_code_samples_per_chip = 1;
                     d_code_length_chips = static_cast<uint32_t>(BEIDOU_B1Cd_CODE_LENGTH_CHIPS);
                     d_secondary = true; //Check!
@@ -739,7 +740,7 @@ void dll_pll_veml_tracking::start_tracking()
     else if (systemName == "Beidou" and signal_type == "C1")
         {
 
-    		if (trk_parameters.track_pilot)
+    		/*if (trk_parameters.track_pilot)
                 {
     			    // Secondary pilot code is specific for each satellite
     			    d_secondary_code_string = const_cast<std::string *>(&BEIDOU_B1Cp_SECONDARY_CODE[d_acquisition_gnss_synchro->PRN - 1]);
@@ -751,6 +752,18 @@ void dll_pll_veml_tracking::start_tracking()
             else
                 {
                     beidou_b1cd_code_gen_float(d_tracking_code, d_acquisition_gnss_synchro->PRN);
+                }*/
+            //Added as Galileo E1,new function added "beidou_b1c_code_gen_sinboc11_float" for simply generating pilot code
+    					if (trk_parameters.track_pilot)
+    	                {
+    						beidou_b1cp_code_gen_sinboc11_float(gsl::span<float>(d_tracking_code, 2 * d_code_length_chips), d_acquisition_gnss_synchro->PRN);
+    						beidou_b1cp_code_gen_sinboc11_float(gsl::span<float>(d_data_code, 2 * d_code_length_chips), d_acquisition_gnss_synchro->PRN);
+    	                    d_Prompt_Data[0] = gr_complex(0.0, 0.0);
+    	                    correlator_data_cpu.set_local_code_and_taps(d_code_samples_per_chip * d_code_length_chips, d_data_code, d_prompt_data_shift);
+    	                }
+    					else
+    	                {
+    	            		beidou_b1cd_code_gen_sinboc11_float(gsl::span<float>(d_tracking_code, 2 * d_code_length_chips),  d_acquisition_gnss_synchro->PRN);
                 }
 
         }

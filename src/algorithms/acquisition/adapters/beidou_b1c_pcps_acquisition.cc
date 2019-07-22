@@ -40,6 +40,8 @@
 #include "gnss_sdr_flags.h"
 #include <boost/math/distributions/exponential.hpp>
 #include <glog/logging.h>
+#include <algorithm>
+
 
 BeidouB1cPcpsAcquisition::BeidouB1cPcpsAcquisition(
     ConfigurationInterface* configuration,
@@ -133,7 +135,8 @@ BeidouB1cPcpsAcquisition::BeidouB1cPcpsAcquisition(
             vector_length_ *= 2;
         }
 
-    code_ = new gr_complex[vector_length_];
+    code_ = std::vector<std::complex<float>>(vector_length_);    
+
 
     if (item_type_ == "cshort")
         {
@@ -173,10 +176,7 @@ BeidouB1cPcpsAcquisition::BeidouB1cPcpsAcquisition(
 }
 
 
-BeidouB1cPcpsAcquisition::~BeidouB1cPcpsAcquisition()
-{
-    delete[] code_;
-}
+BeidouB1cPcpsAcquisition::~BeidouB1cPcpsAcquisition() = default;
 
 
 void BeidouB1cPcpsAcquisition::stop_acquisition()
@@ -240,38 +240,36 @@ signed int BeidouB1cPcpsAcquisition::mag()
 void BeidouB1cPcpsAcquisition::init()
 {
     acquisition_->init();
-    //set_local_code();
 }
 
 
 void BeidouB1cPcpsAcquisition::set_local_code()
 {
-    auto* code = new std::complex<float>[code_length_];
+    std::unique_ptr<std::complex<float>> code{new std::complex<float>[code_length_]};
     // Perform acquisition in Data + Pilot signal
     if (acq_iq_)
         {	
-	        //beidou_b1c_code_gen_complex_sampled(code, gnss_synchro_->PRN, fs_in_);
+	        //In function below XORing gives error as two values generating are fractional
+	        //beidou_b1c_code_gen_complex_sampled_boc(gsl::span<std::complex<float>>(code, code_length_), gnss_synchro_->PRN, fs_in_);
         }
     // Perform acquisition in Pilot signal
     else if (acq_pilot_)
         {
-    		beidou_b1cp_code_gen_complex_sampled(code, gnss_synchro_->PRN, fs_in_);
+    		beidou_b1c_code_gen_complex_sampled_boc_61_11(gsl::span<std::complex<float>>(code, code_length_), gnss_synchro_->PRN, fs_in_);
         }
     // Perform acquisition in Data signal
     else
         {
-    		beidou_b1cd_code_gen_complex_sampled(code, gnss_synchro_->PRN, fs_in_);
+    		beidou_b1c_code_gen_complex_sampled_boc_11(gsl::span<std::complex<float>>(code, code_length_), gnss_synchro_->PRN, fs_in_);
         }
-
-
-    for (uint32_t i = 0; i < sampled_ms_; i++)
+    gsl::span<gr_complex> code_span(code_.data(), vector_length_);
+    for (unsigned int i = 0; i < sampled_ms_; i++)
         {
-            memcpy(&(code_[i * code_length_]), code,
-                sizeof(gr_complex) * code_length_);
+            std::copy_n(code.get(), code_length_, code_span.subspan(i * code_length_, code_length_).data());
         }
 
-    acquisition_->set_local_code(code_);
-    delete[] code;
+    acquisition_->set_local_code(code_.data());
+
 }
 
 

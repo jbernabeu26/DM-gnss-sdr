@@ -82,4 +82,39 @@ void beidou_b1cp_code_gen_complex_sampled_secondary(gsl::span<std::complex<float
 //! Generates complex BEIDOU B1C data+pilot code for the desired SV ID and sampled to specific sampling frequency
 void beidou_b1c_code_gen_complex_sampled(gsl::span<std::complex<float>> _dest, uint32_t _prn, int32_t _fs);
 
+//! Generate BOC for Data component which is in Real part
+void beidou_b1cd_code_gen_float_sampled_boc_11(gsl::span<float> _dest, uint32_t _prn);
+
+//! Generate Complex version of BOC for Data component which is in Real part
+void beidou_b1c_code_gen_complex_sampled_boc_11(gsl::span<std::complex<float>> _dest,uint32_t _prn, int32_t _fs);
+
+//! Generate BOC for first Pilot component which is in Real part
+void beidou_b1cp_gen_float_61(gsl::span<float> _dest, gsl::span<int> _prn);
+
+///! Generate Complex version of BOC for first Pilot component which is in Real part
+void beidou_b1cp_code_gen_float_sampled_boc_61(gsl::span<float> _dest, uint32_t _prn);
+ 	 	
+//! Generate BOC for second Pilot component which is in Imaginary part
+void beidou_b1cp_gen_float_11(gsl::span<float> _dest, gsl::span<int> _prn);
+
+//! Generate Complex version of BOC for second Pilot component which is in Imaginary part
+void beidou_b1cp_code_gen_float_sampled_boc_11(gsl::span<float> _dest, uint32_t _prn);
+
+//! Generates complex version of both pilot components having sine BOC(6,1) which is in Real part and sine BOC(1,1) which is in Imaginary part
+void beidou_b1c_code_gen_complex_sampled_boc_61_11(gsl::span<std::complex<float>> _dest,uint32_t _prn, int32_t _fs);
+
+/*
+* Generates complex version of data+pilot components as follows
+* Data component(in ICD Equation 4-11) in Sine BOC(1,1) and is in Real part  
+* First Pilot component(in ICD Equation 4-11) in Sine BOC(6,1) and is in Real part  
+* Second Pilot component(in ICD Equation 4-11) in Sine BOC(1,1) and is in Imaginary part 
+*/
+void beidou_b1c_code_gen_complex_sampled_boc(gsl::span<std::complex<float>> _dest,uint32_t _prn, int32_t _fs);
+
+//! Generates Data code required at the time of tracking(followed approach like Galileo E1)
+void beidou_b1cd_code_gen_sinboc11_float(gsl::span<float> _dest, uint32_t _prn);
+
+//! Generates pilot code required at the time of tracking(followed approach like Galileo E1)
+void beidou_b1cp_code_gen_sinboc11_float(gsl::span<float> _dest, uint32_t _prn);
+
 #endif /* GNSS_SDR_BEIDOU_B1C_SIGNAL_PROCESSING_H_ */
