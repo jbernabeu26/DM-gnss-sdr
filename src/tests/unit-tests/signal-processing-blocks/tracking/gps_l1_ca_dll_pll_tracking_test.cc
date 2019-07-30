@@ -7,7 +7,7 @@
  *
  * -------------------------------------------------------------------------
  *
- * Copyright (C) 2012-2018  (see AUTHORS file for a list of contributors)
+ * Copyright (C) 2012-2019  (see AUTHORS file for a list of contributors)
  *
  * GNSS-SDR is a software defined Global Navigation
  *          Satellite Systems receiver
@@ -1056,7 +1056,7 @@ TEST_F(GpsL1CADllPllTrackingTest, ValidationOfResults)
 
     if (FLAGS_plot_gps_l1_tracking_test == true)
         {
-            std::cout << "Ploting performance metrics..." << std::endl;
+            std::cout << "Plotting performance metrics..." << std::endl;
             try
                 {
                     if (generator_CN0_values.size() > 1)

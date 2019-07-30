@@ -43,11 +43,10 @@
 #include <gnuradio/io_signature.h>
 #include <pmt/pmt.h>        // for make_any
 #include <pmt/pmt_sugar.h>  // for mp
-#include <volk_gnsssdr/volk_gnsssdr.h>
-#include <cstdlib>    // for abs
-#include <exception>  // for exception
-#include <iostream>   // for cout
-#include <memory>     // for shared_ptr, make_shared
+#include <cstdlib>          // for abs
+#include <exception>        // for exception
+#include <iostream>         // for cout
+#include <memory>           // for shared_ptr, make_shared
 
 
 #define CRC_ERROR_LIMIT 8
@@ -80,7 +79,6 @@ beidou_b2a_telemetry_decoder_gs::beidou_b2a_telemetry_decoder_gs(
     d_symbol_duration_ms = BEIDOU_CNAV2_TELEMETRY_SYMBOLS_PER_BIT * BEIDOU_B2ad_CODE_PERIOD_MS;
     d_symbols_per_preamble = BEIDOU_CNAV2_PREAMBLE_LENGTH_SYMBOLS;
     d_samples_per_preamble = BEIDOU_CNAV2_PREAMBLE_LENGTH_SYMBOLS;
-    d_preamble_samples = static_cast<int32_t *>(volk_gnsssdr_malloc(d_samples_per_preamble * sizeof(int32_t), volk_gnsssdr_get_alignment()));
     d_preamble_period_samples = BEIDOU_CNAV2_PREAMBLE_PERIOD_SYMBOLS;
 
     // Setting samples of preamble code
@@ -96,7 +94,6 @@ beidou_b2a_telemetry_decoder_gs::beidou_b2a_telemetry_decoder_gs(
                 }
         }
 
-    d_frame_symbols = static_cast<float *>(volk_gnsssdr_malloc(BEIDOU_CNAV2_PREAMBLE_PERIOD_SYMBOLS * sizeof(float), volk_gnsssdr_get_alignment()));
     d_required_symbols = BEIDOU_CNAV2_FRAME_SYMBOLS + d_samples_per_preamble;
     d_symbol_history.set_capacity(d_required_symbols);
 
@@ -120,9 +117,6 @@ beidou_b2a_telemetry_decoder_gs::beidou_b2a_telemetry_decoder_gs(
 
 beidou_b2a_telemetry_decoder_gs::~beidou_b2a_telemetry_decoder_gs()
 {
-    volk_gnsssdr_free(d_preamble_samples);
-    volk_gnsssdr_free(d_frame_symbols);
-
     if (d_dump_file.is_open() == true)
         {
             try
@@ -318,7 +312,7 @@ int beidou_b2a_telemetry_decoder_gs::general_work(int noutput_items __attribute_
                                 }
 
                             // call the decoder
-                            decode_frame(d_frame_symbols);
+                            decode_frame(d_frame_symbols.data());
 
                             if (d_nav.flag_crc_test == true)
                                 {
@@ -375,7 +369,7 @@ int beidou_b2a_telemetry_decoder_gs::general_work(int noutput_items __attribute_
                         }
 
                     //call the decoder
-                    decode_frame(d_frame_symbols);
+                    decode_frame(d_frame_symbols.data());
 
                     if (d_nav.flag_crc_test == true)
                         {

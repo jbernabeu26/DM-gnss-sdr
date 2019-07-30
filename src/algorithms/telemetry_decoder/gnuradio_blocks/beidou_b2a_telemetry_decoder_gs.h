@@ -39,6 +39,7 @@
 #include <boost/shared_ptr.hpp>  // for boost::shared_ptr
 #include <gnuradio/block.h>      // for block
 #include <gnuradio/types.h>      // for gr_vector_const_void_star
+#include <array>
 #include <cstdint>
 #include <fstream>
 #include <string>
@@ -48,13 +49,13 @@ class beidou_b2a_telemetry_decoder_gs;
 
 using beidou_b2a_telemetry_decoder_gs_sptr = boost::shared_ptr<beidou_b2a_telemetry_decoder_gs>;
 
-beidou_b2a_telemetry_decoder_gs_sptr beidou_b2a_make_telemetry_decoder_gs(const Gnss_Satellite &satellite, bool dump);
+beidou_b2a_telemetry_decoder_gs_sptr beidou_b2a_make_telemetry_decoder_gs(
+    const Gnss_Satellite &satellite,
+    bool dump);
 
-//!!!! edit
 /*!
- * \brief This class implements a block that decodes the GNAV data defined in BEIDOU ICD v5.1
+ * \brief This class implements a block that decodes the CNAV2 data defined in BEIDOU ICD v5.1
  * \note Code added as part of GSoC 2018 program
- * \see <a href="http://russianspacesystems.ru/wp-content/uploads/2016/08/ICD_GLONASS_eng_v5.1.pdf">GLONASS ICD</a>
  *
  */
 class beidou_b2a_telemetry_decoder_gs : public gr::block
@@ -78,18 +79,18 @@ private:
 
     void decode_frame(float *symbols);
 
-    //!< Preamble decoding
-    int32_t *d_preamble_samples;
+    // Preamble decoding
+    std::array<int32_t, BEIDOU_CNAV2_PREAMBLE_LENGTH_SYMBOLS> d_preamble_samples{};
     int32_t d_symbols_per_preamble;
     int32_t d_samples_per_preamble;
     int32_t d_preamble_period_samples;
-    float *d_frame_symbols;
+    std::array<float, BEIDOU_CNAV2_PREAMBLE_PERIOD_SYMBOLS> d_frame_symbols{};
     uint32_t d_required_symbols;
 
-    //!< Storage for incoming data
+    // Storage for incoming data
     boost::circular_buffer<float> d_symbol_history;
 
-    //!< Variables for internal functionality
+    // Variables for internal functionality
     uint64_t d_sample_counter;    //!< Sample counter as an index (1,2,3,..etc) indicating number of samples processed
     uint64_t d_preamble_index;    //!< Index of sample number where preamble was found
     uint32_t d_stat;              //!< Status of decoder
@@ -98,10 +99,10 @@ private:
     int32_t d_CRC_error_counter;  //!< Number of failed CRC operations
     bool flag_TOW_set;            //!< Indicates when time of week is set
 
-    //!< Navigation Message variable
+    // Navigation Message variable
     Beidou_Cnav2_Navigation_Message d_nav;
 
-    //!< Values to populate gnss synchronization structure
+    // Values to populate gnss synchronization structure
     uint32_t d_symbol_duration_ms;
     uint32_t d_TOW_at_Preamble_ms;
     uint32_t d_TOW_at_current_symbol_ms;
@@ -110,7 +111,7 @@ private:
     bool d_sent_tlm_failed_msg;
     bool Flag_valid_word;
 
-    //!< Satellite Information and logging capacity
+    // Satellite Information and logging capacity
     Gnss_Satellite d_satellite;
     int32_t d_channel;
     bool d_dump;

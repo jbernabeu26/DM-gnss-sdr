@@ -55,7 +55,8 @@ public:
         unsigned int in_streams,
         unsigned int out_streams);
 
-    virtual ~BeidouB2aTelemetryDecoder();
+    ~BeidouB2aTelemetryDecoder() = default;
+
     inline std::string role() override
     {
         return role_;
@@ -66,6 +67,7 @@ public:
     {
         return "BEIDOU_B2a_Telemetry_Decoder";
     }
+
     void connect(gr::top_block_sptr top_block) override;
     void disconnect(gr::top_block_sptr top_block) override;
     gr::basic_block_sptr get_left_block() override;
@@ -78,6 +80,7 @@ public:
         telemetry_decoder_->reset();
         return;
     }
+
     inline size_t item_size() override
     {
         return 0;

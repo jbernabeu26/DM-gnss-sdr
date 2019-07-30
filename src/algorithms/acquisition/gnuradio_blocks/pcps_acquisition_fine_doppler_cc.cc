@@ -7,7 +7,7 @@
  *
  * -------------------------------------------------------------------------
  *
- * Copyright (C) 2010-2018  (see AUTHORS file for a list of contributors)
+ * Copyright (C) 2010-2019  (see AUTHORS file for a list of contributors)
  *
  * GNSS-SDR is a software defined Global Navigation
  *          Satellite Systems receiver
@@ -158,11 +158,11 @@ pcps_acquisition_fine_doppler_cc::pcps_acquisition_fine_doppler_cc(const Acq_Con
 unsigned int pcps_acquisition_fine_doppler_cc::nextPowerOf2(unsigned int n)
 {
     n--;
-    n |= n >> 1;
-    n |= n >> 2;
-    n |= n >> 4;
-    n |= n >> 8;
-    n |= n >> 16;
+    n |= n >> 1U;
+    n |= n >> 2U;
+    n |= n >> 4U;
+    n |= n >> 8U;
+    n |= n >> 16U;
     n++;
     return n;
 }

@@ -8,7 +8,7 @@
  *
  * -------------------------------------------------------------------------
  *
- * Copyright (C) 2010-2018  (see AUTHORS file for a list of contributors)
+ * Copyright (C) 2010-2019  (see AUTHORS file for a list of contributors)
  *
  * GNSS-SDR is a software defined Global Navigation
  *          Satellite Systems receiver
@@ -147,6 +147,7 @@ GpsL5iPcpsAcquisition::GpsL5iPcpsAcquisition(
     channel_ = 0;
     threshold_ = 0.0;
     doppler_step_ = 0;
+    doppler_center_ = 0;
     gnss_synchro_ = nullptr;
 
     if (in_streams_ > 1)
@@ -158,9 +159,6 @@ GpsL5iPcpsAcquisition::GpsL5iPcpsAcquisition(
             LOG(ERROR) << "This implementation does not provide an output stream";
         }
 }
-
-
-GpsL5iPcpsAcquisition::~GpsL5iPcpsAcquisition() = default;
 
 
 void GpsL5iPcpsAcquisition::stop_acquisition()
@@ -209,6 +207,14 @@ void GpsL5iPcpsAcquisition::set_doppler_step(unsigned int doppler_step)
 }
 
 
+void GpsL5iPcpsAcquisition::set_doppler_center(int doppler_center)
+{
+    doppler_center_ = doppler_center;
+
+    acquisition_->set_doppler_center(doppler_center_);
+}
+
+
 void GpsL5iPcpsAcquisition::set_gnss_synchro(Gnss_Synchro* gnss_synchro)
 {
     gnss_synchro_ = gnss_synchro;
@@ -231,21 +237,21 @@ void GpsL5iPcpsAcquisition::init()
 
 void GpsL5iPcpsAcquisition::set_local_code()
 {
-    std::unique_ptr<std::complex<float>> code{new std::complex<float>[code_length_]};
+    std::vector<std::complex<float>> code(code_length_);
 
     if (acq_parameters_.use_automatic_resampler)
         {
-            gps_l5i_code_gen_complex_sampled(gsl::span<std::complex<float>>(code.get(), code_length_), gnss_synchro_->PRN, acq_parameters_.resampled_fs);
+            gps_l5i_code_gen_complex_sampled(code, gnss_synchro_->PRN, acq_parameters_.resampled_fs);
         }
     else
         {
-            gps_l5i_code_gen_complex_sampled(gsl::span<std::complex<float>>(code.get(), code_length_), gnss_synchro_->PRN, fs_in_);
+            gps_l5i_code_gen_complex_sampled(code, gnss_synchro_->PRN, fs_in_);
         }
 
     gsl::span<gr_complex> code_span(code_.data(), vector_length_);
     for (unsigned int i = 0; i < num_codes_; i++)
         {
-            std::copy_n(code.get(), code_length_, code_span.subspan(i * code_length_, code_length_).data());
+            std::copy_n(code.data(), code_length_, code_span.subspan(i * code_length_, code_length_).data());
         }
 
     acquisition_->set_local_code(code_.data());
@@ -266,7 +272,7 @@ void GpsL5iPcpsAcquisition::set_state(int state)
 
 float GpsL5iPcpsAcquisition::calculate_threshold(float pfa)
 {
-    //Calculate the threshold
+    // Calculate the threshold
     unsigned int frequency_bins = 0;
     for (int doppler = static_cast<int>(-doppler_max_); doppler <= static_cast<int>(doppler_max_); doppler += doppler_step_)
         {

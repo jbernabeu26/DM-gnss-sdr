@@ -6,7 +6,7 @@
  *
  * -------------------------------------------------------------------------
  *
- * Copyright (C) 2010-2018  (see AUTHORS file for a list of contributors)
+ * Copyright (C) 2010-2019  (see AUTHORS file for a list of contributors)
  *
  * GNSS-SDR is a software defined Global Navigation
  *          Satellite Systems receiver
@@ -121,7 +121,7 @@ FreqXlatingFirFilter::FreqXlatingFirFilter(ConfigurationInterface* configuration
         }
 
     size_t item_size;
-    LOG(INFO) << "Created freq_xlating_fir_filter with " << taps_.size()<<" taps";
+    LOG(INFO) << "Created freq_xlating_fir_filter with " << taps_.size() << " taps";
     if ((taps_item_type_ == "float") && (input_item_type_ == "gr_complex") && (output_item_type_ == "gr_complex"))
         {
             item_size = sizeof(gr_complex);    //output
@@ -193,9 +193,6 @@ FreqXlatingFirFilter::FreqXlatingFirFilter(ConfigurationInterface* configuration
             LOG(ERROR) << "This implementation only supports one output stream";
         }
 }
-
-
-FreqXlatingFirFilter::~FreqXlatingFirFilter() = default;
 
 
 void FreqXlatingFirFilter::connect(gr::top_block_sptr top_block)
