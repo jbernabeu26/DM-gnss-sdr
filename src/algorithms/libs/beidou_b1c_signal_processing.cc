@@ -607,6 +607,8 @@ void beidou_b1cd_code_gen_complex_sampled_boc_11(gsl::span<std::complex<float>> 
     float _ts;
     float _tc;
 
+    const int32_t _code_freq_basis = BEIDOU_B1Cd_CODE_RATE_HZ;  // Hz
+
     uint32_t _ranging_code_length = BEIDOU_B1Cd_CODE_LENGTH_CHIPS;
     int32_t _b1c_data_ranging_code_chips[_ranging_code_length];
     gsl::span<int32_t> _b1c_data_ranging_code_span(_b1c_data_ranging_code_chips, _ranging_code_length);
@@ -625,7 +627,7 @@ void beidou_b1cd_code_gen_complex_sampled_boc_11(gsl::span<std::complex<float>> 
     gsl::span<float> _b1c_data_boc_code_span(_b1c_data_boc_code_chips, _boc_code_length);
 
     // Generate code with BOC modulation
-    beidou_b1cd_gen_float_11(real_code_span, _prn);
+    beidou_b1cd_gen_float_11(_b1c_data_boc_code_span, _prn);
 
     //--- Find time constants --------------------------------------------------
     _ts = 1.0 / static_cast<float>(_fs);               // Sampling period in sec
@@ -641,12 +643,12 @@ void beidou_b1cd_code_gen_complex_sampled_boc_11(gsl::span<std::complex<float>> 
             if (i == _samples_per_code - 1)
                 {
                     // Correct the last index (due to number rounding issues)
-                    _dest[i] = std::complex<float>(1.0 - 2.0 * real_code_span[_code_length - 1], 0.0);
+                    _dest[i] = std::complex<float>(1.0 - 2.0 * _b1c_data_boc_code_span[_boc_code_length - 1], 0.0);
                 }
             else
                 {
                     //repeat the chip -> upsample
-                    _dest[i] = std::complex<float>(1.0 - 2.0 * real_code_span[_code_value_index], 0.0);
+                    _dest[i] = std::complex<float>(1.0 - 2.0 * _b1c_data_boc_code_span[_code_value_index], 0.0);
                 }
         }
 }
