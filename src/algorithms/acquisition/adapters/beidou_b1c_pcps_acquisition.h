@@ -3,9 +3,11 @@
 * \brief Adapts a PCPS acquisition block to an AcquisitionInterface for
 *  BEIDOU B1C signals
 * \authors <ul>
-*          <li> Andrew Kamble, 2019. andrewkamble88@gmail.com
+*           <li> Andrew Kamble, 2019. andrewkamble88@gmail.com
+*           <li> Joan Bernabeu, 2022. jbernabeu26@gmail.com
 *          </ul>
 * \note Code added as part of GSoC 2019 program
+* \note Code updated as part of GSoC 2022 program
 *
 * -------------------------------------------------------------------------
 *

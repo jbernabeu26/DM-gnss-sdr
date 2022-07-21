@@ -34,6 +34,7 @@
 #include "beidou_b3i_pcps_acquisition.h"
 #include "beidou_b3i_telemetry_decoder.h"
 #include "beidou_b1c_pcps_acquisition.h"
+#include "beidou_b1c_dll_pll_tracking.h"
 #include "byte_to_short.h"
 #include "channel.h"
 #include "configuration_interface.h"
@@ -1649,7 +1650,7 @@ std::unique_ptr<TrackingInterface> GNSSBlockFactory::GetTrkBlock(
         }
     else if (implementation == "BEIDOU_B1C_DLL_PLL_Tracking")
         {
-            std::unique_ptr<TrackingInterface> block_ = std::make_unique<BeidouB1CDllPllTracking>(configuration, role, in_streams,
+            std::unique_ptr<TrackingInterface> block_ = std::make_unique<BeidouB1cDllPllTracking>(configuration, role, in_streams,
                 out_streams);
             block = std::move(block_);
         }
