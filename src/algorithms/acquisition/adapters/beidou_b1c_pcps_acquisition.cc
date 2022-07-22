@@ -45,7 +45,7 @@
 #include <algorithm>
 
 
-BeidouB1CPcpsAcquisition::BeidouB1CPcpsAcquisition(
+BeidouB1cPcpsAcquisition::BeidouB1cPcpsAcquisition(
     ConfigurationInterface* configuration,
     const std::string& role,
     unsigned int in_streams,
@@ -178,14 +178,14 @@ BeidouB1CPcpsAcquisition::BeidouB1CPcpsAcquisition(
 }
 
 
-BeidouB1CPcpsAcquisition::~BeidouB1CPcpsAcquisition() = default;
+BeidouB1cPcpsAcquisition::~BeidouB1cPcpsAcquisition() = default;
 
 
-void BeidouB1CPcpsAcquisition::stop_acquisition()
+void BeidouB1cPcpsAcquisition::stop_acquisition()
 {
 }
 
-void BeidouB1CPcpsAcquisition::set_threshold(float threshold)
+void BeidouB1cPcpsAcquisition::set_threshold(float threshold)
 {
     float pfa = configuration_->property(role_ + std::to_string(channel_) + ".pfa", 0.0);
 
@@ -209,7 +209,7 @@ void BeidouB1CPcpsAcquisition::set_threshold(float threshold)
 }
 
 
-void BeidouB1CPcpsAcquisition::set_doppler_max(unsigned int doppler_max)
+void BeidouB1cPcpsAcquisition::set_doppler_max(unsigned int doppler_max)
 {
     doppler_max_ = doppler_max;
 
@@ -217,7 +217,7 @@ void BeidouB1CPcpsAcquisition::set_doppler_max(unsigned int doppler_max)
 }
 
 
-void BeidouB1CPcpsAcquisition::set_doppler_step(unsigned int doppler_step)
+void BeidouB1cPcpsAcquisition::set_doppler_step(unsigned int doppler_step)
 {
     doppler_step_ = doppler_step;
 
@@ -225,7 +225,7 @@ void BeidouB1CPcpsAcquisition::set_doppler_step(unsigned int doppler_step)
 }
 
 
-void BeidouB1CPcpsAcquisition::set_gnss_synchro(Gnss_Synchro* gnss_synchro)
+void BeidouB1cPcpsAcquisition::set_gnss_synchro(Gnss_Synchro* gnss_synchro)
 {
     gnss_synchro_ = gnss_synchro;
 
@@ -233,19 +233,19 @@ void BeidouB1CPcpsAcquisition::set_gnss_synchro(Gnss_Synchro* gnss_synchro)
 }
 
 
-signed int BeidouB1CPcpsAcquisition::mag()
+signed int BeidouB1cPcpsAcquisition::mag()
 {
     return acquisition_->mag();
 }
 
 
-void BeidouB1CPcpsAcquisition::init()
+void BeidouB1cPcpsAcquisition::init()
 {
     acquisition_->init();
 }
 
 
-void BeidouB1CPcpsAcquisition::set_local_code()
+void BeidouB1cPcpsAcquisition::set_local_code()
 {
     std::unique_ptr<std::complex<float>> code{new std::complex<float>[code_length_]};
     // Perform acquisition in Data + Pilot signal
@@ -273,19 +273,19 @@ void BeidouB1CPcpsAcquisition::set_local_code()
 }
 
 
-void BeidouB1CPcpsAcquisition::reset()
+void BeidouB1cPcpsAcquisition::reset()
 {
     acquisition_->set_active(true);
 }
 
 
-void BeidouB1CPcpsAcquisition::set_state(int state)
+void BeidouB1cPcpsAcquisition::set_state(int state)
 {
     acquisition_->set_state(state);
 }
 
 
-float BeidouB1CPcpsAcquisition::calculate_threshold(float pfa)
+float BeidouB1cPcpsAcquisition::calculate_threshold(float pfa)
 {
     unsigned int frequency_bins = 0;
     for (int doppler = static_cast<int>(-doppler_max_); doppler <= static_cast<int>(doppler_max_); doppler += doppler_step_)
@@ -306,7 +306,7 @@ float BeidouB1CPcpsAcquisition::calculate_threshold(float pfa)
 }
 
 
-void BeidouB1CPcpsAcquisition::connect(gr::top_block_sptr top_block)
+void BeidouB1cPcpsAcquisition::connect(gr::top_block_sptr top_block)
 {
     if (item_type_ == "gr_complex")
         {
@@ -331,7 +331,7 @@ void BeidouB1CPcpsAcquisition::connect(gr::top_block_sptr top_block)
 }
 
 
-void BeidouB1CPcpsAcquisition::disconnect(gr::top_block_sptr top_block)
+void BeidouB1cPcpsAcquisition::disconnect(gr::top_block_sptr top_block)
 {
     if (item_type_ == "gr_complex")
         {
@@ -354,7 +354,7 @@ void BeidouB1CPcpsAcquisition::disconnect(gr::top_block_sptr top_block)
 }
 
 
-gr::basic_block_sptr BeidouB1CPcpsAcquisition::get_left_block()
+gr::basic_block_sptr BeidouB1cPcpsAcquisition::get_left_block()
 {
     if (item_type_ == "gr_complex")
         {
@@ -374,12 +374,12 @@ gr::basic_block_sptr BeidouB1CPcpsAcquisition::get_left_block()
 }
 
 
-gr::basic_block_sptr BeidouB1CPcpsAcquisition::get_right_block()
+gr::basic_block_sptr BeidouB1cPcpsAcquisition::get_right_block()
 {
     return acquisition_;
 }
 
-void BeidouB1CPcpsAcquisition::set_resampler_latency(uint32_t latency_samples)
+void BeidouB1cPcpsAcquisition::set_resampler_latency(uint32_t latency_samples)
 {
     acquisition_->set_resampler_latency(latency_samples);
 }

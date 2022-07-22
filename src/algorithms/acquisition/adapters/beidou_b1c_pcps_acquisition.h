@@ -54,15 +54,15 @@ class ConfigurationInterface;
 * \brief This class adapts a PCPS acquisition block to an
 *  AcquisitionInterface for BeiDou B1C Signals
 */
-class BeidouB1CPcpsAcquisition : public AcquisitionInterface
+class BeidouB1cPcpsAcquisition : public AcquisitionInterface
 {
 public:
-   BeidouB1CPcpsAcquisition(ConfigurationInterface* configuration,
+   BeidouB1cPcpsAcquisition(ConfigurationInterface* configuration,
        const std::string& role,
        unsigned int in_streams,
        unsigned int out_streams);
 
-   virtual ~BeidouB1CPcpsAcquisition();
+   virtual ~BeidouB1cPcpsAcquisition();
 
    inline std::string role() override
    {

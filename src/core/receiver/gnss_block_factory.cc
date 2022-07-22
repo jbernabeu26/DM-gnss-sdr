@@ -34,7 +34,6 @@
 #include "beidou_b3i_pcps_acquisition.h"
 #include "beidou_b3i_telemetry_decoder.h"
 #include "beidou_b1c_pcps_acquisition.h"
-#include "beidou_b1c_dll_pll_tracking.h"
 #include "byte_to_short.h"
 #include "channel.h"
 #include "configuration_interface.h"
@@ -1032,7 +1031,7 @@ std::unique_ptr<GNSSBlockInterface> GNSSBlockFactory::GetBlock(
                 }
             else if (implementation == "BEIDOU_B1C_PCPS_Acquisition")
                 {
-                    std::unique_ptr<AcquisitionInterface> block_ = std::make_unique<BeidouB1CPcpsAcquisition>(configuration, role, in_streams,
+                    std::unique_ptr<AcquisitionInterface> block_ = std::make_unique<BeidouB1cPcpsAcquisition>(configuration, role, in_streams,
                         out_streams);
                     block = std::move(block_);
                 }
@@ -1476,7 +1475,7 @@ std::unique_ptr<AcquisitionInterface> GNSSBlockFactory::GetAcqBlock(
         }
     else if (implementation == "BEIDOU_B1C_PCPS_Acquisition")
         {
-            std::unique_ptr<AcquisitionInterface> block_ = std::make_unique<BeidouB1CPcpsAcquisition>(configuration, role, in_streams,
+            std::unique_ptr<AcquisitionInterface> block_ = std::make_unique<BeidouB1cPcpsAcquisition>(configuration, role, in_streams,
                 out_streams);
             block = std::move(block_);
         }
@@ -1648,12 +1647,6 @@ std::unique_ptr<TrackingInterface> GNSSBlockFactory::GetTrkBlock(
                 out_streams);
             block = std::move(block_);
         }
-    else if (implementation == "BEIDOU_B1C_DLL_PLL_Tracking")
-        {
-            std::unique_ptr<TrackingInterface> block_ = std::make_unique<BeidouB1cDllPllTracking>(configuration, role, in_streams,
-                out_streams);
-            block = std::move(block_);
-        }
 #if CUDA_GPU_ACCEL
     else if (implementation == "GPS_L1_CA_DLL_PLL_Tracking_GPU")
         {
@@ -1782,12 +1775,6 @@ std::unique_ptr<TelemetryDecoderInterface> GNSSBlockFactory::GetTlmBlock(
     else if (implementation == "BEIDOU_B3I_Telemetry_Decoder")
         {
             std::unique_ptr<TelemetryDecoderInterface> block_ = std::make_unique<BeidouB3iTelemetryDecoder>(configuration, role, in_streams,
-                out_streams);
-            block = std::move(block_);
-        }
-    else if (implementation == "BEIDOU_B1C_Telemetry_Decoder")
-        {
-            std::unique_ptr<TelemetryDecoderInterface> block_ = std::make_unique<BeidouB1CTelemetryDecoder>(configuration, role, in_streams,
                 out_streams);
             block = std::move(block_);
         }
