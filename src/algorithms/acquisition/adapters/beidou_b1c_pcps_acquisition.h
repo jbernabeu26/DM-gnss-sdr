@@ -57,7 +57,7 @@ class ConfigurationInterface;
 class BeidouB1cPcpsAcquisition : public AcquisitionInterface
 {
 public:
-   BeidouB1cPcpsAcquisition(ConfigurationInterface* configuration,
+   BeidouB1cPcpsAcquisition(const ConfigurationInterface* configuration,
        const std::string& role,
        unsigned int in_streams,
        unsigned int out_streams);
@@ -173,6 +173,11 @@ private:
    std::string item_type_;
    unsigned int vector_length_;
    unsigned int code_length_;
+   unsigned int doppler_max_;
+   unsigned int doppler_step_;
+   unsigned int num_codes_;
+   unsigned int in_streams_;
+   unsigned int out_streams_;
    bool bit_transition_flag_;
    bool use_CFAR_algorithm_flag_;
    bool acq_pilot_;
@@ -180,8 +185,6 @@ private:
    unsigned int channel_;
    std::weak_ptr<ChannelFsm> channel_fsm_;
    float threshold_;
-   unsigned int doppler_max_;
-   unsigned int doppler_step_;
    unsigned int sampled_ms_;
    unsigned int max_dwells_;
    int64_t fs_in_;
@@ -191,8 +194,6 @@ private:
    std::vector<std::complex<float>> code_;
    Gnss_Synchro* gnss_synchro_;
    std::string role_;
-   unsigned int in_streams_;
-   unsigned int out_streams_;
    float calculate_threshold(float pfa);
 };
 
