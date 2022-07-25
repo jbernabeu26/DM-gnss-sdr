@@ -43,8 +43,9 @@
 #include "pcps_acquisition.h"
 #include <gnuradio/blocks/float_to_complex.h>
 #include <gnuradio/blocks/stream_to_vector.h>
-#include <volk_gnsssdr/volk_gnsssdr.h>
+#include <volk_gnsssdr/volk_gnsssdr_alloc.h>
 #include <cstdint>
+#include <memory>
 #include <string>
 
 
@@ -57,12 +58,11 @@ class ConfigurationInterface;
 class BeidouB1cPcpsAcquisition : public AcquisitionInterface
 {
 public:
-   BeidouB1cPcpsAcquisition(const ConfigurationInterface* configuration,
-       const std::string& role,
-       unsigned int in_streams,
-       unsigned int out_streams);
+    BeidouB1cPcpsAcquisition(const ConfigurationInterface* configuration,
+        const std::string& role, unsigned int in_streams,
+        unsigned int out_streams);
 
-   virtual ~BeidouB1cPcpsAcquisition();
+    ~BeidouB1cPcpsAcquisition() = default;
 
    inline std::string role() override
    {
@@ -77,10 +77,10 @@ public:
        return "BEIDOU_B1C_PCPS_Acquisition";
    }
 
-   size_t item_size() override
-   {
-       return item_size_;
-   }
+    inline size_t item_size() override
+    {
+        return item_size_;
+    }
 
    void connect(gr::top_block_sptr top_block) override;
    void disconnect(gr::top_block_sptr top_block) override;
@@ -116,15 +116,15 @@ public:
     */
    void set_threshold(float threshold) override;
 
-   /*!
-    * \brief Set maximum Doppler off grid search
-    */
-   void set_doppler_max(unsigned int doppler_max) override;
+    /*!
+     * \brief Set maximum Doppler off grid search
+     */
+    void set_doppler_max(uint32_t doppler_max) override;
 
-   /*!
-    * \brief Set Doppler steps for the grid search
-    */
-   void set_doppler_step(unsigned int doppler_step) override;
+    /*!
+     * \brief Set Doppler steps for the grid search
+     */
+    void set_doppler_step(uint32_t doppler_step) override;
 
    /*!
     * \brief Initializes acquisition algorithm.
@@ -164,37 +164,30 @@ public:
 
 
 private:
-   ConfigurationInterface* configuration_;
-   Acq_Conf acq_parameters_;
-   pcps_acquisition_sptr acquisition_;
-   gr::blocks::float_to_complex::sptr float_to_complex_;
-   complex_byte_to_float_x2_sptr cbyte_to_float_x2_;
-   size_t item_size_;
-   std::string item_type_;
-   unsigned int vector_length_;
-   unsigned int code_length_;
-   unsigned int doppler_max_;
-   unsigned int doppler_step_;
-   unsigned int num_codes_;
-   unsigned int in_streams_;
-   unsigned int out_streams_;
-   bool bit_transition_flag_;
-   bool use_CFAR_algorithm_flag_;
-   bool acq_pilot_;
-   bool acq_iq_;
-   unsigned int channel_;
-   std::weak_ptr<ChannelFsm> channel_fsm_;
-   float threshold_;
-   unsigned int sampled_ms_;
-   unsigned int max_dwells_;
-   int64_t fs_in_;
-   bool dump_;
-   bool blocking_;
-   std::string dump_filename_;
-   std::vector<std::complex<float>> code_;
-   Gnss_Synchro* gnss_synchro_;
-   std::string role_;
-   float calculate_threshold(float pfa);
+    pcps_acquisition_sptr acquisition_;
+    volk_gnsssdr::vector<std::complex<float>> code_;
+    std::weak_ptr<ChannelFsm> channel_fsm_;
+    gr::blocks::float_to_complex::sptr float_to_complex_;
+    complex_byte_to_float_x2_sptr cbyte_to_float_x2_;
+    Gnss_Synchro* gnss_synchro_;
+    Acq_Conf acq_parameters_;
+    std::string item_type_;
+    std::string role_;
+    std::string dump_filename_;
+    size_t item_size_;
+    int64_t fs_in_;
+    float threshold_;
+    unsigned int vector_length_;
+    unsigned int code_length_;
+    unsigned int channel_;
+    unsigned int doppler_max_;
+    unsigned int doppler_step_;
+    unsigned int num_codes_;
+    unsigned int in_streams_;
+    unsigned int out_streams_;
+    bool acq_iq_;
+    bool acq_pilot_;
+
 };
 
 #endif /* GNSS_SDR_BEIDOU_B1C_PCPS_ACQUISITION_H_ */

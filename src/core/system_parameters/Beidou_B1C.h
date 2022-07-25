@@ -45,7 +45,7 @@
 
 constexpr double BEIDOU_B1C_FREQ_HZ = FREQ1;              //!< BEIDOU B1C carrier frequency [Hz]
 constexpr double BEIDOU_B1C_CODE_RATE_CPS = 1.023e6;      //!< BEIDOU_B1C data code rate [chips/s]
-constexpr double BEIDOU_B1C_CODE_LENGTH_CHIPS = 10230;  //!< BEIDOU_B1C data  code length [chips]
+constexpr int32_t BEIDOU_B1C_CODE_LENGTH_CHIPS = 10230;  //!< BEIDOU_B1C data  code length [chips]
 constexpr double BEIDOU_B1C_CODE_PERIOD_S = 0.01;    //!< BEIDOU_B1C data code period [seconds]
 constexpr uint32_t BEIDOU_B1C_CODE_PERIOD_MS = 10;
 constexpr uint32_t BEIDOU_B1C_OPT_ACQ_FS_HZ = 2000000;  //!< Sampling frequncy that maximizes the acquisition SNR while using a non-multiple of chip rate

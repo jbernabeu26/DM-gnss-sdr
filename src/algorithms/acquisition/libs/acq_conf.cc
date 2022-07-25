@@ -42,6 +42,7 @@ void Acq_Conf::SetFromConfiguration(const ConfigurationInterface *configuration,
     dump_channel = configuration->property(role + ".dump_channel", dump_channel);
     blocking = configuration->property(role + ".blocking", blocking);
     dump_filename = configuration->property(role + ".dump_filename", dump_filename);
+    acq_iq_ = configuration->property(role + ".acq_iq_", acq_iq_);
 
     use_automatic_resampler = configuration->property("GNSS-SDR.use_acquisition_resampler", use_automatic_resampler);
 

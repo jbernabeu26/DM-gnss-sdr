@@ -73,6 +73,8 @@ public:
     bool make_2_steps{false};
     bool use_automatic_resampler{false};
     bool enable_monitor_output{false};
+    bool acq_iq_{false};
+    bool acq_pilot_{false};
 
 private:
     void SetDerivedParams();

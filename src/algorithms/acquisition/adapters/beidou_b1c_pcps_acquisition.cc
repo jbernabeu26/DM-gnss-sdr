@@ -3,6 +3,7 @@
 * \brief Adapts a PCPS acquisition block to an Acquisition Interface for
 *  BEIDOU B1C signals
 * \authors <ul>
+*           <li> Damian Miralles, 2018. dmiralles2009@gmail.com
 *           <li> Andrew Kamble, 2019. andrewkamble88@gmail.com
 *           <li> Joan Bernabeu, 2022. jbernabeu26@gmail.com
 *          </ul>
@@ -45,6 +46,7 @@
 #include <algorithm>
 #include <memory>
 
+
 #if HAS_STD_SPAN
 #include <span>
 namespace own = std;
@@ -57,12 +59,12 @@ BeidouB1cPcpsAcquisition::BeidouB1cPcpsAcquisition(
     const ConfigurationInterface* configuration,
     const std::string& role,
     unsigned int in_streams,
-    unsigned int out_streams) : in_streams_(in_streams),
-                                out_streams_(out_streams),
-                                channel_(0),
+    unsigned int out_streams) : gnss_synchro_(nullptr),
+                                role_(role),
                                 threshold_(0.0),
-                                gnss_synchro_(nullptr),
-                                role_(role)
+                                channel_(0),
+                                in_streams_(in_streams),
+                                out_streams_(out_streams)
 {
     acq_parameters_.ms_per_code = 10;
     acq_parameters_.SetFromConfiguration(configuration, role, BEIDOU_B1C_CODE_RATE_CPS, 10e6);
@@ -83,6 +85,11 @@ BeidouB1cPcpsAcquisition::BeidouB1cPcpsAcquisition(
     code_length_ = static_cast<unsigned int>(std::floor(static_cast<double>(fs_in_) / (BEIDOU_B1C_CODE_RATE_CPS / BEIDOU_B1C_CODE_LENGTH_CHIPS)));
     vector_length_ = static_cast<unsigned int>(std::floor(acq_parameters_.sampled_ms * acq_parameters_.samples_per_ms) * (acq_parameters_.bit_transition_flag ? 2.0 : 1.0));
     code_ = volk_gnsssdr::vector<std::complex<float>>(vector_length_);
+    acq_iq_ = acq_parameters_.acq_iq_;
+    if (acq_iq_)
+    {
+        acq_pilot_ = false;
+    }
 
     acquisition_ = pcps_make_acquisition(acq_parameters_);
     DLOG(INFO) << "acquisition(" << acquisition_->unique_id() << ")";
@@ -155,20 +162,31 @@ void BeidouB1cPcpsAcquisition::init()
 
 void BeidouB1cPcpsAcquisition::set_local_code()
 {
-    volk_gnsssdr::vector<std::complex<float>> code(code_length_);
-
-    beidou_b1c_code_gen_complex_sampled(code, gnss_synchro_->PRN, fs_in_, 0);
-
-    own::span<gr_complex> code_span(code_.data(), vector_length_);
-    for (unsigned int i = 0; i < num_codes_; i++)
-        {
-            std::copy_n(code.data(), code_length_, code_span.subspan(i * code_length_, code_length_).data());
-        }
+    std::unique_ptr<std::complex<float>> code{new std::complex<float>[code_length_]};
+    // Perform acquisition in Data + Pilot signal
+    if (acq_iq_)
+    {
+        beidou_b1c_code_gen_complex_sampled_boc(gsl::span<std::complex<float>>(code, code_length_), gnss_synchro_->PRN, fs_in_);
+    }
+        // Perform acquisition in Pilot signal
+    else if (acq_pilot_)
+    {
+        beidou_b1cp_code_gen_complex_sampled_boc_61_11(gsl::span<std::complex<float>>(code, code_length_), gnss_synchro_->PRN, fs_in_);
+    }
+        // Perform acquisition in Data signal
+    else
+    {
+        beidou_b1cd_code_gen_complex_sampled_boc_11(gsl::span<std::complex<float>>(code, code_length_), gnss_synchro_->PRN, fs_in_);
+    }
+    gsl::span<gr_complex> code_span(code_.data(), vector_length_);
+    for (unsigned int i = 0; i < num_codes_/10; i++)
+    {
+        std::copy_n(code.get(), code_length_, code_span.subspan(i * code_length_, code_length_).data());
+    }
 
     acquisition_->set_local_code(code_.data());
 
 }
-
 
 void BeidouB1cPcpsAcquisition::reset()
 {

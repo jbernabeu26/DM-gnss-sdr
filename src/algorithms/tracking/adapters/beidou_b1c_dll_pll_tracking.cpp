@@ -121,7 +121,7 @@ BeidouB1cDllPllTracking::BeidouB1cDllPllTracking(
    std::string default_dump_filename = "./track_ch";
    std::string dump_filename = configuration->property(role + ".dump_filename", default_dump_filename);
    trk_param.dump_filename = dump_filename;
-   int vector_length = std::round(static_cast<double>(fs_in) / (static_cast<double>(BEIDOU_B1Cd_CODE_RATE_HZ) / static_cast<double>(BEIDOU_B1Cd_CODE_LENGTH_CHIPS)));
+   int vector_length = std::round(static_cast<double>(fs_in) / (static_cast<double>(BEIDOU_B1C_CODE_RATE_CPS) / static_cast<double>(BEIDOU_B1C_CODE_LENGTH_CHIPS)));
    trk_param.vector_length = vector_length;
    int extend_correlation_symbols = configuration->property(role + ".extend_correlation_symbols", 1);
    float early_late_space_narrow_chips = configuration->property(role + ".early_late_space_narrow_chips", 0.15);
