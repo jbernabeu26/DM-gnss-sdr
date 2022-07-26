@@ -51,7 +51,7 @@ set(TRACKING_ADAPTER_SOURCES
     glonass_l2_ca_dll_pll_c_aid_tracking.cc
     beidou_b1i_dll_pll_tracking.cc
     beidou_b3i_dll_pll_tracking.cc
-    beidou_b1c_dll_pll_tracking.cpp
+        beidou_b1c_dll_pll_tracking.cc
     gps_l1_ca_kf_vtl_tracking.cc
     ${OPT_TRACKING_ADAPTERS_SOURCES}
 )

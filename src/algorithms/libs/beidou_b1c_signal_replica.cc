@@ -31,7 +31,8 @@
 */
 
 
-#include "beidou_b1c_pcps_acquisition.h"
+
+#include "beidou_b1c_signal_replica.h"
 #include "Beidou_B1C.h"
 #include <volk_gnsssdr/volk_gnsssdr.h>
 #include <algorithm>
