@@ -1497,6 +1497,14 @@ int GNSSFlowgraph::assign_channels()
             top_block_->disconnect_all();
             return 1;
         }
+    if (configuration_->property("Channels_BC.count", uint64_t(0ULL)) > available_BDS_BC_signals_.size() - 1)
+        {
+            help_hint_ += " * The number of BeiDou B1C channels is set to Channels_BC.count=" + std::to_string(configuration_->property("Channels_B3.count", 0));
+            help_hint_ += " but the maximum number of available BeiDou satellites is " + std::to_string(available_BDS_BC_signals_.size()) + ".\n";
+            help_hint_ += " Please set Channels_BC.count=" + std::to_string(available_BDS_BC_signals_.size() - 1) + " or lower in your configuration file.\n";
+            top_block_->disconnect_all();
+            return 1;
+        }
 
     // Assign satellites to channels in the initialization
     for (unsigned int& i : vector_of_channels)
@@ -1590,6 +1598,13 @@ int GNSSFlowgraph::assign_channels()
                             gnss_signal = Gnss_Signal(Gnss_Satellite(gnss_system_str, sat), gnss_signal_str);
                             available_BDS_B3_signals_.remove(gnss_signal);
                             break;
+
+                        case evBDS_BC:
+                            gnss_system_str = "Beidou";
+                            gnss_signal = Gnss_Signal(Gnss_Satellite(gnss_system_str, sat), gnss_signal_str);
+                            available_BDS_BC_signals_.remove(gnss_signal);
+                            break;
+
 
                         default:
                             LOG(ERROR) << "This should not happen :-(";
@@ -1701,6 +1716,11 @@ void GNSSFlowgraph::push_back_signal(const Gnss_Signal& gs)
         case evBDS_B3:
             available_BDS_B3_signals_.remove(gs);
             available_BDS_B3_signals_.push_back(gs);
+            break;
+
+        case evBDS_BC:
+            available_BDS_BC_signals_.remove(gs);
+            available_BDS_BC_signals_.push_back(gs);
             break;
 
         default:

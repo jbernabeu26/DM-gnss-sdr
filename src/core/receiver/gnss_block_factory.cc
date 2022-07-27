@@ -1654,6 +1654,12 @@ std::unique_ptr<TrackingInterface> GNSSBlockFactory::GetTrkBlock(
                 out_streams);
             block = std::move(block_);
         }
+    else if (implementation == "BEIDOU_B1C_DLL_PLL_Tracking")
+        {
+            std::unique_ptr<TrackingInterface> block_ = std::make_unique<BeidouB1cDllPllTracking>(configuration, role, in_streams,
+                out_streams);
+            block = std::move(block_);
+        }
 #if CUDA_GPU_ACCEL
     else if (implementation == "GPS_L1_CA_DLL_PLL_Tracking_GPU")
         {

@@ -254,6 +254,7 @@ private:
     std::list<Gnss_Signal> available_GLO_2G_signals_;
     std::list<Gnss_Signal> available_BDS_B1_signals_;
     std::list<Gnss_Signal> available_BDS_B3_signals_;
+    std::list<Gnss_Signal> available_BDS_BC_signals_;
 
     enum StringValue
     {
