@@ -50,10 +50,11 @@ class ConfigurationInterface;
 class BeidouB1cDllPllTracking : public TrackingInterface
 {
 public:
-   BeidouB1cDllPllTracking(ConfigurationInterface* configuration,
-       std::string role,
-       unsigned int in_streams,
-       unsigned int out_streams);
+   BeidouB1cDllPllTracking(
+        const ConfigurationInterface* configuration,
+        const std::string role,
+        unsigned int in_streams,
+        unsigned int out_streams);
 
    virtual ~BeidouB1cDllPllTracking();
 

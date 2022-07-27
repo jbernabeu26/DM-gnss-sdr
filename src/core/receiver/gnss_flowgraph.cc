@@ -182,6 +182,7 @@ void GNSSFlowgraph::init()
     mapStringValues_["2G"] = evGLO_2G;
     mapStringValues_["B1"] = evBDS_B1;
     mapStringValues_["B3"] = evBDS_B3;
+    mapStringValues_["BC"] = evBDS_BC;
 
     // fill the signals queue with the satellites ID's to be searched by the acquisition
     set_signals_list();
