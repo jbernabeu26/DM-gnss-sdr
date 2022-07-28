@@ -175,7 +175,7 @@ private:
     std::string role_;
     std::string dump_filename_;
     size_t item_size_;
-    int64_t fs_in_;
+    int32_t fs_in_;
     float threshold_;
     unsigned int vector_length_;
     unsigned int code_length_;
