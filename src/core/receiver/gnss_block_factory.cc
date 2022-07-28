@@ -326,7 +326,7 @@ std::unique_ptr<GNSSBlockInterface> GNSSBlockFactory::GetObservables(const Confi
     Glonass_channels += configuration->property("Channels_2G.count", 0);
     unsigned int Beidou_channels = configuration->property("Channels_B1.count", 0);
     Beidou_channels += configuration->property("Channels_B3.count", 0);
-    Beidou_channels += configuration->property("Channels_BC.count", 0);
+    Beidou_channels += configuration->property("Channels_C1.count", 0);
     unsigned int extra_channels = 1;  // For monitor channel sample counter
     return GetBlock(configuration, "Observables",
         Galileo_channels +
@@ -362,7 +362,7 @@ std::unique_ptr<GNSSBlockInterface> GNSSBlockFactory::GetPVT(const Configuration
     Glonass_channels += configuration->property("Channels_2G.count", 0);
     unsigned int Beidou_channels = configuration->property("Channels_B1.count", 0);
     Beidou_channels += configuration->property("Channels_B3.count", 0);
-    Beidou_channels += configuration->property("Channels_BC.count", 0);
+    Beidou_channels += configuration->property("Channels_C1.count", 0);
     return GetBlock(configuration, "PVT",
         Galileo_channels + GPS_channels + Glonass_channels + Beidou_channels, 0);
 }
@@ -455,7 +455,7 @@ std::unique_ptr<std::vector<std::unique_ptr<GNSSBlockInterface>>> GNSSBlockFacto
     const unsigned int Channels_L5_count = configuration->property("Channels_L5.count", 0);
     const unsigned int Channels_B1_count = configuration->property("Channels_B1.count", 0);
     const unsigned int Channels_B3_count = configuration->property("Channels_B3.count", 0);
-    const unsigned int Channels_BC_count = configuration->property("Channels_BC.count", 0);
+    const unsigned int Channels_C1_count = configuration->property("Channels_C1.count", 0);
     const unsigned int Channels_7X_count = configuration->property("Channels_7X.count", 0);
     const unsigned int Channels_E6_count = configuration->property("Channels_E6.count", 0);
 
@@ -468,7 +468,7 @@ std::unique_ptr<std::vector<std::unique_ptr<GNSSBlockInterface>>> GNSSBlockFacto
                                         Channels_L5_count +
                                         Channels_B1_count +
                                         Channels_B3_count +
-                                        Channels_BC_count +
+                                        Channels_C1_count +
                                         Channels_7X_count +
                                         Channels_E6_count;
 
@@ -605,13 +605,13 @@ std::unique_ptr<std::vector<std::unique_ptr<GNSSBlockInterface>>> GNSSBlockFacto
                     channel_absolute_id++;
                 }
             // **************** BEIDOU B1C CHANNELS ****************************
-            LOG(INFO) << "Getting " << Channels_BC_count << " BEIDOU B1C channels";
+            LOG(INFO) << "Getting " << Channels_C1_count << " BEIDOU B1C channels";
 
-            for (unsigned int i = 0; i < Channels_BC_count; i++)
+            for (unsigned int i = 0; i < Channels_C1_count; i++)
                 {
                     // Store the channel into the vector of channels
                     channels->at(channel_absolute_id) = GetChannel(configuration,
-                        std::string("BC"),
+                        std::string("C1"),
                         channel_absolute_id,
                         queue);
                     channel_absolute_id++;
