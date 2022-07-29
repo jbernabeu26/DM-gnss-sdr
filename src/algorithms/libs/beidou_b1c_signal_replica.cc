@@ -89,7 +89,7 @@ std::deque<bool> make_b1cd_primary_weil_seq(int32_t w, int32_t p)
    return trunc_weil_seq;
 }
 
-void make_b1cd(gsl::span<int32_t> _dest, int32_t prn)
+void make_b1cd(own::span<int32_t> _dest, int32_t prn)
 {
    int32_t phase_diff = BEIDOU_B1Cd_PHASE_DIFF[prn - 1];
    int32_t truncation_point = BEIDOU_B1Cd_TRUNC_POINT[prn - 1];
@@ -105,14 +105,14 @@ void make_b1cd(gsl::span<int32_t> _dest, int32_t prn)
 
 
 //! Generate a float version of the B1c Data Primary code
-void beidou_b1cd_code_gen_float(gsl::span<float> _dest, uint32_t _prn)
+void beidou_b1cd_code_gen_float(own::span<float> _dest, uint32_t _prn)
 {
    uint32_t _code_length = BEIDOU_B1C_CODE_LENGTH_CHIPS;
    int32_t _code[_code_length];
 
    if (_prn > 0 and _prn < 63)
        {
-           make_b1cd(gsl::span<int32_t>(_code, _code_length), _prn);
+           make_b1cd(own::span<int32_t>(_code, _code_length), _prn);
        }
 
    for (uint32_t ii = 0; ii < _code_length; ii++)
@@ -122,14 +122,14 @@ void beidou_b1cd_code_gen_float(gsl::span<float> _dest, uint32_t _prn)
 }
 
 // Generate a complex version of the B1c Data Primary code
-void beidou_b1cd_code_gen_complex(gsl::span<std::complex<float>> _dest, uint32_t _prn)
+void beidou_b1cd_code_gen_complex(own::span<std::complex<float>> _dest, uint32_t _prn)
 {
    uint32_t _code_length = BEIDOU_B1C_CODE_LENGTH_CHIPS;
    int32_t _code[_code_length];
 
    if (_prn > 0 and _prn < 63)
        {
-           make_b1cd(gsl::span<int32_t>(_code, _code_length), _prn);
+           make_b1cd(own::span<int32_t>(_code, _code_length), _prn);
        }
 
    for (uint32_t ii = 0; ii < _code_length; ii++)
@@ -141,14 +141,14 @@ void beidou_b1cd_code_gen_complex(gsl::span<std::complex<float>> _dest, uint32_t
 /*
 *  Generates complex BEIDOU B1c Data Primary code for the desired SV ID and sampled to specific sampling frequency
 */
-void beidou_b1cd_code_gen_complex_sampled(gsl::span<std::complex<float>> _dest, uint32_t _prn, int32_t _fs)
+void beidou_b1cd_code_gen_complex_sampled(own::span<std::complex<float>> _dest, uint32_t _prn, int32_t _fs)
 {
    uint32_t _code_length = BEIDOU_B1C_CODE_LENGTH_CHIPS;
    int32_t _code[_code_length];
 
    if (_prn > 0 and _prn <= 63)
        {
-           make_b1cd(gsl::span<int32_t>(_code, _code_length), _prn);
+           make_b1cd(own::span<int32_t>(_code, _code_length), _prn);
        }
 
    int32_t _samples_per_code, _code_value_index;
@@ -202,7 +202,7 @@ std::deque<bool> make_b1cp_primary_weil_seq(int32_t w, int32_t p)
 }
 
 //! Generate the B1C Pilot Primary code
-void make_b1cp(gsl::span<int32_t> _dest, int32_t prn)
+void make_b1cp(own::span<int32_t> _dest, int32_t prn)
 {
    int32_t phase_diff = BEIDOU_B1Cp_PHASE_DIFF[prn - 1];
    int32_t truncation_point = BEIDOU_B1Cp_TRUNC_POINT[prn - 1];
@@ -218,14 +218,14 @@ void make_b1cp(gsl::span<int32_t> _dest, int32_t prn)
 
 
 //! Generate a float version of the B1C Pilot Primary code
-void beidou_b1cp_code_gen_float(gsl::span<float> _dest, uint32_t _prn)
+void beidou_b1cp_code_gen_float(own::span<float> _dest, uint32_t _prn)
 {
    uint32_t _code_length = BEIDOU_B1C_CODE_LENGTH_CHIPS;
    int32_t _code[_code_length];
 
    if (_prn > 0 and _prn < 63)
        {
-           make_b1cp(gsl::span<int32_t>(_code, _code_length), _prn);
+           make_b1cp(own::span<int32_t>(_code, _code_length), _prn);
        }
 
    for (uint32_t ii = 0; ii < _code_length; ii++)
@@ -235,14 +235,14 @@ void beidou_b1cp_code_gen_float(gsl::span<float> _dest, uint32_t _prn)
 }
 
 //! Generate a complex version of the B1C Pilot Primary code
-void beidou_b1cp_code_gen_complex(gsl::span<std::complex<float>> _dest, uint32_t _prn)
+void beidou_b1cp_code_gen_complex(own::span<std::complex<float>> _dest, uint32_t _prn)
 {
    uint32_t _code_length = BEIDOU_B1C_CODE_LENGTH_CHIPS;
    int32_t _code[_code_length];
 
    if (_prn > 0 and _prn < 63)
        {
-           make_b1cp(gsl::span<int32_t>(_code, _code_length), _prn);
+           make_b1cp(own::span<int32_t>(_code, _code_length), _prn);
        }
 
    for (uint32_t ii = 0; ii < _code_length; ii++)
@@ -255,14 +255,14 @@ void beidou_b1cp_code_gen_complex(gsl::span<std::complex<float>> _dest, uint32_t
 /*
 *  Generates complex BEIDOU B1C Primary pilot code for the desired SV ID and sampled to specific sampling frequency
 */
-void beidou_b1cp_code_gen_complex_sampled(gsl::span<std::complex<float>> _dest, uint32_t _prn, int32_t _fs)
+void beidou_b1cp_code_gen_complex_sampled(own::span<std::complex<float>> _dest, uint32_t _prn, int32_t _fs)
 {
    uint32_t _code_length = BEIDOU_B1C_CODE_LENGTH_CHIPS;
    int32_t _code[_code_length];
 
    if (_prn > 0 and _prn < 63)
        {
-           make_b1cp(gsl::span<int32_t>(_code, _code_length), _prn);
+           make_b1cp(own::span<int32_t>(_code, _code_length), _prn);
        }
 
    int32_t _samples_per_code, _code_value_index;
@@ -344,7 +344,7 @@ std::deque<bool> make_b1cp_secondary_weil_seq(int32_t w, int32_t p)
 }
 
 //! Generate a version of the B1C Pilot code with the secondary pilot code included
-void make_b1cp_secondary(gsl::span<int32_t> _dest, int32_t prn)
+void make_b1cp_secondary(own::span<int32_t> _dest, int32_t prn)
 {
    int32_t phase_diff_primary = BEIDOU_B1Cp_PHASE_DIFF[prn - 1];
    int32_t truncation_point_primary = BEIDOU_B1Cp_TRUNC_POINT[prn - 1];
@@ -369,14 +369,14 @@ void make_b1cp_secondary(gsl::span<int32_t> _dest, int32_t prn)
 
 
 // Generate a complex version of the B1C pilot code with the secondary pilot code
-void beidou_b1cp_code_gen_complex_secondary(gsl::span<std::complex<float>> _dest, uint32_t _prn)
+void beidou_b1cp_code_gen_complex_secondary(own::span<std::complex<float>> _dest, uint32_t _prn)
 {
    uint32_t _code_length = BEIDOU_B1C_CODE_LENGTH_CHIPS * BEIDOU_B1Cp_SECONDARY_CODE_LENGTH_CHIPS;
    int32_t _code[_code_length];
 
    if (_prn > 0 and _prn < 63)
        {
-           make_b1cp_secondary(gsl::span<int32_t>(_code, _code_length), _prn);
+           make_b1cp_secondary(own::span<int32_t>(_code, _code_length), _prn);
        }
 
    for (uint32_t ii = 0; ii < _code_length; ii++)
@@ -389,14 +389,14 @@ void beidou_b1cp_code_gen_complex_secondary(gsl::span<std::complex<float>> _dest
 /*
 * Generates a float version of the B1C pilot primary code
 */
-void beidou_b1cp_code_gen_float_secondary(gsl::span<float> _dest, uint32_t _prn)
+void beidou_b1cp_code_gen_float_secondary(own::span<float> _dest, uint32_t _prn)
 {
    uint32_t _code_length = BEIDOU_B1C_CODE_LENGTH_CHIPS * BEIDOU_B1Cp_SECONDARY_CODE_LENGTH_CHIPS;
    int32_t _code[_code_length];
 
    if (_prn > 0 and _prn < 63)
        {
-           make_b1cp_secondary(gsl::span<int32_t>(_code, _code_length), _prn);
+           make_b1cp_secondary(own::span<int32_t>(_code, _code_length), _prn);
        }
 
    for (uint32_t ii = 0; ii < _code_length; ii++)
@@ -409,14 +409,14 @@ void beidou_b1cp_code_gen_float_secondary(gsl::span<float> _dest, uint32_t _prn)
 /*
 *  Generates complex BEIDOU B1C pilot code for the desired SV ID and sampled to specific sampling frequency with the secondary code implemented
 */
-void beidou_b1cp_code_gen_complex_sampled_secondary(gsl::span<std::complex<float>> _dest, uint32_t _prn, int32_t _fs)
+void beidou_b1cp_code_gen_complex_sampled_secondary(own::span<std::complex<float>> _dest, uint32_t _prn, int32_t _fs)
 {
    uint32_t _code_length = BEIDOU_B1C_CODE_LENGTH_CHIPS * BEIDOU_B1Cp_SECONDARY_CODE_LENGTH_CHIPS;
    int32_t _code[_code_length];
 
    if (_prn > 0 and _prn <= 63)
        {
-           make_b1cp_secondary(gsl::span<int32_t>(_code, _code_length), _prn);
+           make_b1cp_secondary(own::span<int32_t>(_code, _code_length), _prn);
        }
 
    int32_t _samples_per_code, _code_value_index;
@@ -454,7 +454,7 @@ void beidou_b1cp_code_gen_complex_sampled_secondary(gsl::span<std::complex<float
 /*
 *  Generates complex BEIDOU B1C data+pilot code for the desired SV ID and sampled to specific sampling frequency
 */
-void beidou_b1c_code_gen_complex_sampled(gsl::span<std::complex<float>> _dest, uint32_t _prn, int32_t _fs)
+void beidou_b1c_code_gen_complex_sampled(own::span<std::complex<float>> _dest, uint32_t _prn, int32_t _fs)
 {
    uint32_t _code_length_data = BEIDOU_B1C_CODE_LENGTH_CHIPS;
    uint32_t _code_length_pilot = BEIDOU_B1C_CODE_LENGTH_CHIPS;
@@ -463,8 +463,8 @@ void beidou_b1c_code_gen_complex_sampled(gsl::span<std::complex<float>> _dest, u
 
    if (_prn > 0 and _prn < 63)
        {
-           make_b1cp(gsl::span<int32_t>(_code_pilot, _code_length_pilot), _prn);
-           make_b1cd(gsl::span<int32_t>(_code_data, _code_length_data), _prn);
+           make_b1cp(own::span<int32_t>(_code_pilot, _code_length_pilot), _prn);
+           make_b1cd(own::span<int32_t>(_code_data, _code_length_data), _prn);
        }
 
    int32_t _samples_per_code, _code_value_index;
@@ -504,7 +504,7 @@ void beidou_b1c_code_gen_complex_sampled(gsl::span<std::complex<float>> _dest, u
 //================================================BDS_B1C_BOC_Generation===================================================
 
 
-void beidou_b1c_data_sinboc_11_gen_int(gsl::span<int> _dest, gsl::span<const int> _prn)
+void beidou_b1c_data_sinboc_11_gen_int(own::span<int> _dest, own::span<const int> _prn)
 {
    const uint32_t _length_in = BEIDOU_B1C_CODE_LENGTH_CHIPS;
    auto _period = static_cast<uint32_t>(_dest.size() / _length_in);
@@ -523,7 +523,7 @@ void beidou_b1c_data_sinboc_11_gen_int(gsl::span<int> _dest, gsl::span<const int
 }
 
 
-void beidou_b1c_pilot_sinboc_11_gen_int(gsl::span<int> _dest, gsl::span<const int> _prn)
+void beidou_b1c_pilot_sinboc_11_gen_int(own::span<int> _dest, own::span<const int> _prn)
 {
    const uint32_t _length_in = BEIDOU_B1C_CODE_LENGTH_CHIPS;
    auto _period = static_cast<uint32_t>(_dest.size() / _length_in);
@@ -542,7 +542,7 @@ void beidou_b1c_pilot_sinboc_11_gen_int(gsl::span<int> _dest, gsl::span<const in
 }
 
 
-void beidou_b1c_pilot_sinboc_61_gen_int(gsl::span<int> _dest, gsl::span<const int> _prn)
+void beidou_b1c_pilot_sinboc_61_gen_int(own::span<int> _dest, own::span<const int> _prn)
 {
    const uint32_t _length_in = BEIDOU_B1C_CODE_LENGTH_CHIPS;
    auto _period = static_cast<uint32_t>(_dest.size() / _length_in);
@@ -562,7 +562,7 @@ void beidou_b1c_pilot_sinboc_61_gen_int(gsl::span<int> _dest, gsl::span<const in
 
 
 //! Generates float version of sine BOC(1,1) modulated Data Code
-void beidou_b1cd_gen_float_11(gsl::span<float> _dest, uint32_t _prn)
+void beidou_b1cd_gen_float_11(own::span<float> _dest, uint32_t _prn)
 {
    /*
            *  PROCEDURE:
@@ -574,7 +574,7 @@ void beidou_b1cd_gen_float_11(gsl::span<float> _dest, uint32_t _prn)
    int32_t b1c_data_primary_code_chips[_primary_code_length];
 
    // 1. Generate Beidou B1C Data Code
-   make_b1cd(gsl::span<int32_t>(b1c_data_primary_code_chips, _primary_code_length), _prn);
+   make_b1cd(own::span<int32_t>(b1c_data_primary_code_chips, _primary_code_length), _prn);
 
    //In BOC(n,m),n= subcarrier frequency (subchip frequency) and m= code chipping rate
    //M = number of subchips per chip is calculated as, M=2*n/m
@@ -586,10 +586,10 @@ void beidou_b1cd_gen_float_11(gsl::span<float> _dest, uint32_t _prn)
    const float alpha = (1.0 / 2.0);
 
    int32_t sinboc_11[12 * BEIDOU_B1C_CODE_LENGTH_CHIPS] = {0};  //  _code_length not accepted by Clang
-   gsl::span<int32_t> sinboc_11_(sinboc_11, _code_length);
+   own::span<int32_t> sinboc_11_(sinboc_11, _code_length);
 
    // 2. Apply Sine BOC(1,1) on generated Beidou B1C Data Code
-   beidou_b1c_data_sinboc_11_gen_int(sinboc_11_, gsl::span<int>(b1c_data_primary_code_chips, static_cast<uint32_t>(BEIDOU_B1C_CODE_LENGTH_CHIPS)));  //generate sinboc(1,1) 12 samples per chip
+   beidou_b1c_data_sinboc_11_gen_int(sinboc_11_, own::span<int>(b1c_data_primary_code_chips, static_cast<uint32_t>(BEIDOU_B1C_CODE_LENGTH_CHIPS)));  //generate sinboc(1,1) 12 samples per chip
 
    // 3. Multiply the output of Sine BOC(1,1) with the Power Ratio
    for (uint32_t i = 0; i < _code_length; i++)
@@ -600,10 +600,10 @@ void beidou_b1cd_gen_float_11(gsl::span<float> _dest, uint32_t _prn)
 
 
 //! Generates complex version of sine BOC(1,1) modulated Data Code
-void beidou_b1cd_code_gen_complex_sampled_boc_11(gsl::span<std::complex<float>> _dest,
+void beidou_b1cd_code_gen_complex_sampled_boc_11(own::span<std::complex<float>> _dest,
    uint32_t _prn, int32_t _fs)
 {
-   int32_t _samples_per_code, _samples_per_chip, _code_value_index, _delay;
+   int32_t _samples_per_code, _samples_per_chip, _code_value_index;
    int32_t _boc_code_length;
    float _ts;
    float _tc;
@@ -612,7 +612,7 @@ void beidou_b1cd_code_gen_complex_sampled_boc_11(gsl::span<std::complex<float>> 
 
    uint32_t _ranging_code_length = BEIDOU_B1C_CODE_LENGTH_CHIPS;
    int32_t _b1c_data_ranging_code_chips[_ranging_code_length];
-   gsl::span<int32_t> _b1c_data_ranging_code_span(_b1c_data_ranging_code_chips, _ranging_code_length);
+   own::span<int32_t> _b1c_data_ranging_code_span(_b1c_data_ranging_code_chips, _ranging_code_length);
 
    // 1. Generate Beidou B1C Data Code
    make_b1cd(_b1c_data_ranging_code_span, _prn);
@@ -620,12 +620,11 @@ void beidou_b1cd_code_gen_complex_sampled_boc_11(gsl::span<std::complex<float>> 
    // Find number of samples per spreading code, samples per chip, and delay
    _samples_per_code = static_cast<int>(static_cast<double>(_fs) / (static_cast<double>(_code_freq_basis) / static_cast<double>(_ranging_code_length)));
    _samples_per_chip = 2;
-   _delay = ((static_cast<int32_t>(_ranging_code_length)) % static_cast<int32_t>(_ranging_code_length)) * _samples_per_code / _ranging_code_length;
 
    // Modulated code with sin BOC values
    _boc_code_length = _samples_per_chip * _ranging_code_length;
    float _b1c_data_boc_code_chips[_boc_code_length];
-   gsl::span<float> _b1c_data_boc_code_span(_b1c_data_boc_code_chips, _boc_code_length);
+   own::span<float> _b1c_data_boc_code_span(_b1c_data_boc_code_chips, _boc_code_length);
 
    // Generate code with BOC modulation
    beidou_b1cd_gen_float_11(_b1c_data_boc_code_span, _prn);
@@ -658,7 +657,7 @@ void beidou_b1cd_code_gen_complex_sampled_boc_11(gsl::span<std::complex<float>> 
 //--------------------------------------------------BOC_FOR_PILOT_COMPONENT----------------------------------------------------
 
 //! Generate BOC for first Pilot component which is in Real part
-void beidou_b1cp_gen_float_61(gsl::span<float> _dest, uint32_t _prn)
+void beidou_b1cp_gen_float_61(own::span<float> _dest, uint32_t _prn)
 {
    /*
            *  PROCEDURE:
@@ -670,7 +669,7 @@ void beidou_b1cp_gen_float_61(gsl::span<float> _dest, uint32_t _prn)
    int32_t b1c_pilot_primary_code_chips[_primary_code_length];
 
    // 1. Generate Beidou B1C Pilot Code
-   make_b1cp(gsl::span<int32_t>(b1c_pilot_primary_code_chips, _primary_code_length), _prn);
+   make_b1cp(own::span<int32_t>(b1c_pilot_primary_code_chips, _primary_code_length), _prn);
 
    //In BOC(n,m),n= subcarrier frequency (subchip frequency) and m= code chipping rate
    //M = number of subchips per chip is calculated as, M=2*n/m
@@ -682,10 +681,10 @@ void beidou_b1cp_gen_float_61(gsl::span<float> _dest, uint32_t _prn)
    const float alpha = sqrt(1.0 / 11.0);  // Power Ratio
 
    int32_t sinboc_61[12 * BEIDOU_B1C_CODE_LENGTH_CHIPS] = {0};  //  _code_length not accepted by Clang
-   gsl::span<int32_t> sinboc_61_(sinboc_61, _code_length);
+   own::span<int32_t> sinboc_61_(sinboc_61, _code_length);
 
    // 2. Apply Sine BOC(6,1) on generated Beidou B1C Pilot Code
-   beidou_b1c_pilot_sinboc_61_gen_int(sinboc_61_, gsl::span<int>(b1c_pilot_primary_code_chips, static_cast<uint32_t>(BEIDOU_B1C_CODE_LENGTH_CHIPS)));  //generate sinboc(6,1) 12 samples per chip
+   beidou_b1c_pilot_sinboc_61_gen_int(sinboc_61_, own::span<int>(b1c_pilot_primary_code_chips, static_cast<uint32_t>(BEIDOU_B1C_CODE_LENGTH_CHIPS)));  //generate sinboc(6,1) 12 samples per chip
 
    // 3. Multiply the output of Sine BOC(6,1) with the Power Ratio
    for (uint32_t i = 0; i < _code_length; i++)
@@ -696,7 +695,7 @@ void beidou_b1cp_gen_float_61(gsl::span<float> _dest, uint32_t _prn)
 
 
 //! Generate BOC for second Pilot component which is in Imaginary part
-void beidou_b1cp_gen_float_11(gsl::span<float> _dest, uint32_t _prn)
+void beidou_b1cp_gen_float_11(own::span<float> _dest, uint32_t _prn)
 {
    /*
            *  PROCEDURE:
@@ -708,7 +707,7 @@ void beidou_b1cp_gen_float_11(gsl::span<float> _dest, uint32_t _prn)
    int32_t b1c_pilot_primary_code_chips[_primary_code_length];
 
    // 1. Generate Beidou B1C Pilot Code
-   make_b1cp(gsl::span<int32_t>(b1c_pilot_primary_code_chips, static_cast<uint32_t>(BEIDOU_B1C_CODE_LENGTH_CHIPS)), _prn);
+   make_b1cp(own::span<int32_t>(b1c_pilot_primary_code_chips, static_cast<uint32_t>(BEIDOU_B1C_CODE_LENGTH_CHIPS)), _prn);
 
    //In BOC(n,m),n= subcarrier frequency (subchip frequency) and m= code chipping rate
    //M = number of subchips per chip is calculated as, M=2*n/m
@@ -719,10 +718,10 @@ void beidou_b1cp_gen_float_11(gsl::span<float> _dest, uint32_t _prn)
    const float beta = sqrt(29.0 / 44.0);
 
    int32_t sinboc_11[12 * BEIDOU_B1C_CODE_LENGTH_CHIPS] = {0};  //  _code_length not accepted by Clang
-   gsl::span<int32_t> sinboc_11_(sinboc_11, _code_length);
+   own::span<int32_t> sinboc_11_(sinboc_11, _code_length);
 
    // 2. Apply Sine BOC(1,1) on generated Beidou B1C Pilot Code
-   beidou_b1c_pilot_sinboc_11_gen_int(sinboc_11_, gsl::span<int>(b1c_pilot_primary_code_chips, static_cast<uint32_t>(BEIDOU_B1C_CODE_LENGTH_CHIPS)));  //generate sinboc(1,1) 12 samples per chip
+   beidou_b1c_pilot_sinboc_11_gen_int(sinboc_11_, own::span<int>(b1c_pilot_primary_code_chips, static_cast<uint32_t>(BEIDOU_B1C_CODE_LENGTH_CHIPS)));  //generate sinboc(1,1) 12 samples per chip
 
    // 3. Multiply the output of Sine BOC(1,1) with the Power Ratio
    for (uint32_t i = 0; i < _code_length; i++)
@@ -733,7 +732,7 @@ void beidou_b1cp_gen_float_11(gsl::span<float> _dest, uint32_t _prn)
 
 
 //! Generates complex version of both pilot components having sine BOC(6,1) which is in Real part and sine BOC(1,1) which is in Imaginary part
-void beidou_b1cp_code_gen_complex_sampled_boc_61_11(gsl::span<std::complex<float>> _dest, uint32_t _prn, int32_t _fs)
+void beidou_b1cp_code_gen_complex_sampled_boc_61_11(own::span<std::complex<float>> _dest, uint32_t _prn, int32_t _fs)
 {
    int32_t _samples_per_code, _code_value_index;
    float _ts;
@@ -748,10 +747,10 @@ void beidou_b1cp_code_gen_complex_sampled_boc_61_11(gsl::span<std::complex<float
    _samples_per_code = static_cast<int>(static_cast<double>(_fs) / (static_cast<double>(BEIDOU_B1C_CODE_RATE_CPS) / static_cast<double>(_code_length_pilot)));
 
    // Generate codes
-   gsl::span<float> real_code_span(_code_pilot_real, _code_length_pilot);
+   own::span<float> real_code_span(_code_pilot_real, _code_length_pilot);
    beidou_b1cp_gen_float_61(real_code_span, _prn);
 
-   gsl::span<float> imaginary_code_span(_code_pilot_imag, _code_length_pilot);
+   own::span<float> imaginary_code_span(_code_pilot_imag, _code_length_pilot);
    beidou_b1cp_gen_float_11(imaginary_code_span, _prn);
 
    //--- Find time constants --------------------------------------------------
@@ -786,7 +785,7 @@ void beidou_b1cp_code_gen_complex_sampled_boc_61_11(gsl::span<std::complex<float
 * First Pilot component(in ICD Equation 4-11) in Sine BOC(6,1) and is in Real part
 * Second Pilot component(in ICD Equation 4-11) in Sine BOC(1,1) and is in Imaginary part
 */
-void beidou_b1c_code_gen_complex_sampled_boc(gsl::span<std::complex<float>> _dest, uint32_t _prn, int32_t _fs)
+void beidou_b1c_code_gen_complex_sampled_boc(own::span<std::complex<float>> _dest, uint32_t _prn, int32_t _fs)
 {
    //uint32_t _code_length =12 * BEIDOU_B1C_CODE_LENGTH_CHIPS;
    //int32_t _code[_code_length];
@@ -801,25 +800,25 @@ void beidou_b1c_code_gen_complex_sampled_boc(gsl::span<std::complex<float>> _des
 
    //Generating Data Component which is in Real Part
    auto* real_code_data = static_cast<float*>(volk_gnsssdr_malloc(_samples_per_code * sizeof(float), volk_gnsssdr_get_alignment()));
-   gsl::span<float> real_code_span_data(real_code_data, _samples_per_code);
+   own::span<float> real_code_span_data(real_code_data, _samples_per_code);
    beidou_b1cd_gen_float_11(real_code_span_data, _prn);
 
 
    //Generating Pilot Component which is in Real Part
    auto* real_code_pilot = static_cast<float*>(volk_gnsssdr_malloc(_samples_per_code * sizeof(float), volk_gnsssdr_get_alignment()));
-   gsl::span<float> real_code_span_pilot(real_code_pilot, _samples_per_code);
+   own::span<float> real_code_span_pilot(real_code_pilot, _samples_per_code);
    beidou_b1cp_gen_float_61(real_code_span_pilot, _prn);
 
 
    //Generating Pilot Component which is in Imaginary Part
    auto* imaginary_code_pilot = static_cast<float*>(volk_gnsssdr_malloc(_samples_per_code * sizeof(float), volk_gnsssdr_get_alignment()));
-   gsl::span<float> imaginary_code_span_pilot(imaginary_code_pilot, _samples_per_code);
+   own::span<float> imaginary_code_span_pilot(imaginary_code_pilot, _samples_per_code);
    beidou_b1cp_gen_float_11(imaginary_code_span_pilot, _prn);
 
 
    //XORing the output of two Real parts to put in one Real Part
    auto* real_code = static_cast<float*>(volk_gnsssdr_malloc(_samples_per_code * sizeof(float), volk_gnsssdr_get_alignment()));
-   gsl::span<float> real_code_span(real_code, _samples_per_code);
+   own::span<float> real_code_span(real_code, _samples_per_code);
 
    for (uint32_t m = 0; m < 12 * BEIDOU_B1C_CODE_LENGTH_CHIPS; m++)
        {
@@ -861,11 +860,11 @@ void beidou_b1c_code_gen_complex_sampled_boc(gsl::span<std::complex<float>> _des
 
 
 //! Generates Data code required at the time of tracking(followed approach like Galileo E1)
-void beidou_b1cd_code_gen_sinboc11_float(gsl::span<float> _dest, uint32_t _prn)
+void beidou_b1cd_code_gen_sinboc11_float(own::span<float> _dest, uint32_t _prn)
 {
    const auto _code_length = static_cast<uint32_t>(BEIDOU_B1C_CODE_LENGTH_CHIPS);
    std::array<int32_t, BEIDOU_B1C_CODE_LENGTH_CHIPS> primary_code_b1c_chips{};                        // _code_length not accepted by Clang
-   make_b1cd(gsl::span<int32_t>(primary_code_b1c_chips.data(), BEIDOU_B1C_CODE_LENGTH_CHIPS), _prn);  //generate beidou B1C code, 1 sample per chip
+   make_b1cd(own::span<int32_t>(primary_code_b1c_chips.data(), BEIDOU_B1C_CODE_LENGTH_CHIPS), _prn);  //generate beidou B1C code, 1 sample per chip
    for (uint32_t i = 0; i < _code_length; i++)
        {
            _dest[2 * i] = static_cast<float>(primary_code_b1c_chips[i]);
@@ -875,11 +874,11 @@ void beidou_b1cd_code_gen_sinboc11_float(gsl::span<float> _dest, uint32_t _prn)
 
 
 //! Generates pilot code required at the time of tracking(followed approach like Galileo E1)
-void beidou_b1cp_code_gen_sinboc11_float(gsl::span<float> _dest, uint32_t _prn)
+void beidou_b1cp_code_gen_sinboc11_float(own::span<float> _dest, uint32_t _prn)
 {
    const auto _code_length = static_cast<uint32_t>(BEIDOU_B1C_CODE_LENGTH_CHIPS);
    std::array<int32_t, BEIDOU_B1C_CODE_LENGTH_CHIPS> primary_code_b1c_chips{};                        // _code_length not accepted by Clang
-   make_b1cp(gsl::span<int32_t>(primary_code_b1c_chips.data(), BEIDOU_B1C_CODE_LENGTH_CHIPS), _prn);  //generate beidou B1C code, 1 sample per chip
+   make_b1cp(own::span<int32_t>(primary_code_b1c_chips.data(), BEIDOU_B1C_CODE_LENGTH_CHIPS), _prn);  //generate beidou B1C code, 1 sample per chip
    for (uint32_t i = 0; i < _code_length; i++)
        {
            _dest[2 * i] = static_cast<float>(primary_code_b1c_chips[i]);

@@ -35,67 +35,68 @@
 
 #include <complex>
 #include <cstdint>
-
-#if HAS_SPAN
+#if HAS_STD_SPAN
 #include <span>
-namespace gsl = std;
+namespace own = std;
 #else
-#include <gsl/gsl>
+#include <gsl/gsl-lite.hpp>
+namespace own = gsl;
 #endif
 
+
 //! Generates BeiDou B1c Data Primary codes for the desired SV ID
-void make_b1cd(gsl::span<int32_t> _dest, int32_t prn);
+void make_b1cd(own::span<int32_t> _dest, int32_t prn);
 
 //! Generates a float version of BeiDou B1C Data Primary code for the desired SV ID
-void beidou_b1cd_code_gen_float(gsl::span<float> _dest, uint32_t _prn);
+void beidou_b1cd_code_gen_float(own::span<float> _dest, uint32_t _prn);
 
 //! Generate a complex version of the B1C Data Primary code
-void beidou_b1cd_code_gen_complex(gsl::span<std::complex<float>> _dest, uint32_t _prn);
+void beidou_b1cd_code_gen_complex(own::span<std::complex<float>> _dest, uint32_t _prn);
 
 //! Generates complex BEIDOU B1C Data Primary code for the desired SV ID and sampled to specific sampling frequency
-void beidou_b1cd_code_gen_complex_sampled(gsl::span<std::complex<float>> _dest, uint32_t _prn, int32_t _fs);
+void beidou_b1cd_code_gen_complex_sampled(own::span<std::complex<float>> _dest, uint32_t _prn, int32_t _fs);
 
 //! Generate the B1C Pilot Primary code
-void make_b1cp(gsl::span<int32_t> _dest, int32_t prn);
+void make_b1cp(own::span<int32_t> _dest, int32_t prn);
 
 //! Generate a float version of the B1C Pilot Primary code
-void beidou_b1cp_code_gen_float(gsl::span<float> _dest, uint32_t _prn);
+void beidou_b1cp_code_gen_float(own::span<float> _dest, uint32_t _prn);
 
 //! Generates a complex version of BeiDou B1C Pilot Primary code
-void beidou_b1cp_code_gen_complex(gsl::span<std::complex<float>> _dest, uint32_t _prn);
+void beidou_b1cp_code_gen_complex(own::span<std::complex<float>> _dest, uint32_t _prn);
 
 //! Generates complex BEIDOU B1C Pilot Primary code for the desired SV ID and sampled to specific sampling frequency
-void beidou_b1cp_code_gen_complex_sampled(gsl::span<std::complex<float>> _dest, uint32_t _prn, int32_t _fs);
+void beidou_b1cp_code_gen_complex_sampled(own::span<std::complex<float>> _dest, uint32_t _prn, int32_t _fs);
 
 //! Generate a version of the B1C Pilot code with the secondary pilot code included
-void make_b1cp_secondary(gsl::span<int32_t> _dest, int32_t prn);
+void make_b1cp_secondary(own::span<int32_t> _dest, int32_t prn);
 
 //! Generates a float version of the B1C pilot primary code Note:Newly Added
-void beidou_b1cp_code_gen_float_secondary(gsl::span<float> _dest, uint32_t _prn);
+void beidou_b1cp_code_gen_float_secondary(own::span<float> _dest, uint32_t _prn);
 
 //! Generate a complex version of the B1C pilot code with the secondary pilot code
-void beidou_b1cp_code_gen_complex_secondary(gsl::span<std::complex<float>> _dest, uint32_t _prn);
+void beidou_b1cp_code_gen_complex_secondary(own::span<std::complex<float>> _dest, uint32_t _prn);
 
 //! Generates complex BEIDOU B1C pilot code for the desired SV ID and sampled to specific sampling frequency with the secondary code implemented
-void beidou_b1cp_code_gen_complex_sampled_secondary(gsl::span<std::complex<float>> _dest, uint32_t _prn, int32_t _fs);
+void beidou_b1cp_code_gen_complex_sampled_secondary(own::span<std::complex<float>> _dest, uint32_t _prn, int32_t _fs);
 
 //! Generates complex BEIDOU B1C data+pilot code for the desired SV ID and sampled to specific sampling frequency
-void beidou_b1c_code_gen_complex_sampled(gsl::span<std::complex<float>> _dest, uint32_t _prn, int32_t _fs);
+void beidou_b1c_code_gen_complex_sampled(own::span<std::complex<float>> _dest, uint32_t _prn, int32_t _fs);
 
 //! Generate BOC for Data component which is in Real part
-void beidou_b1cd_gen_float_11(gsl::span<float> _dest, uint32_t _prn);
+void beidou_b1cd_gen_float_11(own::span<float> _dest, uint32_t _prn);
 
 //! Generate Complex version of BOC for Data component which is in Real part
-void beidou_b1cd_code_gen_complex_sampled_boc_11(gsl::span<std::complex<float>> _dest,uint32_t _prn, int32_t _fs);
+void beidou_b1cd_code_gen_complex_sampled_boc_11(own::span<std::complex<float>> _dest,uint32_t _prn, int32_t _fs);
 
 //! Generate BOC for first Pilot component which is in Real part
-void beidou_b1cp_gen_float_61(gsl::span<float> _dest, uint32_t _prn);
+void beidou_b1cp_gen_float_61(own::span<float> _dest, uint32_t _prn);
 
 //! Generate BOC for second Pilot component which is in Imaginary part
-void beidou_b1cp_gen_float_11(gsl::span<float> _dest, uint32_t _prn);
+void beidou_b1cp_gen_float_11(own::span<float> _dest, uint32_t _prn);
 
 //! Generates complex version of both pilot components having sine BOC(6,1) which is in Real part and sine BOC(1,1) which is in Imaginary part
-void beidou_b1cp_code_gen_complex_sampled_boc_61_11(gsl::span<std::complex<float>> _dest,uint32_t _prn, int32_t _fs);
+void beidou_b1cp_code_gen_complex_sampled_boc_61_11(own::span<std::complex<float>> _dest,uint32_t _prn, int32_t _fs);
 
 /*
 * Generates complex version of data+pilot components as follows
@@ -103,12 +104,12 @@ void beidou_b1cp_code_gen_complex_sampled_boc_61_11(gsl::span<std::complex<float
 * First Pilot component(in ICD Equation 4-11) in Sine BOC(6,1) and is in Real part
 * Second Pilot component(in ICD Equation 4-11) in Sine BOC(1,1) and is in Imaginary part
 */
-void beidou_b1c_code_gen_complex_sampled_boc(gsl::span<std::complex<float>> _dest,uint32_t _prn, int32_t _fs);
+void beidou_b1c_code_gen_complex_sampled_boc(own::span<std::complex<float>> _dest,uint32_t _prn, int32_t _fs);
 
 //! Generates Data code required at the time of tracking(followed approach like Galileo E1)
-void beidou_b1cd_code_gen_sinboc11_float(gsl::span<float> _dest, uint32_t _prn);
+void beidou_b1cd_code_gen_sinboc11_float(own::span<float> _dest, uint32_t _prn);
 
 //! Generates pilot code required at the time of tracking(followed approach like Galileo E1)
-void beidou_b1cp_code_gen_sinboc11_float(gsl::span<float> _dest, uint32_t _prn);
+void beidou_b1cp_code_gen_sinboc11_float(own::span<float> _dest, uint32_t _prn);
 
 #endif /* GNSS_SDR_BEIDOU_B1C_SIGNAL_PROCESSING_H_ */
