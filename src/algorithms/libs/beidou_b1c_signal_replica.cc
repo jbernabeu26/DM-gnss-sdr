@@ -44,6 +44,9 @@
 #include <iostream>
 #include <vector>
 
+
+const auto AUX_CEIL = [](float x) { return static_cast<int32_t>(static_cast<int64_t>(x + 1)); };
+
 // Make legendre sequence for Primary Data and Primary Pilot codes
 bool make_leg_primary(int32_t k)
 {
@@ -737,6 +740,7 @@ void beidou_b1cp_code_gen_complex_sampled_boc_61_11(own::span<std::complex<float
    int32_t _samples_per_code, _code_value_index;
    float _ts;
    float _tc;
+   float aux;
 
    uint32_t _code_length_pilot = 12 * BEIDOU_B1C_CODE_LENGTH_CHIPS;
    float _code_pilot_real[_code_length_pilot];
@@ -763,7 +767,9 @@ void beidou_b1cp_code_gen_complex_sampled_boc_61_11(own::span<std::complex<float
            //=== Digitizing =======================================================
 
            //--- Make index array to read B1C code values -------------------------
-           _code_value_index = ceil((_ts * (static_cast<float>(i) + 1)) / _tc) - 1;
+           aux = (_ts * (static_cast<float>(i) + 1)) / _tc;
+           _code_value_index = AUX_CEIL(aux) - 1;
+           //_code_value_index = std::ceil((_ts * (static_cast<float>(i) + 1)) / _tc) - 1;
 
            //--- Make the digitized version of the B1Cd code -----------------------
            if (i == _samples_per_code - 1)
@@ -773,7 +779,7 @@ void beidou_b1cp_code_gen_complex_sampled_boc_61_11(own::span<std::complex<float
                }
            else
                {
-                   _dest[i] = std::complex<float>(1.0 - 2.0 * real_code_span[_code_value_index], 1.0 - 2.0 * imaginary_code_span[_code_value_index - 1]);  //repeat the chip -> upsample
+                   _dest[i] = std::complex<float>(1.0 - 2.0 * real_code_span[_code_value_index], 1.0 - 2.0 * imaginary_code_span[_code_value_index]);  //repeat the chip -> upsample
                }
        }
 }
