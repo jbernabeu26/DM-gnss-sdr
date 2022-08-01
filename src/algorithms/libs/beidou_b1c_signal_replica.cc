@@ -742,6 +742,7 @@ void beidou_b1cp_code_gen_complex_sampled_boc_61_11(own::span<std::complex<float
    float _tc;
    float aux;
 
+   //TODO: fix this definition that doesn't match _dest size
    uint32_t _code_length_pilot = 12 * BEIDOU_B1C_CODE_LENGTH_CHIPS;
    float _code_pilot_real[_code_length_pilot];
    float _code_pilot_imag[_code_length_pilot];
@@ -779,6 +780,7 @@ void beidou_b1cp_code_gen_complex_sampled_boc_61_11(own::span<std::complex<float
                }
            else
                {
+                   //TODO: _dest is not defined to store the complete pilot code, but only a period of the data component
                    _dest[i] = std::complex<float>(1.0 - 2.0 * real_code_span[_code_value_index], 1.0 - 2.0 * imaginary_code_span[_code_value_index]);  //repeat the chip -> upsample
                }
        }
