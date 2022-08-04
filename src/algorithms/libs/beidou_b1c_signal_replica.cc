@@ -593,8 +593,8 @@ void beidou_b1cd_gen_float_11(own::span<float> _dest, uint32_t _prn)
 
    // 2. Apply Sine BOC(1,1) on generated Beidou B1C Data Code
    beidou_b1c_data_sinboc_11_gen_int(sinboc_11_, own::span<int>(b1c_data_primary_code_chips, static_cast<uint32_t>(BEIDOU_B1C_CODE_LENGTH_CHIPS)));  //generate sinboc(1,1) 12 samples per chip
-
-   // 3. Multiply the output of Sine BOC(1,1) with the Power Ratio
+    // 3. Multiply the output of Sine BOC(1,1) with the Power Ratio
+    //TODO Known issue: _dest size does not match the range of the loop
    for (uint32_t i = 0; i < _code_length; i++)
        {
            _dest[i] = alpha * static_cast<float>(sinboc_11[i]);
@@ -742,7 +742,7 @@ void beidou_b1cp_code_gen_complex_sampled_boc_61_11(own::span<std::complex<float
    float _tc;
    float aux;
 
-   //TODO: fix this definition that doesn't match _dest size
+   //TODO: fix this _code_length_pilot definition that doesn't match _dest size
    uint32_t _code_length_pilot = 12 * BEIDOU_B1C_CODE_LENGTH_CHIPS;
    float _code_pilot_real[_code_length_pilot];
    float _code_pilot_imag[_code_length_pilot];
