@@ -565,37 +565,34 @@ void beidou_b1c_pilot_sinboc_61_gen_int(own::span<int> _dest, own::span<const in
 
 
 //! Generates float version of sine BOC(1,1) modulated Data Code
-void beidou_b1cd_gen_float_11(own::span<float> _dest, uint32_t _prn)
+void beidou_b1cd_gen_float_11(own::span<float> _dest, int _prn)
 {
-   /*
+    /*
            *  PROCEDURE:
            *  1. Generate Beidou B1C Data Code
            *  2. Apply Sine BOC(1,1) on generated Beidou B1C Data Code
            *  3. Multiply the output of Sine BOC(1,1) with the Power Ratio
-    */
-   uint32_t _primary_code_length = BEIDOU_B1C_CODE_LENGTH_CHIPS;
-   int32_t b1c_data_primary_code_chips[_primary_code_length];
-
-   // 1. Generate Beidou B1C Data Code
-   make_b1cd(own::span<int32_t>(b1c_data_primary_code_chips, _primary_code_length), _prn);
-
-   //In BOC(n,m),n= subcarrier frequency (subchip frequency) and m= code chipping rate
-   //M = number of subchips per chip is calculated as, M=2*n/m
-   //Here, 12 is the result of the sub chips after the BOC is applied
-   const uint32_t _code_length = 12 * BEIDOU_B1C_CODE_LENGTH_CHIPS;
-
+     */
    //Value of alpha is according to equation 4-11 in ICD which is data component and in Real part of the equation,
    //SB1C(t)=(1/2*DB1C_data(t))*(CB1C_data(t))*(sign(sin(2πfsc_B1C_at)))+(sqrt(1.0 / 11.0)*(CB1C_pilot(t))*(sign(sin(2πfsc_B1C_bt)))+j(sqrt(29.0 / 44.0)*(CB1C_pilot(t)*(sign(sin(2πfsc_B1C_t)))
    const float alpha = (1.0 / 2.0);
+   uint32_t _boc_code_length = _dest.size();
 
-   int32_t sinboc_11[12 * BEIDOU_B1C_CODE_LENGTH_CHIPS] = {0};  //  _code_length not accepted by Clang
-   own::span<int32_t> sinboc_11_(sinboc_11, _code_length);
+   // Initialize primary code and BOC(1,1) replicas
+   int32_t _b1c_data_code_chips[BEIDOU_B1C_CODE_LENGTH_CHIPS];
+   own::span<int32_t> _b1c_data_code_span(_b1c_data_code_chips, BEIDOU_B1C_CODE_LENGTH_CHIPS);
+
+   int32_t sinboc_11[_boc_code_length] = {0};  //  _code_length not accepted by Clang
+   own::span<int32_t> sinboc_11_(sinboc_11, BEIDOU_B1C_CODE_LENGTH_CHIPS);
+
+   // 1. Generate Beidou B1C Data Code
+   make_b1cd(_b1c_data_code_span, _prn);
 
    // 2. Apply Sine BOC(1,1) on generated Beidou B1C Data Code
-   beidou_b1c_data_sinboc_11_gen_int(sinboc_11_, own::span<int>(b1c_data_primary_code_chips, static_cast<uint32_t>(BEIDOU_B1C_CODE_LENGTH_CHIPS)));  //generate sinboc(1,1) 12 samples per chip
-    // 3. Multiply the output of Sine BOC(1,1) with the Power Ratio
-    //TODO Known issue: _dest size does not match the range of the loop
-   for (uint32_t i = 0; i < _code_length; i++)
+   beidou_b1c_data_sinboc_11_gen_int(sinboc_11_, _b1c_data_code_span);  //generate sinboc(1,1) 12 samples per chip
+
+   // 3. Multiply the output of Sine BOC(1,1) with the Power Ratio
+   for (uint32_t i = 0; i < _boc_code_length; i++)
        {
            _dest[i] = alpha * static_cast<float>(sinboc_11[i]);
        }
@@ -606,31 +603,27 @@ void beidou_b1cd_gen_float_11(own::span<float> _dest, uint32_t _prn)
 void beidou_b1cd_code_gen_complex_sampled_boc_11(own::span<std::complex<float>> _dest,
    uint32_t _prn, int32_t _fs)
 {
-   int32_t _samples_per_code, _samples_per_chip, _code_value_index;
+   int32_t _samples_per_code;
+   int32_t _boc_subchips;
+   int32_t _code_value_index;
    int32_t _boc_code_length;
    float _ts;
    float _tc;
 
    const int32_t _code_freq_basis = BEIDOU_B1C_CODE_RATE_CPS;  // Hz
 
-   uint32_t _ranging_code_length = BEIDOU_B1C_CODE_LENGTH_CHIPS;
-   int32_t _b1c_data_ranging_code_chips[_ranging_code_length];
-   own::span<int32_t> _b1c_data_ranging_code_span(_b1c_data_ranging_code_chips, _ranging_code_length);
-
-   // 1. Generate Beidou B1C Data Code
-   make_b1cd(_b1c_data_ranging_code_span, _prn);
 
    // Find number of samples per spreading code, samples per chip, and delay
-   _samples_per_code = static_cast<int>(static_cast<double>(_fs) / (static_cast<double>(_code_freq_basis) / static_cast<double>(_ranging_code_length)));
-   _samples_per_chip = 2;
+   _samples_per_code = static_cast<int>(static_cast<double>(_fs) / (static_cast<double>(_code_freq_basis) / static_cast<double>(BEIDOU_B1C_CODE_LENGTH_CHIPS)));
+   _boc_subchips = 2;
+   _boc_code_length = _boc_subchips * BEIDOU_B1C_CODE_LENGTH_CHIPS;
 
-   // Modulated code with sin BOC values
-   _boc_code_length = _samples_per_chip * _ranging_code_length;
+   // Initialize BOC(1,1) replica
    float _b1c_data_boc_code_chips[_boc_code_length];
-   own::span<float> _b1c_data_boc_code_span(_b1c_data_boc_code_chips, _boc_code_length);
+   own::span<float> _b1c_data_boc_span(_b1c_data_boc_code_chips, _boc_code_length);
 
    // Generate code with BOC modulation
-   beidou_b1cd_gen_float_11(_b1c_data_boc_code_span, _prn);
+    beidou_b1cd_gen_float_11(_b1c_data_boc_span, _prn);
 
    //--- Find time constants --------------------------------------------------
    _ts = 1.0 / static_cast<float>(_fs);               // Sampling period in sec
@@ -646,12 +639,12 @@ void beidou_b1cd_code_gen_complex_sampled_boc_11(own::span<std::complex<float>> 
            if (i == _samples_per_code - 1)
                {
                    // Correct the last index (due to number rounding issues)
-                   _dest[i] = std::complex<float>(1.0 - 2.0 * _b1c_data_boc_code_span[_boc_code_length - 1], 0.0);
+                   _dest[i] = std::complex<float>(1.0 - 2.0 * _b1c_data_boc_span[_boc_code_length - 1], 0.0);
                }
            else
                {
                    //repeat the chip -> upsample
-                   _dest[i] = std::complex<float>(1.0 - 2.0 * _b1c_data_boc_code_span[_code_value_index], 0.0);
+                   _dest[i] = std::complex<float>(1.0 - 2.0 * _b1c_data_boc_span[_code_value_index], 0.0);
                }
        }
 }

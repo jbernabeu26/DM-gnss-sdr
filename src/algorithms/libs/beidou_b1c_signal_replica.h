@@ -84,7 +84,7 @@ void beidou_b1cp_code_gen_complex_sampled_secondary(own::span<std::complex<float
 void beidou_b1c_code_gen_complex_sampled(own::span<std::complex<float>> _dest, uint32_t _prn, int32_t _fs);
 
 //! Generate BOC for Data component which is in Real part
-void beidou_b1cd_gen_float_11(own::span<float> _dest, uint32_t _prn);
+void beidou_b1cd_gen_float_11(own::span<float> _dest, int _primary_code);
 
 //! Generate Complex version of BOC for Data component which is in Real part
 void beidou_b1cd_code_gen_complex_sampled_boc_11(own::span<std::complex<float>> _dest,uint32_t _prn, int32_t _fs);
