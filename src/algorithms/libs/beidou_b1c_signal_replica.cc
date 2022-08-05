@@ -507,20 +507,19 @@ void beidou_b1c_code_gen_complex_sampled(own::span<std::complex<float>> _dest, u
 //================================================BDS_B1C_BOC_Generation===================================================
 
 
-void beidou_b1c_data_sinboc_11_gen_int(own::span<int> _dest, own::span<const int> _prn)
+void beidou_b1c_data_sinboc_11_gen_int(own::span<int> _dest, own::span<const int> _primary_code)
 {
-   const uint32_t _length_in = BEIDOU_B1C_CODE_LENGTH_CHIPS;
-   auto _period = static_cast<uint32_t>(_dest.size() / _length_in);
+   auto _period = static_cast<uint32_t>(_dest.size() / BEIDOU_B1C_CODE_LENGTH_CHIPS);
+   int _sign;
 
-   for (uint32_t i = 0; i < _length_in; i++)
+   for (uint32_t i = 0; i < BEIDOU_B1C_CODE_LENGTH_CHIPS; i++)
        {
-           for (uint32_t j = 0; j < (_period / 2); j++)
+           for (uint32_t j = 0; j < _period; j++)
                {
-                   _dest[i * _period + j] = _prn[i];
-               }
-           for (uint32_t j = (_period / 2); j < _period; j++)
-               {
-                   _dest[i * _period + j] = -_prn[i];
+                   //Compute sign: First _period/2 Sub-chips are - sign, others are + sign.
+                   _sign = (j/(_period/2))*2 - 1;
+                   //Store sub-chips in bipolar format so the sign change has effect
+                   _dest[i * _period + j] = _sign*(2*_primary_code[i] - 1);
                }
        }
 }
@@ -583,7 +582,7 @@ void beidou_b1cd_gen_float_11(own::span<float> _dest, int _prn)
    own::span<int32_t> _b1c_data_code_span(_b1c_data_code_chips, BEIDOU_B1C_CODE_LENGTH_CHIPS);
 
    int32_t sinboc_11[_boc_code_length] = {0};  //  _code_length not accepted by Clang
-   own::span<int32_t> sinboc_11_(sinboc_11, BEIDOU_B1C_CODE_LENGTH_CHIPS);
+   own::span<int32_t> sinboc_11_(sinboc_11, _boc_code_length);
 
    // 1. Generate Beidou B1C Data Code
    make_b1cd(_b1c_data_code_span, _prn);
