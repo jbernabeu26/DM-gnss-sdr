@@ -585,8 +585,9 @@ void beidou_b1cd_gen_float_11(own::span<float> _dest, int _prn)
    own::span<int32_t> sinboc_11_(sinboc_11, _boc_code_length);
 
    // 1. Generate Beidou B1C Data Code
+   //TODO: Verify this code
    make_b1cd(_b1c_data_code_span, _prn);
-
+   p_print(_b1c_data_code_span);
    // 2. Apply Sine BOC(1,1) on generated Beidou B1C Data Code
    beidou_b1c_data_sinboc_11_gen_int(sinboc_11_, _b1c_data_code_span);  //generate sinboc(1,1) 12 samples per chip
 
@@ -597,6 +598,25 @@ void beidou_b1cd_gen_float_11(own::span<float> _dest, int _prn)
        }
 }
 
+//! Pretty prints the values of a pointer
+void p_print(own::span<int32_t>  sp)
+{
+    setbuf(stdout, 0);
+    std::cout << "\n";
+    std::cout << "First Bits: ";
+    for(auto it = sp.begin(); it!=&sp[24]; ++it)
+        {
+            std::cout << *it;
+
+        }
+    std::cout << '\n';
+    std::cout << "Last  Bits: ";
+    for(auto it = sp.end() - 24; it!=sp.end(); ++it)
+        {
+            std::cout << *it;
+
+        }
+}
 
 //! Generates complex version of sine BOC(1,1) modulated Data Code
 void beidou_b1cd_code_gen_complex_sampled_boc_11(own::span<std::complex<float>> _dest,

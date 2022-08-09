@@ -35,6 +35,7 @@
 
 #include <complex>
 #include <cstdint>
+#include "iostream"
 #if HAS_STD_SPAN
 #include <span>
 namespace own = std;
@@ -44,6 +45,7 @@ namespace own = gsl;
 #endif
 
 
+void p_print(own::span<int32_t>  sp);
 //! Generates BeiDou B1c Data Primary codes for the desired SV ID
 void make_b1cd(own::span<int32_t> _dest, int32_t prn);
 
