@@ -83,7 +83,7 @@ BeidouB1cPcpsAcquisition::BeidouB1cPcpsAcquisition(
     num_codes_ = acq_parameters_.sampled_ms;
     code_length_ = static_cast<unsigned int>(std::floor(static_cast<double>(fs_in_) / (BEIDOU_B1C_CODE_RATE_CPS / BEIDOU_B1C_CODE_LENGTH_CHIPS)));
     vector_length_ = static_cast<unsigned int>(std::floor(acq_parameters_.sampled_ms * acq_parameters_.samples_per_ms) * (acq_parameters_.bit_transition_flag ? 2.0 : 1.0));
-    code_ = volk_gnsssdr::vector<std::complex<float>>(vector_length_);
+    code_ = volk_gnsssdr::vector<std::complex<float>>(vector_length_ * num_codes_);
     acq_iq_ = acq_parameters_.acq_iq;
     acq_pilot_ = acq_parameters_.acq_pilot;
 
@@ -179,10 +179,11 @@ void BeidouB1cPcpsAcquisition::set_local_code()
     {
         beidou_b1cd_code_gen_complex_sampled_boc_11(code, gnss_synchro_->PRN, fs_in_);
     }
-    own::span<gr_complex> code_span(code_.data(), vector_length_);
+    //own::span<gr_complex> code_span(code_.data(), vector_length_);
     for (unsigned int i = 0; i < num_codes_; i++)
         {
-            std::copy_n(code.data(), code_length_, code_span.subspan(i * code_length_, code_length_).data());
+            //std::copy_n(code.data(), code_length_, code_span.subspan(i * code_length_, code_length_).data());
+            std::copy(code.begin(), code.end(), code_.begin() + i * code_length_);
         }
 
     acquisition_->set_local_code(code_.data());

@@ -514,9 +514,10 @@ void beidou_b1c_data_sinboc_11_gen_int(own::span<int> _dest, own::span<const int
 
    for (uint32_t i = 0; i < BEIDOU_B1C_CODE_LENGTH_CHIPS; i++)
        {
+           // First _period/2 subchips are (-) sign. Then (+) sign.
            for (uint32_t j = 0; j < _period; j++)
                {
-                   //Compute sign: First _period/2 Sub-chips are - sign, others are + sign.
+                   //Compute sign: B1C-SIS-ICD (Section 4.3)
                    _sign = (j/(_period/2))*2 - 1;
                    //Store sub-chips in bipolar format so the sign change has effect
                    _dest[i * _period + j] = _sign*(2*_primary_code[i] - 1);
@@ -574,7 +575,8 @@ void beidou_b1cd_gen_float_11(own::span<float> _dest, int _prn)
      */
    //Value of alpha is according to equation 4-11 in ICD which is data component and in Real part of the equation,
    //SB1C(t)=(1/2*DB1C_data(t))*(CB1C_data(t))*(sign(sin(2πfsc_B1C_at)))+(sqrt(1.0 / 11.0)*(CB1C_pilot(t))*(sign(sin(2πfsc_B1C_bt)))+j(sqrt(29.0 / 44.0)*(CB1C_pilot(t)*(sign(sin(2πfsc_B1C_t)))
-   const float alpha = (1.0 / 2.0);
+   //TODO: Check alpha is 1/2 and not 1/4 (B1C-SIS-ICD, Section 4.2.2, Table 4-2)
+    const float alpha = (1.0 / 2.0);
    uint32_t _boc_code_length = _dest.size();
 
    // Initialize primary code and BOC(1,1) replicas
@@ -585,9 +587,8 @@ void beidou_b1cd_gen_float_11(own::span<float> _dest, int _prn)
    own::span<int32_t> sinboc_11_(sinboc_11, _boc_code_length);
 
    // 1. Generate Beidou B1C Data Code
-   //TODO: Verify this code
-   make_b1cd(_b1c_data_code_span, _prn);
-   p_print(_b1c_data_code_span);
+   make_b1cd(_b1c_data_code_span, _prn); //p_print(_b1c_data_code_span);
+
    // 2. Apply Sine BOC(1,1) on generated Beidou B1C Data Code
    beidou_b1c_data_sinboc_11_gen_int(sinboc_11_, _b1c_data_code_span);  //generate sinboc(1,1) 12 samples per chip
 
@@ -598,7 +599,7 @@ void beidou_b1cd_gen_float_11(own::span<float> _dest, int _prn)
        }
 }
 
-//! Pretty prints the values of a pointer
+//! Pretty prints the values of signal replicas in std::span format.
 void p_print(own::span<int32_t>  sp)
 {
     setbuf(stdout, 0);
@@ -658,12 +659,12 @@ void beidou_b1cd_code_gen_complex_sampled_boc_11(own::span<std::complex<float>> 
            if (i == _samples_per_code - 1)
                {
                    // Correct the last index (due to number rounding issues)
-                   _dest[i] = std::complex<float>(1.0 - 2.0 * _b1c_data_boc_span[_boc_code_length - 1], 0.0);
+                   _dest[i] = std::complex<float>(_b1c_data_boc_span[_boc_code_length - 1], 0.0);
                }
            else
                {
                    //repeat the chip -> upsample
-                   _dest[i] = std::complex<float>(1.0 - 2.0 * _b1c_data_boc_span[_code_value_index], 0.0);
+                   _dest[i] = std::complex<float>( _b1c_data_boc_span[_code_value_index], 0.0);
                }
        }
 }
