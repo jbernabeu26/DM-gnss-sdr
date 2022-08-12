@@ -22,4 +22,5 @@ build/
 .vscode/
 .vs/
 Testing/
+logs/
 *gz
