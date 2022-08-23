@@ -50,88 +50,13 @@ BeidouB1cDllPllTracking::BeidouB1cDllPllTracking(
     unsigned int in_streams,
     unsigned int out_streams) : role_(role), in_streams_(in_streams), out_streams_(out_streams)
 {
-   Dll_Pll_Conf trk_param = Dll_Pll_Conf();
+   Dll_Pll_Conf trk_params = Dll_Pll_Conf();
    DLOG(INFO) << "role " << role;
+   trk_params.SetFromConfiguration(configuration, role);
    //################# CONFIGURATION PARAMETERS ########################
-   std::string default_item_type = "gr_complex";
-   std::string item_type = configuration->property(role + ".item_type", default_item_type);
-   int fs_in_deprecated = configuration->property("GNSS-SDR.internal_fs_hz", 2048000);
-   int fs_in = configuration->property("GNSS-SDR.internal_fs_sps", fs_in_deprecated);
-   trk_param.fs_in = fs_in;
-   bool dump = configuration->property(role + ".dump", false);
-   trk_param.dump = dump;
-   float pll_bw_hz = configuration->property(role + ".pll_bw_hz", 50.0);
-   if (FLAGS_pll_bw_hz != 0.0)
+   if (trk_params.extend_correlation_symbols < 1)
        {
-           pll_bw_hz = static_cast<float>(FLAGS_pll_bw_hz);
-       }
-   trk_param.pll_bw_hz = pll_bw_hz;
-   float dll_bw_hz = configuration->property(role + ".dll_bw_hz", 2.0);
-   if (FLAGS_dll_bw_hz != 0.0)
-       {
-           dll_bw_hz = static_cast<float>(FLAGS_dll_bw_hz);
-       }
-   trk_param.dll_bw_hz = dll_bw_hz;
-   float pll_bw_narrow_hz = configuration->property(role + ".pll_bw_narrow_hz", 2.0);
-   trk_param.pll_bw_narrow_hz = pll_bw_narrow_hz;
-   float dll_bw_narrow_hz = configuration->property(role + ".dll_bw_narrow_hz", 0.25);
-   trk_param.dll_bw_narrow_hz = dll_bw_narrow_hz;
-
-   int dll_filter_order = configuration->property(role + ".dll_filter_order", 2);
-   if (dll_filter_order < 1)
-       {
-           LOG(WARNING) << "dll_filter_order parameter must be 1, 2 or 3. Set to 1.";
-           dll_filter_order = 1;
-       }
-   if (dll_filter_order > 3)
-       {
-           LOG(WARNING) << "dll_filter_order parameter must be 1, 2 or 3. Set to 3.";
-           dll_filter_order = 3;
-       }
-   trk_param.dll_filter_order = dll_filter_order;
-
-   int pll_filter_order = configuration->property(role + ".pll_filter_order", 3);
-   if (pll_filter_order < 2)
-       {
-           LOG(WARNING) << "pll_filter_order parameter must be 2 or 3. Set to 2.";
-           pll_filter_order = 2;
-       }
-   if (pll_filter_order > 3)
-       {
-           LOG(WARNING) << "pll_filter_order parameter must be 2 or 3. Set to 3.";
-           pll_filter_order = 3;
-       }
-   trk_param.pll_filter_order = pll_filter_order;
-
-   if (pll_filter_order == 2)
-       {
-           trk_param.fll_filter_order = 1;
-       }
-   if (pll_filter_order == 3)
-       {
-           trk_param.fll_filter_order = 2;
-       }
-
-   bool enable_fll_pull_in = configuration->property(role + ".enable_fll_pull_in", false);
-   trk_param.enable_fll_pull_in = enable_fll_pull_in;
-   float fll_bw_hz = configuration->property(role + ".fll_bw_hz", 35.0);
-   trk_param.fll_bw_hz = fll_bw_hz;
-   trk_param.pull_in_time_s = configuration->property(role + ".pull_in_time_s", trk_param.pull_in_time_s);
-
-   float early_late_space_chips = configuration->property(role + ".early_late_space_chips", 0.5);
-   trk_param.early_late_space_chips = early_late_space_chips;
-   std::string default_dump_filename = "./track_ch";
-   std::string dump_filename = configuration->property(role + ".dump_filename", default_dump_filename);
-   trk_param.dump_filename = dump_filename;
-   int vector_length = std::round(static_cast<double>(fs_in) / (static_cast<double>(BEIDOU_B1C_CODE_RATE_CPS) / static_cast<double>(BEIDOU_B1C_CODE_LENGTH_CHIPS)));
-   trk_param.vector_length = vector_length;
-   int extend_correlation_symbols = configuration->property(role + ".extend_correlation_symbols", 1);
-   float early_late_space_narrow_chips = configuration->property(role + ".early_late_space_narrow_chips", 0.15);
-   trk_param.early_late_space_narrow_chips = early_late_space_narrow_chips;
-   bool track_pilot = configuration->property(role + ".track_pilot", false);
-   if (extend_correlation_symbols < 1)
-       {
-           extend_correlation_symbols = 1;
+           trk_params.extend_correlation_symbols = 1;
            std::cout << TEXT_RED << "WARNING: BEIDOU B1C. extend_correlation_symbols must be bigger than 0. Coherent integration has been set to 1 symbol (1 ms)" << TEXT_RESET << std::endl;
        }
    //!Warning:Beidou B1C does not have secondary data component
@@ -140,47 +65,37 @@ BeidouB1cDllPllTracking::BeidouB1cDllPllTracking(
            extend_correlation_symbols = BEIDOU_B2ad_SECONDARY_CODE_LENGTH;
            std::cout << TEXT_RED << "WARNING: BEIDOU B2A. extend_correlation_symbols must be lower than 11 when tracking the data component. Coherent integration has been set to 10 symbols (10 ms)" << TEXT_RESET << std::endl;
        }*/
-   if ((extend_correlation_symbols > 1) and (pll_bw_narrow_hz > pll_bw_hz or dll_bw_narrow_hz > dll_bw_hz))
+   if ((trk_params.extend_correlation_symbols > 1) and (trk_params.pll_bw_narrow_hz > trk_params.pll_bw_hz or trk_params.dll_bw_narrow_hz > trk_params.dll_bw_hz))
        {
            std::cout << TEXT_RED << "WARNING: BEIDOU B1C. PLL or DLL narrow tracking bandwidth is higher than wide tracking one" << TEXT_RESET << std::endl;
        }
-   trk_param.extend_correlation_symbols = extend_correlation_symbols;
-   trk_param.track_pilot = track_pilot;
-   trk_param.very_early_late_space_chips = 0.0;
-   trk_param.very_early_late_space_narrow_chips = 0.0;
-   trk_param.system = 'C';
+   trk_params.very_early_late_space_chips = 0.0;
+   trk_params.very_early_late_space_narrow_chips = 0.0;
+   trk_params.system = 'C';
    char sig_[3] = "C1";
-   std::memcpy(trk_param.signal, sig_, 3);
-   int cn0_samples = configuration->property(role + ".cn0_samples", 20);
-   if (FLAGS_cn0_samples != 20)
-       {
-           cn0_samples = FLAGS_cn0_samples;
-       }
-   trk_param.cn0_samples = cn0_samples;
-   int cn0_min = configuration->property(role + ".cn0_min", 25);
-   if (FLAGS_cn0_min != 25)
-       {
-           cn0_min = FLAGS_cn0_min;
-       }
-   trk_param.cn0_min = cn0_min;
-   trk_param.max_code_lock_fail = configuration->property(role + ".max_lock_fail", trk_param.max_code_lock_fail);
-   trk_param.max_carrier_lock_fail = configuration->property(role + ".max_carrier_lock_fail", trk_param.max_carrier_lock_fail);
-   trk_param.carrier_lock_th = configuration->property(role + ".carrier_lock_th", trk_param.carrier_lock_th);
+   std::memcpy(trk_params.signal, sig_, 3);
 
-
-   //################# MAKE TRACKING GNURadio object ###################
-   if (item_type.compare("gr_complex") == 0)
+   // ################# Make a GNU Radio Tracking block object ################
+   if (trk_params.item_type == "gr_complex")
        {
            item_size_ = sizeof(gr_complex);
-           tracking_ = dll_pll_veml_make_tracking(trk_param);
+           tracking_ = dll_pll_veml_make_tracking(trk_params);
        }
    else
        {
            item_size_ = sizeof(gr_complex);
-           LOG(WARNING) << item_type << " unknown tracking item type.";
+           LOG(WARNING) << trk_params.item_type << " unknown tracking item type.";
        }
    channel_ = 0;
    DLOG(INFO) << "tracking(" << tracking_->unique_id() << ")";
+   if (in_streams_ > 1)
+       {
+           LOG(ERROR) << "This implementation only supports one input stream";
+       }
+   if (out_streams_ > 1)
+       {
+           LOG(ERROR) << "This implementation only supports one output stream";
+       }
 }
 
 
