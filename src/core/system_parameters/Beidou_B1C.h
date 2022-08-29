@@ -50,7 +50,7 @@ constexpr double BEIDOU_B1C_CODE_PERIOD_S = 0.01;    //!< BEIDOU_B1C data code p
 constexpr uint32_t BEIDOU_B1C_CODE_PERIOD_MS = 10;
 constexpr uint32_t BEIDOU_B1C_OPT_ACQ_FS_HZ = 2000000;  //!< Sampling frequncy that maximizes the acquisition SNR while using a non-multiple of chip rate
 constexpr uint32_t  BEIDOU_B1C_SAMPLES_PER_SYMBOL = 1;
-
+constexpr int32_t BEIDOU_B1C_TELEMETRY_SYMBOLS_PER_BIT = 100;
 
 constexpr int32_t BEIDOU_B1C_NBR_SATS = 63;		      //!<Total number of satellites
 
