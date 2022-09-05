@@ -168,7 +168,7 @@ void GpsL2MPcpsAcquisitionTest::init()
         {
             config->set_property("Acquisition_2S.dump", "false");
         }
-    config->set_property("Acquisition_2S.dump_filename", "./tmp-acq-gps2/acquisition_test");
+    config->set_property("Acquisition_2S.dump_filename", "./tmp-bds_b1c_acq-gps2/acquisition_test");
     config->set_property("Acquisition_2S.dump_channel", "1");
     config->set_property("Acquisition_2S.threshold", "0.001");
     config->set_property("Acquisition_2S.doppler_max", std::to_string(doppler_max));
@@ -181,7 +181,7 @@ void GpsL2MPcpsAcquisitionTest::init()
 void GpsL2MPcpsAcquisitionTest::plot_grid()
 {
     // load the measured values
-    std::string basename = "./tmp-acq-gps2/acquisition_test_G_2S";
+    std::string basename = "./tmp-bds_b1c_acq-gps2/acquisition_test_G_2S";
     auto sat = static_cast<unsigned int>(gnss_synchro.PRN);
 
     auto samples_per_code = static_cast<unsigned int>(floor(static_cast<double>(sampling_frequency_hz) / (GPS_L2_M_CODE_RATE_CPS / static_cast<double>(GPS_L2_M_CODE_LENGTH_CHIPS))));
@@ -235,7 +235,7 @@ void GpsL2MPcpsAcquisitionTest::plot_grid()
                     std::cout << ge.what() << '\n';
                 }
         }
-    std::string data_str = "./tmp-acq-gps2";
+    std::string data_str = "./tmp-bds_b1c_acq-gps2";
     if (fs::exists(data_str))
         {
             fs::remove_all(data_str);
@@ -292,7 +292,7 @@ TEST_F(GpsL2MPcpsAcquisitionTest, ValidationOfResults)
 
     if (FLAGS_plot_acq_grid == true)
         {
-            std::string data_str = "./tmp-acq-gps2";
+            std::string data_str = "./tmp-bds_b1c_acq-gps2";
             if (fs::exists(data_str))
                 {
                     fs::remove_all(data_str);

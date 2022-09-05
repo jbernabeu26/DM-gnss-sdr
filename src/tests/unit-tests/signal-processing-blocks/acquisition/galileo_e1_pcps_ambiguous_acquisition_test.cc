@@ -170,7 +170,7 @@ void GalileoE1PcpsAmbiguousAcquisitionTest::init()
         {
             config->set_property("Acquisition_1B.dump", "false");
         }
-    config->set_property("Acquisition_1B.dump_filename", "./tmp-acq-gal1/acquisition");
+    config->set_property("Acquisition_1B.dump_filename", "./tmp-bds_b1c_acq-gal1/acquisition");
     // config->set_property("Acquisition_1B.threshold", "2.5");
     config->set_property("Acquisition_1B.pfa", "0.001");
     config->set_property("Acquisition_1B.doppler_max", std::to_string(doppler_max));
@@ -183,7 +183,7 @@ void GalileoE1PcpsAmbiguousAcquisitionTest::init()
 void GalileoE1PcpsAmbiguousAcquisitionTest::plot_grid()
 {
     // load the measured values
-    std::string basename = "./tmp-acq-gal1/acquisition_E_1B";
+    std::string basename = "./tmp-bds_b1c_acq-gal1/acquisition_E_1B";
     auto sat = static_cast<unsigned int>(gnss_synchro.PRN);
 
     auto samples_per_code = static_cast<unsigned int>(round(4000000 / (GALILEO_E1_CODE_CHIP_RATE_CPS / GALILEO_E1_B_CODE_LENGTH_CHIPS)));  // !!
@@ -238,7 +238,7 @@ void GalileoE1PcpsAmbiguousAcquisitionTest::plot_grid()
                     std::cout << ge.what() << '\n';
                 }
         }
-    std::string data_str = "./tmp-acq-gal1";
+    std::string data_str = "./tmp-bds_b1c_acq-gal1";
     if (fs::exists(data_str))
         {
             fs::remove_all(data_str);
@@ -293,7 +293,7 @@ TEST_F(GalileoE1PcpsAmbiguousAcquisitionTest, ValidationOfResults)
 
     if (FLAGS_plot_acq_grid == true)
         {
-            std::string data_str = "./tmp-acq-gal1";
+            std::string data_str = "./tmp-bds_b1c_acq-gal1";
             if (fs::exists(data_str))
                 {
                     fs::remove_all(data_str);

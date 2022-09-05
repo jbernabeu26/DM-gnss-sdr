@@ -467,8 +467,8 @@ int pcps_acquisition_fine_doppler_cc::general_work(int noutput_items,
      *                 If T>=gamma -> S4 else
      *                 If d_well_count<max_dwells -> S2
      *                 else -> S5.
-     *             S4. Positive_Acq: Send message and stop acq -> S0
-     *             S5. Negative_Acq: Send message and stop acq -> S0
+     *             S4. Positive_Acq: Send message and stop bds_b1c_acq -> S0
+     *             S5. Negative_Acq: Send message and stop bds_b1c_acq -> S0
      */
 
     int return_value = 0;  // Number of Gnss_Syncro objects produced

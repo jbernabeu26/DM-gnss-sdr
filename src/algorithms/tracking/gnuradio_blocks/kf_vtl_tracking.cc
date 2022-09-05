@@ -630,7 +630,7 @@ void kf_vtl_tracking::msg_handler_pvt_to_trk(const pmt::pmt_t &msg)
 void kf_vtl_tracking::start_tracking()
 {
     gr::thread::scoped_lock l(d_setlock);
-    // correct the code phase according to the delay between acq and trk
+    // correct the code phase according to the delay between bds_b1c_acq and trk
     d_acq_code_phase_samples = d_acquisition_gnss_synchro->Acq_delay_samples;
     d_acq_carrier_doppler_hz = d_acquisition_gnss_synchro->Acq_doppler_hz;
     d_acq_sample_stamp = d_acquisition_gnss_synchro->Acq_samplestamp_samples;

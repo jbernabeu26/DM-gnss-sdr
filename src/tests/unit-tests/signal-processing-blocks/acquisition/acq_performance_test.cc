@@ -366,7 +366,7 @@ protected:
     unsigned int measurement_counter = 0;
 
     unsigned int observed_satellite = FLAGS_acq_test_PRN;
-    std::string path_str = "./acq-perf-test";
+    std::string path_str = "./bds_b1c_acq-perf-test";
 
     int num_thresholds;
     unsigned int min_integration_ms;

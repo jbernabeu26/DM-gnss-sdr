@@ -653,8 +653,8 @@ TEST_F(GalileoE5aPcpsAcquisitionGSoC2014GensourceTest, ValidationOfSIM)
                     EXPECT_EQ(1, message) << "Acquisition failure. Expected message: 1=ACQ SUCCESS.";
                     if (message == 1)
                         {
-                            // std::cout << gnss_synchro.Acq_delay_samples << "acq delay'\n'";
-                            // std::cout << gnss_synchro.Acq_doppler_hz << "acq doppler'\n'";
+                            // std::cout << gnss_synchro.Acq_delay_samples << "bds_b1c_acq delay'\n'";
+                            // std::cout << gnss_synchro.Acq_doppler_hz << "bds_b1c_acq doppler'\n'";
                             EXPECT_EQ(static_cast<unsigned int>(1), correct_estimation_counter) << "Acquisition failure. Incorrect parameters estimation.";
                         }
                 }

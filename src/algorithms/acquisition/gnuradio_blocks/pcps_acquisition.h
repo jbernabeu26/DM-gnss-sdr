@@ -274,6 +274,7 @@ private:
     uint32_t d_num_doppler_bins;
     uint32_t d_num_doppler_bins_step2;
     uint32_t d_dump_channel;
+    uint32_t d_dumps_per_channel;
     uint32_t d_buffer_count;
 
     bool d_active;

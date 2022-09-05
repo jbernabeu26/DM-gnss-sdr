@@ -656,7 +656,7 @@ void dll_pll_veml_tracking::msg_handler_telemetry_to_trk(const pmt::pmt_t &msg)
 void dll_pll_veml_tracking::start_tracking()
 {
     gr::thread::scoped_lock l(d_setlock);
-    // correct the code phase according to the delay between acq and trk
+    // correct the code phase according to the delay between bds_b1c_acq and trk
     d_acq_code_phase_samples = d_acquisition_gnss_synchro->Acq_delay_samples;
     d_acq_carrier_doppler_hz = d_acquisition_gnss_synchro->Acq_doppler_hz;
     d_acq_sample_stamp = d_acquisition_gnss_synchro->Acq_samplestamp_samples;
@@ -847,7 +847,8 @@ void dll_pll_veml_tracking::start_tracking()
                 }
             else
                 {
-                    beidou_b1cp_code_gen_sinboc11_float(d_tracking_code, d_acquisition_gnss_synchro->PRN);
+                    //TODO: Check this b1c code is also being generated properly
+                    beidou_b1cd_code_gen_sinboc11_float(d_tracking_code, d_acquisition_gnss_synchro->PRN);
                 }
         }
 

@@ -158,7 +158,7 @@ Gps_L1_Ca_Dll_Pll_Tracking_GPU_cc::Gps_L1_Ca_Dll_Pll_Tracking_GPU_cc(
 void Gps_L1_Ca_Dll_Pll_Tracking_GPU_cc::start_tracking()
 {
     /*
-     *  correct the code phase according to the delay between acq and trk
+     *  correct the code phase according to the delay between bds_b1c_acq and trk
      */
     d_acq_code_phase_samples = d_acquisition_gnss_synchro->Acq_delay_samples;
     d_acq_carrier_doppler_hz = d_acquisition_gnss_synchro->Acq_doppler_hz;
@@ -170,7 +170,7 @@ void Gps_L1_Ca_Dll_Pll_Tracking_GPU_cc::start_tracking()
     // doppler effect
     // Fd=(C/(C+Vr))*F
     const double radial_velocity = (GPS_L1_FREQ_HZ + d_acq_carrier_doppler_hz) / GPS_L1_FREQ_HZ;
-    // new chip and prn sequence periods based on acq Doppler
+    // new chip and prn sequence periods based on bds_b1c_acq Doppler
     d_code_freq_chips = radial_velocity * GPS_L1_CA_CODE_RATE_CPS;
     d_code_phase_step_chips = static_cast<double>(d_code_freq_chips) / static_cast<double>(d_fs_in);
     const double T_chip_mod_seconds = 1 / d_code_freq_chips;

@@ -342,8 +342,8 @@ int pcps_assisted_acquisition_cc::general_work(int noutput_items,
      *                 else if !disable_assist -> S3
      *                 else -> S5.
      *             S3. RedefineGrid. Open the grid search to unasisted acquisition. Reset counters and grid. -> S2
-     *             S4. Positive_Acq: Send message and stop acq -> S0
-     *             S5. Negative_Acq: Send message and stop acq -> S0
+     *             S4. Positive_Acq: Send message and stop bds_b1c_acq -> S0
+     *             S5. Negative_Acq: Send message and stop bds_b1c_acq -> S0
      */
 
     switch (d_state)

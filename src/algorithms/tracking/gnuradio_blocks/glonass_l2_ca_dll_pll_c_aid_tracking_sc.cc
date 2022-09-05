@@ -195,7 +195,7 @@ glonass_l2_ca_dll_pll_c_aid_tracking_sc::glonass_l2_ca_dll_pll_c_aid_tracking_sc
 void glonass_l2_ca_dll_pll_c_aid_tracking_sc::start_tracking()
 {
     /*
-     *  correct the code phase according to the delay between acq and trk
+     *  correct the code phase according to the delay between bds_b1c_acq and trk
      */
     d_acq_code_phase_samples = d_acquisition_gnss_synchro->Acq_delay_samples;
     d_acq_carrier_doppler_hz = d_acquisition_gnss_synchro->Acq_doppler_hz;
@@ -208,7 +208,7 @@ void glonass_l2_ca_dll_pll_c_aid_tracking_sc::start_tracking()
     // Fd=(C/(C+Vr))*F
     d_glonass_freq_ch = GLONASS_L2_CA_FREQ_HZ + (GLONASS_L2_CA_FREQ_HZ * GLONASS_PRN.at(d_acquisition_gnss_synchro->PRN));
     const double radial_velocity = (d_glonass_freq_ch + d_acq_carrier_doppler_hz) / d_glonass_freq_ch;
-    // new chip and prn sequence periods based on acq Doppler
+    // new chip and prn sequence periods based on bds_b1c_acq Doppler
     d_code_freq_chips = radial_velocity * GLONASS_L2_CA_CODE_RATE_CPS;
     d_code_phase_step_chips = static_cast<double>(d_code_freq_chips) / static_cast<double>(d_fs_in);
     const double T_chip_mod_seconds = 1.0 / d_code_freq_chips;

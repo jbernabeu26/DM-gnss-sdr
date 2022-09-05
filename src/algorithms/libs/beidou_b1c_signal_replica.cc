@@ -883,10 +883,16 @@ void beidou_b1c_code_gen_complex_sampled_boc(own::span<std::complex<float>> _des
 //! Generates Data code required at the time of tracking(followed approach like Galileo E1)
 void beidou_b1cd_code_gen_sinboc11_float(own::span<float> _dest, uint32_t _prn)
 {
-   const auto _code_length = static_cast<uint32_t>(BEIDOU_B1C_CODE_LENGTH_CHIPS);
    std::array<int32_t, BEIDOU_B1C_CODE_LENGTH_CHIPS> primary_code_b1c_chips{};                        // _code_length not accepted by Clang
    make_b1cd(own::span<int32_t>(primary_code_b1c_chips.data(), BEIDOU_B1C_CODE_LENGTH_CHIPS), _prn);  //generate beidou B1C code, 1 sample per chip
-   for (uint32_t i = 0; i < _code_length; i++)
+   //TODO remove this piece after verification
+   // validate primary code
+   setbuf(stdout, 0);
+   for (uint32_t i = 0; i < 25; i++)
+       {
+           std::cout << std::to_string(primary_code_b1c_chips[i]);
+       }
+    for (uint32_t i = 0; i < BEIDOU_B1C_CODE_LENGTH_CHIPS; i++)
        {
            _dest[2 * i] = static_cast<float>(primary_code_b1c_chips[i]);
            _dest[2 * i + 1] = -_dest[2 * i];

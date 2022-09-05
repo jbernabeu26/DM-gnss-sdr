@@ -169,11 +169,11 @@ void wait_message()
             // std::cout<<"Acq message rx="<<message<< '\n';
             switch (message)
                 {
-                case 1:  // Positive acq
+                case 1:  // Positive bds_b1c_acq
                     gnss_sync_vector.push_back(gnss_synchro);
                     // acquisition->reset();
                     break;
-                case 2:  // negative acq
+                case 2:  // negative bds_b1c_acq
                     // acquisition->reset();
                     break;
                 case 3:

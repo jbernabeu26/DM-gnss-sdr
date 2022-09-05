@@ -165,7 +165,7 @@ void BeidouB1iPcpsAcquisitionTest::init()
         {
             config->set_property("Acquisition_B1.dump", "false");
         }
-    config->set_property("Acquisition_B1.dump_filename", "./tmp-acq-bds-b1i/acquisition");
+    config->set_property("Acquisition_B1.dump_filename", "./tmp-bds_b1c_acq-bds-b1i/acquisition");
     config->set_property("Acquisition_B1.dump_channel", "1");
     config->set_property("Acquisition_B1.threshold", "0.0038");
     config->set_property("Acquisition_B1.doppler_max", std::to_string(doppler_max));
@@ -178,7 +178,7 @@ void BeidouB1iPcpsAcquisitionTest::init()
 void BeidouB1iPcpsAcquisitionTest::plot_grid()
 {
     // load the measured values
-    std::string basename = "./tmp-acq-bds-b1i/acquisition_C_B1";
+    std::string basename = "./tmp-bds_b1c_acq-bds-b1i/acquisition_C_B1";
     auto sat = static_cast<unsigned int>(gnss_synchro.PRN);
 
     auto samples_per_code = static_cast<unsigned int>(round(25000000 / (BEIDOU_B1I_CODE_RATE_CPS / BEIDOU_B1I_CODE_LENGTH_CHIPS)));  // !!
@@ -233,7 +233,7 @@ void BeidouB1iPcpsAcquisitionTest::plot_grid()
                     std::cout << ge.what() << '\n';
                 }
         }
-    std::string data_str = "./tmp-acq-bds-b1i";
+    std::string data_str = "./tmp-bds_b1c_acq-bds-b1i";
     if (fs::exists(data_str))
         {
             fs::remove_all(data_str);
@@ -294,7 +294,7 @@ TEST_F(BeidouB1iPcpsAcquisitionTest, ValidationOfResults)
 
     if (FLAGS_plot_acq_grid == true)
         {
-            std::string data_str = "./tmp-acq-bds-b1i";
+            std::string data_str = "./tmp-bds_b1c_acq-bds-b1i";
             if (fs::exists(data_str))
                 {
                     fs::remove_all(data_str);

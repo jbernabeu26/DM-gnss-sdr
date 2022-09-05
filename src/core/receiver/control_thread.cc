@@ -1144,7 +1144,7 @@ void ControlThread::gps_acq_assist_data_collector() const
                       << " with Doppler "
                       << gps_acq.Doppler0
                       << " [Hz]\n";
-            // insert new acq record to the global ephemeris map
+            // insert new bds_b1c_acq record to the global ephemeris map
             if (global_gps_acq_assist_map.read(gps_acq.PRN, gps_acq_old))
                 {
                     std::cout << "Acquisition assistance record updated\n";
@@ -1152,8 +1152,8 @@ void ControlThread::gps_acq_assist_data_collector() const
                 }
             else
                 {
-                    // insert new acq record
-                    LOG(INFO) << "New acq assist record inserted";
+                    // insert new bds_b1c_acq record
+                    LOG(INFO) << "New bds_b1c_acq assist record inserted";
                     global_gps_acq_assist_map.write(gps_acq.PRN, gps_acq);
                 }
         }

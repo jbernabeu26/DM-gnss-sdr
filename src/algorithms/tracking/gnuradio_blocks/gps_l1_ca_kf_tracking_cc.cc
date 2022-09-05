@@ -232,14 +232,14 @@ Gps_L1_Ca_Kf_Tracking_cc::Gps_L1_Ca_Kf_Tracking_cc(
 void Gps_L1_Ca_Kf_Tracking_cc::start_tracking()
 {
     /*
-     *  correct the code phase according to the delay between acq and trk
+     *  correct the code phase according to the delay between bds_b1c_acq and trk
      */
     d_acq_code_phase_samples = d_acquisition_gnss_synchro->Acq_delay_samples;
     d_acq_carrier_doppler_hz = d_acquisition_gnss_synchro->Acq_doppler_hz;
     d_acq_sample_stamp = d_acquisition_gnss_synchro->Acq_samplestamp_samples;
     d_acq_carrier_doppler_step_hz = static_cast<double>(d_acquisition_gnss_synchro->Acq_doppler_step);
 
-    // Correct Kalman filter covariance according to acq doppler step size (3 sigma)
+    // Correct Kalman filter covariance according to bds_b1c_acq doppler step size (3 sigma)
     if (d_acquisition_gnss_synchro->Acq_doppler_step > 0)
         {
             kf_P_x_ini(1, 1) = pow(d_acq_carrier_doppler_step_hz / 3.0, 2);
@@ -253,7 +253,7 @@ void Gps_L1_Ca_Kf_Tracking_cc::start_tracking()
     acq_trk_diff_seconds = static_cast<float>(acq_trk_diff_samples) / static_cast<float>(d_fs_in);
     // Doppler effect Fd = (C / (C + Vr)) * F
     double radial_velocity = (GPS_L1_FREQ_HZ + d_acq_carrier_doppler_hz) / GPS_L1_FREQ_HZ;
-    // new chip and prn sequence periods based on acq Doppler
+    // new chip and prn sequence periods based on bds_b1c_acq Doppler
     double T_chip_mod_seconds;
     double T_prn_mod_seconds;
     double T_prn_mod_samples;

@@ -1777,7 +1777,9 @@ void GNSSFlowgraph::remove_signal(const Gnss_Signal& gs)
         case evBDS_B3:
             available_BDS_B3_signals_.remove(gs);
             break;
-
+        case evBDS_C1:
+            available_BDS_C1_signals_.remove(gs);
+            break;
         default:
             LOG(ERROR) << "This should not happen :-(";
             break;
@@ -2525,7 +2527,7 @@ void GNSSFlowgraph::set_signals_list()
 
     if (configuration_->property("Channels_B1.count", 0) > 0)
         {
-            // Loop to create the list of BeiDou B1C signals
+            // Loop to create the list of BeiDou B1I signals
             for (available_gnss_prn_iter = available_beidou_prn.cbegin();
                  available_gnss_prn_iter != available_beidou_prn.cend();
                  available_gnss_prn_iter++)
@@ -2538,7 +2540,7 @@ void GNSSFlowgraph::set_signals_list()
 
     if (configuration_->property("Channels_B3.count", 0) > 0)
         {
-            // Loop to create the list of BeiDou B1C signals
+            // Loop to create the list of BeiDou B3I signals
             for (available_gnss_prn_iter = available_beidou_prn.cbegin();
                  available_gnss_prn_iter != available_beidou_prn.cend();
                  available_gnss_prn_iter++)
@@ -2546,6 +2548,18 @@ void GNSSFlowgraph::set_signals_list()
                     available_BDS_B3_signals_.emplace_back(
                         Gnss_Satellite(std::string("Beidou"), *available_gnss_prn_iter),
                         std::string("B3"));
+                }
+        }
+    if (configuration_->property("Channels_C1.count", 0) > 0)
+        {
+            // Loop to create the list of BeiDou B1C signals
+            for (available_gnss_prn_iter = available_beidou_prn.cbegin();
+                 available_gnss_prn_iter != available_beidou_prn.cend();
+                 available_gnss_prn_iter++)
+                {
+                    available_BDS_C1_signals_.emplace_back(
+                        Gnss_Satellite(std::string("Beidou"), *available_gnss_prn_iter),
+                        std::string("C1"));
                 }
         }
 }
@@ -2865,6 +2879,11 @@ Gnss_Signal GNSSFlowgraph::search_next_signal(const std::string& searched_signal
             result = available_BDS_B3_signals_.front();
             available_BDS_B3_signals_.pop_front();
             available_BDS_B3_signals_.push_back(result);
+            break;
+        case evBDS_C1:
+            result = available_BDS_C1_signals_.front();
+            available_BDS_C1_signals_.pop_front();
+            available_BDS_C1_signals_.push_back(result);
             break;
 
         default:

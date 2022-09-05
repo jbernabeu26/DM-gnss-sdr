@@ -143,7 +143,7 @@ Gps_L1_Ca_Tcp_Connector_Tracking_cc::Gps_L1_Ca_Tcp_Connector_Tracking_cc(
 void Gps_L1_Ca_Tcp_Connector_Tracking_cc::start_tracking()
 {
     /*
-     *  correct the code phase according to the delay between acq and trk
+     *  correct the code phase according to the delay between bds_b1c_acq and trk
      */
 
     d_acq_code_phase_samples = static_cast<float>(d_acquisition_gnss_synchro->Acq_delay_samples);
@@ -158,7 +158,7 @@ void Gps_L1_Ca_Tcp_Connector_Tracking_cc::start_tracking()
     // doppler effect
     // Fd=(C/(C+Vr))*F
     auto radial_velocity = static_cast<float>((GPS_L1_FREQ_HZ + d_acq_carrier_doppler_hz) / GPS_L1_FREQ_HZ);
-    // new chip and prn sequence periods based on acq Doppler
+    // new chip and prn sequence periods based on bds_b1c_acq Doppler
     float T_chip_mod_seconds;
     float T_prn_mod_seconds;
     float T_prn_mod_samples;

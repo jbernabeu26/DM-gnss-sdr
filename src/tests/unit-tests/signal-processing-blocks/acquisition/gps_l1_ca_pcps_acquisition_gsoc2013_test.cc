@@ -617,12 +617,12 @@ TEST_F(GpsL1CaPcpsAcquisitionGSoC2013Test, ValidationOfResultsProbabilities)
                 {
                     std::cout << "Estimated probability of detection = " << Pd << '\n';
                     std::cout << "Estimated probability of false alarm (satellite present) = " << Pfa_p << '\n';
-                    std::cout << "Mean acq time = " << mean_acq_time_us << " microseconds.\n";
+                    std::cout << "Mean bds_b1c_acq time = " << mean_acq_time_us << " microseconds.\n";
                 }
             else if (i == 1)
                 {
                     std::cout << "Estimated probability of false alarm (satellite absent) = " << Pfa_a << '\n';
-                    std::cout << "Mean acq time = " << mean_acq_time_us << " microseconds.\n";
+                    std::cout << "Mean bds_b1c_acq time = " << mean_acq_time_us << " microseconds.\n";
                 }
 
             ASSERT_NO_THROW({

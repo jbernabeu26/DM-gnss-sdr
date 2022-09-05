@@ -822,7 +822,7 @@ TEST_F(GpsL1CaPcpsQuickSyncAcquisitionGSoC2014Test, ValidationOfResultsProbabili
                     std::cout << "Estimated probability of detection = " << Pd << '\n';
                     std::cout << "Estimated probability of false alarm (satellite present) = " << Pfa_p << '\n';
                     std::cout << "Estimated probability of miss detection (satellite present) = " << Pmd << '\n';
-                    std::cout << "Mean acq time = " << mean_acq_time_us << " microseconds.\n";
+                    std::cout << "Mean bds_b1c_acq time = " << mean_acq_time_us << " microseconds.\n";
 
                     if (dump_test_results)
                         {
@@ -840,7 +840,7 @@ TEST_F(GpsL1CaPcpsQuickSyncAcquisitionGSoC2014Test, ValidationOfResultsProbabili
             else if (i == 1)
                 {
                     std::cout << "Estimated probability of false alarm (satellite absent) = " << Pfa_a << '\n';
-                    std::cout << "Mean acq time = " << mean_acq_time_us << " microseconds.\n";
+                    std::cout << "Mean bds_b1c_acq time = " << mean_acq_time_us << " microseconds.\n";
 
                     if (dump_test_results)
                         {

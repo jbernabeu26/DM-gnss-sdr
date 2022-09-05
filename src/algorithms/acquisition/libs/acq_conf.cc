@@ -40,6 +40,7 @@ void Acq_Conf::SetFromConfiguration(const ConfigurationInterface *configuration,
     max_dwells = configuration->property(role + ".max_dwells", max_dwells);
     dump = configuration->property(role + ".dump", dump);
     dump_channel = configuration->property(role + ".dump_channel", dump_channel);
+    dumps_per_channel = configuration->property(role + ".dumps_per_channel", dumps_per_channel);
     blocking = configuration->property(role + ".blocking", blocking);
     dump_filename = configuration->property(role + ".dump_filename", dump_filename);
     acq_iq = configuration->property(role + ".acquire_iq", acq_iq);

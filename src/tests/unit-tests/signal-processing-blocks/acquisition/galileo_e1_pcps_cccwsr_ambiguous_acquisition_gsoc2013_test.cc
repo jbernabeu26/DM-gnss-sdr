@@ -640,12 +640,12 @@ TEST_F(GalileoE1PcpsCccwsrAmbiguousAcquisitionTest, ValidationOfResultsProbabili
                 {
                     std::cout << "Estimated probability of detection = " << Pd << '\n';
                     std::cout << "Estimated probability of false alarm (satellite present) = " << Pfa_p << '\n';
-                    std::cout << "Mean acq time = " << mean_acq_time_us << " microseconds.\n";
+                    std::cout << "Mean bds_b1c_acq time = " << mean_acq_time_us << " microseconds.\n";
                 }
             else if (i == 1)
                 {
                     std::cout << "Probability of false alarm (satellite absent) = " << Pfa_a << '\n';
-                    std::cout << "Mean acq time = " << mean_acq_time_us << " microseconds.\n";
+                    std::cout << "Mean bds_b1c_acq time = " << mean_acq_time_us << " microseconds.\n";
                 }
             ch_thread.join();
         }

@@ -498,7 +498,7 @@ void dll_pll_veml_tracking_fpga::start_tracking()
     // acquisition process. This is done to minimize the time between the end of the acquisition process and
     // the beginning of the tracking process.
 
-    //  correct the code phase according to the delay between acq and trk
+    //  correct the code phase according to the delay between bds_b1c_acq and trk
     d_acq_code_phase_samples = d_acquisition_gnss_synchro->Acq_delay_samples;
     d_acq_carrier_doppler_hz = d_acquisition_gnss_synchro->Acq_doppler_hz;
     d_acq_sample_stamp = d_acquisition_gnss_synchro->Acq_samplestamp_samples;
@@ -1564,7 +1564,7 @@ int dll_pll_veml_tracking_fpga::general_work(int noutput_items __attribute__((un
 
                         // Doppler effect Fd = (C / (C + Vr)) * F
                         const double radial_velocity = (d_signal_carrier_freq + d_acq_carrier_doppler_hz) / d_signal_carrier_freq;
-                        // new chip and PRN sequence periods based on acq Doppler
+                        // new chip and PRN sequence periods based on bds_b1c_acq Doppler
                         d_code_freq_chips = radial_velocity * d_code_chip_rate;
                         d_code_phase_step_chips = d_code_freq_chips / d_trk_parameters.fs_in;
 

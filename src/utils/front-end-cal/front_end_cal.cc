@@ -199,7 +199,7 @@ int FrontEndCal::Get_SUPL_Assist()
                                 {
                                     LOG(INFO) << "SUPL: Received Acquisition assistance for GPS SV " << gps_acq_iter->first;
                                     std::cout << "SUPL: Received Acquisition assistance for GPS SV " << gps_acq_iter->first << '\n';
-                                    LOG(INFO) << "New acq assist record inserted";
+                                    LOG(INFO) << "New bds_b1c_acq assist record inserted";
                                     global_gps_acq_assist_map.write(gps_acq_iter->second.PRN, gps_acq_iter->second);
                                 }
                         }

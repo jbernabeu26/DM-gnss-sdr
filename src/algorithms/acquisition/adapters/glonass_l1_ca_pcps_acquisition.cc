@@ -194,7 +194,7 @@ void GlonassL1CaPcpsAcquisition::disconnect(gr::top_block_sptr top_block)
         }
     else if (item_type_ == "cbyte")
         {
-            // Since a byte-based acq implementation is not available,
+            // Since a byte-based bds_b1c_acq implementation is not available,
             // we just convert cshorts to gr_complex
             top_block->disconnect(cbyte_to_float_x2_, 0, float_to_complex_, 0);
             top_block->disconnect(cbyte_to_float_x2_, 1, float_to_complex_, 1);

@@ -62,6 +62,7 @@ public:
     uint32_t num_doppler_bins_step2{4U};
     uint32_t resampler_latency_samples{0U};
     uint32_t dump_channel{0U};
+    uint32_t dumps_per_channel{1U};
     int32_t doppler_max{5000};
     int32_t doppler_min{-5000};
 
