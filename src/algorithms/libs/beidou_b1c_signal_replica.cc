@@ -579,11 +579,11 @@ void beidou_b1cd_gen_float_11(own::span<float> _dest, int _prn)
    own::span<int32_t> sinboc_11_(sinboc_11, _boc_code_length);
 
    // 1. Generate Beidou B1C Data Code
-   make_b1cd(_b1c_data_code_span, _prn); //p_print(_b1c_data_code_span);
-   p_print(_b1c_data_code_span, _prn);
+   make_b1cd(_b1c_data_code_span, _prn); //p_print(_b1c_data_code_span, _prn);
+
    // 2. Apply Sine BOC(1,1) on generated Beidou B1C Data Code
    beidou_b1c_data_sinboc_11_gen_int(sinboc_11_, _b1c_data_code_span);  //generate sinboc(1,1) 12 samples per chip
-   //p_print(_b1c_data_code_span, _prn);
+
    // 3. Multiply the output of Sine BOC(1,1) with the Power Ratio
    for (uint32_t i = 0; i < _boc_code_length; i++)
        {
@@ -712,7 +712,7 @@ void beidou_b1cp_gen_float_61(own::span<float> _dest, own::span<int32_t> b1c_pil
    // 1. Apply Sine BOC(6,1) on generated Beidou B1C Pilot Code
 
    beidou_b1c_pilot_sinboc_61_gen_int(sinboc_61_, b1c_pilot_primary_code_chips);  //generate sinboc(6,1) 12 samples per chip
-   p_print(sinboc_61_, 29);
+
    // 2. Multiply the output of Sine BOC(6,1) with the Power Ratio
    for (uint32_t i = 0; i < BEIDOU_B1C_CODE_LENGTH_CHIPS; i++)
        {
@@ -759,8 +759,6 @@ void beidou_b1cp_code_gen_complex_sampled_boc_61_11(own::span<std::complex<float
    int32_t _samples_per_code;
    float _ts;
    float _tc;
-   float aux;
-
    //TODO: fix this _code_length_pilot definition that doesn't match _dest size
    //uint32_t _code_length_pilot = 12 * BEIDOU_B1C_CODE_LENGTH_CHIPS;
    float _code_pilot_real[BEIDOU_B1C_CODE_LENGTH_CHIPS];
@@ -773,16 +771,15 @@ void beidou_b1cp_code_gen_complex_sampled_boc_61_11(own::span<std::complex<float
    // Generate B1C pilot primary code for both components
    int32_t b1c_pilot_primary_code_chips[BEIDOU_B1C_CODE_LENGTH_CHIPS];
    make_b1cp(own::span<int32_t>(b1c_pilot_primary_code_chips, static_cast<uint32_t>(BEIDOU_B1C_CODE_LENGTH_CHIPS)), _prn);
-   p_print(b1c_pilot_primary_code_chips, _prn);
+
    // Generate BOC(6,1) for the real component of the pilot signal
-
    own::span<float> real_code_span(_code_pilot_real, BEIDOU_B1C_CODE_LENGTH_CHIPS);
-   //beidou_b1cp_gen_float_61(real_code_span, b1c_pilot_primary_code_chips);
+   beidou_b1cp_gen_float_61(real_code_span, b1c_pilot_primary_code_chips);
 
-   // Generate BOC(1,1) for the imaginary component of the pilot signal
+   // Generate BOC(1,1) for the imaginary component of the pilot signal in Bipolar coding
    own::span<float> imaginary_code_span(_code_pilot_imag, BEIDOU_B1C_CODE_LENGTH_CHIPS * 2);
    beidou_b1cp_gen_float_11(imaginary_code_span, b1c_pilot_primary_code_chips);
-   p_print_float(imaginary_code_span, _prn);
+
    //--- Find time constants --------------------------------------------------
    _ts = 1.0 / static_cast<float>(_fs);                       // Sampling period in sec
    _tc = 1.0 / static_cast<float>(BEIDOU_B1C_CODE_RATE_CPS);  // code chip period in sec
@@ -791,7 +788,7 @@ void beidou_b1cp_code_gen_complex_sampled_boc_61_11(own::span<std::complex<float
    int32_t _code_value_index[_samples_per_code];
    for (int32_t i = 0; i < _samples_per_code; i++)
    {
-       _code_value_index[i] = static_cast<int>(i * _ts / _tc * 2);
+       _code_value_index[i] = static_cast<int>(i * _ts / _tc * 2); // Note the '2' scalar factor
    }
 
     // Resampling
@@ -806,16 +803,17 @@ void beidou_b1cp_code_gen_complex_sampled_boc_61_11(own::span<std::complex<float
            //_code_value_index = std::ceil((_ts * (static_cast<float>(i) + 1)) / _tc) - 1;
 
            //--- Make the digitized version of the B1Cp code -----------------------
+           // TODO: Assess the data type selected for the code
            if (i == _samples_per_code - 1)
                {
                    //--- Correct the last index (due to number rounding issues) -----------
-                   _dest[i] = std::complex<float>(real_code_span[BEIDOU_B1C_CODE_LENGTH_CHIPS - 1], imaginary_code_span[BEIDOU_B1C_CODE_LENGTH_CHIPS - 1]);
+                   //_dest[i] = std::complex<float>(real_code_span[BEIDOU_B1C_CODE_LENGTH_CHIPS - 1], imaginary_code_span[BEIDOU_B1C_CODE_LENGTH_CHIPS - 1]);
+                   _dest[i] = std::complex<float>(0, imaginary_code_span[BEIDOU_B1C_CODE_LENGTH_CHIPS - 1]);
                }
            else
                {
                    //_dest[i] = std::complex<float>(1.0 - 2.0 * real_code_span[_code_value_index], 1.0 - 2.0 * imaginary_code_span[_code_value_index]);  //repeat the chip -> upsample
-                   // TODO: Assess the data type selected for the code
-                   _dest[i] = std::complex<float>(imaginary_code_span[_code_value_index[i]]);  //repeat the chip -> upsample
+                   _dest[i] = std::complex<float>(0, imaginary_code_span[_code_value_index[i]]);  //repeat the chip -> upsample
                }
        }
 }
@@ -909,7 +907,6 @@ void beidou_b1cd_code_gen_sinboc11_float(own::span<float> _dest, uint32_t _prn)
 {
    std::array<int32_t, BEIDOU_B1C_CODE_LENGTH_CHIPS> primary_code_b1c_chips{};                        // _code_length not accepted by Clang
    make_b1cd(own::span<int32_t>(primary_code_b1c_chips.data(), BEIDOU_B1C_CODE_LENGTH_CHIPS), _prn);  //generate beidou B1C code, 1 sample per chip
-   //p_print(primary_code_b1c_chips, _prn);
 
     for (uint32_t i = 0; i < BEIDOU_B1C_CODE_LENGTH_CHIPS; i++)
        {
