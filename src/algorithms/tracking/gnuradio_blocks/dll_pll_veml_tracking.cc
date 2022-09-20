@@ -847,7 +847,7 @@ void dll_pll_veml_tracking::start_tracking()
                 }
             else
                 {
-                    //TODO: Check this b1c code is also being generated properly
+
                     beidou_b1cd_code_gen_sinboc11_float(d_tracking_code, d_acquisition_gnss_synchro->PRN);
                 }
         }
@@ -889,6 +889,7 @@ void dll_pll_veml_tracking::start_tracking()
     d_code_loop_filter.initialize();                                                 // initialize the code filter
 
     // DEBUG OUTPUT
+    setbuf(stdout, 0);
     std::cout << "Tracking of " << d_systemName << " " << d_signal_pretty_name << " signal started on channel " << d_channel << " for satellite " << Gnss_Satellite(d_systemName, d_acquisition_gnss_synchro->PRN) << '\n';
     DLOG(INFO) << "Starting tracking of satellite " << Gnss_Satellite(d_systemName, d_acquisition_gnss_synchro->PRN) << " on channel " << d_channel;
 

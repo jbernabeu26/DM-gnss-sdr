@@ -45,7 +45,8 @@ namespace own = gsl;
 #endif
 
 
-void p_print(own::span<int32_t>  sp);
+void p_print(own::span<int32_t>  sp, int _prn);
+void p_print_float(own::span<float>  sp, int _prn);
 //! Generates BeiDou B1c Data Primary codes for the desired SV ID
 void make_b1cd(own::span<int32_t> _dest, int32_t prn);
 
@@ -92,10 +93,10 @@ void beidou_b1cd_gen_float_11(own::span<float> _dest, int _primary_code);
 void beidou_b1cd_code_gen_complex_sampled_boc_11(own::span<std::complex<float>> _dest,uint32_t _prn, int32_t _fs);
 
 //! Generate BOC for first Pilot component which is in Real part
-void beidou_b1cp_gen_float_61(own::span<float> _dest, uint32_t _prn);
+void beidou_b1cp_gen_float_61(own::span<float> _dest, own::span<int32_t> b1c_pilot_primary_code_chips);
 
 //! Generate BOC for second Pilot component which is in Imaginary part
-void beidou_b1cp_gen_float_11(own::span<float> _dest, uint32_t _prn);
+void beidou_b1cp_gen_float_11(own::span<float> _dest, own::span<int32_t> b1c_pilot_primary_code_chips);
 
 //! Generates complex version of both pilot components having sine BOC(6,1) which is in Real part and sine BOC(1,1) which is in Imaginary part
 void beidou_b1cp_code_gen_complex_sampled_boc_61_11(own::span<std::complex<float>> _dest,uint32_t _prn, int32_t _fs);
