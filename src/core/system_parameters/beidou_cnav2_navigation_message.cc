@@ -132,29 +132,61 @@ uint64_t Beidou_Cnav2_Navigation_Message::read_navigation_unsigned(std::bitset<B
 int64_t Beidou_Cnav2_Navigation_Message::read_navigation_signed(std::bitset<BEIDOU_CNAV2_DATA_BITS> const &bits, const std::vector<std::pair<int32_t, int32_t>> &parameter)
 {
     int64_t value = 0;
-    int64_t sign = 0;
     int32_t num_of_slices = parameter.size();
-    // read the MSB and perform the sign extension
-    if (bits[BEIDOU_CNAV2_DATA_BITS - parameter[0].first] == 1)
+    // Discriminate between 64 bits and 32 bits compiler
+    int32_t long_int_size_bytes = sizeof(int64_t);
+    if (long_int_size_bytes == 8)  // if a long int takes 8 bytes, we are in a 64 bits system
         {
-            sign = -1;
-        }
-    else
-        {
-            sign = 1;
-        }
-    for (int32_t i = 0; i < num_of_slices; i++)
-        {
-            for (int32_t j = 1; j < parameter[i].second; j++)
+            // read the MSB and perform the sign extension
+            if (bits[BEIDOU_CNAV2_DATA_BITS - parameter[0].first] == 1)
                 {
-                    value <<= 1;  //shift left
-                    if (bits[BEIDOU_CNAV2_DATA_BITS - parameter[i].first - j] == 1)
+                    value ^= 0xFFFFFFFFFFFFFFFF;  // 64 bits variable
+                }
+            else
+                {
+                    value &= 0;
+                }
+
+            for (int32_t i = 0; i < num_of_slices; i++)
+                {
+                    for (int32_t j = 0; j < parameter[i].second; j++)
                         {
-                            value |= 1;  // insert the bit
+                            value <<= 1;  // shift left
+                            value &=
+                                0xFFFFFFFFFFFFFFFE;  // reset the corresponding bit (for the 64 bits variable)
+                            if (bits[BEIDOU_CNAV2_DATA_BITS - parameter[i].first - j] == 1)
+                                {
+                                    value += 1;  // insert the bit
+                                }
                         }
                 }
         }
-    return (sign * value);
+    else  // we assume we are in a 32 bits system
+        {
+            // read the MSB and perform the sign extension
+            if (bits[BEIDOU_CNAV2_DATA_BITS - parameter[0].first] == 1)
+                {
+                    value ^= 0xFFFFFFFF;
+                }
+            else
+                {
+                    value &= 0;
+                }
+
+            for (int32_t i = 0; i < num_of_slices; i++)
+                {
+                    for (int32_t j = 0; j < parameter[i].second; j++)
+                        {
+                            value <<= 1;          // shift left
+                            value &= 0xFFFFFFFE;  // reset the corresponding bit
+                            if (bits[BEIDOU_CNAV2_DATA_BITS - parameter[i].first - j] == 1)
+                                {
+                                    value += 1;  // insert the bit
+                                }
+                        }
+                }
+        }
+    return value;
 }
 
 
